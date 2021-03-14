@@ -3,36 +3,35 @@ import logging
 
 import aiohttp
 import requests
-from langcodes import Language
 
-# ENDPOINTS
-BASE_URL = "https://myt-agg.toyota-europe.com/cma/api"
-BASE_URL_CARS = "https://cpb2cs.toyota-europe.com/vehicle"
-ENDPOINT_AUTH = "https://ssoms.toyota-europe.com/authenticate"
-
-TIMEOUT = 10
-
-# LOGIN
-USERNAME = "username"
-PASSWORD = "password"
-
-# JSON ATTRIBUTES
-VIN = "vin"
-TOKEN = "token"
-UUID = "uuid"
-CUSTOMERPROFILE = "customerProfile"
-FUEL = "fuel"
-MILEAGE = "mileage"
-TYPE = "type"
-VALUE = "value"
-UNIT = "unit"
-VEHICLE_INFO = "VehicleInfo"
-ACQUISITIONDATE = "AcquisitionDatetime"
-CHARGE_INFO = "ChargeInfo"
-HVAC = "RemoteHvacInfo"
-
-# HTTP
-HTTP_OK = 200
+from .const import (
+    ACQUISITIONDATE,
+    BASE_URL,
+    BASE_URL_CARS,
+    CHARGE_INFO,
+    CUSTOMERPROFILE,
+    ENDPOINT_AUTH,
+    FUEL,
+    HTTP_OK,
+    HVAC,
+    MILEAGE,
+    PASSWORD,
+    TIMEOUT,
+    TOKEN,
+    TYPE,
+    UNIT,
+    USERNAME,
+    UUID,
+    VALUE,
+    VEHICLE_INFO,
+)
+from .exceptions import (
+    ToyotaHttpError,
+    ToyotaLocaleNotValid,
+    ToyotaLoginError,
+    ToyotaNoCarError,
+)
+from .utils import locale_is_valid
 
 # LOGGER
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -51,7 +50,7 @@ class MyT:
         token: str = None,
     ) -> None:
         """Toyota API"""
-        if self.locale_is_valid(locale):
+        if locale_is_valid(locale):
             self._locale = locale
         else:
             raise ToyotaLocaleNotValid(
@@ -63,11 +62,6 @@ class MyT:
         self.password = password
         self._token = token
         self._uuid = uuid
-
-    @staticmethod
-    def locale_is_valid(locale: str) -> bool:
-        """Is locale string valid."""
-        return Language.make(locale).is_valid()
 
     async def _request(self, endpoint: str, headers: dict) -> tuple:
         """Make the request."""
@@ -199,19 +193,3 @@ class MyT:
         hvac = data[VEHICLE_INFO][HVAC]
 
         return battery, hvac, last_updated
-
-
-class ToyotaLocaleNotValid(Exception):
-    """Raise if locale string is not valid."""
-
-
-class ToyotaLoginError(Exception):
-    """Raise if a login error happens."""
-
-
-class ToyotaHttpError(Exception):
-    """Raise if http error happens."""
-
-
-class ToyotaNoCarError(Exception):
-    """Raise if 205 is returned (Means no car found)."""
