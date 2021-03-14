@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "mytoyota"
+version = "0.1.0"
+description = "Unofficial python module for Toyota Connected Services API."
+authors = ["DurgNomis-drol <simongrud@gmail.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+requests = "^2.25.1"
+aiohttp = "^3.7.4"
+langcodes = "^3.1.0"
+
+[tool.poetry.dev-dependencies]
+pre-commit = "^2.11.1"
+black = "^20.8b1"
+flake8 = "^3.8.4"
+pylint = "^2.7.2"
+isort = "^5.7.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
