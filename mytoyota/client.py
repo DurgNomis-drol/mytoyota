@@ -44,7 +44,7 @@ class MyT:
     def __init__(
         self,
         locale: str,
-        session: aiohttp.ClientSession = None,
+        session: aiohttp.ClientSession,
         uuid: str = None,
         username: str = None,
         password: str = None,
@@ -117,6 +117,9 @@ class MyT:
 
         token = result.get(TOKEN)
         uuid = result[CUSTOMERPROFILE][UUID]
+
+        self._token = token
+        self._uuid = uuid
 
         return token, uuid
 

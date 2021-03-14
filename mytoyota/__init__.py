@@ -1,1 +1,1 @@
-"""Toyota API module"""
+"""Toyota integration"""
