@@ -18,6 +18,7 @@ pip install mytoyota
 
 ```python
 import aiohttp
+import asyncio  
 from mytoyota.client import MyT
 
 username = "jane@doe.com"
@@ -30,47 +31,63 @@ client = MyT(locale=locale, session=session)
 print("Performing login...")
 client.perform_login(username=username, password=password)
 
-print("Retrieving cars...")
-valid, cars = await client.get_cars()
+async def get_cars()
+    print("Retrieving cars...")
+    valid, cars = await client.get_cars()
+    
+    if valid:
+        print(cars)
+        return
 
-if valid:
-    print(cars)
-else:
-    print("Cannot find any car(s) connected to your account.")
+loop = asyncio.get_event_loop()
+loop.run_until_complete(get_cars())
+loop.close()
 ```
 
 ### Get odometer information
 
 ```python
-vin = "VINNUMBER"
+async def get_odometer(vin)
+    print("Retrieving odometer information...")
+    odometer, odometer_unit, fuel = await client.get_odometer(vin=vin)
+    
+    print(odometer)
+    print(odometer_unit)
+    print(fuel)
 
-odometer, odometer_unit, fuel = await client.get_odometer(vin=vin)
-
-print(odometer)
-print(odometer_unit)
-print(fuel)
+loop = asyncio.get_event_loop()
+loop.run_until_complete(get_odometer(vin))
+loop.close()
 ```
 
 ### Get parking information
 
 ```python
-vin = "VINNUMBER"
+async def get_parking(vin)
+    print("Retrieving latest parking information...")
+    parking = await client.get_parking(vin=vin)
 
-parking = await client.get_parking(vin=vin)
+    print(parking)
 
-print(parking)
+loop = asyncio.get_event_loop()
+loop.run_until_complete(get_parking(vin))
+loop.close()
 ```
 
 ### Get vehicle information
 
 ```python
-vin = "VINNUMBER"
+async def get_vehicle_info(vin)
+    print("Retrieving vehicle information...")
+    battery, hvac, last_updated = await client.get_vehicle_information(vin=vin)
 
-battery, hvac, last_updated = await client.get_vehicle_information(vin=vin)
+    print(battery)
+    print(hvac)
+    print(last_updated)
 
-print(battery)
-print(hvac)
-print(last_updated)
+loop = asyncio.get_event_loop()
+loop.run_until_complete(get_vehicle_info(vin))
+loop.close()
 ```
 
 ## Contributing
