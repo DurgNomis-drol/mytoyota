@@ -98,4 +98,8 @@ To start contributing, fork this repository and run `poetry install`. Then creat
 
 ## Note:
 
-As I [@DurgNomis-drol] is not a professional programmer. I will be maintain it as best as I can. If someone is interested in helping with this, they are more the welcome to message me to be a collaborator on this project.
+As I [@DurgNomis-drol](https://github.com/DurgNomis-drol) is not a professional programmer. I will be maintain it as best as I can. If someone is interested in helping with this, they are more the welcome to message me to be a collaborator on this project.
+
+## Credits
+
+A huge thanks go to [@calmjm](https://github.com/calmjm) for making [tojota](https://github.com/calmjm/tojota). Which is used as the base for making this module.

@@ -73,8 +73,10 @@ class MyT:
             if response.status == HTTP_OK:
                 resp = await response.json()
             elif response.status == 204:
+                # If you have not enabled connected services.
                 raise ToyotaNoCarError("Please setup connected services for your car!")
             elif response.status == 401:
+                # If the token has expired.
                 token, uuid = self.perform_login(self.username, self.password)
                 self._token = token
                 self._uuid = uuid
