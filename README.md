@@ -18,7 +18,7 @@ pip install mytoyota
 
 ```python
 import aiohttp
-import asyncio  
+import asyncio
 from mytoyota.client import MyT
 
 username = "jane@doe.com"
@@ -34,7 +34,7 @@ client.perform_login(username=username, password=password)
 async def get_cars()
     print("Retrieving cars...")
     valid, cars = await client.get_cars()
-    
+
     if valid:
         print(cars)
         return
@@ -50,7 +50,7 @@ loop.close()
 async def get_odometer(vin)
     print("Retrieving odometer information...")
     odometer, odometer_unit, fuel = await client.get_odometer(vin=vin)
-    
+
     print(odometer)
     print(odometer_unit)
     print(fuel)
