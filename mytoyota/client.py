@@ -1,4 +1,4 @@
-"""Toyota API module"""
+"""Toyota Connected Services Client"""
 import logging
 
 import aiohttp
@@ -41,10 +41,10 @@ _LOGGER: logging.Logger = logging.getLogger(__package__)
 class MyT:
     """Toyota Connected Services API class."""
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments
         self,
         locale: str,
-        session: aiohttp.ClientSession = None,
+        session: aiohttp.ClientSession,
         uuid: str = None,
         username: str = None,
         password: str = None,
@@ -117,6 +117,9 @@ class MyT:
 
         token = result.get(TOKEN)
         uuid = result[CUSTOMERPROFILE][UUID]
+
+        self._token = token
+        self._uuid = uuid
 
         return token, uuid
 
