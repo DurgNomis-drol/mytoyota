@@ -1,4 +1,4 @@
-"""Toyota API module"""
+"""Toyota Connected Services Client"""
 import logging
 
 import aiohttp
@@ -41,7 +41,7 @@ _LOGGER: logging.Logger = logging.getLogger(__package__)
 class MyT:
     """Toyota Connected Services API class."""
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments
         self,
         locale: str,
         session: aiohttp.ClientSession,

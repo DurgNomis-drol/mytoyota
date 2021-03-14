@@ -1,1 +1,1 @@
-"""Toyota integration"""
+"""Toyota Connected Services Client"""
