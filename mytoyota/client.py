@@ -4,25 +4,16 @@ import logging
 import requests
 
 from .const import (
-    ACQUISITIONDATE,
     BASE_URL,
     BASE_URL_CARS,
-    CHARGE_INFO,
     CUSTOMERPROFILE,
     ENDPOINT_AUTH,
-    FUEL,
     HTTP_OK,
-    HVAC,
-    MILEAGE,
     PASSWORD,
     TIMEOUT,
     TOKEN,
-    TYPE,
-    UNIT,
     USERNAME,
     UUID,
-    VALUE,
-    VEHICLE_INFO,
 )
 from .exceptions import (
     ToyotaHttpError,
@@ -60,7 +51,7 @@ class MyT:
         self._token = token
         self._uuid = uuid
 
-    def _request(self, endpoint: str, headers: dict):
+    def api_request(self, endpoint: str, headers: dict) -> dict:
         """Make the request."""
 
         result = None
@@ -72,7 +63,7 @@ class MyT:
         elif resp.status_code == 204:
             raise ToyotaNoCarError("Please setup connected services for your car!")
         elif resp.status_code == 401:
-            token, uuid = self.perform_login(self.username, self.password)
+            token, uuid = self.perform_login()
             self._token = token
             self._uuid = uuid
         else:
@@ -80,7 +71,7 @@ class MyT:
 
         return result
 
-    def perform_login(self, username: str, password: str) -> tuple:
+    def perform_login(self) -> tuple:
         """Performs login to toyota servers."""
         headers = {
             "X-TME-BRAND": "TOYOTA",
@@ -94,7 +85,7 @@ class MyT:
         response = requests.post(
             ENDPOINT_AUTH,
             headers=headers,
-            json={USERNAME: username, PASSWORD: password},
+            json={USERNAME: self.username, PASSWORD: self.password},
         )
         if response.status_code != HTTP_OK:
             raise ToyotaLoginError(
@@ -106,13 +97,22 @@ class MyT:
         token = result.get(TOKEN)
         uuid = result[CUSTOMERPROFILE][UUID]
 
-        if is_valid_uuid(uuid) and is_valid_token(token):
+        if is_valid_token(token) and is_valid_uuid(uuid):
             self._uuid = uuid
             self._token = token
 
         return token, uuid
 
-    async def get_information_for_given_car(self, vin):
+    def validate_credentials(self) -> bool:
+        """Validates Credentials"""
+        token, uuid = self.perform_login()
+
+        if is_valid_token(token) and is_valid_uuid(uuid):
+            return True
+
+        return False
+
+    async def get_information_for_given_car(self, vin) -> tuple:
         """Collects all information, validates it and then neatly formats it."""
 
         vehicle = await asyncio.gather(
@@ -123,7 +123,7 @@ class MyT:
 
         return vehicle
 
-    async def get_cars(self) -> tuple:
+    async def get_cars(self) -> dict:
         """Retrieves list of cars you have registered with MyT"""
         headers = {
             "X-TME-BRAND": "TOYOTA",
@@ -137,49 +137,34 @@ class MyT:
             f"{BASE_URL_CARS}/user/{self._uuid}/vehicles?services=uio&legacy=true"
         )
 
-        cars = self._request(endpoint, headers=headers)
+        cars = self.api_request(endpoint, headers=headers)
 
-        if isinstance(cars, list) and cars:
-            return True, cars
+        return cars
 
-        return False, None
-
-    async def _get_odometer_endpoint(self, vin: str) -> tuple:
+    async def _get_odometer_endpoint(self, vin: str) -> dict:
         """Get information from odometer."""
 
         print("Odometer...")
 
-        odometer = 0
-        odometer_unit = ""
-        fuel = 0
         headers = {"Cookie": f"iPlanetDirectoryPro={self._token}"}
         endpoint = f"{BASE_URL}/vehicle/{vin}/addtionalInfo"
 
-        retry, data = self._request(endpoint, headers=headers)
+        data = self.api_request(endpoint, headers=headers)
 
-        if retry:
-            retry, data = self._request(endpoint, headers=headers)
+        return data
 
-        for item in data:
-            if item[TYPE] == MILEAGE:
-                odometer = item[VALUE]
-                odometer_unit = item[UNIT]
-            if item[TYPE] == FUEL:
-                fuel = item[VALUE]
-        return odometer, odometer_unit, fuel
-
-    async def _get_parking_endpoint(self, vin: str) -> tuple:
+    async def _get_parking_endpoint(self, vin: str) -> dict:
         """Get where you have parked your car."""
         print("Parking...")
 
         headers = {"Cookie": f"iPlanetDirectoryPro={self._token}", "VIN": vin}
         endpoint = f"{BASE_URL}/users/{self._uuid}/vehicle/location"
 
-        parking = self._request(endpoint, headers=headers)
+        parking = self.api_request(endpoint, headers=headers)
 
         return parking
 
-    async def _get_vehicle_info_endpoint(self, vin: str) -> tuple:
+    async def _get_vehicle_info_endpoint(self, vin: str) -> dict:
         """Get information about the vehicle."""
         print("Vehicle...")
         headers = {
@@ -189,10 +174,6 @@ class MyT:
         }
         endpoint = f"{BASE_URL}/vehicles/{vin}/remoteControl/status"
 
-        data = self._request(endpoint, headers=headers)
+        data = self.api_request(endpoint, headers=headers)
 
-        last_updated = data[VEHICLE_INFO][ACQUISITIONDATE]
-        battery = data[VEHICLE_INFO][CHARGE_INFO]
-        hvac = data[VEHICLE_INFO][HVAC]
-
-        return battery, hvac, last_updated
+        return data
