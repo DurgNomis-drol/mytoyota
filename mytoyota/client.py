@@ -1,7 +1,6 @@
 """Toyota Connected Services Client"""
+import asyncio
 import logging
-
-import aiohttp
 import requests
 
 from .const import (
@@ -41,13 +40,12 @@ class MyT:
     """Toyota Connected Services API class."""
 
     def __init__(  # pylint: disable=too-many-arguments
-        self,
-        locale: str,
-        session: aiohttp.ClientSession,
-        uuid: str = None,
-        username: str = None,
-        password: str = None,
-        token: str = None,
+            self,
+            locale: str,
+            uuid: str = None,
+            username: str = None,
+            password: str = None,
+            token: str = None,
     ) -> None:
         """Toyota API"""
         if is_valid_locale(locale):
@@ -57,36 +55,33 @@ class MyT:
                 "Please provide a valid locale string! Valid format is: en-gb."
             )
 
-        self.session = session
         self.username = username
         self.password = password
         self._token = token
         self._uuid = uuid
 
-    async def _request(self, endpoint: str, headers: dict) -> tuple:
+    def _request(self, endpoint: str, headers: dict) -> tuple:
         """Make the request."""
 
-        resp = None
-        async with self.session.get(
-            endpoint, headers=headers, timeout=TIMEOUT
-        ) as response:
-            if response.status == HTTP_OK:
-                resp = await response.json()
-            elif response.status == 204:
-                # If you have not enabled connected services.
-                raise ToyotaNoCarError("Please setup connected services for your car!")
-            elif response.status == 401:
-                # If the token has expired.
-                token, uuid = self.perform_login(self.username, self.password)
-                self._token = token
-                self._uuid = uuid
-                return False, None
-            else:
-                raise ToyotaHttpError(
-                    "HTTP: {} - {}".format(response.status, response.text)
-                )
+        result = None
 
-        return True, resp
+        resp = requests.get(endpoint, headers=headers, timeout=TIMEOUT)
+
+        if resp.status_code == HTTP_OK:
+            result = resp.json()
+        elif resp.status_code == 204:
+            raise ToyotaNoCarError("Please setup connected services for your car!")
+        elif resp.status_code == 401:
+            token, uuid = self.perform_login(self.username, self.password)
+            self._token = token
+            self._uuid = uuid
+        else:
+            raise ToyotaHttpError(
+                "HTTP: {} - {}".format(resp.status_code, resp.text)
+            )
+
+        if result:
+            return result
 
     def perform_login(self, username: str, password: str) -> tuple:
         """Performs login to toyota servers."""
@@ -120,7 +115,18 @@ class MyT:
 
         return token, uuid
 
-    async def get_cars(self) -> tuple:
+    def get_information_for_given_car(self, vin):
+        """Collects all information, validates it and then neatly formats it."""
+
+        vehicle = asyncio.gather(
+            self._get_odometer_endpoint(vin),
+            self._get_parking_endpoint(vin),
+            self._get_vehicle_info_endpoint(vin),
+        )
+
+        return vehicle
+
+    def get_cars(self) -> tuple:
         """Retrieves list of cars you have registered with MyT"""
         headers = {
             "X-TME-BRAND": "TOYOTA",
@@ -134,17 +140,14 @@ class MyT:
             f"{BASE_URL_CARS}/user/{self._uuid}/vehicles?services=uio&legacy=true"
         )
 
-        retry, cars = await self._request(endpoint, headers=headers)
-
-        if retry:
-            retry, cars = await self._request(endpoint, headers=headers)
+        cars = self._request(endpoint, headers=headers)
 
         if isinstance(cars, list) and cars:
             return True, cars
 
         return False, None
 
-    async def get_odometer(self, vin: str) -> tuple:
+    async def _get_odometer_endpoint(self, vin: str) -> tuple:
         """Get information from odometer."""
         odometer = 0
         odometer_unit = ""
@@ -152,10 +155,10 @@ class MyT:
         headers = {"Cookie": f"iPlanetDirectoryPro={self._token}"}
         endpoint = f"{BASE_URL}/vehicle/{vin}/addtionalInfo"
 
-        retry, data = await self._request(endpoint, headers=headers)
+        retry, data = self._request(endpoint, headers=headers)
 
         if retry:
-            retry, data = await self._request(endpoint, headers=headers)
+            retry, data = self._request(endpoint, headers=headers)
 
         for item in data:
             if item[TYPE] == MILEAGE:
@@ -165,19 +168,16 @@ class MyT:
                 fuel = item[VALUE]
         return odometer, odometer_unit, fuel
 
-    async def get_parking(self, vin: str) -> dict:
+    async def _get_parking_endpoint(self, vin: str) -> tuple:
         """Get where you have parked your car."""
         headers = {"Cookie": f"iPlanetDirectoryPro={self._token}", "VIN": vin}
         endpoint = f"{BASE_URL}/users/{self._uuid}/vehicle/location"
 
-        retry, parking = await self._request(endpoint, headers=headers)
-
-        if retry:
-            retry, parking = await self._request(endpoint, headers=headers)
+        parking = self._request(endpoint, headers=headers)
 
         return parking
 
-    async def get_vehicle_information(self, vin: str) -> tuple:
+    async def _get_vehicle_info_endpoint(self, vin: str) -> tuple:
         """Get information about the vehicle."""
         headers = {
             "Cookie": f"iPlanetDirectoryPro={self._token}",
@@ -186,10 +186,7 @@ class MyT:
         }
         endpoint = f"{BASE_URL}/vehicles/{vin}/remoteControl/status"
 
-        retry, data = await self._request(endpoint, headers=headers)
-
-        if retry:
-            retry, data = await self._request(endpoint, headers=headers)
+        data = self._request(endpoint, headers=headers)
 
         last_updated = data[VEHICLE_INFO][ACQUISITIONDATE]
         battery = data[VEHICLE_INFO][CHARGE_INFO]
