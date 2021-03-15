@@ -13,7 +13,7 @@ from .const import (
     TIMEOUT,
     TOKEN,
     USERNAME,
-    UUID,
+    UUID, HTTP_NO_CONTENT, HTTP_UNAUTHORIZED,
 )
 from .exceptions import (
     ToyotaHttpError,
@@ -60,9 +60,9 @@ class MyT:
 
         if resp.status_code == HTTP_OK:
             result = resp.json()
-        elif resp.status_code == 204:
+        elif resp.status_code == HTTP_NO_CONTENT:
             raise ToyotaNoCarError("Please setup connected services for your car!")
-        elif resp.status_code == 401:
+        elif resp.status_code == HTTP_UNAUTHORIZED:
             token, uuid = self.perform_login()
             self._token = token
             self._uuid = uuid
@@ -106,15 +106,15 @@ class MyT:
         """Collects all information, validates it and then neatly formats it."""
 
         info = await asyncio.gather(
-            self._get_odometer_endpoint(vin),
-            self._get_parking_endpoint(vin),
-            self._get_vehicle_status_endpoint(vin),
+            self.__get_odometer_endpoint(vin),
+            self.__get_parking_endpoint(vin),
+            self.__get_vehicle_status_endpoint(vin),
         )
 
         vehicle = {
             "odometer": info[0],
             "parking": info[1],
-            "status": info[1]
+            "status": info[2]
         }
 
         return vehicle
@@ -137,7 +137,7 @@ class MyT:
 
         return cars
 
-    async def _get_odometer_endpoint(self, vin: str) -> dict:
+    async def __get_odometer_endpoint(self, vin: str) -> dict:
         """Get information from odometer."""
 
         print("Odometer...")
@@ -147,10 +147,9 @@ class MyT:
 
         odometer = self.api_get(endpoint, headers=headers)
 
-        # The requests returns a list, but only one item is in it.
         return odometer
 
-    async def _get_parking_endpoint(self, vin: str) -> dict:
+    async def __get_parking_endpoint(self, vin: str) -> dict:
         """Get where you have parked your car."""
         print("Parking...")
 
@@ -161,7 +160,7 @@ class MyT:
 
         return parking
 
-    async def _get_vehicle_status_endpoint(self, vin: str) -> dict:
+    async def __get_vehicle_status_endpoint(self, vin: str) -> dict:
         """Get information about the vehicle."""
         print("Vehicle...")
         headers = {
