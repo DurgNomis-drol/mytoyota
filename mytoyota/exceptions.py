@@ -19,3 +19,7 @@ class ToyotaNoCarError(Exception):
 
 class ToyotaInvalidToken(Exception):
     """Raise if token is invalid"""
+
+
+class ToyotaTokenHasExpired(Exception):
+    """Raise if token has expired"""

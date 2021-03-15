@@ -25,6 +25,9 @@ ACQUISITIONDATE = "AcquisitionDatetime"
 CHARGE_INFO = "ChargeInfo"
 HVAC = "RemoteHvacInfo"
 
+TOKEN_DURATION = 24 * 60 * 60
+TOKEN_LENGTH = 114
+
 # HTTP
 HTTP_OK = 200
 HTTP_NO_CONTENT = 204

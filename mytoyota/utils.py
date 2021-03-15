@@ -2,6 +2,7 @@
 from uuid import UUID
 from langcodes import Language
 
+from .const import TOKEN_LENGTH
 from .exceptions import ToyotaInvalidToken
 
 
@@ -21,7 +22,7 @@ def is_valid_uuid(uuid_to_test, version=4):
 
 def is_valid_token(token):
     """Checks if token is the correct length"""
-    if len(token) == 114:
+    if len(token) == TOKEN_LENGTH and token.endswith("..*"):
         return True
 
-    raise ToyotaInvalidToken("Token length must be 114 characters long.")
+    raise ToyotaInvalidToken("Token must end with '..*' and be 114 characters long.")
