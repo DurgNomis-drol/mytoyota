@@ -135,7 +135,8 @@ class MyT:
         vehicle = {
             "odometer": odometer_list_to_dict(info[0]) if info[0] is not None else None,
             "parking": info[1],
-            "status": info[2]}
+            "status": info[2],
+        }
 
         return vehicle
 

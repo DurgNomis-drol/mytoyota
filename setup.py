@@ -1,3 +1,4 @@
+"""Setup file for PyPi"""
 from setuptools import find_packages, setup
 
 with open("README.md") as readme_file:
@@ -5,7 +6,7 @@ with open("README.md") as readme_file:
 
 setup_args = dict(
     name="mytoyota",
-    version="0.0.1",
+    version="0.0.2",
     description="Tool to communicate with Toyota Connected Services.",
     long_description_content_type="text/markdown",
     long_description=README,

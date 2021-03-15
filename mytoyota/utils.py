@@ -29,6 +29,7 @@ def is_valid_token(token):
 
 
 def odometer_list_to_dict(instruments):
+    """Format odometer in to list"""
     odometer = {}
 
     for item in instruments:
