@@ -40,12 +40,12 @@ class MyT:
     """Toyota Connected Services API class."""
 
     def __init__(  # pylint: disable=too-many-arguments
-            self,
-            locale: str,
-            uuid: str = None,
-            username: str = None,
-            password: str = None,
-            token: str = None,
+        self,
+        locale: str,
+        uuid: str = None,
+        username: str = None,
+        password: str = None,
+        token: str = None,
     ) -> None:
         """Toyota API"""
         if is_valid_locale(locale):
@@ -60,7 +60,7 @@ class MyT:
         self._token = token
         self._uuid = uuid
 
-    def _request(self, endpoint: str, headers: dict) -> tuple:
+    def _request(self, endpoint: str, headers: dict):
         """Make the request."""
 
         result = None
@@ -76,12 +76,9 @@ class MyT:
             self._token = token
             self._uuid = uuid
         else:
-            raise ToyotaHttpError(
-                "HTTP: {} - {}".format(resp.status_code, resp.text)
-            )
+            raise ToyotaHttpError("HTTP: {} - {}".format(resp.status_code, resp.text))
 
-        if result:
-            return result
+        return result
 
     def perform_login(self, username: str, password: str) -> tuple:
         """Performs login to toyota servers."""
