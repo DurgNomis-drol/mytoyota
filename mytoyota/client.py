@@ -27,7 +27,7 @@ from .exceptions import (
     ToyotaLoginError,
     ToyotaNoCarError,
 )
-from .utils import is_valid_locale, is_valid_uuid, is_valid_token
+from .utils import is_valid_locale, is_valid_uuid, is_valid_token, odometer_list_to_dict
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -132,7 +132,10 @@ class MyT:
             self.__get_vehicle_status_endpoint(vin),
         )
 
-        vehicle = {"odometer": info[0], "parking": info[1], "status": info[2]}
+        vehicle = {
+            "odometer": odometer_list_to_dict(info[0]) if info[0] is not None else None,
+            "parking": info[1],
+            "status": info[2]}
 
         return vehicle
 
