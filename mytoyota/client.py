@@ -148,7 +148,7 @@ class MyT:
         odometer = self.api_get(endpoint, headers=headers)
 
         # The requests returns a list, but only one item is in it.
-        return odometer[0]
+        return odometer
 
     async def _get_parking_endpoint(self, vin: str) -> dict:
         """Get where you have parked your car."""
