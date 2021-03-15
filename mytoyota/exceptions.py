@@ -15,3 +15,7 @@ class ToyotaHttpError(Exception):
 
 class ToyotaNoCarError(Exception):
     """Raise if 204 is returned (Means no car found)."""
+
+
+class ToyotaInvalidToken(Exception):
+    """Raise if token is invalid"""

@@ -96,7 +96,7 @@ This python uses poetry and pre-commit.
 
 To start contributing, fork this repository and run `poetry install`. Then create a new branch. Before making a PR, please run pre-commit `poetry run pre-commit run --all-files` and make sure that all tests passes locally first.
 
-## Note:
+## Note
 
 As I [@DurgNomis-drol](https://github.com/DurgNomis-drol) is not a professional programmer. I will be maintain it as best as I can. If someone is interested in helping with this, they are more the welcome to message me to be a collaborator on this project.
 

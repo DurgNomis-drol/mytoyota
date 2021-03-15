@@ -31,7 +31,7 @@ from .exceptions import (
     ToyotaLoginError,
     ToyotaNoCarError,
 )
-from .utils import locale_is_valid
+from .utils import is_valid_locale, is_valid_uuid, is_valid_token
 
 # LOGGER
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -50,7 +50,7 @@ class MyT:
         token: str = None,
     ) -> None:
         """Toyota API"""
-        if locale_is_valid(locale):
+        if is_valid_locale(locale):
             self._locale = locale
         else:
             raise ToyotaLocaleNotValid(
@@ -114,8 +114,9 @@ class MyT:
         token = result.get(TOKEN)
         uuid = result[CUSTOMERPROFILE][UUID]
 
-        self._token = token
-        self._uuid = uuid
+        if is_valid_uuid(uuid) and is_valid_token(token):
+            self._uuid = uuid
+            self._token = token
 
         return token, uuid
 

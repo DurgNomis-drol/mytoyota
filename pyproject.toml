@@ -10,6 +10,7 @@ python = "^3.8"
 requests = "^2.25.1"
 aiohttp = "^3.7.4"
 langcodes = "^3.1.0"
+uuid = "^1.30"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^2.11.1"
