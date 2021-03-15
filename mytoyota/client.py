@@ -112,10 +112,10 @@ class MyT:
 
         return token, uuid
 
-    def get_information_for_given_car(self, vin):
+    async def get_information_for_given_car(self, vin):
         """Collects all information, validates it and then neatly formats it."""
 
-        vehicle = asyncio.gather(
+        vehicle = await asyncio.gather(
             self._get_odometer_endpoint(vin),
             self._get_parking_endpoint(vin),
             self._get_vehicle_info_endpoint(vin),
@@ -123,7 +123,7 @@ class MyT:
 
         return vehicle
 
-    def get_cars(self) -> tuple:
+    async def get_cars(self) -> tuple:
         """Retrieves list of cars you have registered with MyT"""
         headers = {
             "X-TME-BRAND": "TOYOTA",
@@ -146,6 +146,9 @@ class MyT:
 
     async def _get_odometer_endpoint(self, vin: str) -> tuple:
         """Get information from odometer."""
+
+        print("Odometer...")
+
         odometer = 0
         odometer_unit = ""
         fuel = 0
@@ -167,6 +170,8 @@ class MyT:
 
     async def _get_parking_endpoint(self, vin: str) -> tuple:
         """Get where you have parked your car."""
+        print("Parking...")
+
         headers = {"Cookie": f"iPlanetDirectoryPro={self._token}", "VIN": vin}
         endpoint = f"{BASE_URL}/users/{self._uuid}/vehicle/location"
 
@@ -176,6 +181,7 @@ class MyT:
 
     async def _get_vehicle_info_endpoint(self, vin: str) -> tuple:
         """Get information about the vehicle."""
+        print("Vehicle...")
         headers = {
             "Cookie": f"iPlanetDirectoryPro={self._token}",
             "uuid": self._uuid,
