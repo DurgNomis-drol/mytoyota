@@ -1,9 +1,18 @@
 """Toyota Connected Services API constants."""
 
-# ENDPOINTS
-BASE_URL = "https://myt-agg.toyota-europe.com/cma/api"
-BASE_URL_CARS = "https://cpb2cs.toyota-europe.com/vehicle"
-ENDPOINT_AUTH = "https://ssoms.toyota-europe.com/authenticate"
+# URL ATTRIBUTE NAMES
+BASE_URL = "base_url"
+BASE_URL_CARS = "base_url_cars"
+ENDPOINT_AUTH = "auth_endpoint"
+
+# REGIONS
+SUPPORTED_REGIONS = {
+    "europe": {
+        BASE_URL: "https://myt-agg.toyota-europe.com/cma/api",
+        BASE_URL_CARS: "https://cpb2cs.toyota-europe.com/vehicle",
+        ENDPOINT_AUTH: "https://ssoms.toyota-europe.com/authenticate",
+    }
+}
 
 TIMEOUT = 10
 
