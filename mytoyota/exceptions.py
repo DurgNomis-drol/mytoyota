@@ -9,17 +9,13 @@ class ToyotaLoginError(Exception):
     """Raise if a login error happens."""
 
 
-class ToyotaHttpError(Exception):
-    """Raise if http error happens."""
-
-
-class ToyotaNoCarError(Exception):
-    """Raise if 204 is returned (Means no car found)."""
-
-
 class ToyotaInvalidToken(Exception):
     """Raise if token is invalid"""
 
 
-class ToyotaTokenHasExpired(Exception):
-    """Raise if token has expired"""
+class ToyotaInvalidUsername(Exception):
+    """Raise if username is invalid"""
+
+
+class ToyotaRegionNotSupported(Exception):
+    """Raise if region is not supported"""
