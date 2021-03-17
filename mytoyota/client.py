@@ -197,7 +197,7 @@ class MyT:
             }
 
             # Cannot authenticate with aiohttp (returns 415),
-            # but it works with httpx.
+            # but it works with requests.
             async with httpx.AsyncClient() as client:
                 response = await client.post(
                     self.get_auth_endpoint(),
@@ -285,7 +285,7 @@ class MyT:
                 _LOGGER.error("HTTP: %i - %s", resp.status_code, resp.text)
                 result = None
 
-        return result
+            return result
 
     async def get_vehicles_endpoint(self) -> list:
         """Retrieves list of cars you have registered with MyT"""
