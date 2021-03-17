@@ -6,6 +6,8 @@ from typing import Optional
 from datetime import datetime
 import httpx
 
+from .vehicle import Vehicle
+
 from .const import (
     BASE_URL,
     BASE_URL_CARS,
@@ -31,84 +33,6 @@ from .exceptions import (
 from .utils import is_valid_locale, is_valid_uuid, is_valid_token
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
-
-
-class Vehicle:
-    """Object to hold car information for each car"""
-
-    def __init__(  # pylint: disable=too-many-instance-attributes
-        self,
-        vehicle_info: Optional[dict],
-        odometer: Optional[list],
-        parking: Optional[dict],
-        status: Optional[dict],
-    ):
-        self.odometer = None
-        self.parking = None
-        self.battery = None
-        self.hvac = None
-        self.alias = vehicle_info["alias"] if "alias" in vehicle_info else None
-        self.vin = vehicle_info["vin"] if "vin" in vehicle_info else None
-        self.details = {
-            "hybrid": vehicle_info["hybrid"] if "hybrid" in vehicle_info else False,
-            "model": vehicle_info["modelName"] if "modelName" in vehicle_info else None,
-            "production_year": vehicle_info["productionYear"]
-            if "productionYear" in vehicle_info
-            else None,
-            "fuel_type": vehicle_info["fuel"] if "fuel" in vehicle_info else None,
-            "engine": vehicle_info["engine"] if "engine" in vehicle_info else None,
-            "transmission": vehicle_info["transmission"]
-            if "transmission" in vehicle_info
-            else None,
-            "image": vehicle_info["imageUrl"] if "imageUrl" in vehicle_info else None,
-        }
-
-        if not vehicle_info:
-            _LOGGER.error("No vehicle information provided")
-            return
-
-        if not odometer:
-            self.odometer = {"error": "Please setup Connected Services for your car"}
-        else:
-            instruments = {}
-            for instrument in odometer:
-                instruments[instrument["type"]] = instrument["value"]
-                if "unit" in instrument:
-                    instruments[instrument["type"] + "_unit"] = instrument["unit"]
-
-            self.odometer = instruments
-
-        if not parking:
-            self.parking = {"error": "Please setup Connected Services for your car"}
-        else:
-            self.parking = parking
-
-        if "VehicleInfo" in status:
-            if "RemoteHvacInfo" in status["VehicleInfo"]:
-                self.hvac = status["VehicleInfo"]["RemoteHvacInfo"]
-
-            if "ChargeInfo" in status["VehicleInfo"]:
-                self.battery = status["VehicleInfo"]["ChargeInfo"]
-        else:
-            self.battery = {"error": "Please setup Connected Services for your car"}
-            self.hvac = {"error": "Please setup Connected Services for your car"}
-
-    def __str__(self):
-        return str(self.dict())
-
-    def dict(self):
-        """Return car information in dict"""
-        return {
-            "vin": self.vin,
-            "alias": self.alias,
-            "details": self.details,
-            "status": {
-                "hvac": self.hvac,
-                "battery": self.battery,
-                "odometer": self.odometer,
-                "parking": self.parking,
-            },
-        }
 
 
 class MyT:
