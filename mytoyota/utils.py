@@ -26,4 +26,3 @@ def is_valid_token(token):
         return True
 
     raise ToyotaInvalidToken("Token must end with '..*' and be 114 characters long.")
-
