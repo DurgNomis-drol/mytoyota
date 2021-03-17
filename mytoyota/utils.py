@@ -27,14 +27,3 @@ def is_valid_token(token):
 
     raise ToyotaInvalidToken("Token must end with '..*' and be 114 characters long.")
 
-
-def odometer_list_to_dict(instruments):
-    """Format odometer in to list"""
-    odometer = {}
-
-    for item in instruments:
-        odometer[item["type"]] = item["value"]
-        if "unit" in item:
-            odometer[item["type"] + "Unit"] = item["unit"]
-
-    return odometer
