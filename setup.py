@@ -6,14 +6,14 @@ with open("README.md") as readme_file:
 
 setup_args = dict(
     name="mytoyota",
-    version="0.0.2",
-    description="Tool to communicate with Toyota Connected Services.",
+    version="0.1.2",
+    description="Python client for Toyota Connected Services.",
     long_description_content_type="text/markdown",
     long_description=README,
     license="MIT",
     packages=find_packages(),
     include_package_data=True,
-    author="Simon Hansen",
+    author="Simon Grud Hansen",
     author_email="simongrud@gmail.com",
     keywords=["Toyota", "MyT", "API"],
     url="https://github.com/DurgNomis-drol/mytoyota",
@@ -21,7 +21,7 @@ setup_args = dict(
 
 install_requires = [
     "langcodes",
-    "requests",
+    "httpx",
 ]
 
 if __name__ == "__main__":
