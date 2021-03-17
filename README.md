@@ -43,6 +43,7 @@ loop.run_until_complete(get_information())
 loop.close()
 
 ```
+
 ## Docs
 
 Coming soon...
