@@ -1,6 +1,6 @@
 # Toyota Connected Services Python module
 
-### [!] **This is in beta**
+### [!] **This has not been published to PyPi yet**
 
 ## Description
 
@@ -17,42 +17,82 @@ pip install mytoyota
 ## Usage
 
 ```python
+import aiohttp
 import asyncio
 from mytoyota.client import MyT
 
 username = "jane@doe.com"
-password = "Password"
-locale = "en-gb"
+password = "MyPassword"
+locale = "da-dk"
+session = aiohttp.ClientSession()
 
-client = MyT(username=username, password=password, locale=locale, region="europe")
+client = MyT(locale=locale, session=session)
 
+print("Performing login...")
+client.perform_login(username=username, password=password)
 
-async def get_information():
-    print("Performing login...")
-    # Should only be called when setting up. It will automatically get a new token when it expires.
-    print(await client.get_token())
-    print(client.get_uuid())
-
+async def get_cars()
     print("Retrieving cars...")
-    # Returns all information about the cars registered to your account in json
-    cars = await client.gather_information_json()
-    # Or if you just want a dict.
-    # cars = await client.gather_information()
+    valid, cars = await client.get_cars()
 
-    print(cars)
+    if valid:
+        print(cars)
+        return
 
 loop = asyncio.get_event_loop()
-loop.run_until_complete(get_information())
+loop.run_until_complete(get_cars())
 loop.close()
 ```
 
-## Docs
+### Get odometer information
 
-Coming soon...
+```python
+async def get_odometer(vin)
+    print("Retrieving odometer information...")
+    odometer, odometer_unit, fuel = await client.get_odometer(vin=vin)
+
+    print(odometer)
+    print(odometer_unit)
+    print(fuel)
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(get_odometer(vin))
+loop.close()
+```
+
+### Get parking information
+
+```python
+async def get_parking(vin)
+    print("Retrieving latest parking information...")
+    parking = await client.get_parking(vin=vin)
+
+    print(parking)
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(get_parking(vin))
+loop.close()
+```
+
+### Get vehicle information
+
+```python
+async def get_vehicle_info(vin)
+    print("Retrieving vehicle information...")
+    battery, hvac, last_updated = await client.get_vehicle_information(vin=vin)
+
+    print(battery)
+    print(hvac)
+    print(last_updated)
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(get_vehicle_info(vin))
+loop.close()
+```
 
 ## Contributing
 
-This python module uses poetry and pre-commit.
+This python uses poetry and pre-commit.
 
 To start contributing, fork this repository and run `poetry install`. Then create a new branch. Before making a PR, please run pre-commit `poetry run pre-commit run --all-files` and make sure that all tests passes locally first.
 
@@ -62,4 +102,4 @@ As I [@DurgNomis-drol](https://github.com/DurgNomis-drol) is not a professional 
 
 ## Credits
 
-A huge thanks go to [@calmjm](https://github.com/calmjm) for making [tojota](https://github.com/calmjm/tojota).
+A huge thanks go to [@calmjm](https://github.com/calmjm) for making [tojota](https://github.com/calmjm/tojota). Which is used as the base for making this module.
