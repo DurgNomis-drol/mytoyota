@@ -4,7 +4,7 @@ import json
 import logging
 from typing import Optional
 from datetime import datetime
-import requests
+import httpx
 
 from .const import (
     BASE_URL,
@@ -198,28 +198,29 @@ class MyT:
 
             # Cannot authenticate with aiohttp (returns 415),
             # but it works with requests.
-            response = requests.post(
-                self.get_auth_endpoint(),
-                headers=headers,
-                json={USERNAME: self.username, PASSWORD: self.password},
-            )
-            if response.status_code == HTTP_OK:
-                result = response.json()
-
-                if TOKEN not in result or UUID not in result[CUSTOMERPROFILE]:
-                    _LOGGER.error("[!] Could not get token or UUID.")
-
-                token = result.get(TOKEN)
-                uuid = result[CUSTOMERPROFILE][UUID]
-
-                if is_valid_token(token) and is_valid_uuid(uuid):
-                    self.uuid = uuid
-                    self.token = token
-                    self.token_date = datetime.now()
-            else:
-                raise ToyotaLoginError(
-                    "Login failed, check your credentials! {}".format(response.text)
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    self.get_auth_endpoint(),
+                    headers=headers,
+                    json={USERNAME: self.username, PASSWORD: self.password},
                 )
+                if response.status_code == HTTP_OK:
+                    result = response.json()
+
+                    if TOKEN not in result or UUID not in result[CUSTOMERPROFILE]:
+                        _LOGGER.error("[!] Could not get token or UUID.")
+
+                    token = result.get(TOKEN)
+                    uuid = result[CUSTOMERPROFILE][UUID]
+
+                    if is_valid_token(token) and is_valid_uuid(uuid):
+                        self.uuid = uuid
+                        self.token = token
+                        self.token_date = datetime.now()
+                else:
+                    raise ToyotaLoginError(
+                        "Login failed, check your credentials! {}".format(response.text)
+                    )
 
         return self.token
 
@@ -270,21 +271,21 @@ class MyT:
                 "X-TME-TOKEN": token,
             }
         )
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(endpoint, headers=headers, timeout=TIMEOUT)
 
-        resp = requests.get(endpoint, headers=headers, timeout=TIMEOUT)
+            if resp.status_code == HTTP_OK:
+                result = resp.json()
+            elif resp.status_code == HTTP_NO_CONTENT:
+                result = None
+            elif resp.status_code == HTTP_UNAUTHORIZED:
+                self.invalidate_token()
+                result = await self.get(endpoint, headers)
+            else:
+                _LOGGER.error("HTTP: %i - %s", resp.status_code, resp.text)
+                result = None
 
-        if resp.status_code == HTTP_OK:
-            result = resp.json()
-        elif resp.status_code == HTTP_NO_CONTENT:
-            result = None
-        elif resp.status_code == HTTP_UNAUTHORIZED:
-            self.invalidate_token()
-            result = await self.get(endpoint, headers)
-        else:
-            _LOGGER.error("HTTP: %i - %s", resp.status_code, resp.text)
-            result = None
-
-        return result
+            return result
 
     async def get_vehicles_endpoint(self) -> list:
         """Retrieves list of cars you have registered with MyT"""
