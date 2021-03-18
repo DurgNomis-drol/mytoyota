@@ -22,6 +22,7 @@ setup_args = dict(
 install_requires = [
     "langcodes",
     "httpx",
+    "pendulum",
 ]
 
 if __name__ == "__main__":

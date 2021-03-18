@@ -16,23 +16,33 @@ class Vehicle:  # pylint: disable=too-many-instance-attributes
         parking: Optional[dict],
         status: Optional[dict],
     ) -> None:
-        self.odometer = None
-        self.parking = None
-        self.battery = None
-        self.hvac = None
-        self.alias = vehicle_info["alias"] if "alias" in vehicle_info else None
-        self.vin = vehicle_info["vin"] if "vin" in vehicle_info else None
 
         # If no vehicle information is provided, abort.
         if not vehicle_info:
             _LOGGER.error("No vehicle information provided")
             return
 
+        self.odometer = None
+        self.parking = None
+        self.battery = None
+        self.hvac = None
+
+        # Holds status for each service.
+        self.services = {}
+
+        # Vehicle information
+        self.alias = vehicle_info["alias"] if "alias" in vehicle_info else None
+        self.vin = vehicle_info["vin"] if "vin" in vehicle_info else None
+
         # Format vehicle information.
         self.details = self.format_details(vehicle_info)
 
+        self.services["connectedServices"] = self.has_connected_services_enabled(
+            connected_services
+        )
+
         # Checks if connected services has been enabled.
-        if self.has_connected_services_enabled(connected_services):
+        if self.services["connectedServices"]:
 
             # Extract odometer information.
             if odometer:
@@ -61,6 +71,7 @@ class Vehicle:  # pylint: disable=too-many-instance-attributes
                 "odometer": self.odometer,
                 "parking": self.parking,
             },
+            "servicesEnabled": self.services,
         }
 
     def extract_status(self, status) -> None:
@@ -80,7 +91,10 @@ class Vehicle:  # pylint: disable=too-many-instance-attributes
         ):
             return True
 
-        _LOGGER.error("Please setup Connected Services for this car. (%s)", self.vin)
+        _LOGGER.error(
+            "Please setup Connected Services if you want live data from the car. (%s)",
+            self.vin,
+        )
         return False
 
     @staticmethod
