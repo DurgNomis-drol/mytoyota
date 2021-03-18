@@ -2,19 +2,20 @@
 import asyncio
 import json
 import logging
+from typing import Optional
+
+import pendulum
 
 from .api import Controller
-from .vehicle import Vehicle
-
 from .const import (
-    SUPPORTED_REGIONS,
-)
+    SUPPORTED_REGIONS, )
 from .exceptions import (
     ToyotaLocaleNotValid,
     ToyotaInvalidUsername,
     ToyotaRegionNotSupported,
 )
 from .utils import is_valid_locale
+from .vehicle import Vehicle
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -117,4 +118,50 @@ class MyT:
         vehicles = await self.gather_all_information()
 
         json_string = json.dumps(vehicles, indent=3)
+        return json_string
+
+    async def get_driving_statistics_from_date(self, vin, from_date=None) -> Optional[list, None]:
+        """Get driving statistics from date. from_date should be in this format (YYYY-MM-DD). Default is current day"""
+
+        statistics = await self.api.get_driving_statistics_endpoint(vin, from_date, "day")
+        return statistics
+
+    async def get_driving_statistics_from_date_json(self, vin, from_date=None) -> str:
+        """Return driving statistics from date in json"""
+        statistics = await self.get_driving_statistics_from_date(vin, from_date)
+
+        json_string = json.dumps(statistics, indent=3)
+        return json_string
+
+    async def get_driving_statistics_from_week(self, vin) -> Optional[list, None]:
+        """Get driving statistics from week. Default is current week."""
+
+        from_date = pendulum.now().start_of('week').subtract(days=1).format('YYYY-MM-DD')
+
+        statistics = await self.api.get_driving_statistics_endpoint(vin, from_date, "week")
+        return statistics
+
+    async def get_driving_statistics_from_week_json(self, vin) -> str:
+        """Return driving statistics from date in json"""
+        statistics = await self.get_driving_statistics_from_week(vin)
+
+        json_string = json.dumps(statistics, indent=3)
+        return json_string
+
+    async def get_driving_statistics_from_year(self, vin, year: int = None) -> Optional[list, None]:
+        """Get driving statistics. Default is current year"""
+
+        if year is None:
+            year = pendulum.now().format("YYYY")
+
+        from_date = year + "-01-01"
+
+        statistics = await self.api.get_driving_statistics_endpoint(vin, from_date, "year")
+        return statistics
+
+    async def get_driving_statistics_from_year_json(self, vin, year: int = None) -> str:
+        """Return driving statistics from date in json"""
+        statistics = await self.get_driving_statistics_from_year(vin, year)
+
+        json_string = json.dumps(statistics, indent=3)
         return json_string

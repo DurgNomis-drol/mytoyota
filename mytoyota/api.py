@@ -117,7 +117,7 @@ class Controller:
 
         return self.token
 
-    async def get(self, endpoint: str, headers=None):
+    async def get(self, endpoint: str, headers=None, params=None):
         """Make the request."""
 
         token = await self.get_token()
@@ -137,12 +137,12 @@ class Controller:
             }
         )
         async with httpx.AsyncClient() as client:
-            resp = await client.get(endpoint, headers=headers, timeout=TIMEOUT)
+            resp = await client.get(endpoint, headers=headers, params=params, timeout=TIMEOUT)
 
             if resp.status_code == HTTP_OK:
                 result = resp.json()
             elif resp.status_code == HTTP_NO_CONTENT:
-                result = None
+                result = None  # This prevents raising or logging an error if the user has not setup Connected Services
             elif resp.status_code == HTTP_UNAUTHORIZED:
                 self.invalidate_token()
                 result = await self.get(endpoint, headers)
@@ -177,7 +177,7 @@ class Controller:
             if resp.status_code == HTTP_OK:
                 result = resp.json()
             elif resp.status_code == HTTP_NO_CONTENT:
-                result = None
+                result = None # This prevents raising or logging an error if the user has not setup Connected Services
             elif resp.status_code == HTTP_UNAUTHORIZED:
                 self.invalidate_token()
                 result = await self.get(endpoint, headers)
@@ -230,4 +230,15 @@ class Controller:
 
         return await self.get(
             f"{self.get_base_url()}/vehicles/{vin}/remoteControl/status"
+        )
+
+    async def get_driving_statistics_endpoint(self, vin: str, from_date, interval="day") -> list:
+        """Get driving statistic"""
+
+        params = {'from': from_date, 'calendarInterval': interval}
+
+        return await self.get(
+            f"{self.get_base_url()}/v2/trips/summarize",
+            {"vin": vin},
+            params
         )
