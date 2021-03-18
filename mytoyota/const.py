@@ -9,7 +9,7 @@ ENDPOINT_AUTH = "auth_endpoint"
 SUPPORTED_REGIONS = {
     "europe": {
         BASE_URL: "https://myt-agg.toyota-europe.com/cma/api",
-        BASE_URL_CARS: "https://cpb2cs.toyota-europe.com/vehicle",
+        BASE_URL_CARS: "https://cpb2cs.toyota-europe.com",
         ENDPOINT_AUTH: "https://ssoms.toyota-europe.com/authenticate",
     }
 }

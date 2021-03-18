@@ -8,9 +8,10 @@ _LOGGER: logging.Logger = logging.getLogger(__package__)
 class Vehicle:  # pylint: disable=too-many-instance-attributes
     """Class to hold car information for each car"""
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments
         self,
         vehicle_info: Optional[dict],
+        connected_services: Optional[dict],
         odometer: Optional[list],
         parking: Optional[dict],
         status: Optional[dict],
@@ -19,7 +20,6 @@ class Vehicle:  # pylint: disable=too-many-instance-attributes
         self.parking = None
         self.battery = None
         self.hvac = None
-        self.error = None
         self.alias = vehicle_info["alias"] if "alias" in vehicle_info else None
         self.vin = vehicle_info["vin"] if "vin" in vehicle_info else None
 
@@ -31,25 +31,25 @@ class Vehicle:  # pylint: disable=too-many-instance-attributes
         # Format vehicle information.
         self.details = self.format_details(vehicle_info)
 
-        # Extract odometer information.
-        if not odometer:
-            self.error = "Please setup Connected Services for your car"
-        else:
-            self.odometer = self.format_odometer(odometer)
+        # Checks if connected services has been enabled.
+        if self.has_connected_services_enabled(connected_services):
 
-        # Extract parking information.
-        if not parking:
-            self.error = "Please setup Connected Services for your car"
-        else:
-            self.parking = parking
+            # Extract odometer information.
+            if odometer:
+                self.odometer = self.format_odometer(odometer)
 
-        # Extracts information from status.
-        self.extract_status(status)
+            # Extract parking information.
+            if parking:
+                self.parking = parking
+
+            # Extracts information from status.
+            if status:
+                self.extract_status(status)
 
     def __str__(self) -> str:
-        return str(self.dict())
+        return str(self.as_dict())
 
-    def dict(self) -> dict:
+    def as_dict(self) -> dict:
         """Return car information in dict"""
         return {
             "alias": self.alias,
@@ -61,7 +61,6 @@ class Vehicle:  # pylint: disable=too-many-instance-attributes
                 "odometer": self.odometer,
                 "parking": self.parking,
             },
-            "error": self.error,
         }
 
     def extract_status(self, status) -> None:
@@ -72,11 +71,20 @@ class Vehicle:  # pylint: disable=too-many-instance-attributes
 
             if "ChargeInfo" in status["VehicleInfo"]:
                 self.battery = status["VehicleInfo"]["ChargeInfo"]
-        else:
-            self.error = "Please setup Connected Services for your car"
+
+    def has_connected_services_enabled(self, json_dict) -> bool:
+        """Checks if the user has enabled connected services."""
+        if (
+            "connectedServices" in json_dict
+            and json_dict["connectedServices"]["status"] == "ACTIVATED"
+        ):
+            return True
+
+        _LOGGER.error("Please setup Connected Services for this car. (%s)", self.vin)
+        return False
 
     @staticmethod
-    def format_odometer(raw):
+    def format_odometer(raw) -> dict:
         """Formats odometer information from a list to a dict."""
         instruments = {}
         for instrument in sorted(raw):
@@ -87,7 +95,7 @@ class Vehicle:  # pylint: disable=too-many-instance-attributes
         return instruments
 
     @staticmethod
-    def format_details(raw):
+    def format_details(raw) -> dict:
         """Formats vehicle info into a dict."""
         details = {}
         for item in sorted(raw):
