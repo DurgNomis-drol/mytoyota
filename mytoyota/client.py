@@ -8,8 +8,7 @@ import pendulum
 
 from .api import Controller
 from .const import (
-    SUPPORTED_REGIONS,
-)
+    SUPPORTED_REGIONS, )
 from .exceptions import (
     ToyotaLocaleNotValid,
     ToyotaInvalidUsername,
@@ -121,19 +120,10 @@ class MyT:
         json_string = json.dumps(vehicles, indent=3)
         return json_string
 
-    async def get_driving_statistics_from_date(
-        self, vin, from_date=None
-    ) -> Optional[list]:
-        """Get driving statistics from date.
-        from_date should be in this format (YYYY-MM-DD).
-        Default is current day"""
+    async def get_driving_statistics_from_date(self, vin, from_date=None) -> Optional[list, None]:
+        """Get driving statistics from date. from_date should be in this format (YYYY-MM-DD). Default is current day"""
 
-        if from_date is None:
-            from_date = pendulum.now().subtract(days=1).format("YYYY-MM-DD")
-
-        statistics = await self.api.get_driving_statistics_endpoint(
-            vin, from_date, "day"
-        )
+        statistics = await self.api.get_driving_statistics_endpoint(vin, from_date, "day")
         return statistics
 
     async def get_driving_statistics_from_date_json(self, vin, from_date=None) -> str:
@@ -143,16 +133,12 @@ class MyT:
         json_string = json.dumps(statistics, indent=3)
         return json_string
 
-    async def get_driving_statistics_from_week(self, vin) -> Optional[list]:
+    async def get_driving_statistics_from_week(self, vin) -> Optional[list, None]:
         """Get driving statistics from week. Default is current week."""
 
-        from_date = (
-            pendulum.now().start_of("week").subtract(days=1).format("YYYY-MM-DD")
-        )
+        from_date = pendulum.now().start_of('week').subtract(days=1).format('YYYY-MM-DD')
 
-        statistics = await self.api.get_driving_statistics_endpoint(
-            vin, from_date, "week"
-        )
+        statistics = await self.api.get_driving_statistics_endpoint(vin, from_date, "week")
         return statistics
 
     async def get_driving_statistics_from_week_json(self, vin) -> str:
@@ -162,9 +148,7 @@ class MyT:
         json_string = json.dumps(statistics, indent=3)
         return json_string
 
-    async def get_driving_statistics_from_year(
-        self, vin, year: int = None
-    ) -> Optional[list]:
+    async def get_driving_statistics_from_year(self, vin, year: int = None) -> Optional[list, None]:
         """Get driving statistics. Default is current year"""
 
         if year is None:
@@ -172,9 +156,7 @@ class MyT:
 
         from_date = year + "-01-01"
 
-        statistics = await self.api.get_driving_statistics_endpoint(
-            vin, from_date, "year"
-        )
+        statistics = await self.api.get_driving_statistics_endpoint(vin, from_date, "year")
         return statistics
 
     async def get_driving_statistics_from_year_json(self, vin, year: int = None) -> str:
