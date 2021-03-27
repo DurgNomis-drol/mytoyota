@@ -1,4 +1,4 @@
-"""Base classes"""
+"""Vehicle class"""
 import logging
 from typing import Optional
 
@@ -86,8 +86,8 @@ class Vehicle:  # pylint: disable=too-many-instance-attributes
     def has_connected_services_enabled(self, json_dict) -> bool:
         """Checks if the user has enabled connected services."""
         if (
-            "connectedServices" in json_dict
-            and json_dict["connectedServices"]["status"] == "ACTIVATED"
+            "connectedService" in json_dict
+            and json_dict["connectedService"]["status"] == "ACTIVE"
         ):
             return True
 
