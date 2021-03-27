@@ -30,6 +30,7 @@ class MyT:
         password: str,
         locale: str,
         region: str,
+        uuid: str = None,
     ) -> None:
         """Toyota API"""
 
@@ -45,12 +46,20 @@ class MyT:
             )
 
         self.api = Controller(
-            locale=locale, region=region, username=username, password=password
+            locale=locale,
+            region=region,
+            username=username,
+            password=password,
+            uuid=uuid,
         )
 
-    async def login(self):
+    async def login(self) -> None:
         """Login to Toyota services"""
-        return await self.api.get_token()
+        await self.api.get_new_token()
+
+    async def get_uuid(self) -> str:
+        """Get uuid"""
+        return await self.api.get_uuid()
 
     async def set_alias(self, vehicle_id: int, new_alias: str) -> dict:
         """Sets a new alias for the car"""
@@ -144,11 +153,13 @@ class MyT:
         return json_string
 
     async def get_driving_statistics_from_week(self, vin) -> Optional[list]:
-        """Get driving statistics from week. Default is current week."""
+        """Get driving statistics from week. Default is current week.
 
-        from_date = (
-            pendulum.now().start_of("week").subtract(days=1).format("YYYY-MM-DD")
-        )
+        NOTICE: Week numbers are not ISO week numbers but Japan week numbers!
+        Example: 2021-01-31 is on week 6 instead of ISO week 4!
+
+        """
+        from_date = pendulum.now().start_of("week").format("YYYY-MM-DD")
 
         statistics = await self.api.get_driving_statistics_endpoint(
             vin, from_date, "week"
@@ -162,24 +173,19 @@ class MyT:
         json_string = json.dumps(statistics, indent=3)
         return json_string
 
-    async def get_driving_statistics_from_year(
-        self, vin, year: int = None
-    ) -> Optional[list]:
-        """Get driving statistics. Default is current year"""
+    async def get_driving_statistics_from_month(self, vin) -> Optional[list]:
+        """Get driving statistics from month. Default is current month."""
 
-        if year is None:
-            year = pendulum.now().format("YYYY")
-
-        from_date = year + "-01-01"
+        from_date = pendulum.now().start_of("month").format("YYYY-MM-DD")
 
         statistics = await self.api.get_driving_statistics_endpoint(
-            vin, from_date, "year"
+            vin, from_date, "month"
         )
         return statistics
 
-    async def get_driving_statistics_from_year_json(self, vin, year: int = None) -> str:
+    async def get_driving_statistics_from_month_json(self, vin) -> str:
         """Return driving statistics from date in json"""
-        statistics = await self.get_driving_statistics_from_year(vin, year)
+        statistics = await self.get_driving_statistics_from_month(vin)
 
         json_string = json.dumps(statistics, indent=3)
         return json_string

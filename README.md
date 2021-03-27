@@ -28,15 +28,26 @@ client = MyT(username=username, password=password, locale=locale, region="europe
 
 
 async def get_information():
-    print("Performing login...")
-    print(await client.get_token())
-    print(client.get_uuid())
+    print("Logging in...")
+    await client.login()
 
     print("Retrieving cars...")
     # Returns information about the cars registered to your account
-    cars = await client.gather_information_json()
+    cars = await client.get_vehicles()
 
-    print(cars)
+    print(await client.gather_all_information_json())
+
+    statistics = await client.get_driving_statistics_from_date_json(cars[0]['vin'])
+
+    print(statistics)
+
+    statistics = await client.get_driving_statistics_from_week_json(cars[0]['vin'])
+
+    print(statistics)
+
+    statistics = await client.get_driving_statistics_from_month_json(cars[0]['vin'])
+
+    print(statistics)
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(get_information())

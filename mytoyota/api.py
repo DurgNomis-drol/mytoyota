@@ -1,6 +1,6 @@
 """Toyota Connected Services Controller"""
 import logging
-from typing import Optional
+from typing import Optional, Union
 from datetime import datetime
 import httpx
 
@@ -17,9 +17,9 @@ from .const import (
     UUID,
     HTTP_OK,
     HTTP_NO_CONTENT,
-    HTTP_UNAUTHORIZED,
-    TOKEN_DURATION,
     SUPPORTED_REGIONS,
+    TOKEN_VALID_URL,
+    TOKEN_DURATION,
 )
 from .exceptions import (
     ToyotaLoginError,
@@ -38,12 +38,16 @@ class Controller:
         region: str,
         username: str,
         password: str,
+        uuid: str,
     ) -> None:
         """Toyota Controller"""
 
         self.token = None
+        self.token_expiration: Optional[datetime] = None
         self.uuid = None
-        self.token_date: Optional[datetime] = None
+
+        if uuid is not None and is_valid_uuid(uuid):
+            self.uuid = uuid
 
         self.locale: str = locale
         self.region: str = region
@@ -51,89 +55,113 @@ class Controller:
         self.username: str = username
         self.password: str = password
 
-    @staticmethod
-    def __token_has_expired(creation_dt, duration) -> bool:
-        """Checks if token has expired."""
-        if creation_dt is not None:
-            return datetime.now().timestamp() - creation_dt.timestamp() > duration
-        return True
-
-    def invalidate_token(self):
-        """Invalidates the current access token."""
-        self.token = None
-        self.token_date = None
-
-    def get_base_url(self):
+    def get_base_url(self) -> str:
         """Returns base url"""
         return SUPPORTED_REGIONS[self.region][BASE_URL]
 
-    def get_base_url_cars(self):
+    def get_base_url_cars(self) -> str:
         """Returns base url for get_vehicles_endpoint"""
         return SUPPORTED_REGIONS[self.region][BASE_URL_CARS]
 
-    def get_auth_endpoint(self):
+    def get_auth_endpoint(self) -> str:
         """Returns auth endpoint"""
         return SUPPORTED_REGIONS[self.region][ENDPOINT_AUTH]
 
-    async def get_token(self) -> tuple:
+    def get_auth_valid_endpoint(self) -> str:
+        """Returns token is valid endpoint"""
+        return SUPPORTED_REGIONS[self.region][TOKEN_VALID_URL]
+
+    async def get_uuid(self) -> str:
+        """Returns uuid"""
+        return self.uuid
+
+    @staticmethod
+    def _has_expired(creation_dt, duration) -> bool:
+        """Checks if an specified token/object has expired"""
+        return datetime.now().timestamp() - creation_dt.timestamp() > duration
+
+    async def is_token_valid(self) -> bool:
+        """Checks if token is valid"""
+
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                self.get_auth_valid_endpoint(),
+                json={TOKEN: self.token},
+            )
+            if response.status_code == HTTP_OK:
+                result = response.json()
+
+                if result["valid"]:
+                    self.token_expiration = datetime.now()
+                    return True
+                return False
+
+            raise ToyotaLoginError(
+                "Error when trying to check token: {}".format(response.text)
+            )
+
+    async def get_new_token(self) -> str:
         """Performs login to toyota servers and retrieves token and uuid for the account."""
 
-        if self.token is None or self.__token_has_expired(
-            self.token_date, TOKEN_DURATION
-        ):
-            headers = {
-                "X-TME-BRAND": "TOYOTA",
-                "X-TME-LC": self.locale,
-                "Accept": "application/json, text/plain, */*",
-                "Sec-Fetch-Dest": "empty",
-                "Content-Type": "application/json;charset=UTF-8",
-            }
+        headers = {
+            "X-TME-BRAND": "TOYOTA",
+            "X-TME-LC": self.locale,
+            "Accept": "application/json, text/plain, */*",
+            "Sec-Fetch-Dest": "empty",
+            "Content-Type": "application/json;charset=UTF-8",
+        }
 
-            # Cannot authenticate with aiohttp (returns 415),
-            # but it works with requests.
-            async with httpx.AsyncClient() as client:
-                response = await client.post(
-                    self.get_auth_endpoint(),
-                    headers=headers,
-                    json={USERNAME: self.username, PASSWORD: self.password},
+        # Cannot authenticate with aiohttp (returns 415),
+        # but it works with httpx.
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                self.get_auth_endpoint(),
+                headers=headers,
+                json={USERNAME: self.username, PASSWORD: self.password},
+            )
+            if response.status_code == HTTP_OK:
+                result = response.json()
+
+                if TOKEN not in result or UUID not in result[CUSTOMERPROFILE]:
+                    _LOGGER.error("[!] Could not get token or UUID.")
+
+                token = result.get(TOKEN)
+                uuid = result[CUSTOMERPROFILE][UUID]
+
+                if is_valid_token(token) and is_valid_uuid(uuid):
+                    self.uuid = uuid
+                    self.token = token
+                    self.token_expiration = datetime.now()
+            else:
+                raise ToyotaLoginError(
+                    "Login failed, check your credentials! {}".format(response.text)
                 )
-                if response.status_code == HTTP_OK:
-                    result = response.json()
-
-                    if TOKEN not in result or UUID not in result[CUSTOMERPROFILE]:
-                        _LOGGER.error("[!] Could not get token or UUID.")
-
-                    token = result.get(TOKEN)
-                    uuid = result[CUSTOMERPROFILE][UUID]
-
-                    if is_valid_token(token) and is_valid_uuid(uuid):
-                        self.uuid = uuid
-                        self.token = token
-                        self.token_date = datetime.now()
-                else:
-                    raise ToyotaLoginError(
-                        "Login failed, check your credentials! {}".format(response.text)
-                    )
 
         return self.token
 
-    async def get(self, endpoint: str, headers=None, params=None):
+    async def get(
+        self, endpoint: str, headers=None, params=None
+    ) -> Union[dict, list, None]:
         """Make the request."""
 
-        token = await self.get_token()
+        if self.token is None or self._has_expired(
+            self.token_expiration, TOKEN_DURATION
+        ):
+            if await self.is_token_valid() is False:
+                await self.get_new_token()
 
         if headers is None:
             headers = {}
         headers.update(
             {
-                "Cookie": f"iPlanetDirectoryPro={token}",
+                "Cookie": f"iPlanetDirectoryPro={self.token}",
                 "uuid": self.uuid,
                 "Accept": "application/json, text/plain, */*",
                 "Sec-Fetch-Dest": "empty",
                 "X-TME-BRAND": "TOYOTA",
                 "X-TME-LC": self.locale,
                 "X-TME-LOCALE": self.locale,
-                "X-TME-TOKEN": token,
+                "X-TME-TOKEN": self.token,
             }
         )
         async with httpx.AsyncClient() as client:
@@ -147,19 +175,22 @@ class Controller:
                 # This prevents raising or logging an error
                 # if the user has not setup Connected Services
                 result = None
-            elif resp.status_code == HTTP_UNAUTHORIZED:
-                self.invalidate_token()
-                result = await self.get(endpoint, headers)
             else:
                 _LOGGER.error("HTTP: %i - %s", resp.status_code, resp.text)
                 result = None
 
-            return result
+        return result
 
-    async def put(self, endpoint: str, body: dict, headers=None):
+    async def put(
+        self, endpoint: str, body: dict, headers=None
+    ) -> Union[dict, list, None]:
         """Make the request."""
 
-        token = await self.get_token()
+        if self.token is None or self._has_expired(
+            self.token_expiration, TOKEN_DURATION
+        ):
+            if await self.is_token_valid() is False:
+                await self.get_new_token()
 
         if headers is None:
             headers = {}
@@ -169,7 +200,7 @@ class Controller:
                 "Sec-Fetch-Dest": "empty",
                 "X-TME-BRAND": "TOYOTA",
                 "X-TME-LC": self.locale,
-                "X-TME-TOKEN": token,
+                "X-TME-TOKEN": self.token,
             }
         )
 
@@ -184,9 +215,6 @@ class Controller:
                 # This prevents raising or logging an error
                 # if the user has not setup Connected Services
                 result = None
-            elif resp.status_code == HTTP_UNAUTHORIZED:
-                self.invalidate_token()
-                result = await self.get(endpoint, headers)
             else:
                 _LOGGER.error("HTTP: %i - %s", resp.status_code, resp.text)
                 result = None
@@ -239,7 +267,7 @@ class Controller:
         )
 
     async def get_driving_statistics_endpoint(
-        self, vin: str, from_date, interval="day"
+        self, vin: str, from_date, interval
     ) -> list:
         """Get driving statistic"""
 

@@ -4,10 +4,12 @@
 BASE_URL = "base_url"
 BASE_URL_CARS = "base_url_cars"
 ENDPOINT_AUTH = "auth_endpoint"
+TOKEN_VALID_URL = "auth_valid"
 
 # REGIONS
 SUPPORTED_REGIONS = {
     "europe": {
+        TOKEN_VALID_URL: "https://ssoms.toyota-europe.com/isTokenValid",
         BASE_URL: "https://myt-agg.toyota-europe.com/cma/api",
         BASE_URL_CARS: "https://cpb2cs.toyota-europe.com",
         ENDPOINT_AUTH: "https://ssoms.toyota-europe.com/authenticate",
@@ -18,7 +20,8 @@ SUPPORTED_REGIONS = {
 USERNAME = "username"
 PASSWORD = "password"
 
-TOKEN_DURATION = 24 * 60 * 60
+# So we don't have to test the token if multiple endpoints is requested at the same time.
+TOKEN_DURATION = 900
 TOKEN_LENGTH = 114
 
 # JSON ATTRIBUTES
