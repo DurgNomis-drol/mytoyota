@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mytoyota"
-version = "0.1.4"
+version = "0.2.1"
 description = "Unofficial python module for Toyota Connected Services API."
 authors = ["DurgNomis-drol <simongrud@gmail.com>"]
 license = "MIT"
