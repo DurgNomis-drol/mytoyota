@@ -6,7 +6,7 @@ with open("README.md") as readme_file:
 
 setup_args = dict(
     name="mytoyota",
-    version="0.1.4",
+    version="0.2.1",
     description="Python client for Toyota Connected Services.",
     long_description_content_type="text/markdown",
     long_description=README,
