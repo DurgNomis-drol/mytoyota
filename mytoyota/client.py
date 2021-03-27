@@ -58,7 +58,7 @@ class MyT:
         """Return supported regions"""
         regions = []
 
-        for key, value in SUPPORTED_REGIONS.items():
+        for key, value in SUPPORTED_REGIONS.items():  # pylint: disable=unused-variable
             regions.append(key)
 
         return regions
