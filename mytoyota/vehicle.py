@@ -100,8 +100,8 @@ class Vehicle:  # pylint: disable=too-many-instance-attributes
     @staticmethod
     def format_odometer(raw) -> dict:
         """Formats odometer information from a list to a dict."""
-        instruments = {}
-        for instrument in sorted(raw):
+        instruments: dict = {}
+        for instrument in raw:
             instruments[instrument["type"]] = instrument["value"]
             if "unit" in instrument:
                 instruments[instrument["type"] + "_unit"] = instrument["unit"]
@@ -111,7 +111,7 @@ class Vehicle:  # pylint: disable=too-many-instance-attributes
     @staticmethod
     def format_details(raw) -> dict:
         """Formats vehicle info into a dict."""
-        details = {}
+        details: dict = {}
         for item in sorted(raw):
             if item in ("vin", "alias"):
                 continue
