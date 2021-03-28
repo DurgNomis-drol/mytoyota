@@ -53,6 +53,16 @@ class MyT:
             uuid=uuid,
         )
 
+    @staticmethod
+    def get_supported_regions():
+        """Return supported regions"""
+        regions = []
+
+        for key, value in SUPPORTED_REGIONS.items():  # pylint: disable=unused-variable
+            regions.append(key)
+
+        return regions
+
     async def login(self) -> None:
         """Login to Toyota services"""
         await self.api.get_new_token()
