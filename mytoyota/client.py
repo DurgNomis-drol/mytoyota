@@ -171,6 +171,11 @@ class MyT:
         """
         from_date = pendulum.now().start_of("week").format("YYYY-MM-DD")
 
+        if from_date == pendulum.now().format("YYYY-MM-DD"):
+            from_date = (
+                pendulum.now().subtract(days=1).start_of("week").format("YYYY-MM-DD")
+            )
+
         statistics = await self.api.get_driving_statistics_endpoint(
             vin, from_date, "week"
         )
@@ -187,6 +192,11 @@ class MyT:
         """Get driving statistics from month. Default is current month."""
 
         from_date = pendulum.now().start_of("month").format("YYYY-MM-DD")
+
+        if from_date == pendulum.now().format("YYYY-MM-DD"):
+            from_date = (
+                pendulum.now().subtract(days=1).start_of("month").format("YYYY-MM-DD")
+            )
 
         statistics = await self.api.get_driving_statistics_endpoint(
             vin, from_date, "month"
