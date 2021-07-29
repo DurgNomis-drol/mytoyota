@@ -87,12 +87,19 @@ class Vehicle:  # pylint: disable=too-many-instance-attributes
         """Checks if the user has enabled connected services."""
         if (
             "connectedService" in json_dict
-            and json_dict["connectedService"]["status"] == "ACTIVE"
+            and "status" in json_dict["connectedService"]
         ):
-            return True
+            if json_dict["connectedService"]["status"] == "ACTIVE":
+                return True
 
+            _LOGGER.error(
+                "Please setup Connected Services if you want live data from the car. (%s)",
+                self.vin,
+            )
+            return False
         _LOGGER.error(
-            "Please setup Connected Services if you want live data from the car. (%s)",
+            "Your vehicle does not support Connected services (%s). You can find out if your "
+            "vehicle is compatible by checking the manual the comes with your car.",
             self.vin,
         )
         return False
