@@ -2,7 +2,6 @@
 import asyncio
 import json
 import logging
-from typing import Optional
 
 import pendulum
 
@@ -81,9 +80,9 @@ class MyT:
     async def get_vehicles(self) -> list:
         """Return list of vehicles with basic information about them"""
 
-        cars = await self.api.get_vehicles_endpoint()
-        if cars:
-            return cars
+        vehicles = await self.api.get_vehicles_endpoint()
+        if vehicles:
+            return vehicles
 
     async def get_vehicles_json(self) -> str:
         """Return vehicle list as json"""
@@ -92,7 +91,7 @@ class MyT:
         json_string = json.dumps(vehicles, indent=3)
         return json_string
 
-    async def get_vehicle_information(self, vehicle: dict) -> dict:
+    async def get_vehicle_status(self, vehicle: dict) -> dict:
         """Return information for given vehicle"""
 
         vin = vehicle["vin"]
@@ -113,99 +112,56 @@ class MyT:
 
         return car.as_dict()
 
-    async def get_vehicle_information_json(self, vehicle: dict) -> str:
+    async def get_vehicle_status_json(self, vehicle: dict) -> str:
         """Return vehicle information as json"""
-        vehicle = await self.get_vehicle_information(vehicle)
+        vehicle = await self.get_vehicle_status(vehicle)
 
         json_string = json.dumps(vehicle, indent=3)
         return json_string
 
-    async def gather_all_information(self) -> list:
-        """Gather all information, format it and return it as list"""
-        vehicles = []
-        cars = await self.api.get_vehicles_endpoint()
-        if cars:
-            for car in cars:
+    async def get_driving_statistics(
+        self, vin: str, interval: str = "month", from_date=None
+    ) -> dict:
+        """
+        params: vin: Vin number of your car.
+                interval: can be "day", "week" or "month". Default "month"
+                from_date: from which date you want statistics. Default is current day,
+                week or month if None.
+        """
 
-                vehicle = await self.get_vehicle_information(car)
+        if interval not in ("day", "week", "month"):
+            return {"Error_mesg": "Invalid interval provided!"}
 
-                vehicles.append(vehicle)
+        def calculate_from_date() -> str:
+            if interval == "day":
+                date = pendulum.now().subtract(days=1).format("YYYY-MM-DD")
+                return date
 
-            return vehicles
+            date = pendulum.now().start_of(interval).format("YYYY-MM-DD")
 
-    async def gather_all_information_json(self) -> str:
-        """Gather all information, format it and return a json string"""
-        vehicles = await self.gather_all_information()
-
-        json_string = json.dumps(vehicles, indent=3)
-        return json_string
-
-    async def get_driving_statistics_from_date(
-        self, vin, from_date=None
-    ) -> Optional[list]:
-        """Get driving statistics from date.
-        from_date should be in this format (YYYY-MM-DD).
-        Default is current day"""
+            if date == pendulum.now().format("YYYY-MM-DD"):
+                date = (
+                    pendulum.now()
+                    .subtract(days=1)
+                    .start_of(interval)
+                    .format("YYYY-MM-DD")
+                )
+                return date
+            return date
 
         if from_date is None:
-            from_date = pendulum.now().subtract(days=1).format("YYYY-MM-DD")
+            from_date = calculate_from_date()
 
         statistics = await self.api.get_driving_statistics_endpoint(
-            vin, from_date, "day"
+            vin, from_date, interval
         )
+
         return statistics
 
-    async def get_driving_statistics_from_date_json(self, vin, from_date=None) -> str:
-        """Return driving statistics from date in json"""
-        statistics = await self.get_driving_statistics_from_date(vin, from_date)
-
-        json_string = json.dumps(statistics, indent=3)
-        return json_string
-
-    async def get_driving_statistics_from_week(self, vin) -> Optional[list]:
-        """Get driving statistics from week. Default is current week.
-
-        NOTICE: Week numbers are not ISO week numbers but Japan week numbers!
-        Example: 2021-01-31 is on week 6 instead of ISO week 4!
-
-        """
-        from_date = pendulum.now().start_of("week").format("YYYY-MM-DD")
-
-        if from_date == pendulum.now().format("YYYY-MM-DD"):
-            from_date = (
-                pendulum.now().subtract(days=1).start_of("week").format("YYYY-MM-DD")
-            )
-
-        statistics = await self.api.get_driving_statistics_endpoint(
-            vin, from_date, "week"
+    async def get_driving_statistics_json(
+        self, vin: str, interval: str = "month", from_date=None
+    ) -> str:
+        """Return driving statistics in json"""
+        return json.dumps(
+            await self.get_driving_statistics(vin, interval, from_date), indent=3
         )
-        return statistics
-
-    async def get_driving_statistics_from_week_json(self, vin) -> str:
-        """Return driving statistics from date in json"""
-        statistics = await self.get_driving_statistics_from_week(vin)
-
-        json_string = json.dumps(statistics, indent=3)
-        return json_string
-
-    async def get_driving_statistics_from_month(self, vin) -> Optional[list]:
-        """Get driving statistics from month. Default is current month."""
-
-        from_date = pendulum.now().start_of("month").format("YYYY-MM-DD")
-
-        if from_date == pendulum.now().format("YYYY-MM-DD"):
-            from_date = (
-                pendulum.now().subtract(days=1).start_of("month").format("YYYY-MM-DD")
-            )
-
-        statistics = await self.api.get_driving_statistics_endpoint(
-            vin, from_date, "month"
-        )
-        return statistics
-
-    async def get_driving_statistics_from_month_json(self, vin) -> str:
-        """Return driving statistics from date in json"""
-        statistics = await self.get_driving_statistics_from_month(vin)
-
-        json_string = json.dumps(statistics, indent=3)
-        return json_string
