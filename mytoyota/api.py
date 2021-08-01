@@ -267,8 +267,8 @@ class Controller:
         )
 
     async def get_driving_statistics_endpoint(
-        self, vin: str, from_date, interval
-    ) -> list:
+        self, vin: str, from_date: str, interval: str = None
+    ) -> dict:
         """Get driving statistic"""
 
         params = {"from": from_date, "calendarInterval": interval}

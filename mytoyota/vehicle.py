@@ -37,9 +37,12 @@ class Vehicle:  # pylint: disable=too-many-instance-attributes
         # Format vehicle information.
         self.details = self.format_details(vehicle_info)
 
-        self.services["connectedServices"] = self.has_connected_services_enabled(
-            connected_services
-        )
+        if connected_services is not None:
+            self.services["connectedServices"] = self.has_connected_services_enabled(
+                connected_services
+            )
+        else:
+            self.services["connectedServices"] = False
 
         # Checks if connected services has been enabled.
         if self.services["connectedServices"]:
@@ -85,6 +88,7 @@ class Vehicle:  # pylint: disable=too-many-instance-attributes
 
     def has_connected_services_enabled(self, json_dict) -> bool:
         """Checks if the user has enabled connected services."""
+
         if (
             "connectedService" in json_dict
             and "status" in json_dict["connectedService"]
