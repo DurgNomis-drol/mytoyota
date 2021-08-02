@@ -3,7 +3,7 @@ import asyncio
 import json
 import logging
 
-import pendulum
+import arrow
 
 from .api import Controller
 from .const import (
@@ -134,19 +134,19 @@ class MyT:
 
         def calculate_from_date() -> str:
             if interval == "day":
-                date = pendulum.now().subtract(days=1).format("YYYY-MM-DD")
+                date = arrow.now().shift(days=-1).format("YYYY-MM-DD")
                 return date
 
-            date = pendulum.now().start_of(interval).format("YYYY-MM-DD")
-
-            if date == pendulum.now().format("YYYY-MM-DD"):
+            if interval == "week":
                 date = (
-                    pendulum.now()
-                    .subtract(days=1)
-                    .start_of(interval)
+                    arrow.now()
+                    .span("week", week_start=7)[0]
+                    .shift(days=-1)
                     .format("YYYY-MM-DD")
                 )
                 return date
+
+            date = arrow.now().floor("month").shift(days=-1).format("YYYY-MM-DD")
             return date
 
         if from_date is None:
