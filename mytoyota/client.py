@@ -144,11 +144,7 @@ class MyT:
                 return date
 
             if interval == "week":
-                date = (
-                    arrow.now()
-                    .span("week", week_start=7)[0]
-                    .format("YYYY-MM-DD")
-                )
+                date = arrow.now().span("week", week_start=7)[0].format("YYYY-MM-DD")
 
                 if date == arrow.now().format("YYYY-MM-DD"):
                     date = (
