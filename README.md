@@ -39,28 +39,28 @@ async def get_information():
     print("Retrieving cars...")
     # Returns cars registered to your account + information about each car.
     cars = await client.get_vehicles()
-    
+
     for car in cars:
         # Returns live data from car/last time you used it.
         vehicle = await client.get_vehicle_status(car)
         print(vehicle)
-        
+
         # Stats returned in a dict
         daily_stats = await client.get_driving_statistics(cars[0]['vin'], interval="day")
         print(daily_stats)
-        
+
         # Stats returned in json.
         weekly_stats = await client.get_driving_statistics_json(cars[0]['vin'], interval="week")
         print(weekly_stats)
-        
+
         # Monthly stats is returned by default
         monthly_stats = await client.get_driving_statistics(cars[0]['vin'])
         print(monthly_stats)
-        
+
         # Use the summary to get year to date stats.
         yearly_stats = await client.get_driving_statistics(car['vin'], interval="month", from_date=(arrow.now().floor("year").format("YYYY-MM-DD")))
         print(yearly_stats)
-        
+
 loop = asyncio.get_event_loop()
 loop.run_until_complete(get_information())
 loop.close()
