@@ -131,6 +131,8 @@ class MyT:
                 Week numbers are not ISO week numbers, but Japan week numbers.
 
                 A week starts on a Sunday and not Monday.
+
+                Will return null if no ride have been performed in the timeframe.
         """
 
         if interval not in ("day", "week", "month"):
