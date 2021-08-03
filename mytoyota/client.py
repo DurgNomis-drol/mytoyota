@@ -127,6 +127,10 @@ class MyT:
                 interval: can be "day", "week" or "month". Default "month"
                 from_date: from which date you want statistics. Default is current day,
                 week or month if None.
+
+                Week numbers are not ISO week numbers, but Japan week numbers.
+
+                A week starts on a Sunday and not Monday.
         """
 
         if interval not in ("day", "week", "month"):
@@ -141,12 +145,27 @@ class MyT:
                 date = (
                     arrow.now()
                     .span("week", week_start=7)[0]
+                    .format("YYYY-MM-DD")
+                )
+
+                if date == arrow.now().format("YYYY-MM-DD"):
+                    date = (
+                        arrow.now()
+                        .span("week", week_start=7)[0]
+                        .shift(days=-1)
+                        .format("YYYY-MM-DD")
+                    )
+                return date
+
+            date = arrow.now().floor("month").format("YYYY-MM-DD")
+
+            if date == arrow.now().format("YYYY-MM_DD"):
+                date = (
+                    arrow.now()
+                    .span("month", week_start=7)[0]
                     .shift(days=-1)
                     .format("YYYY-MM-DD")
                 )
-                return date
-
-            date = arrow.now().floor("month").shift(days=-1).format("YYYY-MM-DD")
             return date
 
         if from_date is None:
