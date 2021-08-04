@@ -4,7 +4,7 @@ description = "Python client for Toyota Connected Services."
 authors = ["Simon Grud Hansen <simongrud@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-version = "0.3.3"
+version = "0.3.4"
 classifiers = [
     "Development Status :: 4 - Beta",
     "License :: OSI Approved :: MIT License",
