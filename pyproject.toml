@@ -4,7 +4,7 @@ description = "Python client for Toyota Connected Services."
 authors = ["Simon Grud Hansen <simongrud@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-version = "0.3.2"
+version = "0.3.3"
 classifiers = [
     "Development Status :: 4 - Beta",
     "License :: OSI Approved :: MIT License",
@@ -27,7 +27,7 @@ repository = "https://github.com/DurgNomis-drol/mytoyota"
 python = "^3.8"
 langcodes = "^3.1.0"
 uuid = "^1.30"
-httpx = "^0.17.1"
+httpx = "^0.18.1"
 arrow = "^1.1.1"
 
 [tool.poetry.dev-dependencies]
