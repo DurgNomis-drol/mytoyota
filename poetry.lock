@@ -411,14 +411,6 @@ optional = false
 python-versions = "*"
 
 [[package]]
-name = "uuid"
-version = "1.30"
-description = "UUID object and generation functions (Python 2.3 or higher)"
-category = "main"
-optional = false
-python-versions = "*"
-
-[[package]]
 name = "virtualenv"
 version = "20.7.0"
 description = "Virtual Python Environment builder"
@@ -448,7 +440,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "1a71c4175d9f0e7cd537f6dd31679a7f5660b8b1763f819d29796e4d15b4c3e0"
+content-hash = "736d1a5c44552e9fde7aaedf344a3e51c16be03b200e7e864421e54af7070686"
 
 [metadata.files]
 anyio = [
@@ -711,9 +703,6 @@ typing-extensions = [
     {file = "typing_extensions-3.10.0.0-py2-none-any.whl", hash = "sha256:0ac0f89795dd19de6b97debb0c6af1c70987fd80a2d62d1958f7e56fcc31b497"},
     {file = "typing_extensions-3.10.0.0-py3-none-any.whl", hash = "sha256:779383f6086d90c99ae41cf0ff39aac8a7937a9283ce0a414e5dd782f4c94a84"},
     {file = "typing_extensions-3.10.0.0.tar.gz", hash = "sha256:50b6f157849174217d0656f99dc82fe932884fb250826c18350e159ec6cdf342"},
-]
-uuid = [
-    {file = "uuid-1.30.tar.gz", hash = "sha256:1f87cc004ac5120466f36c5beae48b4c48cc411968eed0eaecd3da82aa96193f"},
 ]
 virtualenv = [
     {file = "virtualenv-20.7.0-py2.py3-none-any.whl", hash = "sha256:fdfdaaf0979ac03ae7f76d5224a05b58165f3c804f8aa633f3dd6f22fbd435d5"},
