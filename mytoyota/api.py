@@ -24,7 +24,7 @@ from .const import (
 from .exceptions import (
     ToyotaLoginError,
 )
-from .utils import is_valid_uuid, is_valid_token
+from .utils import is_valid_token
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -46,7 +46,7 @@ class Controller:
         self.token_expiration: Optional[datetime] = None
         self.uuid = None
 
-        if uuid is not None and is_valid_uuid(uuid):
+        if uuid is not None:
             self.uuid = uuid
 
         self.locale: str = locale
@@ -128,7 +128,7 @@ class Controller:
                 token = result.get(TOKEN)
                 uuid = result[CUSTOMERPROFILE][UUID]
 
-                if is_valid_token(token) and is_valid_uuid(uuid):
+                if is_valid_token(token):
                     self.uuid = uuid
                     self.token = token
                     self.token_expiration = datetime.now()
