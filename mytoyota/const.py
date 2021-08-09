@@ -43,4 +43,9 @@ TIMEOUT = 10
 
 HTTP_OK = 200
 HTTP_NO_CONTENT = 204
+HTTP_BAD_REQUEST = 400
 HTTP_UNAUTHORIZED = 401
+
+RETURNED_BAD_REQUEST = "bad_request"
+
+INTERVAL_SUPPORTED = ["day", "week", "isoweek", "month", "year"]

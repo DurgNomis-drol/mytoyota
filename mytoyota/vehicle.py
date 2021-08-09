@@ -19,7 +19,7 @@ class Vehicle:  # pylint: disable=too-many-instance-attributes
 
         # If no vehicle information is provided, abort.
         if not vehicle_info:
-            _LOGGER.error("No vehicle information provided")
+            _LOGGER.error("No vehicle information provided!")
             return
 
         self.odometer = None

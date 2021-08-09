@@ -8,12 +8,15 @@ import arrow
 from .api import Controller
 from .const import (
     SUPPORTED_REGIONS,
+    RETURNED_BAD_REQUEST,
+    INTERVAL_SUPPORTED,
 )
 from .exceptions import (
     ToyotaLocaleNotValid,
     ToyotaInvalidUsername,
     ToyotaRegionNotSupported,
 )
+from .statistics import Statistics
 from .utils import is_valid_locale
 from .vehicle import Vehicle
 
@@ -124,56 +127,74 @@ class MyT:
     ) -> dict:
         """
         params: vin: Vin number of your car.
-                interval: can be "day", "week" or "month". Default "month"
+                interval: can be "day", "week", "isoweek", "month" or "year". Default "month"
                 from_date: from which date you want statistics. Default is current day,
                 week or month if None.
 
-                Week numbers are not ISO week numbers, but Japan week numbers.
+                "day" will return yesterday
 
-                A week starts on a Sunday and not Monday.
+                "week" uses Japan weeknumbers and not ISOweeknumbers.
 
-                Will return null if no ride have been performed in the timeframe.
+                Use "isoweek" if you want Monday to Sunday. "week" returns Sunday to Saturday.
+
+                Will return a error message if no ride have been performed in the timeframe
+                or no data is available yet.
+
+                On the first of each week, month or year. This will also return a error message.
+                This is due to a Toyota API limitation.
         """
 
-        if interval not in ("day", "week", "month"):
-            return {"Error_mesg": "Invalid interval provided!"}
+        if interval not in INTERVAL_SUPPORTED:
+            return {"error_mesg": "Invalid interval provided!", "error_code": 1}
 
-        def calculate_from_date() -> str:
-            if interval == "day":
-                date = arrow.now().shift(days=-1).format("YYYY-MM-DD")
-                return date
-
-            if interval == "week":
-                date = arrow.now().span("week", week_start=7)[0].format("YYYY-MM-DD")
-
-                if date == arrow.now().format("YYYY-MM-DD"):
-                    date = (
-                        arrow.now()
-                        .span("week", week_start=7)[0]
-                        .shift(days=-1)
-                        .format("YYYY-MM-DD")
-                    )
-                return date
-
-            date = arrow.now().floor("month").format("YYYY-MM-DD")
-
-            if date == arrow.now().format("YYYY-MM_DD"):
-                date = (
-                    arrow.now()
-                    .span("month", week_start=7)[0]
-                    .shift(days=-1)
-                    .format("YYYY-MM-DD")
-                )
-            return date
+        stats_interval = interval
 
         if from_date is None:
-            from_date = calculate_from_date()
+            if interval == "day":
+                from_date = arrow.now().shift(days=-1).format("YYYY-MM-DD")
 
-        statistics = await self.api.get_driving_statistics_endpoint(
-            vin, from_date, interval
+            if interval == "week":
+                from_date = (
+                    arrow.now().span("week", week_start=7)[0].format("YYYY-MM-DD")
+                )
+
+            if interval == "isoweek":
+                stats_interval = "day"
+                from_date = arrow.now().floor("week").format("YYYY-MM-DD")
+
+            if interval == "month":
+                from_date = arrow.now().floor("month").format("YYYY-MM-DD")
+
+            if interval == "year":
+                stats_interval = "month"
+                from_date = arrow.now().floor("year").format("YYYY-MM-DD")
+
+        raw_statistics = await self.api.get_driving_statistics_endpoint(
+            vin, from_date, stats_interval
         )
 
-        return statistics
+        if raw_statistics == RETURNED_BAD_REQUEST or raw_statistics is None:
+            return {
+                "error_mesg": "No data available for this period. (" + interval + ")",
+                "error_code": 2,
+            }
+
+        if interval == "day":
+
+            today = arrow.now().strftime("%j")
+
+            if raw_statistics["histogram"][0]["bucket"]["dayOfYear"] != today:
+                return {
+                    "error_mesg": "No data available for this period. ("
+                    + interval
+                    + ")",
+                    "error_code": 2,
+                }
+
+        # Format data so we get a uniform output.
+        statistics = Statistics(raw_statistics, interval)
+
+        return statistics.as_dict()
 
     async def get_driving_statistics_json(
         self, vin: str, interval: str = "month", from_date=None
