@@ -52,13 +52,17 @@ async def get_information():
         # Stats returned in json.
         weekly_stats = await client.get_driving_statistics_json(cars[0]['vin'], interval="week")
         print(weekly_stats)
-
+        
+        # ISO 8601 week stats
+        iso_weekly_stats = await client.get_driving_statistics(cars[0]['vin'], interval="isoweek")
+        print(iso_weekly_stats)
+        
         # Monthly stats is returned by default
         monthly_stats = await client.get_driving_statistics(cars[0]['vin'])
         print(monthly_stats)
 
-        # Use the summary to get year to date stats.
-        yearly_stats = await client.get_driving_statistics(car['vin'], interval="month", from_date=(arrow.now().floor("year").format("YYYY-MM-DD")))
+        #Get year to date stats.
+        yearly_stats = await client.get_driving_statistics(car['vin'], interval="year")
         print(yearly_stats)
 
 loop = asyncio.get_event_loop()
