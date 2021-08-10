@@ -20,6 +20,8 @@ from .const import (
     SUPPORTED_REGIONS,
     TOKEN_VALID_URL,
     TOKEN_DURATION,
+    HTTP_BAD_REQUEST,
+    RETURNED_BAD_REQUEST,
 )
 from .exceptions import (
     ToyotaLoginError,
@@ -171,6 +173,14 @@ class Controller:
 
             if resp.status_code == HTTP_OK:
                 result = resp.json()
+            elif resp.status_code == HTTP_BAD_REQUEST:
+                # Reason for getting HTTP: 400
+                # - Invalid interval
+                # - If from_date is the same as to_date.
+                # - Probably something else.
+                # We also log the error if the error is something else.
+                result = RETURNED_BAD_REQUEST
+                _LOGGER.error(resp.text)
             elif resp.status_code == HTTP_NO_CONTENT:
                 # This prevents raising or logging an error
                 # if the user has not setup Connected Services
