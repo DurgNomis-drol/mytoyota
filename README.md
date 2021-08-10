@@ -73,7 +73,7 @@ loop.close()
 
 ## Known issues
 
-- Statistical endpoint will return "null" if no trip have been performed in the requested timeframe. This problem will often happen at the start of each week, month or year. Also daily stats will of course also be unavailable if no trip have been performed.
+- Statistical endpoint will return `None` if no trip have been performed in the requested timeframe. This problem will often happen at the start of each week, month or year. Also daily stats will of course also be unavailable if no trip have been performed.
 - Toyota's API can be a little flaky sometimes. So be aware of that when using this in your project.
 
 ## Docs
