@@ -39,7 +39,7 @@ CHARGE_INFO = "ChargeInfo"
 HVAC = "RemoteHvacInfo"
 
 # HTTP
-TIMEOUT = 10
+TIMEOUT = 15
 
 HTTP_OK = 200
 HTTP_NO_CONTENT = 204

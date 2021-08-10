@@ -122,9 +122,9 @@ class MyT:
         json_string = json.dumps(vehicle, indent=3)
         return json_string
 
-    async def get_driving_statistics(
+    async def get_driving_statistics(  # pylint: disable=too-many-branches
         self, vin: str, interval: str = "month", from_date=None
-    ) -> dict:
+    ) -> list:
         """
         params: vin: Vin number of your car.
                 interval: can be "day", "week", "isoweek", "month" or "year". Default "month"
@@ -145,9 +145,12 @@ class MyT:
         """
 
         if interval not in INTERVAL_SUPPORTED:
-            return {"error_mesg": "Invalid interval provided!", "error_code": 1}
+            return [{"error_mesg": "Invalid interval provided!", "error_code": 1}]
 
         stats_interval = interval
+
+        if from_date is not None and arrow.get(from_date) > arrow.now():
+            return [{"error_mesg": "This is not a timemachine!", "error_code": 5}]
 
         if from_date is None:
             if interval == "day":
@@ -169,32 +172,53 @@ class MyT:
                 stats_interval = "month"
                 from_date = arrow.now().floor("year").format("YYYY-MM-DD")
 
+        if interval == "isoweek":
+            stats_interval = "day"
+            time_between = arrow.now() - arrow.get(from_date)
+
+            if time_between.days > 7:
+                return [
+                    {
+                        "error_mesg": "Invalid date for isoweek provided! - from_date must not "
+                        "be older then 7 days from now.",
+                        "error_code": 3,
+                    }
+                ]
+
+            arrow.get(from_date).floor("week").format("YYYY-MM-DD")
+
+        if interval == "year":
+            stats_interval = "month"
+
+            if arrow.get(from_date) < arrow.now().floor("year"):
+                return [
+                    {
+                        "error_mesg": "Invalid date provided. from_date can"
+                        " only be current year. (" + interval + ")",
+                        "error_code": 4,
+                    }
+                ]
+
+            from_date = arrow.get(from_date).floor("year").format("YYYY-MM-DD")
+
         raw_statistics = await self.api.get_driving_statistics_endpoint(
             vin, from_date, stats_interval
         )
 
         if raw_statistics == RETURNED_BAD_REQUEST or raw_statistics is None:
-            return {
-                "error_mesg": "No data available for this period. (" + interval + ")",
-                "error_code": 2,
-            }
-
-        if interval == "day":
-
-            today = arrow.now().strftime("%j")
-
-            if raw_statistics["histogram"][0]["bucket"]["dayOfYear"] != today:
-                return {
+            return [
+                {
                     "error_mesg": "No data available for this period. ("
                     + interval
                     + ")",
                     "error_code": 2,
                 }
+            ]
 
         # Format data so we get a uniform output.
         statistics = Statistics(raw_statistics, interval)
 
-        return statistics.as_dict()
+        return statistics.get_data()
 
     async def get_driving_statistics_json(
         self, vin: str, interval: str = "month", from_date=None

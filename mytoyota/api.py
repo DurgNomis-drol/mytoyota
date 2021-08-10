@@ -180,7 +180,7 @@ class Controller:
                 # - Probably something else.
                 # We also log the error if the error is something else.
                 result = RETURNED_BAD_REQUEST
-                _LOGGER.debug(resp.text)
+                _LOGGER.error(resp.text)
             elif resp.status_code == HTTP_NO_CONTENT:
                 # This prevents raising or logging an error
                 # if the user has not setup Connected Services
