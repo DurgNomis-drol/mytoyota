@@ -103,7 +103,7 @@ class Vehicle:  # pylint: disable=too-many-instance-attributes
             return False
         _LOGGER.error(
             "Your vehicle does not support Connected services (%s). You can find out if your "
-            "vehicle is compatible by checking the manual the comes with your car.",
+            "vehicle is compatible by checking the manual that comes with your car.",
             self.vin,
         )
         return False

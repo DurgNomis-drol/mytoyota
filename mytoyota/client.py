@@ -8,7 +8,6 @@ import arrow
 from .api import Controller
 from .const import (
     SUPPORTED_REGIONS,
-    RETURNED_BAD_REQUEST,
     INTERVAL_SUPPORTED,
 )
 from .exceptions import (
@@ -140,7 +139,7 @@ class MyT:
                 Will return a error message if no ride have been performed in the timeframe
                 or no data is available yet.
 
-                On the first of each week, month or year. This will also return a error message.
+                On the first of each week, month or year. This will return an error message.
                 This is due to a Toyota API limitation.
         """
 
@@ -201,11 +200,17 @@ class MyT:
 
             from_date = arrow.get(from_date).floor("year").format("YYYY-MM-DD")
 
-        raw_statistics = await self.api.get_driving_statistics_endpoint(
-            vin, from_date, stats_interval
-        )
+        today = arrow.now().format("YYYY-MM-DD")
 
-        if raw_statistics == RETURNED_BAD_REQUEST or raw_statistics is None:
+        if from_date is today:
+            raw_statistics = None
+
+        else:
+            raw_statistics = await self.api.get_driving_statistics_endpoint(
+                vin, from_date, stats_interval
+            )
+
+        if raw_statistics is None:
             return [
                 {
                     "error_mesg": "No data available for this period. ("
@@ -218,7 +223,7 @@ class MyT:
         # Format data so we get a uniform output.
         statistics = Statistics(raw_statistics, interval)
 
-        return statistics.get_data()
+        return statistics.as_list()
 
     async def get_driving_statistics_json(
         self, vin: str, interval: str = "month", from_date=None

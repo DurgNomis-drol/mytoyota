@@ -4,7 +4,6 @@ from typing import Optional, Union
 from datetime import datetime
 import httpx
 
-
 from .const import (
     BASE_URL,
     BASE_URL_CARS,
@@ -20,11 +19,11 @@ from .const import (
     SUPPORTED_REGIONS,
     TOKEN_VALID_URL,
     TOKEN_DURATION,
-    HTTP_BAD_REQUEST,
-    RETURNED_BAD_REQUEST,
+    HTTP_INTERNAL,
 )
 from .exceptions import (
     ToyotaLoginError,
+    ToyotaInternalServerError,
 )
 from .utils import is_valid_token
 
@@ -173,18 +172,18 @@ class Controller:
 
             if resp.status_code == HTTP_OK:
                 result = resp.json()
-            elif resp.status_code == HTTP_BAD_REQUEST:
-                # Reason for getting HTTP: 400
-                # - Invalid interval
-                # - If from_date is the same as to_date.
-                # - Probably something else.
-                # We also log the error if the error is something else.
-                result = RETURNED_BAD_REQUEST
-                _LOGGER.error(resp.text)
             elif resp.status_code == HTTP_NO_CONTENT:
                 # This prevents raising or logging an error
-                # if the user has not setup Connected Services
+                # if the user have not setup Connected Services
                 result = None
+            elif resp.status_code == HTTP_INTERNAL:
+                response = resp.json()
+                raise ToyotaInternalServerError(
+                    "Internal server error occurred! Code: "
+                    + response["code"]
+                    + " - "
+                    + response["message"],
+                )
             else:
                 _LOGGER.error("HTTP: %i - %s", resp.status_code, resp.text)
                 result = None
@@ -223,8 +222,16 @@ class Controller:
                 result = resp.json()
             elif resp.status_code == HTTP_NO_CONTENT:
                 # This prevents raising or logging an error
-                # if the user has not setup Connected Services
+                # if the user have not setup Connected Services
                 result = None
+            elif resp.status_code == HTTP_INTERNAL:
+                response = resp.json()
+                raise ToyotaInternalServerError(
+                    "Internal server error occurred! Code: "
+                    + response["code"]
+                    + " - "
+                    + response["message"],
+                )
             else:
                 _LOGGER.error("HTTP: %i - %s", resp.status_code, resp.text)
                 result = None

@@ -28,7 +28,7 @@ class Statistics:
         if interval == "year":
             self.formated.append(self.add_year_to_bucket_year(raw_statistics))
 
-    def get_data(self) -> list:
+    def as_list(self) -> list:
         """Return formated data."""
         return self.formated
 

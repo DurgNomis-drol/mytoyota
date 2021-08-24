@@ -19,3 +19,7 @@ class ToyotaInvalidUsername(Exception):
 
 class ToyotaRegionNotSupported(Exception):
     """Raise if region is not supported"""
+
+
+class ToyotaInternalServerError(Exception):
+    """Raise if an internal server error occurred from toyota."""
