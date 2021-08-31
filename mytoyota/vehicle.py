@@ -30,11 +30,11 @@ class Odometer:
 
     def __init__(self, odometer: list) -> None:
 
-        _LOGGER.debug("Raw odometer data: " + str(odometer))
+        _LOGGER.debug("Raw odometer data: %s", str(odometer))
 
         odometer_dict = self._format_odometer(odometer)
 
-        _LOGGER.debug("Formatted odometer data: " + str(odometer_dict))
+        _LOGGER.debug("Formatted odometer data: %s", str(odometer_dict))
 
         if "mileage" in odometer_dict:
             self.mileage = odometer_dict["mileage"]
@@ -72,7 +72,7 @@ class ParkingLocation:
 
     def __init__(self, parking: dict) -> None:
 
-        _LOGGER.debug("Raw parking location data: " + str(parking))
+        _LOGGER.debug("Raw parking location data: %s", str(parking))
 
         self.latitude = float(parking["event"]["lat"])
         self.longitude = float(parking["event"]["lon"])
@@ -104,12 +104,12 @@ class Vehicle:  # pylint: disable=too-many-instance-attributes
     hvac = None
 
     def __init__(  # pylint: disable=too-many-arguments
-            self,
-            vehicle_info: dict,
-            connected_services: Optional[dict],
-            odometer: Optional[list],
-            parking: Optional[dict],
-            status: Optional[dict],
+        self,
+        vehicle_info: dict,
+        connected_services: Optional[dict],
+        odometer: Optional[list],
+        parking: Optional[dict],
+        status: Optional[dict],
     ) -> None:
 
         # If no vehicle information is provided, abort.
@@ -117,18 +117,16 @@ class Vehicle:  # pylint: disable=too-many-instance-attributes
             _LOGGER.error("No vehicle information provided!")
             return
 
-        _LOGGER.debug("Raw connected services data: " + str(connected_services))
+        _LOGGER.debug("Raw connected services data: %s", str(connected_services))
 
         if connected_services is not None:
-            self.is_connected = self._has_connected_services_enabled(
-                connected_services
-            )
+            self.is_connected = self._has_connected_services_enabled(connected_services)
 
-        _LOGGER.debug("Raw vehicle info: " + str(vehicle_info))
+        _LOGGER.debug("Raw vehicle info: %s", str(vehicle_info))
 
         # Vehicle information
         if "id" in vehicle_info:
-            self.id = vehicle_info["id"]
+            self.id = vehicle_info["id"]  # pylint: disable=invalid-name
         if "vin" in vehicle_info:
             self.vin = vehicle_info["vin"]
         if "alias" in vehicle_info:
@@ -141,11 +139,13 @@ class Vehicle:  # pylint: disable=too-many-instance-attributes
         self.odometer = Odometer(odometer) if self.is_connected and odometer else None
 
         # Extract parking information.
-        self.parking = ParkingLocation(parking) if self.is_connected and parking else None
+        self.parking = (
+            ParkingLocation(parking) if self.is_connected and parking else None
+        )
 
         # Extracts information from status.
         if self.is_connected and status:
-            _LOGGER.debug("Raw status data: " + str(status))
+            _LOGGER.debug("Raw status data: %s", str(status))
             self._extract_status(status)
 
     def __str__(self) -> str:
@@ -183,8 +183,8 @@ class Vehicle:  # pylint: disable=too-many-instance-attributes
         """Checks if the user has enabled connected services."""
 
         if (
-                "connectedService" in json_dict
-                and "status" in json_dict["connectedService"]
+            "connectedService" in json_dict
+            and "status" in json_dict["connectedService"]
         ):
             if json_dict["connectedService"]["status"] == "ACTIVE":
                 return True

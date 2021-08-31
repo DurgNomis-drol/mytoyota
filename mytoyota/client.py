@@ -6,7 +6,16 @@ import logging
 import arrow
 
 from .api import Controller
-from .const import INTERVAL_SUPPORTED, SUPPORTED_REGIONS, DATE_FORMAT, YEAR, MONTH, ISOWEEK, DAY, WEEK
+from .const import (
+    DATE_FORMAT,
+    DAY,
+    INTERVAL_SUPPORTED,
+    ISOWEEK,
+    MONTH,
+    SUPPORTED_REGIONS,
+    WEEK,
+    YEAR,
+)
 from .exceptions import (
     ToyotaInvalidUsername,
     ToyotaLocaleNotValid,
@@ -94,7 +103,8 @@ class MyT:
         """Return information for given vehicle"""
 
         vin = vehicle["vin"]
-        info = await asyncio.gather(*[
+        info = await asyncio.gather(
+            *[
                 self.api.get_connected_services_endpoint(vin),
                 self.api.get_odometer_endpoint(vin),
                 self.api.get_parking_endpoint(vin),
@@ -154,9 +164,7 @@ class MyT:
                 from_date = arrow.now().shift(days=-1).format(DATE_FORMAT)
 
             if interval is WEEK:
-                from_date = (
-                    arrow.now().span(WEEK, week_start=7)[0].format(DATE_FORMAT)
-                )
+                from_date = arrow.now().span(WEEK, week_start=7)[0].format(DATE_FORMAT)
 
             if interval is ISOWEEK:
                 stats_interval = DAY

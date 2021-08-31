@@ -1,17 +1,30 @@
 """Statistics class"""
 import logging
-from typing import Union
 
 import arrow
 from arrow import Arrow
 
-from mytoyota.const import DAY, WEEK, MONTH, ISOWEEK, YEAR, BUCKET, DAYOFYEAR, DATE, DATA, SUMMARY, \
-    HISTOGRAM, DATE_FORMAT, DATE_FORMAT_YEAR, PERIODE_START
+from mytoyota.const import (
+    BUCKET,
+    DATA,
+    DATE,
+    DATE_FORMAT,
+    DATE_FORMAT_YEAR,
+    DAY,
+    DAYOFYEAR,
+    HISTOGRAM,
+    ISOWEEK,
+    MONTH,
+    PERIODE_START,
+    SUMMARY,
+    WEEK,
+    YEAR,
+)
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 
-class Statistics:
+class Statistics:  # pylint: disable=too-few-public-methods)
     """Class to hold statistical information."""
 
     def __init__(self, raw_statistics: dict, interval: str) -> None:
@@ -38,9 +51,9 @@ class Statistics:
 
                 day[BUCKET].update(
                     {
-                        DATE: self._now
-                            .strptime("{} {}".format(dayofyear, year), "%j %Y")
-                            .format(DATE_FORMAT),
+                        DATE: self._now.strptime(
+                            "{} {}".format(dayofyear, year), "%j %Y"
+                        ).format(DATE_FORMAT),
                     }
                 )
             return data[HISTOGRAM]
@@ -61,9 +74,10 @@ class Statistics:
                 month[BUCKET].update(
                     {
                         PERIODE_START: self._now.replace(
-                            year=month[BUCKET][YEAR],
-                            month=month[BUCKET][MONTH]
-                        ).floor(MONTH).format(DATE_FORMAT),
+                            year=month[BUCKET][YEAR], month=month[BUCKET][MONTH]
+                        )
+                        .floor(MONTH)
+                        .format(DATE_FORMAT),
                     }
                 )
             return data[HISTOGRAM]

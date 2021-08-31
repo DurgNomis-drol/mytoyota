@@ -13,6 +13,7 @@ from .const import (
     HTTP_INTERNAL,
     HTTP_NO_CONTENT,
     HTTP_OK,
+    HTTP_SERVICE_UNAVAILABLE,
     PASSWORD,
     SUPPORTED_REGIONS,
     TIMEOUT,
@@ -20,9 +21,9 @@ from .const import (
     TOKEN_DURATION,
     TOKEN_VALID_URL,
     USERNAME,
-    UUID, HTTP_SERVICE_UNAVAILABLE,
+    UUID,
 )
-from .exceptions import ToyotaInternalServerError, ToyotaLoginError
+from .exceptions import ToyotaApiError, ToyotaInternalError, ToyotaLoginError
 from .utils import is_valid_token
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -122,7 +123,7 @@ class Controller:
                 result = response.json()
 
                 if TOKEN not in result or UUID not in result[CUSTOMERPROFILE]:
-                    _LOGGER.error("[!] Could not get token or UUID.")
+                    raise ToyotaLoginError("Could not get token or UUID from result")
 
                 token = result.get(TOKEN)
                 uuid = result[CUSTOMERPROFILE][UUID]
@@ -177,17 +178,23 @@ class Controller:
                 # This prevents raising or logging an error
                 # if the user have not setup Connected Services
                 result = None
+                _LOGGER.debug("Connected services is disabled")
             elif resp.status_code is HTTP_INTERNAL:
                 response = resp.json()
-                raise ToyotaInternalServerError(
+                raise ToyotaInternalError(
                     "Internal server error occurred! Code: "
                     + response["code"]
                     + " - "
                     + response["message"],
                 )
+            elif resp.status_code is HTTP_SERVICE_UNAVAILABLE:
+                raise ToyotaApiError(
+                    "Toyota Connected Services are temporarily unavailable"
+                )
             else:
-                _LOGGER.debug("HTTP: %i - %s", resp.status_code, resp.text)
-                result = None
+                raise ToyotaInternalError(
+                    "HTTP: " + resp.status_code + " - " + resp.text
+                )
 
         return result
 
@@ -225,17 +232,23 @@ class Controller:
                 # This prevents raising or logging an error
                 # if the user have not setup Connected Services
                 result = None
+                _LOGGER.debug("Connected services is disabled")
             elif resp.status_code == HTTP_INTERNAL:
                 response = resp.json()
-                raise ToyotaInternalServerError(
+                raise ToyotaInternalError(
                     "Internal server error occurred! Code: "
                     + response["code"]
                     + " - "
                     + response["message"],
                 )
+            elif resp.status_code is HTTP_SERVICE_UNAVAILABLE:
+                raise ToyotaApiError(
+                    "Toyota Connected Services are temporarily unavailable"
+                )
             else:
-                _LOGGER.error("HTTP: %i - %s", resp.status_code, resp.text)
-                result = None
+                raise ToyotaInternalError(
+                    "HTTP: " + resp.status_code + " - " + resp.text
+                )
 
             return result
 
