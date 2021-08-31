@@ -1,7 +1,8 @@
 """Toyota Connected Services Controller"""
+from datetime import datetime
 import logging
 from typing import Optional, Union
-from datetime import datetime
+
 import httpx
 
 from .const import (
@@ -9,22 +10,20 @@ from .const import (
     BASE_URL_CARS,
     CUSTOMERPROFILE,
     ENDPOINT_AUTH,
+    HTTP_INTERNAL,
+    HTTP_NO_CONTENT,
+    HTTP_OK,
+    HTTP_SERVICE_UNAVAILABLE,
     PASSWORD,
+    SUPPORTED_REGIONS,
     TIMEOUT,
     TOKEN,
+    TOKEN_DURATION,
+    TOKEN_VALID_URL,
     USERNAME,
     UUID,
-    HTTP_OK,
-    HTTP_NO_CONTENT,
-    SUPPORTED_REGIONS,
-    TOKEN_VALID_URL,
-    TOKEN_DURATION,
-    HTTP_INTERNAL,
 )
-from .exceptions import (
-    ToyotaLoginError,
-    ToyotaInternalServerError,
-)
+from .exceptions import ToyotaApiError, ToyotaInternalError, ToyotaLoginError
 from .utils import is_valid_token
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -77,7 +76,7 @@ class Controller:
         return self.uuid
 
     @staticmethod
-    def _has_expired(creation_dt, duration) -> bool:
+    def _has_expired(creation_dt: datetime, duration: int) -> bool:
         """Checks if an specified token/object has expired"""
         return datetime.now().timestamp() - creation_dt.timestamp() > duration
 
@@ -124,7 +123,7 @@ class Controller:
                 result = response.json()
 
                 if TOKEN not in result or UUID not in result[CUSTOMERPROFILE]:
-                    _LOGGER.error("[!] Could not get token or UUID.")
+                    raise ToyotaLoginError("Could not get token or UUID from result")
 
                 token = result.get(TOKEN)
                 uuid = result[CUSTOMERPROFILE][UUID]
@@ -141,7 +140,10 @@ class Controller:
         return self.token
 
     async def get(
-        self, endpoint: str, headers=None, params=None
+        self,
+        endpoint: str,
+        headers: Optional[dict] = None,
+        params: Optional[dict] = None,
     ) -> Union[dict, list, None]:
         """Make the request."""
 
@@ -172,26 +174,32 @@ class Controller:
 
             if resp.status_code == HTTP_OK:
                 result = resp.json()
-            elif resp.status_code == HTTP_NO_CONTENT:
+            elif resp.status_code is HTTP_NO_CONTENT:
                 # This prevents raising or logging an error
                 # if the user have not setup Connected Services
                 result = None
-            elif resp.status_code == HTTP_INTERNAL:
+                _LOGGER.debug("Connected services is disabled")
+            elif resp.status_code is HTTP_INTERNAL:
                 response = resp.json()
-                raise ToyotaInternalServerError(
+                raise ToyotaInternalError(
                     "Internal server error occurred! Code: "
                     + response["code"]
                     + " - "
                     + response["message"],
                 )
+            elif resp.status_code is HTTP_SERVICE_UNAVAILABLE:
+                raise ToyotaApiError(
+                    "Toyota Connected Services are temporarily unavailable"
+                )
             else:
-                _LOGGER.error("HTTP: %i - %s", resp.status_code, resp.text)
-                result = None
+                raise ToyotaInternalError(
+                    "HTTP: " + resp.status_code + " - " + resp.text
+                )
 
         return result
 
     async def put(
-        self, endpoint: str, body: dict, headers=None
+        self, endpoint: str, body: dict, headers: Optional[dict] = None
     ) -> Union[dict, list, None]:
         """Make the request."""
 
@@ -224,21 +232,29 @@ class Controller:
                 # This prevents raising or logging an error
                 # if the user have not setup Connected Services
                 result = None
+                _LOGGER.debug("Connected services is disabled")
             elif resp.status_code == HTTP_INTERNAL:
                 response = resp.json()
-                raise ToyotaInternalServerError(
+                raise ToyotaInternalError(
                     "Internal server error occurred! Code: "
                     + response["code"]
                     + " - "
                     + response["message"],
                 )
+            elif resp.status_code is HTTP_SERVICE_UNAVAILABLE:
+                raise ToyotaApiError(
+                    "Toyota Connected Services are temporarily unavailable"
+                )
             else:
-                _LOGGER.error("HTTP: %i - %s", resp.status_code, resp.text)
-                result = None
+                raise ToyotaInternalError(
+                    "HTTP: " + resp.status_code + " - " + resp.text
+                )
 
             return result
 
-    async def set_vehicle_alias_endpoint(self, new_alias: str, vehicle_id: int) -> dict:
+    async def set_vehicle_alias_endpoint(
+        self, new_alias: str, vehicle_id: int
+    ) -> Optional[dict]:
         """Set vehicle alias."""
 
         return await self.put(
@@ -246,7 +262,7 @@ class Controller:
             {"id": vehicle_id, "alias": new_alias},
         )
 
-    async def get_vehicles_endpoint(self) -> list:
+    async def get_vehicles_endpoint(self) -> Optional[list]:
         """Retrieves list of cars you have registered with MyT"""
 
         arguments = "?services=uio&legacy=true"
@@ -255,7 +271,7 @@ class Controller:
             f"{self.get_base_url_cars()}/vehicle/user/{self.uuid}/vehicles{arguments}"
         )
 
-    async def get_connected_services_endpoint(self, vin: str) -> dict:
+    async def get_connected_services_endpoint(self, vin: str) -> Optional[dict]:
         """Get information about connected services for the given car."""
 
         arguments = "?legacy=true&services=fud,connected"
@@ -264,19 +280,19 @@ class Controller:
             f"{self.get_base_url_cars()}/vehicle/user/{self.uuid}/vehicle/{vin}{arguments}"
         )
 
-    async def get_odometer_endpoint(self, vin: str) -> list:
+    async def get_odometer_endpoint(self, vin: str) -> Optional[list]:
         """Get information from odometer."""
 
         return await self.get(f"{self.get_base_url()}/vehicle/{vin}/addtionalInfo")
 
-    async def get_parking_endpoint(self, vin: str) -> dict:
+    async def get_parking_endpoint(self, vin: str) -> Optional[dict]:
         """Get where you have parked your car."""
 
         return await self.get(
             f"{self.get_base_url()}/users/{self.uuid}/vehicle/location", {"VIN": vin}
         )
 
-    async def get_vehicle_status_endpoint(self, vin: str) -> dict:
+    async def get_vehicle_status_endpoint(self, vin: str) -> Optional[dict]:
         """Get information about the vehicle."""
 
         return await self.get(
@@ -284,8 +300,8 @@ class Controller:
         )
 
     async def get_driving_statistics_endpoint(
-        self, vin: str, from_date: str, interval: str = None
-    ) -> dict:
+        self, vin: str, from_date: str, interval: Optional[str] = None
+    ) -> Optional[dict]:
         """Get driving statistic"""
 
         params = {"from": from_date, "calendarInterval": interval}

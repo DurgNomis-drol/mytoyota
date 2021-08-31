@@ -21,5 +21,9 @@ class ToyotaRegionNotSupported(Exception):
     """Raise if region is not supported"""
 
 
-class ToyotaInternalServerError(Exception):
-    """Raise if an internal server error occurred from toyota."""
+class ToyotaApiError(Exception):
+    """Raise if a API error occurres."""
+
+
+class ToyotaInternalError(Exception):
+    """Raise if an internal server error occurres from Toyota."""

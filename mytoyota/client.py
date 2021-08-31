@@ -7,12 +7,18 @@ import arrow
 
 from .api import Controller
 from .const import (
-    SUPPORTED_REGIONS,
+    DATE_FORMAT,
+    DAY,
     INTERVAL_SUPPORTED,
+    ISOWEEK,
+    MONTH,
+    SUPPORTED_REGIONS,
+    WEEK,
+    YEAR,
 )
 from .exceptions import (
-    ToyotaLocaleNotValid,
     ToyotaInvalidUsername,
+    ToyotaLocaleNotValid,
     ToyotaRegionNotSupported,
 )
 from .statistics import Statistics
@@ -55,11 +61,11 @@ class MyT:
         )
 
     @staticmethod
-    def get_supported_regions():
+    def get_supported_regions() -> list:
         """Return supported regions"""
         regions = []
 
-        for key, value in SUPPORTED_REGIONS.items():  # pylint: disable=unused-variable
+        for key, _ in SUPPORTED_REGIONS.items():  # pylint: disable=unused-variable
             regions.append(key)
 
         return regions
@@ -93,15 +99,17 @@ class MyT:
         json_string = json.dumps(vehicles, indent=3)
         return json_string
 
-    async def get_vehicle_status(self, vehicle: dict) -> dict:
+    async def get_vehicle_status(self, vehicle: dict) -> Vehicle:
         """Return information for given vehicle"""
 
         vin = vehicle["vin"]
         info = await asyncio.gather(
-            self.api.get_connected_services_endpoint(vin),
-            self.api.get_odometer_endpoint(vin),
-            self.api.get_parking_endpoint(vin),
-            self.api.get_vehicle_status_endpoint(vin),
+            *[
+                self.api.get_connected_services_endpoint(vin),
+                self.api.get_odometer_endpoint(vin),
+                self.api.get_parking_endpoint(vin),
+                self.api.get_vehicle_status_endpoint(vin),
+            ]
         )
 
         car = Vehicle(
@@ -112,17 +120,17 @@ class MyT:
             status=info[3],
         )
 
-        return car.as_dict()
+        return car
 
     async def get_vehicle_status_json(self, vehicle: dict) -> str:
         """Return vehicle information as json"""
         vehicle = await self.get_vehicle_status(vehicle)
 
-        json_string = json.dumps(vehicle, indent=3)
+        json_string = json.dumps(vehicle.as_dict(), indent=3)
         return json_string
 
     async def get_driving_statistics(  # pylint: disable=too-many-branches
-        self, vin: str, interval: str = "month", from_date=None
+        self, vin: str, interval: str = MONTH, from_date: str = None
     ) -> list:
         """
         params: vin: Vin number of your car.
@@ -152,27 +160,25 @@ class MyT:
             return [{"error_mesg": "This is not a timemachine!", "error_code": 5}]
 
         if from_date is None:
-            if interval == "day":
-                from_date = arrow.now().shift(days=-1).format("YYYY-MM-DD")
+            if interval is DAY:
+                from_date = arrow.now().shift(days=-1).format(DATE_FORMAT)
 
-            if interval == "week":
-                from_date = (
-                    arrow.now().span("week", week_start=7)[0].format("YYYY-MM-DD")
-                )
+            if interval is WEEK:
+                from_date = arrow.now().span(WEEK, week_start=7)[0].format(DATE_FORMAT)
 
-            if interval == "isoweek":
-                stats_interval = "day"
-                from_date = arrow.now().floor("week").format("YYYY-MM-DD")
+            if interval is ISOWEEK:
+                stats_interval = DAY
+                from_date = arrow.now().floor(WEEK).format(DATE_FORMAT)
 
-            if interval == "month":
-                from_date = arrow.now().floor("month").format("YYYY-MM-DD")
+            if interval is MONTH:
+                from_date = arrow.now().floor(MONTH).format(DATE_FORMAT)
 
-            if interval == "year":
-                stats_interval = "month"
-                from_date = arrow.now().floor("year").format("YYYY-MM-DD")
+            if interval is YEAR:
+                stats_interval = MONTH
+                from_date = arrow.now().floor(YEAR).format(DATE_FORMAT)
 
-        if interval == "isoweek":
-            stats_interval = "day"
+        if interval is ISOWEEK:
+            stats_interval = DAY
             time_between = arrow.now() - arrow.get(from_date)
 
             if time_between.days > 7:
@@ -184,12 +190,12 @@ class MyT:
                     }
                 ]
 
-            arrow.get(from_date).floor("week").format("YYYY-MM-DD")
+            arrow.get(from_date).floor(WEEK).format(DATE_FORMAT)
 
-        if interval == "year":
-            stats_interval = "month"
+        if interval is YEAR:
+            stats_interval = MONTH
 
-            if arrow.get(from_date) < arrow.now().floor("year"):
+            if arrow.get(from_date) < arrow.now().floor(YEAR):
                 return [
                     {
                         "error_mesg": "Invalid date provided. from_date can"
@@ -198,9 +204,9 @@ class MyT:
                     }
                 ]
 
-            from_date = arrow.get(from_date).floor("year").format("YYYY-MM-DD")
+            from_date = arrow.get(from_date).floor(YEAR).format(DATE_FORMAT)
 
-        today = arrow.now().format("YYYY-MM-DD")
+        today = arrow.now().format(DATE_FORMAT)
 
         if from_date is today:
             raw_statistics = None
@@ -226,7 +232,7 @@ class MyT:
         return statistics.as_list()
 
     async def get_driving_statistics_json(
-        self, vin: str, interval: str = "month", from_date=None
+        self, vin: str, interval: str = MONTH, from_date: str = None
     ) -> str:
         """Return driving statistics in json"""
         return json.dumps(

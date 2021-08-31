@@ -5,12 +5,107 @@ from typing import Optional
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 
+class VehicleStatistics:
+    """Vehicle statistics representation"""
+
+    daily: list = None
+    weekly: list = None
+    monthly: list = None
+    yearly: list = None
+
+    def __str__(self) -> str:
+        return str(self.as_dict())
+
+    def as_dict(self) -> dict:
+        """Return vehicle statistics as dict."""
+        return vars(self)
+
+
+class Odometer:
+    """Odometer representation"""
+
+    mileage: int = None
+    unit: str = None
+    fuel: int = None
+
+    def __init__(self, odometer: list) -> None:
+
+        _LOGGER.debug("Raw odometer data: %s", str(odometer))
+
+        odometer_dict = self._format_odometer(odometer)
+
+        _LOGGER.debug("Formatted odometer data: %s", str(odometer_dict))
+
+        if "mileage" in odometer_dict:
+            self.mileage = odometer_dict["mileage"]
+        if "mileage_unit" in odometer_dict:
+            self.unit = odometer_dict["mileage_unit"]
+        if "Fuel" in odometer_dict:
+            self.fuel = odometer_dict["Fuel"]
+
+    def __str__(self) -> str:
+        return str(self.as_dict())
+
+    def as_dict(self) -> dict:
+        """Return odometer as dict."""
+        return vars(self)
+
+    @staticmethod
+    def _format_odometer(raw: list) -> dict:
+        """Formats odometer information from a list to a dict."""
+        instruments: dict = {}
+        for instrument in raw:
+            instruments[instrument["type"]] = instrument["value"]
+            if "unit" in instrument:
+                instruments[instrument["type"] + "_unit"] = instrument["unit"]
+
+        return instruments
+
+
+class ParkingLocation:
+    """ParkingLocation representation"""
+
+    latitude: float = None
+    longitude: float = None
+    timestamp: int = None
+    trip_status: str = None
+
+    def __init__(self, parking: dict) -> None:
+
+        _LOGGER.debug("Raw parking location data: %s", str(parking))
+
+        self.latitude = float(parking["event"]["lat"])
+        self.longitude = float(parking["event"]["lon"])
+        self.timestamp = int(parking["event"]["timestamp"])
+        self.trip_status = parking["tripStatus"]
+
+    def __str__(self) -> str:
+        return str(self.as_dict())
+
+    def as_dict(self) -> dict:
+        """Return parking location as dict."""
+        return vars(self)
+
+
 class Vehicle:  # pylint: disable=too-many-instance-attributes
-    """Class to hold car information for each car"""
+    """Vehicle representation"""
+
+    id: int = 0
+    vin: str = None
+    alias: str = None
+    is_connected: bool = False
+    details: Optional[dict] = None
+    odometer: Optional[Odometer] = None
+    parking: Optional[ParkingLocation] = None
+    statistics: VehicleStatistics = VehicleStatistics()
+
+    # Not known yet.
+    battery = None
+    hvac = None
 
     def __init__(  # pylint: disable=too-many-arguments
         self,
-        vehicle_info: Optional[dict],
+        vehicle_info: dict,
         connected_services: Optional[dict],
         odometer: Optional[list],
         parking: Optional[dict],
@@ -22,62 +117,60 @@ class Vehicle:  # pylint: disable=too-many-instance-attributes
             _LOGGER.error("No vehicle information provided!")
             return
 
-        self.odometer = None
-        self.parking = None
-        self.battery = None
-        self.hvac = None
-
-        # Holds status for each service.
-        self.services = {}
-
-        # Vehicle information
-        self.alias = vehicle_info["alias"] if "alias" in vehicle_info else None
-        self.vin = vehicle_info["vin"] if "vin" in vehicle_info else None
-
-        # Format vehicle information.
-        self.details = self.format_details(vehicle_info)
+        _LOGGER.debug("Raw connected services data: %s", str(connected_services))
 
         if connected_services is not None:
-            self.services["connectedServices"] = self.has_connected_services_enabled(
-                connected_services
-            )
-        else:
-            self.services["connectedServices"] = False
+            self.is_connected = self._has_connected_services_enabled(connected_services)
 
-        # Checks if connected services has been enabled.
-        if self.services["connectedServices"]:
+        _LOGGER.debug("Raw vehicle info: %s", str(vehicle_info))
 
-            # Extract odometer information.
-            if odometer:
-                self.odometer = self.format_odometer(odometer)
+        # Vehicle information
+        if "id" in vehicle_info:
+            self.id = vehicle_info["id"]  # pylint: disable=invalid-name
+        if "vin" in vehicle_info:
+            self.vin = vehicle_info["vin"]
+        if "alias" in vehicle_info:
+            self.alias = vehicle_info["alias"]
 
-            # Extract parking information.
-            if parking:
-                self.parking = parking
+        # Format vehicle information.
+        self.details = self._format_details(vehicle_info)
 
-            # Extracts information from status.
-            if status:
-                self.extract_status(status)
+        # Extract odometer information.
+        self.odometer = Odometer(odometer) if self.is_connected and odometer else None
+
+        # Extract parking information.
+        self.parking = (
+            ParkingLocation(parking) if self.is_connected and parking else None
+        )
+
+        # Extracts information from status.
+        if self.is_connected and status:
+            _LOGGER.debug("Raw status data: %s", str(status))
+            self._extract_status(status)
 
     def __str__(self) -> str:
         return str(self.as_dict())
 
     def as_dict(self) -> dict:
-        """Return car information in dict"""
+        """Return vehicle as dict."""
         return {
+            "id": self.id,
             "alias": self.alias,
             "vin": self.vin,
             "details": self.details,
             "status": {
                 "battery": self.battery,
                 "hvac": self.hvac,
-                "odometer": self.odometer,
-                "parking": self.parking,
+                "odometer": self.odometer.as_dict(),
+                "parking": self.parking.as_dict(),
             },
-            "servicesEnabled": self.services,
+            "servicesEnabled": {
+                "connectedServices": self.is_connected,
+            },
+            "statistics": self.statistics.as_dict(),
         }
 
-    def extract_status(self, status) -> None:
+    def _extract_status(self, status: dict) -> None:
         """Extract information like battery and hvac from status."""
         if "VehicleInfo" in status:
             if "RemoteHvacInfo" in status["VehicleInfo"]:
@@ -86,7 +179,7 @@ class Vehicle:  # pylint: disable=too-many-instance-attributes
             if "ChargeInfo" in status["VehicleInfo"]:
                 self.battery = status["VehicleInfo"]["ChargeInfo"]
 
-    def has_connected_services_enabled(self, json_dict) -> bool:
+    def _has_connected_services_enabled(self, json_dict: dict) -> bool:
         """Checks if the user has enabled connected services."""
 
         if (
@@ -109,22 +202,11 @@ class Vehicle:  # pylint: disable=too-many-instance-attributes
         return False
 
     @staticmethod
-    def format_odometer(raw) -> dict:
-        """Formats odometer information from a list to a dict."""
-        instruments: dict = {}
-        for instrument in raw:
-            instruments[instrument["type"]] = instrument["value"]
-            if "unit" in instrument:
-                instruments[instrument["type"] + "_unit"] = instrument["unit"]
-
-        return instruments
-
-    @staticmethod
-    def format_details(raw) -> dict:
+    def _format_details(raw: dict) -> dict:
         """Formats vehicle info into a dict."""
         details: dict = {}
         for item in sorted(raw):
-            if item in ("vin", "alias"):
+            if item in ("vin", "alias", "id"):
                 continue
             details[item] = raw[item]
         return details

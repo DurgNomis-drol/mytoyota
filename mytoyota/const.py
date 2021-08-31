@@ -38,6 +38,24 @@ ACQUISITIONDATE = "AcquisitionDatetime"
 CHARGE_INFO = "ChargeInfo"
 HVAC = "RemoteHvacInfo"
 
+BUCKET = "bucket"
+DAYOFYEAR = "dayOfYear"
+PERIODE_START = "periode_start"
+DATE = "date"
+DATA = "data"
+SUMMARY = "summary"
+HISTOGRAM = "histogram"
+
+DAY = "day"
+WEEK = "week"
+ISOWEEK = "isoweek"
+MONTH = "month"
+YEAR = "year"
+
+# DATE FORMATS
+DATE_FORMAT_YEAR = "YYYY"
+DATE_FORMAT = "YYYY-MM-DD"
+
 # HTTP
 TIMEOUT = 15
 
@@ -45,6 +63,7 @@ HTTP_OK = 200
 HTTP_NO_CONTENT = 204
 HTTP_UNAUTHORIZED = 401
 HTTP_INTERNAL = 500
+HTTP_SERVICE_UNAVAILABLE = 503
 
 RETURNED_BAD_REQUEST = "bad_request"
 
