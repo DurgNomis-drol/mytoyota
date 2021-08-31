@@ -10,7 +10,7 @@ def is_valid_locale(locale: str) -> bool:
     return Language.make(locale).is_valid()
 
 
-def is_valid_token(token):
+def is_valid_token(token: str) -> bool:
     """Checks if token is the correct length"""
     if len(token) == TOKEN_LENGTH and token.endswith("..*"):
         return True
