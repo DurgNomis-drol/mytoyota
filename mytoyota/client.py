@@ -208,7 +208,7 @@ class MyT:
 
         today = arrow.now().format(DATE_FORMAT)
 
-        if from_date is today:
+        if from_date == today:
             raw_statistics = None
 
         else:

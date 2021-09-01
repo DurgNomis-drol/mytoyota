@@ -193,7 +193,7 @@ class Controller:
                 )
             else:
                 raise ToyotaInternalError(
-                    "HTTP: %i - %s" + str(resp.status_code) + " - " + resp.text
+                    "HTTP: " + str(resp.status_code) + " - " + resp.text
                 )
 
         return result
