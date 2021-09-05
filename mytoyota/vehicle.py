@@ -2,6 +2,9 @@
 import logging
 from typing import Optional
 
+from mytoyota.const import DOORS, HOOD, KEY, LIGHTS, WINDOWS
+from mytoyota.models import Doors, Key, Lights, Windows
+
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 
@@ -28,20 +31,22 @@ class Odometer:
     unit: str = None
     fuel: int = None
 
-    def __init__(self, odometer: list) -> None:
+    def __init__(self, odometer: Optional[list]) -> None:
 
         _LOGGER.debug("Raw odometer data: %s", str(odometer))
 
-        odometer_dict = self._format_odometer(odometer)
+        if odometer is not None:
 
-        _LOGGER.debug("Formatted odometer data: %s", str(odometer_dict))
+            odometer_dict = self._format_odometer(odometer)
 
-        if "mileage" in odometer_dict:
-            self.mileage = odometer_dict["mileage"]
-        if "mileage_unit" in odometer_dict:
-            self.unit = odometer_dict["mileage_unit"]
-        if "Fuel" in odometer_dict:
-            self.fuel = odometer_dict["Fuel"]
+            _LOGGER.debug("Formatted odometer data: %s", str(odometer_dict))
+
+            if "mileage" in odometer_dict:
+                self.mileage = odometer_dict["mileage"]
+            if "mileage_unit" in odometer_dict:
+                self.unit = odometer_dict["mileage_unit"]
+            if "Fuel" in odometer_dict:
+                self.fuel = odometer_dict["Fuel"]
 
     def __str__(self) -> str:
         return str(self.as_dict())
@@ -68,16 +73,14 @@ class ParkingLocation:
     latitude: float = None
     longitude: float = None
     timestamp: int = None
-    trip_status: str = None
 
-    def __init__(self, parking: dict) -> None:
-
+    def __init__(self, parking: Optional[dict]) -> None:
         _LOGGER.debug("Raw parking location data: %s", str(parking))
 
-        self.latitude = float(parking["event"]["lat"])
-        self.longitude = float(parking["event"]["lon"])
-        self.timestamp = int(parking["event"]["timestamp"])
-        self.trip_status = parking["tripStatus"]
+        if parking is not None:
+            self.latitude = float(parking["lat"])
+            self.longitude = float(parking["lon"])
+            self.timestamp = int(parking["timestamp"])
 
     def __str__(self) -> str:
         return str(self.as_dict())
@@ -85,6 +88,73 @@ class ParkingLocation:
     def as_dict(self) -> dict:
         """Return parking location as dict."""
         return vars(self)
+
+
+class Status:
+    """Vehicle status representation"""
+
+    lights: Lights
+    doors: Doors
+    windows: Windows
+    key: Key
+
+    overallstatus: str = None
+    last_updated: str = None
+
+    def __init__(self, status: Optional[dict]):
+        status = {
+            "overallStatus": "OK",
+            "timestamp": "2021-09-04T18:00:24Z",
+            "doors": {
+                "warning": False,
+                "driverSeatDoor": {"warning": False, "closed": True, "locked": True},
+                "passengerSeatDoor": {"warning": False, "closed": True, "locked": True},
+                "rearRightSeatDoor": {"warning": False, "closed": True, "locked": True},
+                "rearLeftSeatDoor": {"warning": False, "closed": True, "locked": True},
+                "backDoor": {"warning": False, "closed": True, "locked": True},
+            },
+            "hood": {"closed": True, "warning": False},
+            "lamps": {
+                "warning": False,
+                "headLamp": {"warning": False, "off": True},
+                "tailLamp": {"warning": False, "off": True},
+                "hazardLamp": {"warning": False, "off": True},
+            },
+            "windows": {
+                "warning": False,
+                "driverSeatWindow": {"warning": False, "state": "close"},
+                "passengerSeatWindow": {"warning": False, "state": "close"},
+                "rearRightSeatWindow": {"warning": False, "state": "close"},
+                "rearLeftSeatWindow": {"warning": False, "state": "close"},
+            },
+            "key": {"warning": False, "inCar": False},
+        }
+
+        _LOGGER.debug("Raw status data: %s", str(status))
+
+        if status is not None:
+            self.overallstatus = status["overallStatus"]
+
+            self.lights = Lights(status[LIGHTS])
+            self.doors = Doors(status[HOOD], status[DOORS])
+            self.windows = Windows(status[WINDOWS])
+            self.key = Key(status[KEY])
+
+            self.last_updated = status["timestamp"]
+
+    def __str__(self) -> str:
+        return str(self.as_dict())
+
+    def as_dict(self) -> dict:
+        """Return as dict."""
+        return {
+            "overallstatus": self.overallstatus,
+            "lights": self.lights.as_dict(),
+            "doors": self.doors.as_dict(),
+            "windows": self.windows.as_dict(),
+            "key": self.key.as_dict(),
+            "last_updated": self.last_updated,
+        }
 
 
 class Vehicle:  # pylint: disable=too-many-instance-attributes
@@ -98,17 +168,13 @@ class Vehicle:  # pylint: disable=too-many-instance-attributes
     odometer: Optional[Odometer] = None
     parking: Optional[ParkingLocation] = None
     statistics: VehicleStatistics = VehicleStatistics()
-
-    # Not known yet.
-    battery = None
-    hvac = None
+    status: Optional[Status] = None
 
     def __init__(  # pylint: disable=too-many-arguments
         self,
         vehicle_info: dict,
         connected_services: Optional[dict],
         odometer: Optional[list],
-        parking: Optional[dict],
         status: Optional[dict],
     ) -> None:
 
@@ -135,18 +201,25 @@ class Vehicle:  # pylint: disable=too-many-instance-attributes
         # Format vehicle information.
         self.details = self._format_details(vehicle_info)
 
-        # Extract odometer information.
-        self.odometer = Odometer(odometer) if self.is_connected and odometer else None
+        if self.is_connected:
+            # Extract odometer information.
+            self.odometer = Odometer(odometer) if odometer else Odometer(None)
 
-        # Extract parking information.
-        self.parking = (
-            ParkingLocation(parking) if self.is_connected and parking else None
-        )
-
-        # Extracts information from status.
-        if self.is_connected and status:
             _LOGGER.debug("Raw status data: %s", str(status))
-            self._extract_status(status)
+
+            # Extract parking information.
+            self.parking = (
+                ParkingLocation(status["event"])
+                if "event" in status
+                else ParkingLocation(None)
+            )
+
+            # Extracts information from status.
+            self.status = (
+                Status(status["protectionState"])
+                if "protectionState" in status
+                else Status(None)
+            )
 
     def __str__(self) -> str:
         return str(self.as_dict())
@@ -159,25 +232,15 @@ class Vehicle:  # pylint: disable=too-many-instance-attributes
             "vin": self.vin,
             "details": self.details,
             "status": {
-                "battery": self.battery,
-                "hvac": self.hvac,
                 "odometer": self.odometer.as_dict(),
                 "parking": self.parking.as_dict(),
+                "vehicle": self.status.as_dict(),
             },
             "servicesEnabled": {
                 "connectedServices": self.is_connected,
             },
             "statistics": self.statistics.as_dict(),
         }
-
-    def _extract_status(self, status: dict) -> None:
-        """Extract information like battery and hvac from status."""
-        if "VehicleInfo" in status:
-            if "RemoteHvacInfo" in status["VehicleInfo"]:
-                self.hvac = status["VehicleInfo"]["RemoteHvacInfo"]
-
-            if "ChargeInfo" in status["VehicleInfo"]:
-                self.battery = status["VehicleInfo"]["ChargeInfo"]
 
     def _has_connected_services_enabled(self, json_dict: dict) -> bool:
         """Checks if the user has enabled connected services."""

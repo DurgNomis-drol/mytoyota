@@ -52,6 +52,18 @@ ISOWEEK = "isoweek"
 MONTH = "month"
 YEAR = "year"
 
+HOOD = "hood"
+DOORS = "doors"
+WINDOWS = "windows"
+LIGHTS = "lamps"
+KEY = "key"
+CLOSED = "closed"
+LOCKED = "locked"
+WARNING = "warning"
+STATE = "state"
+OFF = "off"
+INCAR = "inCar"
+
 # DATE FORMATS
 DATE_FORMAT_YEAR = "YYYY"
 DATE_FORMAT = "YYYY-MM-DD"
