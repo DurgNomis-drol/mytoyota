@@ -107,7 +107,6 @@ class MyT:
             *[
                 self.api.get_connected_services_endpoint(vin),
                 self.api.get_odometer_endpoint(vin),
-                self.api.get_parking_endpoint(vin),
                 self.api.get_vehicle_status_endpoint(vin),
             ]
         )
@@ -116,8 +115,7 @@ class MyT:
             vehicle_info=vehicle,
             connected_services=info[0],
             odometer=info[1],
-            parking=info[2],
-            status=info[3],
+            status=info[2],
         )
 
         return car

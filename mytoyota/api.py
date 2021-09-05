@@ -296,7 +296,7 @@ class Controller:
         """Get information about the vehicle."""
 
         return await self.get(
-            f"{self.get_base_url()}/vehicles/{vin}/remoteControl/status"
+            f"{self.get_base_url()}/users/{self.uuid}/vehicles/{vin}/vehicleStatus"
         )
 
     async def get_driving_statistics_endpoint(
