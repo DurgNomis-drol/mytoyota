@@ -93,42 +93,15 @@ class ParkingLocation:
 class Status:
     """Vehicle status representation"""
 
-    lights: Lights
-    doors: Doors
-    windows: Windows
-    key: Key
+    lights: Optional[Lights] = None
+    doors: Optional[Doors] = None
+    windows: Optional[Windows] = None
+    key: Optional[Key] = None
 
     overallstatus: str = None
     last_updated: str = None
 
     def __init__(self, status: Optional[dict]):
-        status = {
-            "overallStatus": "OK",
-            "timestamp": "2021-09-04T18:00:24Z",
-            "doors": {
-                "warning": False,
-                "driverSeatDoor": {"warning": False, "closed": True, "locked": True},
-                "passengerSeatDoor": {"warning": False, "closed": True, "locked": True},
-                "rearRightSeatDoor": {"warning": False, "closed": True, "locked": True},
-                "rearLeftSeatDoor": {"warning": False, "closed": True, "locked": True},
-                "backDoor": {"warning": False, "closed": True, "locked": True},
-            },
-            "hood": {"closed": True, "warning": False},
-            "lamps": {
-                "warning": False,
-                "headLamp": {"warning": False, "off": True},
-                "tailLamp": {"warning": False, "off": True},
-                "hazardLamp": {"warning": False, "off": True},
-            },
-            "windows": {
-                "warning": False,
-                "driverSeatWindow": {"warning": False, "state": "close"},
-                "passengerSeatWindow": {"warning": False, "state": "close"},
-                "rearRightSeatWindow": {"warning": False, "state": "close"},
-                "rearLeftSeatWindow": {"warning": False, "state": "close"},
-            },
-            "key": {"warning": False, "inCar": False},
-        }
 
         _LOGGER.debug("Raw status data: %s", str(status))
 
@@ -149,10 +122,10 @@ class Status:
         """Return as dict."""
         return {
             "overallstatus": self.overallstatus,
-            "lights": self.lights.as_dict(),
-            "doors": self.doors.as_dict(),
-            "windows": self.windows.as_dict(),
-            "key": self.key.as_dict(),
+            "lights": self.lights.as_dict() if self.lights is not None else None,
+            "doors": self.doors.as_dict() if self.doors is not None else None,
+            "windows": self.windows.as_dict() if self.windows is not None else None,
+            "key": self.key.as_dict() if self.key is not None else None,
             "last_updated": self.last_updated,
         }
 
