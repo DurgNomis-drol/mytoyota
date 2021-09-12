@@ -1,3 +1,7 @@
+[![GitHub Workflow Status][workflow-shield]][workflow]
+[![GitHub Release][releases-shield]][releases]
+[![GitHub Activity][commits-shield]][commits]
+
 # Toyota Connected Services Python module
 
 ### [!] **This is still in beta**
@@ -131,3 +135,10 @@ As I [@DurgNomis-drol](https://github.com/DurgNomis-drol) am not a professional 
 ## Credits
 
 A huge thanks go to [@calmjm](https://github.com/calmjm) for making [tojota](https://github.com/calmjm/tojota).
+
+[releases-shield]: https://img.shields.io/github/release/DurgNomis-drol/mytoyota.svg?style=for-the-badge
+[releases]: https://github.com/DurgNomis-drol/mytoyota/releases
+[workflow-shield]: https://img.shields.io/github/workflow/status/DurgNomis-drol/mytoyota/Linting?style=for-the-badge
+[workflow]: https://github.com/DurgNomis-drol/mytoyota/actions
+[commits-shield]: https://img.shields.io/github/commit-activity/y/DurgNomis-drol/mytoyota.svg?style=for-the-badge
+[commits]: https://github.com/DurgNomis-drol/mytoyota/commits/master
