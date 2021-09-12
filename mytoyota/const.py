@@ -82,3 +82,10 @@ RETURNED_BAD_REQUEST = "bad_request"
 TME_B2C_ERR_CPSERVICES = "TME_B2C_ERR_CPSERVICES_GET_FAILURE"
 
 INTERVAL_SUPPORTED = ["day", "week", "isoweek", "month", "year"]
+
+BASE_HEADERS = {
+    "Content-Type": "application/json;charset=UTF-8",
+    "Accept": "application/json, text/plain, */*",
+    "Sec-Fetch-Dest": "empty",
+    "X-TME-BRAND": "TOYOTA",
+}

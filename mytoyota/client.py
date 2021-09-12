@@ -5,7 +5,7 @@ import logging
 
 import arrow
 
-from .api import Controller
+from .api import Api
 from .const import (
     DATE_FORMAT,
     DAY,
@@ -16,6 +16,7 @@ from .const import (
     WEEK,
     YEAR,
 )
+from .controller import Controller
 from .exceptions import (
     ToyotaInvalidUsername,
     ToyotaLocaleNotValid,
@@ -52,12 +53,14 @@ class MyT:
                 "Please provide a valid locale string! Valid format is: en-gb."
             )
 
-        self.api = Controller(
-            locale=locale,
-            region=region,
-            username=username,
-            password=password,
-            uuid=uuid,
+        self.api = Api(
+            Controller(
+                username=username,
+                password=password,
+                locale=locale,
+                region=region,
+                uuid=uuid,
+            )
         )
 
     @staticmethod
@@ -72,11 +75,11 @@ class MyT:
 
     async def login(self) -> None:
         """Login to Toyota services"""
-        await self.api.get_new_token()
+        await self.api.controller.first_login()
 
     async def get_uuid(self) -> str:
         """Get uuid"""
-        return await self.api.get_uuid()
+        return await self.api.uuid()
 
     async def set_alias(self, vehicle_id: int, new_alias: str) -> dict:
         """Sets a new alias for the car"""
