@@ -64,6 +64,10 @@ STATE = "state"
 OFF = "off"
 INCAR = "inCar"
 
+METRIC = "metric"
+IMPERIAL = "imperial"
+IMPERIAL_MPG = "imperial_mpg"
+
 # DATE FORMATS
 DATE_FORMAT_YEAR = "YYYY"
 DATE_FORMAT = "YYYY-MM-DD"
