@@ -9,8 +9,11 @@ from .api import Api
 from .const import (
     DATE_FORMAT,
     DAY,
+    IMPERIAL,
+    IMPERIAL_MPG,
     INTERVAL_SUPPORTED,
     ISOWEEK,
+    METRIC,
     MONTH,
     SUPPORTED_REGIONS,
     WEEK,
@@ -131,7 +134,7 @@ class MyT:
         return json_string
 
     async def get_driving_statistics(  # pylint: disable=too-many-branches
-        self, vin: str, interval: str = MONTH, from_date: str = None
+        self, vin: str, interval: str = MONTH, from_date: str = None, unit: str = METRIC
     ) -> list:
         """
         params: vin: Vin number of your car.
@@ -228,7 +231,22 @@ class MyT:
             ]
 
         # Format data so we get a uniform output.
-        statistics = Statistics(raw_statistics, interval)
+
+        imperial = False
+        use_mpg = False
+
+        if unit is IMPERIAL:
+            imperial = True
+        if unit is IMPERIAL_MPG:
+            imperial = True
+            use_mpg = True
+
+        statistics = Statistics(
+            raw_statistics=raw_statistics,
+            interval=interval,
+            imperial=imperial,
+            use_mpg=use_mpg,
+        )
 
         return statistics.as_list()
 
