@@ -14,7 +14,7 @@ from mytoyota.const import (
     DAYOFYEAR,
     HISTOGRAM,
     IMPERIAL,
-    IMPERIAL_MPG,
+    IMPERIAL_LITERS,
     ISOWEEK,
     METRIC,
     MONTH,
@@ -36,7 +36,7 @@ class Statistics:  # pylint: disable=too-few-public-methods)
         raw_statistics: dict,
         interval: str,
         imperial: bool = False,
-        use_mpg: bool = False,
+        use_liters: bool = False,
     ) -> None:
 
         self._now: Arrow = arrow.now()
@@ -48,7 +48,7 @@ class Statistics:  # pylint: disable=too-few-public-methods)
         stats_as_list = self._add_bucket(raw_statistics, interval)
 
         if imperial:
-            stats_as_list = self._convert_to_imperial(stats_as_list, use_mpg)
+            stats_as_list = self._convert_to_imperial(stats_as_list, use_liters)
 
         self._statistic = stats_as_list
 
@@ -57,7 +57,7 @@ class Statistics:  # pylint: disable=too-few-public-methods)
         return self._statistic
 
     @staticmethod
-    def _convert_to_imperial(data: list, use_mpg: bool) -> list:
+    def _convert_to_imperial(data: list, use_liters: bool) -> list:
         """
         Toyota converts some of the data, but not all for some reason. This function
         corrects these values and adds the possibility to show them in MPG also.
@@ -87,22 +87,22 @@ class Statistics:  # pylint: disable=too-few-public-methods)
         for periode in data:
             periode[BUCKET].update(
                 {
-                    UNIT: IMPERIAL_MPG if use_mpg else IMPERIAL,
+                    UNIT: IMPERIAL_LITERS if use_liters else IMPERIAL,
                 }
             )
             for attribute in attributes_to_convert:
                 if attribute in periode[DATA]:
+                    if attribute == "totalFuelConsumedInL":
+                        periode[DATA][attribute] = (
+                            convert_to_liter_per_100_miles(periode[DATA][attribute])
+                            if use_liters
+                            else convert_to_mpg(periode[DATA][attribute])
+                        )
+                        continue
+
                     periode[DATA][attribute] = convert_to_miles(
                         periode[DATA][attribute]
                     )
-
-                if attribute == "totalFuelConsumedInL" and attribute in periode[DATA]:
-                    periode[DATA][attribute] = (
-                        convert_to_mpg(periode[DATA][attribute])
-                        if use_mpg
-                        else convert_to_liter_per_100_miles(periode[DATA][attribute])
-                    )
-
         return data
 
     def _add_bucket(self, data: dict, interval: str) -> list:

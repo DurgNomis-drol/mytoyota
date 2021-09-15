@@ -66,7 +66,7 @@ INCAR = "inCar"
 
 METRIC = "metric"
 IMPERIAL = "imperial"
-IMPERIAL_MPG = "imperial_mpg"
+IMPERIAL_LITERS = "imperial_liters"
 
 # DATE FORMATS
 DATE_FORMAT_YEAR = "YYYY"
