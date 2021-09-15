@@ -10,7 +10,7 @@ from .const import (
     DATE_FORMAT,
     DAY,
     IMPERIAL,
-    IMPERIAL_MPG,
+    IMPERIAL_LITERS,
     INTERVAL_SUPPORTED,
     ISOWEEK,
     METRIC,
@@ -233,19 +233,19 @@ class MyT:
         # Format data so we get a uniform output.
 
         imperial = False
-        use_mpg = False
+        use_liters = False
 
         if unit is IMPERIAL:
             imperial = True
-        if unit is IMPERIAL_MPG:
+        if unit is IMPERIAL_LITERS:
             imperial = True
-            use_mpg = True
+            use_liters = True
 
         statistics = Statistics(
             raw_statistics=raw_statistics,
             interval=interval,
             imperial=imperial,
-            use_mpg=use_mpg,
+            use_liters=use_liters,
         )
 
         return statistics.as_list()
