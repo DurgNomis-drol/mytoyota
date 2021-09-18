@@ -1,6 +1,6 @@
 """Models for mytoyota"""
 
-from mytoyota.const import CLOSED, HOOD, INCAR, LOCKED, OFF, STATE, WARNING
+from mytoyota.const import CLOSED, INCAR, LOCKED, OFF, STATE, WARNING
 
 
 class Hood:
@@ -48,18 +48,16 @@ class Door:
 class Doors:
     """Represent all car doors"""
 
-    hood: Hood
     driverseat: Door
     passengerseat: Door
     rightrearseat: Door
     leftrearseat: Door
-    tailgate: Door
+    trunk: Door
     warning: bool = False
 
-    def __init__(self, hood, doors):
+    def __init__(self, doors: dict):
         self.warning = doors[WARNING]
 
-        self.hood = Hood(hood)
         self.driverseat = (
             Door(doors["driverSeatDoor"]) if "driverSeatDoor" in doors else None
         )
@@ -72,7 +70,7 @@ class Doors:
         self.leftrearseat = (
             Door(doors["rearLeftSeatDoor"]) if "rearLeftSeatDoor" in doors else None
         )
-        self.tailgate = Door(doors["backDoor"]) if "backDoor" in doors else None
+        self.trunk = Door(doors["backDoor"]) if "backDoor" in doors else None
 
     def __str__(self) -> str:
         return str(self.as_dict())
@@ -81,12 +79,11 @@ class Doors:
         """Return as dict."""
         return {
             WARNING: self.warning,
-            HOOD: self.hood.as_dict(),
             "driverseat": self.driverseat.as_dict(),
             "passengerseat": self.passengerseat.as_dict(),
             "rightrearseat": self.rightrearseat.as_dict(),
             "leftrearseat": self.rightrearseat.as_dict(),
-            "tailgate": self.tailgate.as_dict(),
+            "trunk": self.trunk.as_dict(),
         }
 
 
