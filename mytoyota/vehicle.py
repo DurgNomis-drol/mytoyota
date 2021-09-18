@@ -3,7 +3,7 @@ import logging
 from typing import Optional
 
 from mytoyota.const import DOORS, HOOD, KEY, LIGHTS, WINDOWS
-from mytoyota.models import Doors, Key, Lights, Windows
+from mytoyota.models import Doors, Hood, Key, Lights, Windows
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -94,6 +94,7 @@ class Status:
     """Vehicle status representation"""
 
     lights: Optional[Lights] = None
+    hood: Optional[Hood] = None
     doors: Optional[Doors] = None
     windows: Optional[Windows] = None
     key: Optional[Key] = None
@@ -106,14 +107,17 @@ class Status:
         _LOGGER.debug("Raw status data: %s", str(status))
 
         if status is not None:
-            self.overallstatus = status["overallStatus"]
+            self.overallstatus = (
+                status["overallStatus"] if "overallStatus" in status else None
+            )
 
-            self.lights = Lights(status[LIGHTS])
-            self.doors = Doors(status[HOOD], status[DOORS])
-            self.windows = Windows(status[WINDOWS])
-            self.key = Key(status[KEY])
+            self.lights = Lights(status[LIGHTS]) if LIGHTS in status else None
+            self.hood = Hood(status[HOOD]) if HOOD in status else None
+            self.doors = Doors(status[DOORS]) if DOORS in status else None
+            self.windows = Windows(status[WINDOWS]) if WINDOWS in status else None
+            self.key = Key(status[KEY]) if KEY in status else None
 
-            self.last_updated = status["timestamp"]
+            self.last_updated = status["timestamp"] if "timestamp" in status else None
 
     def __str__(self) -> str:
         return str(self.as_dict())
@@ -123,6 +127,7 @@ class Status:
         return {
             "overallstatus": self.overallstatus,
             "lights": self.lights.as_dict() if self.lights is not None else None,
+            "hood": self.hood.as_dict() if self.hood is not None else None,
             "doors": self.doors.as_dict() if self.doors is not None else None,
             "windows": self.windows.as_dict() if self.windows is not None else None,
             "key": self.key.as_dict() if self.key is not None else None,
