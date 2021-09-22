@@ -84,7 +84,7 @@ class Api:
             endpoint=f"/users/{await self.uuid()}/vehicles/{vin}/vehicleStatus",
         )
 
-    async def get_vehicle_hvac_endpoint(self, vin: str) -> Optional[dict]:
+    async def get_vehicle_status_legacy_endpoint(self, vin: str) -> Optional[dict]:
         """Get information about the vehicle."""
 
         return await self.controller.request(

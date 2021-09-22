@@ -80,9 +80,6 @@ class Energy:
         # Support for old endpoint for fuel level. Some cars still uses this.
         if legacy:
             self.level = data.get("Fuel", None)
-            self.range = None
-            self.last_updated = None
-
         else:
             self.level = data[0].get("level", None)
             self.range = data[0].get("remainingRange", None)
