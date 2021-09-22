@@ -84,6 +84,15 @@ class Api:
             endpoint=f"/users/{await self.uuid()}/vehicles/{vin}/vehicleStatus",
         )
 
+    async def get_vehicle_status_legacy_endpoint(self, vin: str) -> Optional[dict]:
+        """Get information about the vehicle."""
+
+        return await self.controller.request(
+            method="GET",
+            base_url=BASE_URL,
+            endpoint=f"/vehicles/{vin}/remoteControl/status",
+        )
+
     async def get_driving_statistics_endpoint(
         self, vin: str, from_date: str, interval: Optional[str] = None
     ) -> Optional[dict]:

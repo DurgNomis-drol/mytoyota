@@ -109,19 +109,21 @@ class MyT:
         """Return information for given vehicle"""
 
         vin = vehicle["vin"]
-        info = await asyncio.gather(
+        data = await asyncio.gather(
             *[
                 self.api.get_connected_services_endpoint(vin),
                 self.api.get_odometer_endpoint(vin),
                 self.api.get_vehicle_status_endpoint(vin),
+                self.api.get_vehicle_status_legacy_endpoint(vin),
             ]
         )
 
         car = Vehicle(
             vehicle_info=vehicle,
-            connected_services=info[0],
-            odometer=info[1],
-            status=info[2],
+            connected_services=data[0],
+            odometer=data[1],
+            status=data[2],
+            remote_control=data[3],
         )
 
         return car

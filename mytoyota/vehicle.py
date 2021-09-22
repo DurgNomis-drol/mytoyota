@@ -2,6 +2,7 @@
 import logging
 from typing import Optional
 
+from mytoyota.hvac import Hvac
 from mytoyota.location import ParkingLocation
 from mytoyota.status import Energy, Odometer, Sensors
 from mytoyota.utils import format_odometer
@@ -35,6 +36,7 @@ class Vehicle:  # pylint: disable=too-many-instance-attributes
     details: Optional[dict] = None
     odometer: Optional[Odometer] = None
     energy: Optional[Energy] = None
+    hvac: Optional[Hvac] = None
     parking: Optional[ParkingLocation] = None
     sensors: Optional[Sensors] = None
     statistics: VehicleStatistics = VehicleStatistics()
@@ -45,6 +47,7 @@ class Vehicle:  # pylint: disable=too-many-instance-attributes
         connected_services: Optional[dict],
         odometer: Optional[list],
         status: Optional[dict],
+        remote_control: Optional[dict],
     ) -> None:
 
         # If no vehicle information is provided, abort.
@@ -96,6 +99,15 @@ class Vehicle:  # pylint: disable=too-many-instance-attributes
             # Extracts window, door, lock and other information from status.
             self.sensors = Sensors(status.get("protectionState", {}))
 
+            # Extract HVAC information from endpoint
+            remote_control_hvac = remote_control.get("VehicleInfo", {})
+            if "RemoteHvacInfo" in remote_control_hvac:
+                self.hvac = Hvac(remote_control_hvac.get("RemoteHvacInfo", {}), True)
+            elif "climate" in status:
+                self.hvac = Hvac(status.get("climate"))
+            else:
+                self.hvac = None
+
     def __str__(self) -> str:
         return str(self.as_dict())
 
@@ -108,6 +120,7 @@ class Vehicle:  # pylint: disable=too-many-instance-attributes
             "details": self.details,
             "status": {
                 "energy": self.energy.as_dict(),
+                "hvac": self.hvac.as_dict() if self.hvac is not None else {},
                 "odometer": self.odometer.as_dict(),
                 "parking": self.parking.as_dict(),
                 "vehicle": self.sensors.as_dict(),
