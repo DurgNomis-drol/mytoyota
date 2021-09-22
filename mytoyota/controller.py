@@ -100,7 +100,7 @@ class Controller:
                     self._token_expiration = datetime.now()
             else:
                 raise ToyotaLoginError(
-                    "Login failed, check your credentials! {}".format(response.text)
+                    f"Login failed, check your credentials! {response.text}"
                 )
 
     async def _is_token_valid(self) -> bool:
@@ -118,9 +118,7 @@ class Controller:
                     return True
                 return False
 
-            raise ToyotaLoginError(
-                "Error when trying to check token: {}".format(response.text)
-            )
+            raise ToyotaLoginError(f"Error when trying to check token: {response.text}")
 
     async def request(  # pylint: disable=too-many-arguments
         self,
