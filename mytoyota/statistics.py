@@ -116,9 +116,9 @@ class Statistics:  # pylint: disable=too-few-public-methods)
                 day[BUCKET].update(
                     {
                         UNIT: METRIC,
-                        DATE: self._now.strptime(
-                            "{} {}".format(dayofyear, year), "%j %Y"
-                        ).format(DATE_FORMAT),
+                        DATE: self._now.strptime(f"{dayofyear} {year}", "%j %Y").format(
+                            DATE_FORMAT
+                        ),
                     }
                 )
             return data[HISTOGRAM]
