@@ -74,7 +74,9 @@ class Vehicle:  # pylint: disable=too-many-instance-attributes
 
             _LOGGER.debug("Raw status data: %s", str(status))
 
-            # Extract fuellevel/Energy capacity information from status.
+            remote_control_info = remote_control.get("VehicleInfo", {})
+
+            # Extract fuel level/Energy capacity information from status.
             if "energy" in status:
                 _LOGGER.debug("Using energy data: %s", str(status.get("energy")))
                 self.energy = Energy(status.get("energy"))
@@ -87,6 +89,11 @@ class Vehicle:  # pylint: disable=too-many-instance-attributes
                 if fueltype == "1.0P":
                     fueltype = "Petrol"
                 self.energy.type = fueltype
+                # Add charge information if car supports it.
+                if "ChargeInfo" in remote_control_info:
+                    self.energy.set_battery_attributes(
+                        remote_control_info.get("ChargeInfo", {})
+                    )
 
             # Extract mileage and if the car reports in km or mi
             self.odometer = (
@@ -100,9 +107,8 @@ class Vehicle:  # pylint: disable=too-many-instance-attributes
             self.sensors = Sensors(status.get("protectionState", {}))
 
             # Extract HVAC information from endpoint
-            remote_control_hvac = remote_control.get("VehicleInfo", {})
-            if "RemoteHvacInfo" in remote_control_hvac:
-                self.hvac = Hvac(remote_control_hvac.get("RemoteHvacInfo", {}), True)
+            if "RemoteHvacInfo" in remote_control_info:
+                self.hvac = Hvac(remote_control_info.get("RemoteHvacInfo", {}), True)
             elif "climate" in status:
                 self.hvac = Hvac(status.get("climate"))
             else:
