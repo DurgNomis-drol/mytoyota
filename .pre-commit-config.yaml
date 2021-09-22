@@ -28,12 +28,11 @@ repos:
       - id: pylint
         name: pylint
         entry: poetry run pylint
-        exclude: ^glocaltokens/google/
         language: system
         types: [python]
       - id: codespell
         name: codespell
-        entry: poetry run codespell --skip="./*"
+        entry: poetry run codespell --write-changes --skip="./*"
         language: system
         pass_filenames: false
         always_run: true
