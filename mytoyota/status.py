@@ -39,7 +39,6 @@ class Sensors:
     last_updated: str = None
 
     def __init__(self, status: dict):
-
         _LOGGER.debug("Raw sensor data: %s", str(status))
 
         self.overallstatus = status.get("overallStatus", None)
@@ -67,24 +66,25 @@ class Sensors:
         }
 
 
-class Energy:
+class Energy:  # pylint: disable=too-many-instance-attributes
     """Represents fuel level, battery capacity and range"""
 
     level: Optional[int] = None
     range: Optional[int] = None
+    range_with_aircon: Optional[int] = None
     type: str = None
     last_updated: Optional[str] = None
+    legacy: bool = False
+
+    chargeinfo: dict = None
 
     def __init__(self, data: Union[list, dict] = None, legacy: bool = False):
 
         # Support for old endpoint for fuel level. Some cars still uses this.
         if legacy:
-            self.level = data.get("Fuel", None)
+            self._set_legacy(data)
         else:
-            self.level = data[0].get("level", None)
-            self.range = data[0].get("remainingRange", None)
-            self.type = data[0].get("type", "Unknown").capitalize()
-            self.last_updated = data[0].get("timestamp", None)
+            self._set(data)
 
     def __str__(self) -> str:
         return str(self.as_dict())
@@ -92,3 +92,30 @@ class Energy:
     def as_dict(self) -> dict:
         """Return odometer as dict."""
         return vars(self)
+
+    def _set(self, data: list) -> None:
+        """Set attributes"""
+        self.level = data[0].get("level", None)
+        self.range = data[0].get("remainingRange", None)
+        self.type = data[0].get("type", "Unknown").capitalize()
+        self.last_updated = data[0].get("timestamp", None)
+
+    def _set_legacy(self, data: dict) -> None:
+        """Set attributes using legacy data"""
+        self.legacy = True
+
+        self.level = data.get("Fuel", None)
+
+    def set_battery_attributes(self, data: dict) -> None:
+        """Set charge info from legacy endpoint"""
+
+        self.range = data.get("EvDistanceInKm", None)
+        self.range_with_aircon = data.get("EvDistanceWithAirCoInKm", None)
+
+        self.chargeinfo = {
+            "status": data.get("ChargingStatus", None),
+            "remaining_time": data.get("RemainingChargeTime", None),
+            "remaining_amount": data.get("ChargeRemainingAmount", None),
+            "start_time": data.get("ChargeStartTime", None),
+            "end_time": data.get("ChargeEndTime", None),
+        }
