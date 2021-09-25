@@ -46,7 +46,7 @@ class Hvac:  # pylint: disable=too-many-instance-attributes)
 
         self.current_temperature = hvac.get("InsideTemperature", None)
         self.target_temperature = hvac.get("SettingTemperature", None)
-        self.blower_on = hvac.get("BlowerStatus", False)
+        self.blower_on = hvac.get("BlowerStatus", None)
 
         self.front_defogger_on = hvac.get("FrontDefoggerStatus", False)
         self.rear_defogger_on = hvac.get("RearDefoggerStatus", False)
