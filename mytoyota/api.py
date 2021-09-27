@@ -11,9 +11,7 @@ _LOGGER: logging.Logger = logging.getLogger(__package__)
 class Api:
     """Controller class."""
 
-    def __init__(  # pylint: disable=too-many-arguments
-        self, controller: Controller
-    ) -> None:
+    def __init__(self, controller: Controller) -> None:
         """Toyota Controller"""
 
         self.controller = controller

@@ -66,7 +66,7 @@ class Sensors:
         }
 
 
-class Energy:  # pylint: disable=too-many-instance-attributes
+class Energy:
     """Represents fuel level, battery capacity and range"""
 
     level: Optional[int] = None

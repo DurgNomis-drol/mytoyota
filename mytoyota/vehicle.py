@@ -26,7 +26,7 @@ class VehicleStatistics:
         return vars(self)
 
 
-class Vehicle:  # pylint: disable=too-many-instance-attributes
+class Vehicle:
     """Vehicle representation"""
 
     id: int = 0
@@ -41,7 +41,7 @@ class Vehicle:  # pylint: disable=too-many-instance-attributes
     sensors: Optional[Sensors] = None
     statistics: VehicleStatistics = VehicleStatistics()
 
-    def __init__(  # pylint: disable=too-many-arguments
+    def __init__(
         self,
         vehicle_info: dict,
         connected_services: Optional[dict],

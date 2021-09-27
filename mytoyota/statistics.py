@@ -28,7 +28,7 @@ from mytoyota.const import (
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 
-class Statistics:  # pylint: disable=too-few-public-methods)
+class Statistics:
     """Class to hold statistical information."""
 
     def __init__(
@@ -63,16 +63,20 @@ class Statistics:  # pylint: disable=too-few-public-methods)
         corrects these values and adds the possibility to show them in MPG also.
         """
 
+        _LOGGER.debug("Converting statistics to imperial...")
+
         def convert_to_miles(kilometers: float) -> float:
             """Convert kilometers to miles"""
             return round(kilometers * 0.621371192, 4)
 
         def convert_to_liter_per_100_miles(liters: float) -> float:
             """Convert liters per 100 km to liters per 100 miles"""
+            _LOGGER.debug("Converting to L/100miles...")
             return round(liters * 1.609344, 4)
 
         def convert_to_mpg(liters_per_100_km: float) -> float:
             """Convert to miles per UK gallon (MPG)"""
+            _LOGGER.debug("Converting to MPG...")
             return round(282.5 / liters_per_100_km, 4)
 
         attributes_to_convert = [
@@ -93,6 +97,7 @@ class Statistics:  # pylint: disable=too-few-public-methods)
             for attribute in attributes_to_convert:
                 if attribute in periode[DATA]:
                     if attribute == "totalFuelConsumedInL":
+                        _LOGGER.debug(f"Converting attribute {attribute}...")
                         periode[DATA][attribute] = (
                             convert_to_liter_per_100_miles(periode[DATA][attribute])
                             if use_liters
@@ -100,6 +105,7 @@ class Statistics:  # pylint: disable=too-few-public-methods)
                         )
                         continue
 
+                    _LOGGER.debug(f"Converting attribute {attribute} to miles...")
                     periode[DATA][attribute] = convert_to_miles(
                         periode[DATA][attribute]
                     )
@@ -107,6 +113,8 @@ class Statistics:  # pylint: disable=too-few-public-methods)
 
     def _add_bucket(self, data: dict, interval: str) -> list:
         """Add bucket and return statistics in a uniform way."""
+
+        _LOGGER.debug("Updating bucket for statistics....")
 
         if interval is DAY:
             for day in data[HISTOGRAM]:

@@ -1,7 +1,7 @@
 """HVAC representation for mytoyota"""
 
 
-class Hvac:  # pylint: disable=too-many-instance-attributes)
+class Hvac:
     """Representation of the HVAC system in the car"""
 
     current_temperature: int = None
