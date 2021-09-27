@@ -35,7 +35,7 @@ class Controller:
     _token: str = None
     _token_expiration: datetime = None
 
-    def __init__(  # pylint: disable=too-many-arguments
+    def __init__(
         self,
         locale: str,
         region: str,
@@ -72,6 +72,7 @@ class Controller:
     @staticmethod
     def _has_expired(creation_dt: datetime, duration: int) -> bool:
         """Checks if an specified token/object has expired"""
+        _LOGGER.debug("Checking if token has expired...")
         return datetime.now().timestamp() - creation_dt.timestamp() > duration
 
     async def _update_token(self) -> None:
@@ -79,6 +80,8 @@ class Controller:
 
         # Cannot authenticate with aiohttp (returns 415),
         # but it works with httpx.
+
+        _LOGGER.debug("Getting new token...")
         async with httpx.AsyncClient() as client:
             response = await client.post(
                 self._get_auth_endpoint(),
@@ -91,12 +94,16 @@ class Controller:
                 if TOKEN not in result or UUID not in result[CUSTOMERPROFILE]:
                     raise ToyotaLoginError("Could not get token or UUID from result")
 
+                _LOGGER.debug("Extracting token from result")
+
                 token = result.get(TOKEN)
                 uuid = result[CUSTOMERPROFILE][UUID]
 
                 if is_valid_token(token):
+                    _LOGGER.debug("Token is the correct format")
                     self._uuid = uuid
                     self._token = token
+                    _LOGGER.debug("Saving token and uuid")
                     self._token_expiration = datetime.now()
             else:
                 raise ToyotaLoginError(
@@ -106,6 +113,7 @@ class Controller:
     async def _is_token_valid(self) -> bool:
         """Checks if token is valid"""
 
+        _LOGGER.debug("Checking if token is still valid...")
         async with httpx.AsyncClient() as client:
             response = await client.post(
                 self._get_auth_valid_endpoint(),
@@ -115,12 +123,14 @@ class Controller:
                 result = response.json()
 
                 if result["valid"]:
+                    _LOGGER.debug("Token is still valid")
                     return True
+                _LOGGER.debug("Token is not valid anymore")
                 return False
 
             raise ToyotaLoginError(f"Error when trying to check token: {response.text}")
 
-    async def request(  # pylint: disable=too-many-arguments
+    async def request(
         self,
         method: str,
         endpoint: str,
@@ -146,6 +156,8 @@ class Controller:
         else:
             url = endpoint
 
+        _LOGGER.debug("Constructing additional headers...")
+
         headers.update(
             {
                 "X-TME-LC": self._locale,
@@ -162,9 +174,16 @@ class Controller:
                 }
             )
 
+        _LOGGER.debug(f"Additional headers: {headers}")
+
         # Cannot authenticate with aiohttp (returns 415),
         # but it works with httpx.
+        _LOGGER.debug("Creating client...")
+        _LOGGER.debug(f"Base headers: {BASE_HEADERS} - Timeout: {TIMEOUT}")
         async with httpx.AsyncClient(headers=BASE_HEADERS, timeout=TIMEOUT) as client:
+            _LOGGER.debug(
+                f"Requesting {url} - Method: {method} - Body: {body} - Parameters: {params}"
+            )
             response = await client.request(
                 method, url, headers=headers, json=body, params=params
             )
@@ -191,5 +210,7 @@ class Controller:
                 raise ToyotaInternalError(
                     "HTTP: " + str(response.status_code) + " - " + response.text
                 )
+
+        _LOGGER.debug(f"Raw result: {result}")
 
         return result

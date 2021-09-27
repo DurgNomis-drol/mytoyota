@@ -35,7 +35,7 @@ _LOGGER: logging.Logger = logging.getLogger(__package__)
 class MyT:
     """Toyota Connected Services API class."""
 
-    def __init__(  # pylint: disable=too-many-arguments
+    def __init__(
         self,
         username: str,
         password: str,
@@ -78,6 +78,7 @@ class MyT:
 
     async def login(self) -> None:
         """Login to Toyota services"""
+        _LOGGER.debug("Performing first login")
         await self.api.controller.first_login()
 
     async def get_uuid(self) -> str:
@@ -86,6 +87,9 @@ class MyT:
 
     async def set_alias(self, vehicle_id: int, new_alias: str) -> dict:
         """Sets a new alias for the car"""
+        _LOGGER.debug(
+            f"Setting new alias: {new_alias} for vehicle with id: {vehicle_id}"
+        )
         result = await self.api.set_vehicle_alias_endpoint(
             vehicle_id=vehicle_id, new_alias=new_alias
         )
@@ -93,7 +97,7 @@ class MyT:
 
     async def get_vehicles(self) -> list:
         """Return list of vehicles with basic information about them"""
-
+        _LOGGER.debug("Getting list of vehicles associated with the account")
         vehicles = await self.api.get_vehicles_endpoint()
         if vehicles:
             return vehicles
@@ -102,11 +106,13 @@ class MyT:
         """Return vehicle list as json"""
         vehicles = await self.get_vehicles()
 
+        _LOGGER.debug("Returning it as json...")
         json_string = json.dumps(vehicles, indent=3)
         return json_string
 
     async def get_vehicle_status(self, vehicle: dict) -> Vehicle:
         """Return information for given vehicle"""
+        _LOGGER.debug(f"Getting status for vehicle - {vehicle}...")
 
         vin = vehicle["vin"]
         data = await asyncio.gather(
@@ -117,6 +123,8 @@ class MyT:
                 self.api.get_vehicle_status_legacy_endpoint(vin),
             ]
         )
+
+        _LOGGER.debug("Presenting information as an object...")
 
         car = Vehicle(
             vehicle_info=vehicle,
@@ -132,6 +140,7 @@ class MyT:
         """Return vehicle information as json"""
         vehicle = await self.get_vehicle_status(vehicle)
 
+        _LOGGER.debug("Returning it as json")
         json_string = json.dumps(vehicle.as_dict(), indent=3)
         return json_string
 
@@ -156,6 +165,9 @@ class MyT:
                 On the first of each week, month or year. This will return an error message.
                 This is due to a Toyota API limitation.
         """
+
+        _LOGGER.debug(f"Getting statistics for {vin}...")
+        _LOGGER.debug(f"Interval: {interval} - from_date: {from_date} - unit: {unit}")
 
         if interval not in INTERVAL_SUPPORTED:
             return [{"error_mesg": "Invalid interval provided!", "error_code": 1}]
@@ -215,6 +227,10 @@ class MyT:
         today = arrow.now().format(DATE_FORMAT)
 
         if from_date == today:
+            _LOGGER.debug(
+                "Aborting getting statistics because day is on the first of the week,"
+                " month or year"
+            )
             raw_statistics = None
 
         else:
@@ -243,6 +259,8 @@ class MyT:
             imperial = True
             use_liters = True
 
+        _LOGGER.debug("Parse statistics into the statistics object for formatting...")
+
         statistics = Statistics(
             raw_statistics=raw_statistics,
             interval=interval,
@@ -256,6 +274,7 @@ class MyT:
         self, vin: str, interval: str = MONTH, from_date: str = None
     ) -> str:
         """Return driving statistics in json"""
+        _LOGGER.debug("Returning it as json...")
         return json.dumps(
             await self.get_driving_statistics(vin, interval, from_date), indent=3
         )

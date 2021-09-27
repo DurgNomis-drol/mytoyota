@@ -4,7 +4,7 @@ description = "Python client for Toyota Connected Services."
 authors = ["Simon Grud Hansen <simongrud@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-version = "0.6.3"
+version = "0.7.0"
 classifiers = [
     "Development Status :: 4 - Beta",
     "License :: OSI Approved :: MIT License",
@@ -39,6 +39,18 @@ flake8-comprehensions = "^3.4.0"
 pylint = "^2.7.2"
 isort = "^5.7.0"
 codespell = "^2.0.0"
+
+[tool.pylint.messages_control]
+# Reasons disabled:
+# too-many-* - not enforced for the sake of readability
+# too-few-* - same as too-many-*
+disable = [
+    "too-few-public-methods",
+    "too-many-arguments",
+    "too-many-instance-attributes",
+    "duplicate-code",
+    "logging-fstring-interpolation",
+]
 
 [tool.pylint.format]
 max-line-length = 99
