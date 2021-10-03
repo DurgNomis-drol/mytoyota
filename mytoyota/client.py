@@ -1,4 +1,14 @@
-"""Toyota Connected Services Client"""
+"""Client for connecting to Toyota Connected Services.
+
+A client for connecting to MyT (Toyota Connected Services) and retrieving vehicle
+information, sensor data, fuel level, driving statistics and more.
+
+  Typical usage example:
+
+  client = MyT()
+  vehicles = await client.get_vehicles()
+"""
+
 import asyncio
 import json
 import logging
@@ -33,7 +43,11 @@ _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 
 class MyT:
-    """Toyota Connected Services API class."""
+    """Toyota Connected Services client.
+
+    Toyota connected services client class. This is the class that you
+    should interact with when using this library.
+    """
 
     def __init__(
         self,
@@ -68,7 +82,13 @@ class MyT:
 
     @staticmethod
     def get_supported_regions() -> list:
-        """Return supported regions"""
+        """Get supported regions.
+
+        Retrieves a list of supported regions.
+
+        Returns:
+            A list of supported regions. For example: ["europe"]
+        """
         regions = []
 
         for key, _ in SUPPORTED_REGIONS.items():  # pylint: disable=unused-variable
@@ -77,16 +97,47 @@ class MyT:
         return regions
 
     async def login(self) -> None:
-        """Login to Toyota services"""
+        """Performs first login.
+
+        Performs first login to Toyota's servers. Should be ideally be used
+        the very first time you login in. Fetches a token and stores it in
+        the controller object for future use.
+
+        """
         _LOGGER.debug("Performing first login")
         await self.api.controller.first_login()
 
     async def get_uuid(self) -> str:
-        """Get uuid"""
+        """Get UUID.
+
+        Retrieves the UUID returned for the account.
+
+        Returns:
+            UUIDv4 unique ID for the logged in account. Example:
+
+            9cc70412-27d6-4b81-83fb-542b3a9feb65
+        """
         return await self.api.uuid()
 
     async def set_alias(self, vehicle_id: int, new_alias: str) -> dict:
-        """Sets a new alias for the car"""
+        """Set a new alias for your vehicle.
+
+        Sets a new alias for a vehicle specified by its vehicle id.
+
+        Args:
+            vehicle_id (int): Vehicle id is a 7 digit number identifying your vehicle.
+            new_alias (str): New alias of the vehicle.
+
+        Returns:
+            Returns a dict containing the changed alias and the vehicle id. Example:
+
+            {"id":"2199911","alias":"lightning mcqueen"}
+
+        Raises:
+            ToyotaLoginError: An error returned when updating token or invalid login information.
+            ToyotaInternalError: An error occurred when making a request.
+            ToyotaApiError: Toyota's API returned an error.
+        """
         _LOGGER.debug(
             f"Setting new alias: {new_alias} for vehicle with id: {vehicle_id}"
         )
@@ -96,14 +147,74 @@ class MyT:
         return result
 
     async def get_vehicles(self) -> list:
-        """Return list of vehicles with basic information about them"""
+        """Returns a list of vehicles.
+
+        Retrieves list of vehicles associated with the account. The list contains static
+        information about the vehicle, numberplate and starter battery health.
+
+        Returns:
+            Returns a list containing mostly static information about a vehicle. Example:
+
+            [
+               {
+                  "id":1111111,
+                  "vin":"XXXXGNEC00NXXXXXX",
+                  "isNC":true,
+                  "batteryHealth":"GOOD",
+                  "alias":"Aygo",
+                  "owner":true,
+                  "claimedBy":"MT-EHUB",
+                  "startDate":"2021-03-19T09:20:42.152Z",
+                  "vehicleAddedOn":"2021-03-12T09:43:42.350Z",
+                  "isEntitled":true,
+                  "entitledBy":"MT-EHUB",
+                  "entitledOn":"2021-03-19T09:20:42.152Z",
+                  "ownerFlag":true,
+                  "source":"NMSC",
+                  "horsePower":72,
+                  "hybrid":false,
+                  "fuel":"1.0P",
+                  "engine":"1.0P",
+                  "transmissionType":"MT",
+                  "transmission":"5 M/T",
+                  "grade":"Mid/High",
+                  "modelName":"Aygo 2B",
+                  "modelCode":"AY",
+                  "interiorColour":"20",
+                  "exteriorColour":"1E0 ",
+                  "imageUrl":"https://dj3z27z47basa.cloudfront.net/5957a713-f80f-483f-998c-97f956367048",  # pylint: disable=line-too-long
+                  "modelDocumentId":"12345",
+                  "productionYear":"2021",
+                  "licensePlate":"XX11111",
+                  "modelDescription":"Aygo 2B"
+               }
+            ]
+
+        Raises:
+            ToyotaLoginError: An error returned when updating token or invalid login information.
+            ToyotaInternalError: An error occurred when making a request.
+            ToyotaApiError: Toyota's API returned an error.
+        """
         _LOGGER.debug("Getting list of vehicles associated with the account")
         vehicles = await self.api.get_vehicles_endpoint()
         if vehicles:
             return vehicles
 
     async def get_vehicles_json(self) -> str:
-        """Return vehicle list as json"""
+        """Returns a list of vehicles as json string.
+
+        Retrieves list of vehicles associated with the account. The list contains static
+        information about the vehicle, numberplate and starter battery health.
+        Returns it as a json string.
+
+        Returns:
+            See get_vehicles() for an example of what this function returns.
+
+        Raises:
+            ToyotaLoginError: An error returned when updating token or invalid login information.
+            ToyotaInternalError: An error occurred when making a request.
+            ToyotaApiError: Toyota's API returned an error.
+        """
         vehicles = await self.get_vehicles()
 
         _LOGGER.debug("Returning it as json...")
@@ -111,7 +222,22 @@ class MyT:
         return json_string
 
     async def get_vehicle_status(self, vehicle: dict) -> Vehicle:
-        """Return information for given vehicle"""
+        """Returns vehicle status.
+
+        Collects and formats different vehicle status endpoints into
+        a easy accessible vehicle object.
+
+        Args:
+            vehicle (dict): dict for each vehicle returned in get_vehicles().
+
+        Returns:
+            Vehicle object containing odometer information, parking information, fuel and more.
+
+        Raises:
+            ToyotaLoginError: An error returned when updating token or invalid login information.
+            ToyotaInternalError: An error occurred when making a request.
+            ToyotaApiError: Toyota's API returned an error.
+        """
         _LOGGER.debug(f"Getting status for vehicle - {vehicle}...")
 
         vin = vehicle["vin"]
@@ -137,7 +263,22 @@ class MyT:
         return car
 
     async def get_vehicle_status_json(self, vehicle: dict) -> str:
-        """Return vehicle information as json"""
+        """Returns vehicle status as json string.
+
+        Collects and formats different vehicle status endpoints into
+        a easy accessible vehicle object.
+
+        Args:
+            vehicle (dict): dict for each vehicle returned in get_vehicles().
+
+        Returns:
+            Json string containing odometer information, parking information, fuel and more.
+
+        Raises:
+            ToyotaLoginError: An error returned when updating token or invalid login information.
+            ToyotaInternalError: An error occurred when making a request.
+            ToyotaApiError: Toyota's API returned an error.
+        """
         vehicle = await self.get_vehicle_status(vehicle)
 
         _LOGGER.debug("Returning it as json")
@@ -147,23 +288,60 @@ class MyT:
     async def get_driving_statistics(  # pylint: disable=too-many-branches
         self, vin: str, interval: str = MONTH, from_date: str = None, unit: str = METRIC
     ) -> list:
-        """
-        params: vin: Vin number of your car.
-                interval: can be "day", "week", "isoweek", "month" or "year". Default "month"
-                from_date: from which date you want statistics. Default is current day,
-                week or month if None.
+        """Returns driving statistics from a given period.
 
-                "day" will return yesterday
+        Retrieves and formats driving statistics from a given periode. Will return
+        a error message on the first of each week, month or year. Or if no rides have been
+        performed in the given periode. This is due to a Toyota API limitation.
 
-                "week" uses Japan weeknumbers and not ISOweeknumbers.
+        Args:
+            vin (str):
+                Vin number of vehicle you want statistics for.
+            interval (str):
+                Possible intervals are: "day", "week", "isoweek", "month" or "year".
+                Defaults to "month" if none specified.
+                Beware that "week" returns a week that starts on sunday and not monday.
+                Use "isoweek" for a `normal` week. "isoweek" can only get data from
+                the last/current week.
+            from_date (str):
+                Date-string format: "YYYY-MM-DD".
+                Defaults to current day or the first of current week, month or year
+                depending interval chosen.
+            unit (str):
+                Can be either: "metric", "imperial" OR "imperial_liters".
+                Defaults to "metric".
 
-                Use "isoweek" if you want Monday to Sunday. "week" returns Sunday to Saturday.
+        Returns:
+            A list of data points for the given periode. Example response with interval "isoweek":
 
-                Will return a error message if no ride have been performed in the timeframe
-                or no data is available yet.
+            [
+                {
+                    "bucket": {
+                        "year": "2021",
+                        "week": "39",
+                        "unit": "metric",
+                        "periode_start": "2021-09-27"
+                    },
+                    "data": {
+                        "tripCount": 17,
+                        "totalDistanceInKm": 222.793,
+                        "totalDurationInSec": 13893,
+                        "idleDurationInSec": 852,
+                        "highwayDistanceInKm": 66.206,
+                        "nightTripsCount": 1,
+                        "hardAccelerationCount": 23,
+                        "hardBrakingCount": 12,
+                        "averageSpeedInKmph": 57.730867,
+                        "maxSpeedInKmph": 134.0,
+                        "highwayDistancePercentage": 29.716373494678916
+                    }
+                }
+            ]
 
-                On the first of each week, month or year. This will return an error message.
-                This is due to a Toyota API limitation.
+        Raises:
+            ToyotaLoginError: An error returned when updating token or invalid login information.
+            ToyotaInternalError: An error occurred when making a request.
+            ToyotaApiError: Toyota's API returned an error.
         """
 
         _LOGGER.debug(f"Getting statistics for {vin}...")
@@ -273,7 +451,22 @@ class MyT:
     async def get_driving_statistics_json(
         self, vin: str, interval: str = MONTH, from_date: str = None
     ) -> str:
-        """Return driving statistics in json"""
+        """Returns driving statistics from a given period as json.
+
+        Retrieves and formats driving statistics from a given periode. Will return
+        a error message on the first of each week, month or year. Or if no rides have been
+        performed in the given periode. This is due to a Toyota API limitation.
+
+        See get_driving_statistics() for args.
+
+        Returns:
+            Pretty printed json string.
+
+        Raises:
+            ToyotaLoginError: An error returned when updating token or invalid login information.
+            ToyotaInternalError: An error occurred when making a request.
+            ToyotaApiError: Toyota's API returned an error.
+        """
         _LOGGER.debug("Returning it as json...")
         return json.dumps(
             await self.get_driving_statistics(vin, interval, from_date), indent=3
