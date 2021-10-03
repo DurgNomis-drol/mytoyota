@@ -12,7 +12,7 @@ class Hood:
     warning: bool = False
     closed: bool = True
 
-    def __init__(self, hood):
+    def __init__(self, hood: dict) -> None:
         self.warning = hood.get(WARNING, None)
         self.closed = hood.get(CLOSED, None)
 
@@ -31,7 +31,7 @@ class Door:
     closed: bool = True
     locked: bool = True
 
-    def __init__(self, door) -> None:
+    def __init__(self, door: dict) -> None:
         self.warning = door.get(WARNING, None)
         self.closed = door.get(CLOSED, None)
         self.locked = door.get(LOCKED, None)
@@ -61,11 +61,11 @@ class Doors:
     def __init__(self, doors: dict):
         self.warning = doors[WARNING]
 
-        self.driverseat = Door(doors.get("driverSeatDoor", None))
-        self.passengerseat = Door(doors.get("passengerSeatDoor", None))
-        self.rightrearseat = Door(doors.get("rearRightSeatDoor", None))
-        self.leftrearseat = Door(doors.get("rearLeftSeatDoor", None))
-        self.trunk = Door(doors.get("backDoor", None))
+        self.driverseat = Door(doors.get("driverSeatDoor", {}))
+        self.passengerseat = Door(doors.get("passengerSeatDoor", {}))
+        self.rightrearseat = Door(doors.get("rearRightSeatDoor", {}))
+        self.leftrearseat = Door(doors.get("rearLeftSeatDoor", {}))
+        self.trunk = Door(doors.get("backDoor", {}))
 
     def __str__(self) -> str:
         return str(self.as_dict())
@@ -113,13 +113,13 @@ class Windows:
 
     warning: bool = False
 
-    def __init__(self, windows):
+    def __init__(self, windows: dict) -> None:
         self.warning = windows[WARNING]
 
-        self.driverseat = Window(windows.get("driverSeatWindow", None))
-        self.passengerseat = Window(windows.get("passengerSeatWindow", None))
-        self.rightrearseat = Window(windows.get("rearRightSeatWindow", None))
-        self.leftrearseat = Window(windows.get("rearLeftSeatWindow", None))
+        self.driverseat = Window(windows.get("driverSeatWindow", {}))
+        self.passengerseat = Window(windows.get("passengerSeatWindow", {}))
+        self.rightrearseat = Window(windows.get("rearRightSeatWindow", {}))
+        self.leftrearseat = Window(windows.get("rearLeftSeatWindow", {}))
 
     def __str__(self) -> str:
         return str(self.as_dict())
@@ -141,7 +141,7 @@ class Light:
     warning: bool = False
     off: bool = True
 
-    def __init__(self, light):
+    def __init__(self, light: dict) -> None:
         self.warning = light.get(WARNING, None)
         self.off = light.get(OFF, None)
 
@@ -164,12 +164,12 @@ class Lights:
     hazard: Light
     warning: bool = False
 
-    def __init__(self, lights):
+    def __init__(self, lights: dict) -> None:
         self.warning = lights.get(WARNING, None)
 
-        self.front = Light(lights.get("headLamp", None))
-        self.back = Light(lights.get("tailLamp", None))
-        self.hazard = Light(lights.get("hazardLamp", None))
+        self.front = Light(lights.get("headLamp", {}))
+        self.back = Light(lights.get("tailLamp", {}))
+        self.hazard = Light(lights.get("hazardLamp", {}))
 
     def __str__(self) -> str:
         return str(self.as_dict())
@@ -190,7 +190,7 @@ class Key:
     warning: bool = False
     in_car: bool = False
 
-    def __init__(self, key):
+    def __init__(self, key: dict) -> None:
         self.warning = key.get(WARNING, None)
         self.in_car = key.get(INCAR, None)
 
