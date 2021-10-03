@@ -69,7 +69,9 @@ async def get_information():
 
 
         # You can access odometer data like this:
-        fuel = vehicle.odometer.fuel
+        mileage = vehicle.odometer.mileage
+        # Or retrieve the energy level (electric or gasoline)
+        fuel = vehicle.energy.level
         # Or Parking information:
         latitude = vehicle.parking.latitude
 
