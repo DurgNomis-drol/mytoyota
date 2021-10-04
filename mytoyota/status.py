@@ -4,6 +4,7 @@ from typing import Optional, Union
 
 from mytoyota.const import DOORS, HOOD, KEY, LIGHTS, WINDOWS
 from mytoyota.sensors import Doors, Hood, Key, Lights, Windows
+from mytoyota.utils import convert_to_miles
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -78,7 +79,14 @@ class Energy:
 
     chargeinfo: dict = None
 
-    def __init__(self, data: Union[list, dict] = None, legacy: bool = False):
+    _is_imperial: bool = False
+
+    def __init__(
+        self, data: Union[list, dict] = None, unit: str = "km", legacy: bool = False
+    ):
+
+        if unit == "mi":
+            self._is_imperial = True
 
         # Support for old endpoint for fuel level. Some cars still uses this.
         if legacy:
@@ -95,8 +103,15 @@ class Energy:
 
     def _set(self, data: list) -> None:
         """Set attributes"""
+
+        range_in_km = data[0].get("remainingRange", None)
+
         self.level = data[0].get("level", None)
-        self.range = data[0].get("remainingRange", None)
+        self.range = (
+            convert_to_miles(range_in_km)
+            if range_in_km is not None and self._is_imperial
+            else range_in_km
+        )
         self.type = data[0].get("type", "Unknown").capitalize()
         self.last_updated = data[0].get("timestamp", None)
 
@@ -109,8 +124,19 @@ class Energy:
     def set_battery_attributes(self, data: dict) -> None:
         """Set charge info from legacy endpoint"""
 
-        self.range = data.get("EvDistanceInKm", None)
-        self.range_with_aircon = data.get("EvDistanceWithAirCoInKm", None)
+        range_in_km = data.get("EvDistanceInKm", None)
+        range_in_km_with_aircon = data.get("EvDistanceWithAirCoInKm", None)
+
+        self.range = (
+            convert_to_miles(range_in_km)
+            if range_in_km is not None and self._is_imperial
+            else range_in_km
+        )
+        self.range_with_aircon = (
+            convert_to_miles(range_in_km_with_aircon)
+            if range_in_km_with_aircon is not None and self._is_imperial
+            else range_in_km_with_aircon
+        )
 
         self.chargeinfo = {
             "status": data.get("ChargingStatus", None),

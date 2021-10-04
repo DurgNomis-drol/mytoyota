@@ -129,6 +129,6 @@ dmypy.json
 .pyre/
 
 
-/test.py
 .myt_app/
 tests/
+/blahblah.py
