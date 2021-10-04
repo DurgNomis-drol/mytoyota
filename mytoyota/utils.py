@@ -35,6 +35,7 @@ def format_odometer(raw: list) -> dict:
 
 def convert_to_miles(kilometers: float) -> float:
     """Convert kilometers to miles"""
+    _LOGGER.debug(f"Converting {kilometers} to miles...")
     return round(kilometers * 0.621371192, 4)
 
 
