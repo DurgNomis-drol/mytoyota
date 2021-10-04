@@ -84,7 +84,7 @@ class Vehicle:
             # Extract fuel level/Energy capacity information from status.
             if "energy" in status:
                 _LOGGER.debug("Using energy data: %s", str(status.get("energy")))
-                self.energy = Energy(status.get("energy"))
+                self.energy = Energy(status.get("energy"), self.odometer.unit)
             # Use legacy odometer to get fuel level. Older cars still uses this.
             elif odometer:
                 _LOGGER.debug("Using legacy odometer data: %s", str(odometer))
