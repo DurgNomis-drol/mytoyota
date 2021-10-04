@@ -76,14 +76,21 @@ class Vehicle:
 
             remote_control_info = remote_control.get("VehicleInfo", {})
 
+            # Extract mileage and if the car reports in km or mi
+            self.odometer = (
+                Odometer(format_odometer(odometer)) if odometer else Odometer({})
+            )
+
             # Extract fuel level/Energy capacity information from status.
             if "energy" in status:
                 _LOGGER.debug("Using energy data: %s", str(status.get("energy")))
-                self.energy = Energy(status.get("energy"))
+                self.energy = Energy(status.get("energy"), self.odometer.unit)
             # Use legacy odometer to get fuel level. Older cars still uses this.
             elif odometer:
                 _LOGGER.debug("Using legacy odometer data: %s", str(odometer))
-                self.energy = Energy(format_odometer(odometer), True)
+                self.energy = Energy(
+                    format_odometer(odometer), self.odometer.unit, True
+                )
                 fueltype = self.details.get("fuel", "Unknown")
                 # PATCH: Toyota Aygo reports wrong type.
                 if fueltype == "1.0P":
@@ -94,11 +101,6 @@ class Vehicle:
                     self.energy.set_battery_attributes(
                         remote_control_info.get("ChargeInfo", {})
                     )
-
-            # Extract mileage and if the car reports in km or mi
-            self.odometer = (
-                Odometer(format_odometer(odometer)) if odometer else Odometer({})
-            )
 
             # Extract parking information from status.
             self.parking = ParkingLocation(status.get("event", {}))
