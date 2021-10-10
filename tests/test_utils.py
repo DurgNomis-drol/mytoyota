@@ -36,7 +36,6 @@ class TestUtils:
             "",
             None,
             "something_invalid",
-            "en",
             "en-u",
             "en-us-nl-nl",
         ],
