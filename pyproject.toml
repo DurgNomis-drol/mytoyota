@@ -39,6 +39,7 @@ flake8-comprehensions = "^3.4.0"
 pylint = "^2.7.2"
 isort = "^5.7.0"
 codespell = "^2.0.0"
+pytest = "^6.2.5"
 
 [tool.pylint.messages_control]
 # Reasons disabled:
