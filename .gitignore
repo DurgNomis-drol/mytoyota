@@ -132,3 +132,4 @@ dmypy.json
 .vs/
 
 .myt_app/
+/blahblah.py
