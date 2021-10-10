@@ -11,7 +11,7 @@ _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 def is_valid_locale(locale: str) -> bool:
     """Is locale string valid."""
-    return Language.make(locale).is_valid()
+    return Language.get(locale).is_valid()
 
 
 def is_valid_token(token: str) -> bool:
