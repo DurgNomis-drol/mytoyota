@@ -33,15 +33,15 @@ class TestUtils:
     @pytest.mark.parametrize(
         "invalid_locale",
         [
-            # "",
-            # joro75: Should be fixed, waiting for other PR to be accepted
-            # None,
-            # 'something',
-            # 'en-u',
-            # 'en-us-nl-nl',
+            "",
+            None,
+            "something_invalid",
+            "en",
+            "en-u",
+            "en-us-nl-nl",
         ],
     )
-    def disabled_test_not_is_valid_locale(self, invalid_locale: str):
+    def test_not_is_valid_locale(self, invalid_locale: str):
         """Test invalid cases for is_valid_locale"""
         assert not is_valid_locale(invalid_locale)
 
