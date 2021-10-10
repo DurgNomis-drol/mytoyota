@@ -16,10 +16,12 @@ def is_valid_locale(locale: str) -> bool:
 
 def is_valid_token(token: str) -> bool:
     """Checks if token is the correct length"""
-    if len(token) == TOKEN_LENGTH and token.endswith("..*"):
+    if token and len(token) == TOKEN_LENGTH and token.endswith("..*"):
         return True
 
-    raise ToyotaInvalidToken("Token must end with '..*' and be 114 characters long.")
+    raise ToyotaInvalidToken(
+        f"Token must end with '..*' and be {TOKEN_LENGTH} characters long."
+    )
 
 
 def format_odometer(raw: list) -> dict:
