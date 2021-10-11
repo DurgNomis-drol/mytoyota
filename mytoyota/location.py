@@ -7,16 +7,16 @@ _LOGGER: logging.Logger = logging.getLogger(__package__)
 class ParkingLocation:
     """ParkingLocation representation"""
 
-    latitude: float = None
-    longitude: float = None
-    timestamp: int = None
+    latitude: float = 0.0
+    longitude: float = 0.0
+    timestamp: int = 0
 
     def __init__(self, parking: dict) -> None:
         _LOGGER.debug("Raw parking location data: %s", str(parking))
 
-        self.latitude = float(parking.get("lat", None))
-        self.longitude = float(parking.get("lon", None))
-        self.timestamp = int(parking.get("timestamp", None))
+        self.latitude = float(parking.get("lat", 0.0))
+        self.longitude = float(parking.get("lon", 0.0))
+        self.timestamp = int(parking.get("timestamp", 0))
 
     def __str__(self) -> str:
         return str(self.as_dict())
