@@ -101,9 +101,9 @@ class TestUtils:
     @pytest.mark.parametrize(
         "liters_km,mpg",
         [
+            (0, 0),
+            (0.01, 28250.0),
             (1, 282.5),
-            # Joro75: A divide by zero is triggered!!
-            # (0, 0),
             (12, 23.5417),
         ],
     )
