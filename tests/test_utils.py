@@ -65,8 +65,7 @@ class TestUtils:
             "234234",
             "0" * 110 + "..*",
             "." * 112 + "..*",
-            # joro75: a TypeError exception is raised.
-            # None,
+            None,
             "",
         ],
     )
