@@ -56,6 +56,7 @@ class MyT:
         locale: str,
         region: str,
         uuid: str = None,
+        controller_class=Controller,
     ) -> None:
         """Toyota API"""
 
@@ -71,7 +72,7 @@ class MyT:
             )
 
         self.api = Api(
-            Controller(
+            controller_class(
                 username=username,
                 password=password,
                 locale=locale,

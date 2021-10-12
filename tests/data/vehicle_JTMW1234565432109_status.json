@@ -1,0 +1,87 @@
+{
+  "event": {
+    "lat": "53.5262133",
+    "lon": "8.954699",
+    "timestamp": "1634051916000"
+  },
+  "tripStatus": "0",
+  "protectionState": {
+    "overallStatus": "OK",
+    "timestamp": "2021-10-12T15:22:53Z",
+    "doors": {
+      "warning": false,
+      "driverSeatDoor": {
+        "warning": false,
+        "closed": true,
+        "locked": true
+      },
+      "passengerSeatDoor": {
+        "warning": false,
+        "closed": true,
+        "locked": true
+      },
+      "rearRightSeatDoor": {
+        "warning": false,
+        "closed": true,
+        "locked": true
+      },
+      "rearLeftSeatDoor": {
+        "warning": false,
+        "closed": true,
+        "locked": true
+      },
+      "backDoor": {
+        "warning": false,
+        "closed": true,
+        "locked": true
+      }
+    },
+    "hood": {
+      "closed": true,
+      "warning": false
+    },
+    "lamps": {
+      "warning": false,
+      "headLamp": {
+        "warning": false,
+        "off": true
+      },
+      "tailLamp": {
+        "warning": false,
+        "off": true
+      },
+      "hazardLamp": {
+        "warning": false,
+        "off": true
+      }
+    },
+    "windows": {
+      "warning": false,
+      "driverSeatWindow": {
+        "warning": false,
+        "state": "close"
+      },
+      "passengerSeatWindow": {
+        "warning": false,
+        "state": "close"
+      },
+      "rearRightSeatWindow": {
+        "warning": false,
+        "state": "close"
+      },
+      "rearLeftSeatWindow": {
+        "warning": false,
+        "state": "close"
+      }
+    },
+    "key": {
+      "warning": false,
+      "inCar": false
+    },
+    "lock": {
+      "lockState": "locked",
+      "source": "key",
+      "failedUnlockPreconditions": ["alarmLocked"]
+    }
+  }
+}

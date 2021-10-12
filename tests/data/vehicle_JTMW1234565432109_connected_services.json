@@ -1,0 +1,37 @@
+{
+  "id": 2571281,
+  "vin": "JTMW1234565432109",
+  "isNC": false,
+  "alias": "RAV4",
+  "owner": true,
+  "claimedBy": "TME-ADMIN-TNL-SERVICES",
+  "startDate": "2021-08-30T16:01:29.174Z",
+  "vehicleAddedOn": "2021-08-30T16:01:29.162Z",
+  "isEntitled": true,
+  "entitledBy": "TME-ADMIN-TNL-SERVICES",
+  "entitledOn": "2021-08-30T16:01:29.174Z",
+  "hasAutomaticMMRegistration": false,
+  "ownerFlag": true,
+  "source": "NMSC",
+  "connected": true,
+  "connectedService": {
+    "devices": [
+      {
+        "deviceId": "987654321012345",
+        "provider": "DCM19",
+        "subState": "ACTIVE",
+        "state": "ACTIVE",
+        "vin": "JTMW1234565432109",
+        "linkedWithCustomer": true,
+        "customerId": "be8e1ebc-914c-4e18-9b5e-951d7d324686",
+        "brand": "TOYOTA",
+        "countryOfUsage": "NL"
+      }
+    ],
+    "registrationPreReqs": [],
+    "registrationTerms": [],
+    "status": "ACTIVE",
+    "wifiBoxData": null
+  },
+  "fud": false
+}
