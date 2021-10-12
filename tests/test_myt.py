@@ -1,6 +1,6 @@
 """pytest tests for mytoyota.client.MyT"""
 
-import pytest
+import pytest  # pylint: disable=import-error
 
 from mytoyota.client import MyT
 from mytoyota.exceptions import (
