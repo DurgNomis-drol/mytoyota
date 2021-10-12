@@ -59,7 +59,7 @@ class MyT:
     ) -> None:
         """Toyota API"""
 
-        if "@" not in username:
+        if username is None or "@" not in username:
             raise ToyotaInvalidUsername
 
         if region not in SUPPORTED_REGIONS:
