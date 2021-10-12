@@ -1,5 +1,6 @@
 """Sensor representation for mytoyota"""
 import logging
+from typing import Optional
 
 from mytoyota.const import CLOSED, INCAR, LOCKED, OFF, STATE, WARNING
 
@@ -9,12 +10,9 @@ _LOGGER: logging.Logger = logging.getLogger(__package__)
 class Hood:
     """Representation of the hood of the car"""
 
-    warning: bool = False
-    closed: bool = True
-
     def __init__(self, hood: dict) -> None:
-        self.warning = hood.get(WARNING, None)
-        self.closed = hood.get(CLOSED, None)
+        self.warning: Optional[bool] = hood.get(WARNING, None)
+        self.closed: Optional[bool] = hood.get(CLOSED, None)
 
     def __str__(self) -> str:
         return str(self.as_dict())
@@ -27,14 +25,10 @@ class Hood:
 class Door:
     """Representation of a door"""
 
-    warning: bool = False
-    closed: bool = True
-    locked: bool = True
-
     def __init__(self, door: dict) -> None:
-        self.warning = door.get(WARNING, None)
-        self.closed = door.get(CLOSED, None)
-        self.locked = door.get(LOCKED, None)
+        self.warning: Optional[bool] = door.get(WARNING, None)
+        self.closed: Optional[bool] = door.get(CLOSED, None)
+        self.locked: Optional[bool] = door.get(LOCKED, None)
 
     def __str__(self) -> str:
         return str(self.as_dict())
@@ -85,12 +79,9 @@ class Doors:
 class Window:
     """Representation of a window"""
 
-    warning: bool = False
-    state: str = None
-
     def __init__(self, window) -> None:
-        self.warning = window.get(WARNING, None)
-        self.state = window.get(STATE, None)
+        self.warning: Optional[bool] = window.get(WARNING, None)
+        self.state: Optional[str] = window.get(STATE, None)
 
     def __str__(self) -> str:
         return str(self.as_dict())
@@ -138,12 +129,9 @@ class Windows:
 class Light:
     """Representation of the lights"""
 
-    warning: bool = False
-    off: bool = True
-
     def __init__(self, light: dict) -> None:
-        self.warning = light.get(WARNING, None)
-        self.off = light.get(OFF, None)
+        self.warning: Optional[bool] = light.get(WARNING, None)
+        self.off: Optional[bool] = light.get(OFF, None)
 
     def __str__(self) -> str:
         return str(self.as_dict())
@@ -187,12 +175,9 @@ class Lights:
 class Key:
     """Representation of the ignition"""
 
-    warning: bool = False
-    in_car: bool = False
-
     def __init__(self, key: dict) -> None:
-        self.warning = key.get(WARNING, None)
-        self.in_car = key.get(INCAR, None)
+        self.warning: Optional[bool] = key.get(WARNING, None)
+        self.in_car: Optional[bool] = key.get(INCAR, None)
 
     def __str__(self) -> str:
         return str(self.as_dict())
