@@ -1,6 +1,6 @@
 """pytest tests for mytoyota.location.ParkingLocation"""
 
-from mytoyota.location import ParkingLocation
+from mytoyota.location import ParkingLocation  # pylint: disable=import-error
 
 # pylint: disable=no-self-use
 
