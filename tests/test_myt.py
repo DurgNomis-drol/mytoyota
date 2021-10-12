@@ -6,7 +6,7 @@ import os.path
 import re
 from typing import Optional, Union
 
-import pytest
+import pytest  # pylint: disable=import-error
 
 from mytoyota.client import MyT
 from mytoyota.exceptions import (
