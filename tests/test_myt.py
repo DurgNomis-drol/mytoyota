@@ -65,8 +65,6 @@ class OfflineController:
             raise ToyotaInternalError("Invalid request method provided")
 
         _ = base_url
-        _ = params
-        _ = headers
 
         data_files = os.path.join(os.path.curdir, "tests", "data")
 
@@ -110,6 +108,15 @@ class OfflineController:
             vin = match.group(1)
             response = self._load_from_file(
                 os.path.join(data_files, f"vehicle_{vin}_status_legacy.json")
+            )
+
+        match = re.match(r"/v2/trips/summarize", endpoint)
+        if match:
+            # We should retrieve the driving statistics
+            vin = headers["vin"]
+            interval = params["calendarInterval"]
+            response = self._load_from_file(
+                os.path.join(data_files, f"vehicle_{vin}_statistics_{interval}.json")
             )
 
         return response
@@ -261,3 +268,34 @@ class TestMyT:
             myt.get_vehicle_status_json(vehicle)
         )
         assert json.loads(status_json) is not None
+
+    @pytest.mark.parametrize(
+        "interval,unit",
+        [
+            ("day", "metric"),
+            ("day", "imperial"),
+            ("day", "imperial_liters"),
+            ("week", "metric"),
+            ("week", "imperial"),
+            ("week", "imperial_liters"),
+            ("isoweek", "metric"),
+            ("isoweek", "imperial"),
+            ("isoweek", "imperial_liters"),
+            ("month", "metric"),
+            ("month", "imperial"),
+            ("month", "imperial_liters"),
+            ("year", "metric"),
+            ("year", "imperial"),
+            ("year", "imperial_liters"),
+        ],
+    )
+    def test_get_driving_statistics(self, interval, unit):
+        """Test the retrieval of the status of a vehicle"""
+        myt = self._create_offline_myt()
+        vehicle = self._lookup_vehicle(myt, 4444444)
+        assert vehicle is not None
+        # Retrieve the actual status of the vehicle
+        statistics = asyncio.get_event_loop().run_until_complete(
+            myt.get_driving_statistics(vehicle["vin"], interval, unit=unit)
+        )
+        assert statistics is not None
