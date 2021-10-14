@@ -65,13 +65,19 @@ class OfflineController:
             raise ToyotaInternalError("Invalid request method provided")
 
         _ = base_url
-        _ = body
         _ = params
         _ = headers
 
         data_files = os.path.join(os.path.curdir, "tests", "data")
 
         response = None
+
+        match = re.match(r"/api/users/.*/vehicles/.*", endpoint)
+        if match:
+            # A new alias is set
+            # We should return a predefined dictionary
+            response = {"id": str(body["id"]), "alias": body["alias"]}
+
         match = re.match(r".*/vehicles\?.*services=uio", endpoint)
         if match:
             response = self._load_from_file(os.path.join(data_files, "vehicles.json"))
@@ -200,6 +206,15 @@ class TestMyT:
         uuid = asyncio.get_event_loop().run_until_complete(myt.get_uuid())
         assert uuid
         assert len(uuid) > 0
+
+    def test_set_alias(self):
+        """Test the set_alias"""
+        myt = self._create_offline_myt()
+        result = asyncio.get_event_loop().run_until_complete(
+            myt.set_alias(4444444, "pytest_vehicle")
+        )
+        assert isinstance(result, (dict))
+        assert result == {"id": "4444444", "alias": "pytest_vehicle"}
 
     def test_get_vehicles(self):
         """Test the retrieval of the available vehicles"""
