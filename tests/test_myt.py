@@ -82,7 +82,9 @@ class OfflineController:
         if match:
             response = self._load_from_file(os.path.join(data_files, "vehicles.json"))
 
-        match = re.match(r".*/vehicle/([^/]+)/\?.*services=fud,connected", endpoint)
+        match = re.match(
+            r"/vehicle/user/.*/vehicle/([^?]+)\?.*services=fud,connected", endpoint
+        )
         if match:
             vin = match.group(1)
             response = self._load_from_file(
