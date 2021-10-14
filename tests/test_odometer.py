@@ -8,9 +8,13 @@ from mytoyota.status import Odometer
 class TestOdometer:
     """pytest functions to test Odometer"""
 
+    def _create_example_odometer(self):
+        """Create an ParkingLocation with some predefined example data"""
+        return Odometer({"mileage": 765, "mileage_unit": "km"})
+
     def test_odometer_km(self):
         """Test a mileage specified in km"""
-        odo = Odometer({"mileage": 765, "mileage_unit": "km"})
+        odo = self._create_example_odometer()
         assert odo.mileage == 765
         assert odo.unit == "km"
 
@@ -25,3 +29,17 @@ class TestOdometer:
         odo = Odometer({})
         assert odo.mileage is None
         assert odo.unit is None
+
+    def test_odometer_str(self):
+        """Test Odometer converted to a str"""
+        odo = self._create_example_odometer()
+        string = str(odo)
+        assert isinstance(string, (str))
+        assert string == "{'mileage': 765, 'unit': 'km'}"
+
+    def test_odometer_dict(self):
+        """Test Odometer converted to a dictionary"""
+        odo = self._create_example_odometer()
+        dictionary = odo.as_dict()
+        assert isinstance(dictionary, (dict))
+        assert dictionary == {"mileage": 765, "unit": "km"}
