@@ -95,8 +95,19 @@ class TestSensors:  # pylint: disable=too-many-public-methods
         assert isinstance(doors.leftrearseat, Door)
         assert isinstance(doors.trunk, Door)
 
-        dictionary = doors.as_dict()
+        string = str(doors)
+        assert isinstance(string, str)
+        assert (
+            string == "{'warning': False, "
+            "'driverseat': {'warning': False, 'closed': True, 'locked': False}, "
+            "'passengerseat': {'warning': False, 'closed': True, 'locked': False}, "
+            "'rightrearseat': {'warning': False, 'closed': True, 'locked': False}, "
+            "'leftrearseat': {'warning': False, 'closed': True, 'locked': False}, "
+            "'trunk': {'warning': False, 'closed': True, "
+            "'locked': False}}"
+        )
 
+        dictionary = doors.as_dict()
         assert isinstance(dictionary, dict)
         assert dictionary == {
             "warning": False,
@@ -183,8 +194,17 @@ class TestSensors:  # pylint: disable=too-many-public-methods
         assert isinstance(windows.rightrearseat, Window)
         assert isinstance(windows.leftrearseat, Window)
 
-        dictionary = windows.as_dict()
+        string = str(windows)
+        assert isinstance(string, str)
+        assert (
+            string
+            == "{'warning': False, 'driverseat': {'warning': False, 'state': 'close'}, "
+            "'passengerseat': {'warning': False, 'state': 'close'}, "
+            "'rightrearseat': {'warning': False, 'state': 'close'}, "
+            "'leftrearseat': {'warning': False, 'state': 'close'}}"
+        )
 
+        dictionary = windows.as_dict()
         assert isinstance(dictionary, dict)
         assert dictionary == {
             "warning": False,
@@ -266,8 +286,16 @@ class TestSensors:  # pylint: disable=too-many-public-methods
         assert isinstance(lights.back, Light)
         assert isinstance(lights.hazard, Light)
 
-        dictionary = lights.as_dict()
+        string = str(lights)
+        assert isinstance(string, str)
+        assert (
+            string == "{'warning': False, "
+            "'front': {'warning': False, 'off': True}, "
+            "'back': {'warning': False, 'off': True}, "
+            "'hazard': {'warning': False, 'off': True}}"
+        )
 
+        dictionary = lights.as_dict()
         assert isinstance(dictionary, dict)
         assert dictionary == {
             "warning": False,
