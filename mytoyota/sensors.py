@@ -53,7 +53,7 @@ class Doors:
     warning: bool = False
 
     def __init__(self, doors: dict):
-        self.warning = doors[WARNING]
+        self.warning = doors.get(WARNING, None)
 
         self.driverseat = Door(doors.get("driverSeatDoor", {}))
         self.passengerseat = Door(doors.get("passengerSeatDoor", {}))
@@ -105,7 +105,7 @@ class Windows:
     warning: bool = False
 
     def __init__(self, windows: dict) -> None:
-        self.warning = windows[WARNING]
+        self.warning = windows.get(WARNING, None)
 
         self.driverseat = Window(windows.get("driverSeatWindow", {}))
         self.passengerseat = Window(windows.get("passengerSeatWindow", {}))
