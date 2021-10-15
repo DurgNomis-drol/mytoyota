@@ -68,7 +68,7 @@ class TestEnergy:
         assert energy.last_updated == "2021-09-19T14:02:37Z"
 
     def test_energy_no_data(self):
-        """Test energy in unit mi"""
+        """Test energy with no initialization data"""
         energy = Energy([{}])
 
         assert energy.legacy is False
@@ -79,7 +79,7 @@ class TestEnergy:
         assert energy.last_updated is None
 
     def test_energy_str(self):
-        """Test energy converted to string"""
+        """Test energy converted to a string"""
         energy = Energy(self._create_example_data())
 
         string = str(energy)
@@ -90,7 +90,7 @@ class TestEnergy:
         )
 
     def test_energy_dict(self):
-        """Test energy converted to dict"""
+        """Test energy converted to a dict"""
         energy = Energy(self._create_example_data())
 
         dictionary = energy.as_dict()
@@ -128,7 +128,7 @@ class TestEnergy:
         }
 
     def test_energy_legacy_mi(self):
-        """Test legacy energy in unit km"""
+        """Test legacy energy in unit mi"""
         energy = Energy(self._create_example_legacy_data(), unit="mi", legacy=True)
 
         assert energy.legacy is True
@@ -153,7 +153,7 @@ class TestEnergy:
         }
 
     def test_energy_legacy_no_data(self):
-        """Test energy in unit mi"""
+        """Test energy with no initialization data"""
         energy = Energy({}, legacy=True)
 
         assert energy.legacy is True
@@ -176,7 +176,7 @@ class TestEnergy:
         }
 
     def test_energy_legacy_str(self):
-        """Test energy converted to string"""
+        """Test energy converted to a string"""
         energy = Energy(self._create_example_legacy_data(), legacy=True)
 
         string = str(energy)
@@ -199,7 +199,7 @@ class TestEnergy:
         )
 
     def test_energy_legacy_dict(self):
-        """Test energy converted to dict"""
+        """Test energy converted to a dict"""
         energy = Energy(self._create_example_legacy_data(), legacy=True)
 
         dictionary = energy.as_dict()
