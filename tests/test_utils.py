@@ -7,6 +7,7 @@ from mytoyota.utils import (
     convert_to_liter_per_100_miles,
     convert_to_miles,
     convert_to_mpg,
+    format_odometer,
     is_valid_locale,
     is_valid_token,
 )
@@ -110,3 +111,28 @@ class TestUtils:
     def test_convert_to_mpg(self, liters_km, mpg):
         """Test conversion from liters/100km to miles per gallons"""
         assert convert_to_mpg(liters_km) == mpg
+
+    def test_format_odometer(self):
+        """Test format odometer"""
+
+        raw = [
+            {"type": "mileage", "value": 3205, "unit": "km"},
+            {"type": "Fuel", "value": 22},
+        ]
+
+        formatted = format_odometer(raw)
+
+        assert isinstance(formatted, dict)
+        assert formatted == {
+            "mileage": 3205,
+            "mileage_unit": "km",
+            "Fuel": 22,
+        }
+
+    def test_format_odometer_no_data(self):
+        """Test format odometer with no initialization data"""
+
+        nothing = format_odometer([])
+
+        assert isinstance(nothing, dict)
+        assert nothing == {}
