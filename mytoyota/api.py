@@ -1,11 +1,8 @@
 """Toyota Connected Services API"""
-import logging
 from typing import Optional
 
 from .const import BASE_URL, BASE_URL_CARS
 from .controller import Controller
-
-_LOGGER: logging.Logger = logging.getLogger(__package__)
 
 
 class Api:

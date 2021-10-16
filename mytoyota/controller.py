@@ -24,7 +24,8 @@ from mytoyota.const import (
     UUID,
 )
 from mytoyota.exceptions import ToyotaApiError, ToyotaInternalError, ToyotaLoginError
-from mytoyota.utils import is_valid_token
+from mytoyota.utils.logs import censor_dict
+from mytoyota.utils.token import is_valid_token
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -174,7 +175,7 @@ class Controller:
                 }
             )
 
-        _LOGGER.debug(f"Additional headers: {headers}")
+        _LOGGER.debug(f"Additional headers: {censor_dict(headers.copy())}")
 
         # Cannot authenticate with aiohttp (returns 415),
         # but it works with httpx.
@@ -182,7 +183,7 @@ class Controller:
         _LOGGER.debug(f"Base headers: {BASE_HEADERS} - Timeout: {TIMEOUT}")
         async with httpx.AsyncClient(headers=BASE_HEADERS, timeout=TIMEOUT) as client:
             _LOGGER.debug(
-                f"Requesting {url} - Method: {method} - Body: {body} - Parameters: {params}"
+                f"Body: {censor_dict(body) if body else body} - Parameters: {params}"
             )
             response = await client.request(
                 method, url, headers=headers, json=body, params=params
@@ -210,7 +211,5 @@ class Controller:
                 raise ToyotaInternalError(
                     "HTTP: " + str(response.status_code) + " - " + response.text
                 )
-
-        _LOGGER.debug(f"Raw result: {result}")
 
         return result

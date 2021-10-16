@@ -24,7 +24,7 @@ from mytoyota.const import (
     WEEK,
     YEAR,
 )
-from mytoyota.utils import (
+from mytoyota.utils.conversions import (
     convert_to_liter_per_100_miles,
     convert_to_miles,
     convert_to_mpg,

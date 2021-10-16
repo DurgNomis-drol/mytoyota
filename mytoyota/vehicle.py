@@ -5,7 +5,8 @@ from typing import Optional
 from mytoyota.hvac import Hvac
 from mytoyota.location import ParkingLocation
 from mytoyota.status import Energy, Odometer, Sensors
-from mytoyota.utils import format_odometer
+from mytoyota.utils.formatters import format_odometer
+from mytoyota.utils.logs import censor_vin
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -55,12 +56,8 @@ class Vehicle:
             _LOGGER.error("No vehicle information provided!")
             return
 
-        _LOGGER.debug("Raw connected services data: %s", str(connected_services))
-
         if connected_services is not None:
             self.is_connected = self._has_connected_services_enabled(connected_services)
-
-        _LOGGER.debug("Raw vehicle info: %s", str(vehicle_info))
 
         # Vehicle information
         self.id = vehicle_info.get("id", None)  # pylint: disable=invalid-name
@@ -71,8 +68,6 @@ class Vehicle:
         self.details = self._format_details(vehicle_info)
 
         if self.is_connected:
-
-            _LOGGER.debug("Raw status data: %s", str(status))
 
             remote_control_info = remote_control.get("VehicleInfo", {})
 
@@ -151,13 +146,13 @@ class Vehicle:
 
             _LOGGER.error(
                 "Please setup Connected Services if you want live data from the car. (%s)",
-                self.vin,
+                censor_vin(self.vin),
             )
             return False
         _LOGGER.error(
             "Your vehicle does not support Connected services (%s). You can find out if your "
             "vehicle is compatible by checking the manual that comes with your car.",
-            self.vin,
+            censor_vin(self.vin),
         )
         return False
 

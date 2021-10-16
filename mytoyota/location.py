@@ -12,8 +12,6 @@ class ParkingLocation:
     timestamp: int = 0
 
     def __init__(self, parking: dict) -> None:
-        _LOGGER.debug("Raw parking location data: %s", str(parking))
-
         self.latitude = float(parking.get("lat", 0.0))
         self.longitude = float(parking.get("lon", 0.0))
         self.timestamp = int(parking.get("timestamp", 0))

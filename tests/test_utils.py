@@ -3,16 +3,16 @@
 import pytest  # pylint: disable=import-error
 
 from mytoyota.exceptions import ToyotaInvalidToken
-from mytoyota.utils import (
+
+# pylint: disable=no-self-use
+from mytoyota.utils.conversions import (
     convert_to_liter_per_100_miles,
     convert_to_miles,
     convert_to_mpg,
-    format_odometer,
-    is_valid_locale,
-    is_valid_token,
 )
-
-# pylint: disable=no-self-use
+from mytoyota.utils.formatters import format_odometer
+from mytoyota.utils.locale import is_valid_locale
+from mytoyota.utils.token import is_valid_token
 
 
 class TestUtils:
