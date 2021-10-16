@@ -36,8 +36,8 @@ class TestLogUtilities:
         """Test censor_location"""
         location = censor_location({"timestamp": 987654, "lat": 1.234, "lon": 5.678})
 
-        assert location["lat"] == "CENSORED"
-        assert location["lon"] == "CENSORED"
+        assert location["lat"] == "********"
+        assert location["lon"] == "********"
         assert location["timestamp"] == 987654
 
     def test_censor_location_no_data(self):

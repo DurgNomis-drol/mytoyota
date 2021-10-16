@@ -33,9 +33,9 @@ def censor_location(location) -> dict:
     Replaces lat and lon wth text CENSORED
     """
     if "lat" in location:
-        location["lat"] = "CENSORED"
+        location["lat"] = "********"
     if "lon" in location:
-        location["lon"] = "CENSORED"
+        location["lon"] = "********"
     return location
 
 
