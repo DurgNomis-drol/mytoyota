@@ -28,17 +28,6 @@ def censor_vin(vin) -> str:
     return vin[:-8] + "********" if vin else vin
 
 
-def censor_location(location) -> dict:
-    """
-    Replaces lat and lon wth text CENSORED
-    """
-    if "lat" in location:
-        location["lat"] = "********"
-    if "lon" in location:
-        location["lon"] = "********"
-    return location
-
-
 def censor_dict(dictionary) -> dict:
     """
     Censors token, vin and other private info in a dict.

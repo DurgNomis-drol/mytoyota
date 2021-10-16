@@ -1,6 +1,6 @@
 """pytest tests for mytoyota.utils.logs"""
 
-from mytoyota.utils.logs import censor, censor_dict, censor_location, censor_vin
+from mytoyota.utils.logs import censor, censor_dict, censor_vin
 
 # pylint: disable=no-self-use
 
@@ -31,21 +31,6 @@ class TestLogUtilities:
         vin = censor_vin("")
 
         assert vin == ""
-
-    def test_censor_location(self):
-        """Test censor_location"""
-        location = censor_location({"timestamp": 987654, "lat": 1.234, "lon": 5.678})
-
-        assert location["lat"] == "********"
-        assert location["lon"] == "********"
-        assert location["timestamp"] == 987654
-
-    def test_censor_location_no_data(self):
-        """Test censor_location"""
-        location = censor_location({})
-
-        assert isinstance(location, dict)
-        assert location == {}
 
     def test_censor_dict(self):
         """Test censor_dict"""
