@@ -58,6 +58,7 @@ class TestLogUtilities:
                 "uuid": "ba1ba6cb-b3c9-47d1-a657-c28a05cdd66e",
                 "id": 2199911,
                 "Cookie": "iPlanetDirectoryPro=5957a713-f80f-483f-998c-97f956367048",
+                "Today": "Tomorrow Toyota",
             }
         )
 
@@ -69,6 +70,7 @@ class TestLogUtilities:
             "uuid": "b***********************************",
             "id": "2******",
             "Cookie": "iPlanetDirectoryPro=5***********************************",
+            "Today": "Tomorrow Toyota",
         }
 
     def test_censor_dict_no_data(self):
