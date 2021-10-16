@@ -36,7 +36,8 @@ from .exceptions import (
     ToyotaRegionNotSupported,
 )
 from .statistics import Statistics
-from .utils import is_valid_locale
+from .utils.locale import is_valid_locale
+from .utils.logs import censor, censor_vin
 from .vehicle import Vehicle
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -140,7 +141,7 @@ class MyT:
             ToyotaApiError: Toyota's API returned an error.
         """
         _LOGGER.debug(
-            f"Setting new alias: {new_alias} for vehicle with id: {vehicle_id}"
+            f"Setting new alias: {new_alias} for vehicle with id: {censor(str(vehicle_id))}"
         )
         result = await self.api.set_vehicle_alias_endpoint(
             vehicle_id=vehicle_id, new_alias=new_alias
@@ -239,7 +240,7 @@ class MyT:
             ToyotaInternalError: An error occurred when making a request.
             ToyotaApiError: Toyota's API returned an error.
         """
-        _LOGGER.debug(f"Getting status for vehicle - {vehicle}...")
+        _LOGGER.debug(f"Getting status for vehicle - {censor_vin(vehicle['vin'])}...")
 
         vin = vehicle["vin"]
         data = await asyncio.gather(
@@ -345,7 +346,7 @@ class MyT:
             ToyotaApiError: Toyota's API returned an error.
         """
 
-        _LOGGER.debug(f"Getting statistics for {vin}...")
+        _LOGGER.debug(f"Getting statistics for {censor_vin(vin)}...")
         _LOGGER.debug(f"Interval: {interval} - from_date: {from_date} - unit: {unit}")
 
         if interval not in INTERVAL_SUPPORTED:
@@ -354,7 +355,7 @@ class MyT:
         stats_interval = interval
 
         if from_date is not None and arrow.get(from_date) > arrow.now():
-            return [{"error_mesg": "This is not a timemachine!", "error_code": 5}]
+            return [{"error_mesg": "This is not a time machine!", "error_code": 5}]
 
         if from_date is None:
             if interval is DAY:

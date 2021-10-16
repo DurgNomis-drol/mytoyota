@@ -4,7 +4,7 @@ from typing import Optional, Union
 
 from mytoyota.const import DOORS, HOOD, KEY, LIGHTS, WINDOWS
 from mytoyota.sensors import Doors, Hood, Key, Lights, Windows
-from mytoyota.utils import convert_to_miles
+from mytoyota.utils.conversions import convert_to_miles
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 

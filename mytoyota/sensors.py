@@ -1,10 +1,7 @@
 """Sensor representation for mytoyota"""
-import logging
 from typing import Optional
 
 from mytoyota.const import CLOSED, INCAR, LOCKED, OFF, STATE, WARNING
-
-_LOGGER: logging.Logger = logging.getLogger(__package__)
 
 
 class Hood:
