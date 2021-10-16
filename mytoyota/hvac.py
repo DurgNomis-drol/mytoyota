@@ -4,8 +4,6 @@
 class Hvac:
     """Representation of the HVAC system in the car"""
 
-    current_temperature: int = None
-    target_temperature: int = None
     legacy: bool = False
 
     def __init__(self, hvac: dict, legacy: bool = False) -> None:
