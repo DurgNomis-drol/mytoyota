@@ -42,14 +42,23 @@ class Vehicle:
     sensors: Optional[Sensors] = None
     statistics: VehicleStatistics = VehicleStatistics()
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-branches
         self,
         vehicle_info: dict,
-        connected_services: Optional[dict],
-        odometer: Optional[list],
-        status: Optional[dict],
-        remote_control: Optional[dict],
+        connected_services=None,
+        odometer=None,
+        status=None,
+        remote_control=None,
     ) -> None:
+
+        if connected_services is None:
+            connected_services = {}
+        if remote_control is None:
+            remote_control = {}
+        if status is None:
+            status = {}
+        if odometer is None:
+            odometer = []
 
         # If no vehicle information is provided, abort.
         if not vehicle_info:
@@ -67,7 +76,7 @@ class Vehicle:
         # Format vehicle details.
         self.details = self._format_details(vehicle_info)
 
-        if self.is_connected:
+        if self.is_connected and self.vin:
 
             remote_control_info = remote_control.get("VehicleInfo", {})
 
