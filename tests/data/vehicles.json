@@ -127,5 +127,12 @@
     "productionYear": "2016",
     "licensePlate": "SP234S",
     "modelDescription": "Verso"
+  },
+  {
+    "id": 666666,
+    "alias": "Aygo",
+    "owner": true,
+    "licensePlate": "SP234S",
+    "productionYear": "2019"
   }
 ]
