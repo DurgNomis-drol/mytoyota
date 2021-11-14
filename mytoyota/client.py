@@ -58,6 +58,7 @@ class MyT:
         region: str,
         uuid: str = None,
         controller_class=Controller,
+        disable_locale_check: bool = False,
     ) -> None:
         """Toyota API"""
 
@@ -67,10 +68,11 @@ class MyT:
         if region not in SUPPORTED_REGIONS:
             raise ToyotaRegionNotSupported(region)
 
-        if not is_valid_locale(locale):
-            raise ToyotaLocaleNotValid(
-                "Please provide a valid locale string! Valid format is: en-gb."
-            )
+        if not disable_locale_check:
+            if not is_valid_locale(locale):
+                raise ToyotaLocaleNotValid(
+                    "Please provide a valid locale string! Valid format is: en-gb."
+                )
 
         self.api = Api(
             controller_class(
