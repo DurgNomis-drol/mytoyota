@@ -135,4 +135,4 @@ class TestUtils:
         nothing = format_odometer([])
 
         assert isinstance(nothing, dict)
-        assert nothing == {}
+        assert not nothing
