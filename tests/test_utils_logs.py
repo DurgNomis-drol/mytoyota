@@ -64,4 +64,4 @@ class TestLogUtilities:
         dictionary = censor_dict({})
 
         assert isinstance(dictionary, dict)
-        assert dictionary == {}
+        assert not dictionary
