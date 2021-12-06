@@ -133,3 +133,4 @@ dmypy.json
 
 .myt_app/
 /blahblah.py
+.idea/

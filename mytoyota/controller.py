@@ -1,6 +1,7 @@
 """Toyota Connected Services Controller """
 
 from datetime import datetime
+from http import HTTPStatus
 import logging
 from typing import Optional, Union
 
@@ -10,10 +11,6 @@ from mytoyota.const import (
     BASE_HEADERS,
     CUSTOMERPROFILE,
     ENDPOINT_AUTH,
-    HTTP_INTERNAL,
-    HTTP_NO_CONTENT,
-    HTTP_OK,
-    HTTP_SERVICE_UNAVAILABLE,
     PASSWORD,
     SUPPORTED_REGIONS,
     TIMEOUT,
@@ -76,7 +73,7 @@ class Controller:
         _LOGGER.debug("Checking if token has expired...")
         return datetime.now().timestamp() - creation_dt.timestamp() > duration
 
-    async def _update_token(self) -> None:
+    async def _update_token(self, retry: bool = True) -> None:
         """Performs login to toyota servers and retrieves token and uuid for the account."""
 
         # Cannot authenticate with aiohttp (returns 415),
@@ -89,7 +86,7 @@ class Controller:
                 headers={"X-TME-LC": self._locale},
                 json=self._build_auth_body(),
             )
-            if response.status_code == HTTP_OK:
+            if response.status_code == HTTPStatus.OK:
                 result = response.json()
 
                 if TOKEN not in result or UUID not in result[CUSTOMERPROFILE]:
@@ -106,12 +103,17 @@ class Controller:
                     self._token = token
                     _LOGGER.debug("Saving token and uuid")
                     self._token_expiration = datetime.now()
+
+            elif response.status_code == HTTPStatus.BAD_GATEWAY:
+                if retry:
+                    return self._is_token_valid(retry=False)
+                raise ToyotaApiError("Servers are overloaded, try again later")
             else:
                 raise ToyotaLoginError(
                     f"Login failed, check your credentials! {response.text}"
                 )
 
-    async def _is_token_valid(self) -> bool:
+    async def _is_token_valid(self, retry: bool = True) -> bool:
         """Checks if token is valid"""
 
         _LOGGER.debug("Checking if token is still valid...")
@@ -120,7 +122,7 @@ class Controller:
                 self._get_auth_valid_endpoint(),
                 json={TOKEN: self._token},
             )
-            if response.status_code == HTTP_OK:
+            if response.status_code == HTTPStatus.OK:  # pylint: disable=no-else-return
                 result = response.json()
 
                 if result["valid"]:
@@ -128,10 +130,16 @@ class Controller:
                     return True
                 _LOGGER.debug("Token is not valid anymore")
                 return False
+            elif response.status_code == HTTPStatus.BAD_GATEWAY:
+                if retry:
+                    return self._is_token_valid(retry=False)
+                raise ToyotaApiError("Servers are overloaded, try again later")
+            else:
+                raise ToyotaLoginError(
+                    f"Error when trying to check token: {response.text}"
+                )
 
-            raise ToyotaLoginError(f"Error when trying to check token: {response.text}")
-
-    async def request(
+    async def request(  # pylint: disable=too-many-branches
         self,
         method: str,
         endpoint: str,
@@ -188,27 +196,34 @@ class Controller:
             response = await client.request(
                 method, url, headers=headers, json=body, params=params
             )
-            if response.status_code == HTTP_OK:
+            if response.status_code == HTTPStatus.OK:
                 result = response.json()
-            elif response.status_code == HTTP_NO_CONTENT:
+            elif response.status_code == HTTPStatus.NO_CONTENT:
                 # This prevents raising or logging an error
                 # if the user have not setup Connected Services
                 result = None
                 _LOGGER.debug("Connected services is disabled")
-            elif response.status_code == HTTP_INTERNAL:
+            elif response.status_code == HTTPStatus.INTERNAL_SERVER_ERROR:
                 response = response.json()
-                raise ToyotaInternalError(
-                    "Internal server error occurred! Code: "
-                    + response["code"]
-                    + " - "
-                    + response["message"],
-                )
-            elif response.status_code == HTTP_SERVICE_UNAVAILABLE:
-                raise ToyotaApiError(
-                    "Toyota Connected Services are temporarily unavailable"
-                )
+                if "code" in response:
+                    error = ToyotaApiError(
+                        "Internal server error occurred! Code: "
+                        + response.get("code")
+                        + " - "
+                        + response.get("message"),
+                    )
+                else:
+                    error = ToyotaApiError(
+                        "Internal server error occurred! - " + response
+                    )
+
+                raise error
+            elif response.status_code == HTTPStatus.BAD_GATEWAY:
+                raise ToyotaApiError("Servers are overloaded, try again later")
+            elif response.status_code == HTTPStatus.SERVICE_UNAVAILABLE:
+                raise ToyotaApiError("Servers are temporarily unavailable")
             else:
-                raise ToyotaInternalError(
+                raise ToyotaApiError(
                     "HTTP: " + str(response.status_code) + " - " + response.text
                 )
 
