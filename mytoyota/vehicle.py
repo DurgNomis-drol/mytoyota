@@ -30,9 +30,6 @@ class VehicleStatistics:
 class Vehicle:
     """Vehicle representation"""
 
-    id: int = 0
-    vin: str = None
-    alias: str = None
     is_connected: bool = False
     details: Optional[dict] = None
     odometer: Optional[Odometer] = None
@@ -45,28 +42,16 @@ class Vehicle:
     def __init__(  # pylint: disable=too-many-branches
         self,
         vehicle_info: dict,
-        connected_services=None,
-        odometer=None,
-        status=None,
-        remote_control=None,
+        connected_services: Optional[dict] = None,
+        odometer: Optional[list] = None,
+        status: Optional[dict] = None,
+        remote_control: Optional[dict] = None,
     ) -> None:
-
-        if connected_services is None:
-            connected_services = {}
-        if remote_control is None:
-            remote_control = {}
-        if status is None:
-            status = {}
-        if odometer is None:
-            odometer = []
 
         # If no vehicle information is provided, abort.
         if not vehicle_info:
             _LOGGER.error("No vehicle information provided!")
             return
-
-        if connected_services is not None:
-            self.is_connected = self._has_connected_services_enabled(connected_services)
 
         # Vehicle information
         self.id = vehicle_info.get("id", None)  # pylint: disable=invalid-name
@@ -76,9 +61,17 @@ class Vehicle:
         # Format vehicle details.
         self.details = self._format_details(vehicle_info)
 
+        self.is_connected = (
+            self._has_connected_services_enabled(connected_services)
+            if connected_services
+            else False
+        )
+
         if self.is_connected and self.vin:
 
-            remote_control_info = remote_control.get("VehicleInfo", {})
+            remote_control_info = (
+                remote_control.get("VehicleInfo") if remote_control is not None else {}
+            )
 
             # Extract mileage and if the car reports in km or mi
             self.odometer = (
@@ -86,7 +79,7 @@ class Vehicle:
             )
 
             # Extract fuel level/Energy capacity information from status.
-            if "energy" in status:
+            if status and "energy" in status:
                 _LOGGER.debug("Using energy data: %s", str(status.get("energy")))
                 self.energy = Energy(status.get("energy"), self.odometer.unit)
             # Use legacy odometer to get fuel level. Older cars still uses this.
@@ -101,21 +94,22 @@ class Vehicle:
                     fueltype = "Petrol"
                 self.energy.type = fueltype
                 # Add charge information if car supports it.
-                if "ChargeInfo" in remote_control_info:
+                if remote_control_info and "ChargeInfo" in remote_control_info:
                     self.energy.set_battery_attributes(
                         remote_control_info.get("ChargeInfo", {})
                     )
 
-            # Extract parking information from status.
-            self.parking = ParkingLocation(status.get("event", {}))
+            if status:
+                # Extract parking information from status.
+                self.parking = ParkingLocation(status.get("event", {}))
 
-            # Extracts window, door, lock and other information from status.
-            self.sensors = Sensors(status.get("protectionState", {}))
+                # Extracts window, door, lock and other information from status.
+                self.sensors = Sensors(status.get("protectionState", {}))
 
             # Extract HVAC information from endpoint
-            if "RemoteHvacInfo" in remote_control_info:
+            if remote_control_info and "RemoteHvacInfo" in remote_control_info:
                 self.hvac = Hvac(remote_control_info.get("RemoteHvacInfo", {}), True)
-            elif "climate" in status:
+            elif status and "climate" in status:
                 self.hvac = Hvac(status.get("climate"))
             else:
                 self.hvac = None
@@ -145,24 +139,27 @@ class Vehicle:
 
     def _has_connected_services_enabled(self, json_dict: dict) -> bool:
         """Checks if the user has enabled connected services."""
+        # Check if vin is not None. Toyota's servers is a bit flacky and can
+        # return garbage from connected_services endpoint, this is just to
+        # make sure that we don't throw a error message.
+        if self.vin:
+            if (
+                "connectedService" in json_dict
+                and "status" in json_dict["connectedService"]
+            ):
+                if json_dict["connectedService"]["status"] == "ACTIVE":
+                    return True
 
-        if (
-            "connectedService" in json_dict
-            and "status" in json_dict["connectedService"]
-        ):
-            if json_dict["connectedService"]["status"] == "ACTIVE":
-                return True
-
+                _LOGGER.error(
+                    "Please setup Connected Services if you want live data from the car. (%s)",
+                    censor_vin(self.vin),
+                )
+                return False
             _LOGGER.error(
-                "Please setup Connected Services if you want live data from the car. (%s)",
+                "Your vehicle does not support Connected services (%s). You can find out if your "
+                "vehicle is compatible by checking the manual that comes with your car.",
                 censor_vin(self.vin),
             )
-            return False
-        _LOGGER.error(
-            "Your vehicle does not support Connected services (%s). You can find out if your "
-            "vehicle is compatible by checking the manual that comes with your car.",
-            censor_vin(self.vin),
-        )
         return False
 
     @staticmethod

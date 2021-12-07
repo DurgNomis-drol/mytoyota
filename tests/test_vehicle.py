@@ -21,9 +21,9 @@ class TestVehicle:
         """Test vehicle with no initialization data"""
         vehicle = Vehicle({})
 
-        assert vehicle.id == 0
-        assert vehicle.vin is None
-        assert vehicle.alias is None
+        assert hasattr(vehicle, "id") is False
+        assert hasattr(vehicle, "vin") is False
+        assert hasattr(vehicle, "alias") is False
         assert vehicle.details is None
         assert vehicle.is_connected is False
         assert vehicle.odometer is None
@@ -62,16 +62,21 @@ class TestVehicle:
             )
 
             assert vehicle.vin == veh.get("vin")
-            assert vehicle.is_connected is True
+            assert vehicle.alias == veh.get("alias")
+
             print(vehicle.id)
 
             if vehicle.vin is None:
+                assert vehicle.is_connected is False
                 assert vehicle.odometer is None
                 assert vehicle.energy is None
                 assert vehicle.hvac is None
                 assert vehicle.parking is None
+                assert vehicle.sensors is None
             else:
+                assert vehicle.is_connected is True
                 assert vehicle.odometer is not None
                 assert vehicle.energy is None
                 assert vehicle.hvac is None
-                assert vehicle.parking is not None
+                assert vehicle.parking is None
+                assert vehicle.sensors is None
