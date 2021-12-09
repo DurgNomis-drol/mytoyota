@@ -106,7 +106,7 @@ class Controller:
 
             elif response.status_code == HTTPStatus.BAD_GATEWAY:
                 if retry:
-                    await self._is_token_valid(retry=False)
+                    await self._update_token(retry=False)
                     return
                 raise ToyotaApiError("Servers are overloaded, try again later")
             else:
