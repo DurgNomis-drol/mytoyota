@@ -258,17 +258,6 @@ class TestMyT:
         )
         assert status is not None
 
-    def disabled___test_get_vehicle_status_json(self):
-        """Test the retrieval of the status of a vehicle"""
-        myt = self._create_offline_myt()
-        vehicle = self._lookup_vehicle(myt, 4444444)
-        assert vehicle is not None
-        # Retrieve the actual status of the vehicle
-        status_json = asyncio.get_event_loop().run_until_complete(
-            myt.get_vehicle_status_json(vehicle)
-        )
-        assert json.loads(status_json) is not None
-
     @pytest.mark.parametrize(
         "interval,unit",
         [

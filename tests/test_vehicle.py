@@ -23,9 +23,9 @@ class TestVehicle:
 
     def test_vehicle_no_data(self):
         """Test vehicle with no initialization data"""
-        vehicle = Vehicle({})
+        vehicle = Vehicle({}, {})
 
-        assert vehicle.id is None
+        assert vehicle.vehicle_id is None
         assert vehicle.vin is None
         assert vehicle.alias is None
         assert vehicle.hybrid is None
@@ -47,7 +47,7 @@ class TestVehicle:
         )
 
         for veh in vehicle_fixtures:
-            vehicle = Vehicle(vehicle_info=veh)
+            vehicle = Vehicle(vehicle_info=veh, connected_services={})
 
             assert vehicle.is_connected_services_enabled is False
             assert vehicle.dashboard is None
@@ -73,12 +73,12 @@ class TestVehicle:
 
             assert vehicle.vin == veh.get("vin")
             assert vehicle.alias == veh.get("alias")
-            assert vehicle.id == veh.get("id")
+            assert vehicle.vehicle_id == veh.get("id")
             assert vehicle.hybrid == veh.get("hybrid")
             assert isinstance(vehicle.fueltype, str)
             assert isinstance(vehicle.details, dict)
 
-            print(vehicle.id)
+            print(vehicle.vehicle_id)
 
             if vehicle.vin is None:
                 assert vehicle.is_connected_services_enabled is False
@@ -88,11 +88,10 @@ class TestVehicle:
                 assert vehicle.parkinglocation is None
             else:
                 assert vehicle.is_connected_services_enabled is True
-                assert isinstance(vehicle.dashboard, Dashboard)
+                assert vehicle.dashboard is None
                 assert vehicle.sensors is None
                 assert vehicle.hvac is None
                 assert vehicle.parkinglocation is None
-                assert isinstance(vehicle.dashboard, Dashboard)
 
     def test_vehicle_init_status(self):
         """Test vehicle initialization with connected services with status"""
@@ -125,7 +124,10 @@ class TestVehicle:
         assert vehicle.dashboard.fuel_level == status_fixture["energy"][0]["level"]
         assert vehicle.dashboard.is_metric is True
         assert vehicle.dashboard.odometer == odometer_fixture[0]["value"]
-        assert vehicle.dashboard.range == status_fixture["energy"][0]["remainingRange"]
+        assert (
+            vehicle.dashboard.fuel_range
+            == status_fixture["energy"][0]["remainingRange"]
+        )
         assert vehicle.dashboard.battery_level is None
         assert vehicle.dashboard.battery_range is None
         assert vehicle.dashboard.battery_range_with_aircon is None
@@ -164,7 +166,7 @@ class TestVehicle:
         assert vehicle.dashboard.is_metric is True
         assert vehicle.dashboard.odometer == odometer_fixture[0]["value"]
         assert (
-            vehicle.dashboard.range
+            vehicle.dashboard.fuel_range
             == status_fixture["VehicleInfo"]["ChargeInfo"]["GasolineTravelableDistance"]
         )
         assert (
