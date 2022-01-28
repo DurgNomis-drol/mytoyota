@@ -35,10 +35,10 @@ from .exceptions import (
     ToyotaLocaleNotValid,
     ToyotaRegionNotSupported,
 )
+from .models.vehicle import Vehicle
 from .statistics import Statistics
 from .utils.locale import is_valid_locale
 from .utils.logs import censor, censor_vin
-from .vehicle import Vehicle
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -256,15 +256,13 @@ class MyT:
 
         _LOGGER.debug("Presenting information as an object...")
 
-        car = Vehicle(
+        return Vehicle(
             vehicle_info=vehicle,
             connected_services=data[0],
             odometer=data[1],
             status=data[2],
-            remote_control=data[3],
+            status_legacy=data[3],
         )
-
-        return car
 
     async def get_vehicle_status_json(self, vehicle: dict) -> str:
         """Returns vehicle status as json string.

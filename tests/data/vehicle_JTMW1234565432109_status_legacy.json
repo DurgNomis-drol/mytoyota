@@ -1,3 +1,38 @@
 {
+  "VehicleInfo": {
+    "RemoteHvacInfo": {
+      "InsideTemperature": 21,
+      "RemoteHvacMode": 0,
+      "RemoteHvacProhibitionSignal": 1,
+      "Temperaturelevel": 28,
+      "BlowerStatus": 0,
+      "FrontDefoggerStatus": 0,
+      "RearDefoggerStatus": 0,
+      "LatestAcStartTime": "2022-01-12T07:33:12Z",
+      "TemperatureDisplayFlag": 1,
+      "SettingTemperature": 21.0
+    },
+    "ChargeInfo": {
+      "PlugStatus": 12,
+      "PlugInHistory": 33,
+      "RemainingChargeTime": 65535,
+      "EvTravelableDistance": 45.9,
+      "EvTravelableDistanceSubtractionRate": 10,
+      "ChargeRemainingAmount": 75,
+      "SettingChangeAcceptanceStatus": 0,
+      "ChargeWeek": 0,
+      "ChargeStartTime": "42:35",
+      "ChargeEndTime": "42:35",
+      "ConnectorStatus": 2,
+      "BatteryPowerSupplyPossibleTime": 16383,
+      "ChargingStatus": "none",
+      "EvDistanceWithAirCoInKm": 41.31,
+      "GasolineTravelableDistance": 128,
+      "ChargeType": 15,
+      "GasolineTravelableDistanceUnit": 1,
+      "EvDistanceInKm": 45.9
+    },
+    "AcquisitionDatetime": "2022-01-12T16:48:39Z"
+  },
   "ReturnCode": "000000"
 }

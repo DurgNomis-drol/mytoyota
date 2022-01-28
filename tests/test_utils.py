@@ -1,6 +1,6 @@
 """pytest tests for mytoyota.utils"""
-
-import pytest  # pylint: disable=import-error
+# pylint: disable=import-error
+import pytest
 
 from mytoyota.exceptions import ToyotaInvalidToken
 

@@ -1,8 +1,12 @@
-"""pytest tests for mytoyota.vehicle.Vehicle"""
+"""pytest tests for mytoyota.models.vehicle.Vehicle"""
 import json
 import os
 
-from mytoyota.vehicle import Vehicle
+from mytoyota.models.dashboard import Dashboard
+from mytoyota.models.hvac import Hvac
+from mytoyota.models.location import ParkingLocation
+from mytoyota.models.sensors import Sensors
+from mytoyota.models.vehicle import Vehicle
 
 # pylint: disable=no-self-use
 
@@ -21,41 +25,47 @@ class TestVehicle:
         """Test vehicle with no initialization data"""
         vehicle = Vehicle({})
 
-        assert hasattr(vehicle, "id") is False
-        assert hasattr(vehicle, "vin") is False
-        assert hasattr(vehicle, "alias") is False
+        assert vehicle.id is None
+        assert vehicle.vin is None
+        assert vehicle.alias is None
+        assert vehicle.hybrid is None
+        assert vehicle.fueltype == "Unknown"
         assert vehicle.details is None
-        assert vehicle.is_connected is False
-        assert vehicle.odometer is None
-        assert vehicle.energy is None
+        assert vehicle.is_connected_services_enabled is False
+        assert vehicle.dashboard is None
+        assert vehicle.sensors is None
         assert vehicle.hvac is None
-        assert vehicle.parking is None
+        assert vehicle.parkinglocation is None
 
     def test_vehicle_init_no_status(self):
         """Test vehicle initialization with no status"""
 
         data_files = os.path.join(os.path.curdir, "tests", "data")
 
-        fixtures = self._load_from_file(os.path.join(data_files, "vehicles.json"))
+        vehicle_fixtures = self._load_from_file(
+            os.path.join(data_files, "vehicles.json")
+        )
 
-        for veh in fixtures:
+        for veh in vehicle_fixtures:
             vehicle = Vehicle(vehicle_info=veh)
 
-            assert vehicle.vin == veh.get("vin")
-            assert vehicle.is_connected is False
-            assert vehicle.odometer is None
-            assert vehicle.energy is None
+            assert vehicle.is_connected_services_enabled is False
+            assert vehicle.dashboard is None
+            assert vehicle.sensors is None
             assert vehicle.hvac is None
-            assert vehicle.parking is None
+            assert vehicle.parkinglocation is None
+            assert vehicle.sensors is None
 
     def test_vehicle_init(self):
         """Test vehicle initialization with connected services"""
 
         data_files = os.path.join(os.path.curdir, "tests", "data")
 
-        fixtures = self._load_from_file(os.path.join(data_files, "vehicles.json"))
+        vehicle_fixtures = self._load_from_file(
+            os.path.join(data_files, "vehicles.json")
+        )
 
-        for veh in fixtures:
+        for veh in vehicle_fixtures:
             vehicle = Vehicle(
                 vehicle_info=veh,
                 connected_services={"connectedService": {"status": "ACTIVE"}},
@@ -63,20 +73,117 @@ class TestVehicle:
 
             assert vehicle.vin == veh.get("vin")
             assert vehicle.alias == veh.get("alias")
+            assert vehicle.id == veh.get("id")
+            assert vehicle.hybrid == veh.get("hybrid")
+            assert isinstance(vehicle.fueltype, str)
+            assert isinstance(vehicle.details, dict)
 
             print(vehicle.id)
 
             if vehicle.vin is None:
-                assert vehicle.is_connected is False
-                assert vehicle.odometer is None
-                assert vehicle.energy is None
-                assert vehicle.hvac is None
-                assert vehicle.parking is None
+                assert vehicle.is_connected_services_enabled is False
+                assert vehicle.dashboard is None
                 assert vehicle.sensors is None
+                assert vehicle.hvac is None
+                assert vehicle.parkinglocation is None
             else:
-                assert vehicle.is_connected is True
-                assert vehicle.odometer is not None
-                assert vehicle.energy is None
-                assert vehicle.hvac is None
-                assert vehicle.parking is None
+                assert vehicle.is_connected_services_enabled is True
+                assert isinstance(vehicle.dashboard, Dashboard)
                 assert vehicle.sensors is None
+                assert vehicle.hvac is None
+                assert vehicle.parkinglocation is None
+                assert isinstance(vehicle.dashboard, Dashboard)
+
+    def test_vehicle_init_status(self):
+        """Test vehicle initialization with connected services with status"""
+
+        data_files = os.path.join(os.path.curdir, "tests", "data")
+
+        vehicle_fixtures = self._load_from_file(
+            os.path.join(data_files, "vehicles.json")
+        )
+        odometer_fixture = self._load_from_file(
+            os.path.join(data_files, "vehicle_JTMW1234565432109_odometer.json")
+        )
+        status_fixture = self._load_from_file(
+            os.path.join(data_files, "vehicle_JTMW1234565432109_status.json")
+        )
+
+        vehicle = Vehicle(
+            vehicle_info=vehicle_fixtures[0],
+            connected_services={"connectedService": {"status": "ACTIVE"}},
+            odometer=odometer_fixture,
+            status=status_fixture,
+        )
+
+        assert vehicle.fueltype == status_fixture["energy"][0]["type"].capitalize()
+        assert isinstance(vehicle.parkinglocation, ParkingLocation)
+        assert isinstance(vehicle.sensors, Sensors)
+        assert vehicle.hvac is None
+        assert isinstance(vehicle.dashboard, Dashboard)
+        assert vehicle.dashboard.legacy is False
+        assert vehicle.dashboard.fuel_level == status_fixture["energy"][0]["level"]
+        assert vehicle.dashboard.is_metric is True
+        assert vehicle.dashboard.odometer == odometer_fixture[0]["value"]
+        assert vehicle.dashboard.range == status_fixture["energy"][0]["remainingRange"]
+        assert vehicle.dashboard.battery_level is None
+        assert vehicle.dashboard.battery_range is None
+        assert vehicle.dashboard.battery_range_with_aircon is None
+        assert vehicle.dashboard.charging_status is None
+        assert vehicle.dashboard.remaining_charge_time is None
+
+    def test_vehicle_init_status_legacy(self):
+        """Test vehicle initialization with connected services with legacy status"""
+
+        data_files = os.path.join(os.path.curdir, "tests", "data")
+
+        vehicle_fixtures = self._load_from_file(
+            os.path.join(data_files, "vehicles.json")
+        )
+        odometer_fixture = self._load_from_file(
+            os.path.join(data_files, "vehicle_JTMW1234565432109_odometer_legacy.json")
+        )
+        status_fixture = self._load_from_file(
+            os.path.join(data_files, "vehicle_JTMW1234565432109_status_legacy.json")
+        )
+
+        vehicle = Vehicle(
+            vehicle_info=vehicle_fixtures[0],
+            connected_services={"connectedService": {"status": "ACTIVE"}},
+            odometer=odometer_fixture,
+            status_legacy=status_fixture,
+        )
+
+        assert vehicle.fueltype == "Petrol"
+        assert vehicle.parkinglocation is None
+        assert vehicle.sensors is None
+        assert isinstance(vehicle.hvac, Hvac)
+        assert isinstance(vehicle.dashboard, Dashboard)
+        assert vehicle.dashboard.legacy is True
+        assert vehicle.dashboard.fuel_level == odometer_fixture[1]["value"]
+        assert vehicle.dashboard.is_metric is True
+        assert vehicle.dashboard.odometer == odometer_fixture[0]["value"]
+        assert (
+            vehicle.dashboard.range
+            == status_fixture["VehicleInfo"]["ChargeInfo"]["GasolineTravelableDistance"]
+        )
+        assert (
+            vehicle.dashboard.battery_level
+            == status_fixture["VehicleInfo"]["ChargeInfo"]["ChargeRemainingAmount"]
+        )
+        assert (
+            vehicle.dashboard.battery_range
+            == status_fixture["VehicleInfo"]["ChargeInfo"]["EvDistanceInKm"]
+        )
+        assert (
+            vehicle.dashboard.battery_range_with_aircon
+            == status_fixture["VehicleInfo"]["ChargeInfo"]["EvDistanceWithAirCoInKm"]
+        )
+        assert (
+            vehicle.dashboard.charging_status
+            == status_fixture["VehicleInfo"]["ChargeInfo"]["ChargingStatus"]
+        )
+        assert (
+            vehicle.dashboard.remaining_charge_time
+            == status_fixture["VehicleInfo"]["ChargeInfo"]["RemainingChargeTime"]
+        )

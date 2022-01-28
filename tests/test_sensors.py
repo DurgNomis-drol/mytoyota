@@ -1,6 +1,17 @@
-"""pytest tests for mytoyota.sensors"""
+"""pytest tests for mytoyota.models.sensors"""
+import json
+import os
 
-from mytoyota.sensors import Door, Doors, Hood, Key, Light, Lights, Window, Windows
+from mytoyota.models.sensors import (
+    Door,
+    Doors,
+    Key,
+    Light,
+    Lights,
+    Sensors,
+    Window,
+    Windows,
+)
 
 # pylint: disable=no-self-use
 
@@ -8,35 +19,28 @@ from mytoyota.sensors import Door, Doors, Hood, Key, Light, Lights, Window, Wind
 class TestSensors:  # pylint: disable=too-many-public-methods
     """pytest functions to test Sensors"""
 
+    @staticmethod
+    def _load_from_file(filename: str):
+        """Load a data structure from the specified JSON filename, and
+        return it."""
+        with open(filename, encoding="UTF-8") as json_file:
+            return json.load(json_file)
+
     def test_hood(self):
         """Test hood"""
-        hood = Hood({"warning": False, "closed": True})
+        hood = Door({"warning": False, "closed": True})
 
         assert hood.warning is False
         assert hood.closed is True
+        assert hood.locked is None
 
     def test_hood_no_data(self):
         """Test hood with no initialization data"""
-        hood = Hood({})
+        hood = Door({})
 
         assert hood.warning is None
         assert hood.closed is None
-
-    def test_hood_str(self):
-        """Test hood converted to str"""
-        hood = Hood({"warning": False, "closed": True})
-
-        string = str(hood)
-        assert isinstance(string, str)
-        assert string == "{'warning': False, 'closed': True}"
-
-    def test_hood_dict(self):
-        """Test hood converted to a dictionary"""
-        hood = Hood({"warning": False, "closed": True})
-
-        dictionary = hood.as_dict()
-        assert isinstance(dictionary, dict)
-        assert dictionary == {"warning": False, "closed": True}
+        assert hood.locked is None
 
     @staticmethod
     def _create_example_door():
@@ -59,22 +63,6 @@ class TestSensors:  # pylint: disable=too-many-public-methods
         assert door.closed is None
         assert door.locked is None
 
-    def test_door_str(self):
-        """Test door converted to str"""
-        door = self._create_example_door()
-
-        string = str(door)
-        assert isinstance(string, str)
-        assert string == "{'warning': False, 'closed': True, 'locked': False}"
-
-    def test_door_dict(self):
-        """Test door converted to a dictionary"""
-        door = self._create_example_door()
-
-        dictionary = door.as_dict()
-        assert isinstance(dictionary, dict)
-        assert dictionary == {"warning": False, "closed": True, "locked": False}
-
     def test_doors(self):
         """Test Doors"""
         doors = {
@@ -89,57 +77,22 @@ class TestSensors:  # pylint: disable=too-many-public-methods
         doors = Doors(doors)
 
         assert doors.warning is False
-        assert isinstance(doors.driverseat, Door)
-        assert isinstance(doors.passengerseat, Door)
-        assert isinstance(doors.rightrearseat, Door)
-        assert isinstance(doors.leftrearseat, Door)
+        assert isinstance(doors.driver_seat, Door)
+        assert isinstance(doors.passenger_seat, Door)
+        assert isinstance(doors.leftrear_seat, Door)
+        assert isinstance(doors.rightrear_seat, Door)
         assert isinstance(doors.trunk, Door)
-
-        string = str(doors)
-        assert isinstance(string, str)
-        assert (
-            string == "{'warning': False, "
-            "'driverseat': {'warning': False, 'closed': True, 'locked': False}, "
-            "'passengerseat': {'warning': False, 'closed': True, 'locked': False}, "
-            "'rightrearseat': {'warning': False, 'closed': True, 'locked': False}, "
-            "'leftrearseat': {'warning': False, 'closed': True, 'locked': False}, "
-            "'trunk': {'warning': False, 'closed': True, "
-            "'locked': False}}"
-        )
-
-        dictionary = doors.as_dict()
-        assert isinstance(dictionary, dict)
-        assert dictionary == {
-            "warning": False,
-            "driverseat": {"warning": False, "closed": True, "locked": False},
-            "passengerseat": {"warning": False, "closed": True, "locked": False},
-            "rightrearseat": {"warning": False, "closed": True, "locked": False},
-            "leftrearseat": {"warning": False, "closed": True, "locked": False},
-            "trunk": {"warning": False, "closed": True, "locked": False},
-        }
 
     def test_doors_no_data(self):
         """Test Windows with no initialization data"""
         doors = Doors({})
 
         assert doors.warning is None
-        assert isinstance(doors.driverseat, Door)
-        assert isinstance(doors.passengerseat, Door)
-        assert isinstance(doors.rightrearseat, Door)
-        assert isinstance(doors.leftrearseat, Door)
+        assert isinstance(doors.driver_seat, Door)
+        assert isinstance(doors.passenger_seat, Door)
+        assert isinstance(doors.leftrear_seat, Door)
+        assert isinstance(doors.rightrear_seat, Door)
         assert isinstance(doors.trunk, Door)
-
-        dictionary = doors.as_dict()
-
-        assert isinstance(dictionary, dict)
-        assert dictionary == {
-            "warning": None,
-            "driverseat": {"warning": None, "closed": None, "locked": None},
-            "passengerseat": {"warning": None, "closed": None, "locked": None},
-            "rightrearseat": {"warning": None, "closed": None, "locked": None},
-            "leftrearseat": {"warning": None, "closed": None, "locked": None},
-            "trunk": {"warning": None, "closed": None, "locked": None},
-        }
 
     @staticmethod
     def _create_example_window():
@@ -160,22 +113,6 @@ class TestSensors:  # pylint: disable=too-many-public-methods
         assert window.warning is None
         assert window.state is None
 
-    def test_window_str(self):
-        """Test window converted to str"""
-        window = self._create_example_window()
-
-        string = str(window)
-        assert isinstance(string, str)
-        assert string == "{'warning': False, 'state': 'close'}"
-
-    def test_window_dict(self):
-        """Test window converted to a dictionary"""
-        window = self._create_example_window()
-
-        dictionary = window.as_dict()
-        assert isinstance(dictionary, dict)
-        assert dictionary == {"warning": False, "state": "close"}
-
     def test_windows(self):
         """Test Windows"""
         windows = {
@@ -189,51 +126,20 @@ class TestSensors:  # pylint: disable=too-many-public-methods
         windows = Windows(windows)
 
         assert windows.warning is False
-        assert isinstance(windows.driverseat, Window)
-        assert isinstance(windows.passengerseat, Window)
-        assert isinstance(windows.rightrearseat, Window)
-        assert isinstance(windows.leftrearseat, Window)
-
-        string = str(windows)
-        assert isinstance(string, str)
-        assert (
-            string
-            == "{'warning': False, 'driverseat': {'warning': False, 'state': 'close'}, "
-            "'passengerseat': {'warning': False, 'state': 'close'}, "
-            "'rightrearseat': {'warning': False, 'state': 'close'}, "
-            "'leftrearseat': {'warning': False, 'state': 'close'}}"
-        )
-
-        dictionary = windows.as_dict()
-        assert isinstance(dictionary, dict)
-        assert dictionary == {
-            "warning": False,
-            "driverseat": {"warning": False, "state": "close"},
-            "passengerseat": {"warning": False, "state": "close"},
-            "rightrearseat": {"warning": False, "state": "close"},
-            "leftrearseat": {"warning": False, "state": "close"},
-        }
+        assert isinstance(windows.driver_seat, Window)
+        assert isinstance(windows.passenger_seat, Window)
+        assert isinstance(windows.rightrear_seat, Window)
+        assert isinstance(windows.leftrear_seat, Window)
 
     def test_windows_no_data(self):
         """Test Windows with no initialization data"""
         windows = Windows({})
 
         assert windows.warning is None
-        assert isinstance(windows.driverseat, Window)
-        assert isinstance(windows.passengerseat, Window)
-        assert isinstance(windows.rightrearseat, Window)
-        assert isinstance(windows.leftrearseat, Window)
-
-        dictionary = windows.as_dict()
-
-        assert isinstance(dictionary, dict)
-        assert dictionary == {
-            "warning": None,
-            "driverseat": {"warning": None, "state": None},
-            "passengerseat": {"warning": None, "state": None},
-            "rightrearseat": {"warning": None, "state": None},
-            "leftrearseat": {"warning": None, "state": None},
-        }
+        assert isinstance(windows.driver_seat, Window)
+        assert isinstance(windows.passenger_seat, Window)
+        assert isinstance(windows.rightrear_seat, Window)
+        assert isinstance(windows.leftrear_seat, Window)
 
     @staticmethod
     def _create_example_light():
@@ -254,22 +160,6 @@ class TestSensors:  # pylint: disable=too-many-public-methods
         assert light.warning is None
         assert light.off is None
 
-    def test_light_str(self):
-        """Test light converted to str"""
-        light = self._create_example_light()
-
-        string = str(light)
-        assert isinstance(string, str)
-        assert string == "{'warning': False, 'off': True}"
-
-    def test_light_dict(self):
-        """Test light converted to a dictionary"""
-        light = self._create_example_light()
-
-        dictionary = light.as_dict()
-        assert isinstance(dictionary, dict)
-        assert dictionary == {"warning": False, "off": True}
-
     def test_lights(self):
         """Test ligts"""
         lights = {
@@ -282,46 +172,18 @@ class TestSensors:  # pylint: disable=too-many-public-methods
         lights = Lights(lights)
 
         assert lights.warning is False
-        assert isinstance(lights.front, Light)
-        assert isinstance(lights.back, Light)
-        assert isinstance(lights.hazard, Light)
-
-        string = str(lights)
-        assert isinstance(string, str)
-        assert (
-            string == "{'warning': False, "
-            "'front': {'warning': False, 'off': True}, "
-            "'back': {'warning': False, 'off': True}, "
-            "'hazard': {'warning': False, 'off': True}}"
-        )
-
-        dictionary = lights.as_dict()
-        assert isinstance(dictionary, dict)
-        assert dictionary == {
-            "warning": False,
-            "front": {"warning": False, "off": True},
-            "back": {"warning": False, "off": True},
-            "hazard": {"warning": False, "off": True},
-        }
+        assert isinstance(lights.headlights, Light)
+        assert isinstance(lights.taillights, Light)
+        assert isinstance(lights.hazardlights, Light)
 
     def test_lights_no_data(self):
         """Test Lights with no initialization data"""
         lights = Lights({})
 
         assert lights.warning is None
-        assert isinstance(lights.front, Light)
-        assert isinstance(lights.back, Light)
-        assert isinstance(lights.hazard, Light)
-
-        dictionary = lights.as_dict()
-
-        assert isinstance(dictionary, dict)
-        assert dictionary == {
-            "warning": None,
-            "front": {"warning": None, "off": None},
-            "back": {"warning": None, "off": None},
-            "hazard": {"warning": None, "off": None},
-        }
+        assert isinstance(lights.headlights, Light)
+        assert isinstance(lights.taillights, Light)
+        assert isinstance(lights.hazardlights, Light)
 
     def test_key(self):
         """Test key"""
@@ -337,18 +199,28 @@ class TestSensors:  # pylint: disable=too-many-public-methods
         assert key.warning is None
         assert key.in_car is None
 
-    def test_key_str(self):
-        """Test key converted to str"""
-        key = Key({"warning": False, "inCar": True})
+    def test_sensors(self):
+        """Test sensors"""
+        data_files = os.path.join(os.path.curdir, "tests", "data")
+        fixture = self._load_from_file(
+            os.path.join(data_files, "vehicle_JTMW1234565432109_status.json")
+        )
+        sensors = Sensors(fixture.get("protectionState"))
 
-        string = str(key)
-        assert isinstance(string, str)
-        assert string == "{'warning': False, 'in_car': True}"
-
-    def test_key_dict(self):
-        """Test key converted to a dictionary"""
-        key = Key({"warning": False, "inCar": True})
-
-        dictionary = key.as_dict()
-        assert isinstance(dictionary, dict)
-        assert dictionary == {"warning": False, "in_car": True}
+        assert sensors.overallstatus == "OK"
+        assert sensors.last_updated == "2021-10-12T15:22:53Z"
+        assert isinstance(sensors.doors, Doors)
+        assert sensors.doors.driver_seat.warning is False
+        assert sensors.doors.driver_seat.closed is True
+        assert sensors.doors.driver_seat.locked is True
+        assert isinstance(sensors.hood, Door)
+        assert sensors.hood.warning is False
+        assert sensors.hood.closed is True
+        assert sensors.hood.locked is None
+        assert isinstance(sensors.lights, Lights)
+        assert sensors.lights.headlights.warning is False
+        assert sensors.lights.headlights.off is True
+        assert isinstance(sensors.windows, Windows)
+        assert sensors.windows.passenger_seat.warning is False
+        assert sensors.windows.passenger_seat.state == "close"
+        assert isinstance(sensors.key, Key)
