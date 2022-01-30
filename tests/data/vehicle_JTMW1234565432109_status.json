@@ -5,6 +5,14 @@
     "timestamp": "1634051916000"
   },
   "tripStatus": "0",
+  "energy": [
+    {
+      "timestamp": "2021-09-19T14:02:37Z",
+      "type": "HYDROGEN",
+      "level": 58.8,
+      "remainingRange": 295
+    }
+  ],
   "protectionState": {
     "overallStatus": "OK",
     "timestamp": "2021-10-12T15:22:53Z",

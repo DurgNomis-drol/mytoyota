@@ -35,10 +35,10 @@ from .exceptions import (
     ToyotaLocaleNotValid,
     ToyotaRegionNotSupported,
 )
+from .models.vehicle import Vehicle
 from .statistics import Statistics
 from .utils.locale import is_valid_locale
 from .utils.logs import censor, censor_vin
-from .vehicle import Vehicle
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -256,38 +256,13 @@ class MyT:
 
         _LOGGER.debug("Presenting information as an object...")
 
-        car = Vehicle(
+        return Vehicle(
             vehicle_info=vehicle,
             connected_services=data[0],
             odometer=data[1],
             status=data[2],
-            remote_control=data[3],
+            status_legacy=data[3],
         )
-
-        return car
-
-    async def get_vehicle_status_json(self, vehicle: dict) -> str:
-        """Returns vehicle status as json string.
-
-        Collects and formats different vehicle status endpoints into
-        a easy accessible vehicle object.
-
-        Args:
-            vehicle (dict): dict for each vehicle returned in get_vehicles().
-
-        Returns:
-            Json string containing odometer information, parking information, fuel and more.
-
-        Raises:
-            ToyotaLoginError: An error returned when updating token or invalid login information.
-            ToyotaInternalError: An error occurred when making a request.
-            ToyotaApiError: Toyota's API returned an error.
-        """
-        vehicle = await self.get_vehicle_status(vehicle)
-
-        _LOGGER.debug("Returning it as json")
-        json_string = json.dumps(vehicle.as_dict(), indent=3)
-        return json_string
 
     async def get_driving_statistics(  # pylint: disable=too-many-branches
         self, vin: str, interval: str = MONTH, from_date: str = None, unit: str = METRIC

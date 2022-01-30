@@ -1,6 +1,6 @@
-"""pytest tests for mytoyota.location.ParkingLocation"""
+"""pytest tests for mytoyota.models.location.ParkingLocation"""
 
-from mytoyota.location import ParkingLocation  # pylint: disable=import-error
+from mytoyota.models.location import ParkingLocation  # pylint: disable=import-error
 
 # pylint: disable=no-self-use
 
@@ -24,22 +24,4 @@ class TestParkingLocation:
         location = ParkingLocation({})
         assert location.latitude == 0.0
         assert location.longitude == 0.0
-        assert location.timestamp == 0
-
-    def test_parking_location_str(self):
-        """Test ParkingLocation converted to a str"""
-        location = self._create_example_parking_location()
-        string = str(location)
-        assert isinstance(string, (str))
-        assert string == "{'latitude': 1.234, 'longitude': 5.678, 'timestamp': 987654}"
-
-    def test_parking_location_dict(self):
-        """Test ParkingLocation converted to a dictionary"""
-        location = self._create_example_parking_location()
-        dictionary = location.as_dict()
-        assert isinstance(dictionary, (dict))
-        assert dictionary == {
-            "timestamp": 987654,
-            "latitude": 1.234,
-            "longitude": 5.678,
-        }
+        assert location.timestamp is None

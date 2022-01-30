@@ -3,5 +3,9 @@
     "type": "mileage",
     "value": 1004,
     "unit": "km"
+  },
+  {
+    "type": "Fuel",
+    "value": 47.84
   }
 ]
