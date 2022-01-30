@@ -27,8 +27,8 @@ class TestVehicle:
 
         assert vehicle.vehicle_id is None
         assert vehicle.vin is None
-        assert vehicle.alias is None
-        assert vehicle.hybrid is None
+        assert vehicle.alias == "My vehicle"
+        assert vehicle.hybrid is False
         assert vehicle.fueltype == "Unknown"
         assert vehicle.details is None
         assert vehicle.is_connected_services_enabled is False
@@ -72,9 +72,9 @@ class TestVehicle:
             )
 
             assert vehicle.vin == veh.get("vin")
-            assert vehicle.alias == veh.get("alias")
+            assert vehicle.alias == veh.get("alias", "My vehicle")
             assert vehicle.vehicle_id == veh.get("id")
-            assert vehicle.hybrid == veh.get("hybrid")
+            assert vehicle.hybrid == veh.get("hybrid", False)
             assert isinstance(vehicle.fueltype, str)
             assert isinstance(vehicle.details, dict)
 

@@ -46,12 +46,12 @@ class Vehicle:
     @property
     def alias(self) -> str | None:
         """Vehicle's alias."""
-        return self._vehicle_info.get("alias")
+        return self._vehicle_info.get("alias", "My vehicle")
 
     @property
-    def hybrid(self) -> bool | None:
+    def hybrid(self) -> bool:
         """If the vehicle is a hybrid."""
-        return self._vehicle_info.get("hybrid")
+        return self._vehicle_info.get("hybrid", False)
 
     @property
     def fueltype(self) -> str:
