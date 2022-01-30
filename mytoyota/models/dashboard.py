@@ -1,20 +1,20 @@
 """Models for vehicle sensors."""
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from mytoyota.utils.conversions import convert_to_miles
+
+if TYPE_CHECKING:
+    from mytoyota.models.vehicle import Vehicle
 
 
 class Dashboard:
     """Instrumentation data model."""
 
-    _chargeinfo: dict[str, Any]
-    _energy: dict[str, Any]
-
     def __init__(
         self,
-        vehicle,
+        vehicle: Vehicle,
     ) -> None:
         """Dashboard."""
         self._vehicle = vehicle
@@ -22,9 +22,7 @@ class Dashboard:
         vehicle_info = vehicle._status_legacy.get("VehicleInfo", {})
         self._chargeinfo = vehicle_info.get("ChargeInfo", {})
         self._energy = (
-            vehicle._status.get("energy", [])[0]
-            if vehicle._status.get("energy")
-            else {}
+            vehicle._status.get("energy", [])[0] if "energy" in vehicle._status else {}
         )
 
     @property
