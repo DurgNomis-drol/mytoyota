@@ -28,12 +28,11 @@ from mytoyota.client import MyT
 
 username = "jane@doe.com"
 password = "MyPassword"
-locale = "da-dk"
 
-# Get supported regions.
+# Get supported regions, can be passed to the optional 'region' argument of MyT
 print(MyT.get_supported_regions())
 
-client = MyT(username=username, password=password, locale=locale, region="europe")
+client = MyT(username=username, password=password)
 
 
 async def get_information():
