@@ -1,7 +1,7 @@
 """Models for vehicle sensors."""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from mytoyota.utils.conversions import convert_to_miles
 
