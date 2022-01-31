@@ -140,7 +140,7 @@ class Statistics:
                     {
                         UNIT: METRIC,
                         PERIODE_START: self._now.replace(
-                            year=month[BUCKET][YEAR], month=month[BUCKET][MONTH], day=1
+                            year=month[BUCKET][YEAR], month=month[BUCKET][MONTH]
                         )
                         .floor(MONTH)
                         .format(DATE_FORMAT),
