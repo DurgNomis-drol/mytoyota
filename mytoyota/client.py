@@ -8,10 +8,12 @@ information, sensor data, fuel level, driving statistics and more.
   client = MyT()
   vehicles = await client.get_vehicles()
 """
+from __future__ import annotations
 
 import asyncio
 import json
 import logging
+from typing import Any
 
 import arrow
 
@@ -111,7 +113,8 @@ class MyT:
         _LOGGER.debug("Performing first login")
         await self.api.controller.first_login()
 
-    async def get_uuid(self) -> str:
+    @property
+    def uuid(self) -> str | None:
         """Get UUID.
 
         Retrieves the UUID returned for the account.
@@ -121,9 +124,9 @@ class MyT:
 
             9cc70412-27d6-4b81-83fb-542b3a9feb65
         """
-        return await self.api.uuid()
+        return self.api.uuid
 
-    async def set_alias(self, vehicle_id: int, new_alias: str) -> dict:
+    async def set_alias(self, vehicle_id: int, new_alias: str) -> dict[str, Any]:
         """Set a new alias for your vehicle.
 
         Sets a new alias for a vehicle specified by its vehicle id.
@@ -145,12 +148,11 @@ class MyT:
         _LOGGER.debug(
             f"Setting new alias: {new_alias} for vehicle with id: {censor(str(vehicle_id))}"
         )
-        result = await self.api.set_vehicle_alias_endpoint(
+        return await self.api.set_vehicle_alias_endpoint(
             vehicle_id=vehicle_id, new_alias=new_alias
         )
-        return result
 
-    async def get_vehicles(self) -> list:
+    async def get_vehicles(self) -> list[dict[str, Any]]:
         """Returns a list of vehicles.
 
         Retrieves list of vehicles associated with the account. The list contains static
@@ -222,10 +224,9 @@ class MyT:
         vehicles = await self.get_vehicles()
 
         _LOGGER.debug("Returning it as json...")
-        json_string = json.dumps(vehicles, indent=3)
-        return json_string
+        return json.dumps(vehicles, indent=3)
 
-    async def get_vehicle_status(self, vehicle: dict) -> Vehicle:
+    async def get_vehicle_status(self, vehicle: dict[str, Any]) -> Vehicle:
         """Returns vehicle status.
 
         Collects and formats different vehicle status endpoints into
@@ -242,9 +243,9 @@ class MyT:
             ToyotaInternalError: An error occurred when making a request.
             ToyotaApiError: Toyota's API returned an error.
         """
-        _LOGGER.debug(f"Getting status for vehicle - {censor_vin(vehicle['vin'])}...")
+        vin = vehicle.get("vin")
+        _LOGGER.debug(f"Getting status for vehicle - {censor_vin(vin)}...")
 
-        vin = vehicle["vin"]
         data = await asyncio.gather(
             *[
                 self.api.get_connected_services_endpoint(vin),
@@ -265,8 +266,12 @@ class MyT:
         )
 
     async def get_driving_statistics(  # pylint: disable=too-many-branches
-        self, vin: str, interval: str = MONTH, from_date: str = None, unit: str = METRIC
-    ) -> list:
+        self,
+        vin: str,
+        interval: str = MONTH,
+        from_date: str | None = None,
+        unit: str = METRIC,
+    ) -> list[dict[str, Any]]:
         """Returns driving statistics from a given period.
 
         Retrieves and formats driving statistics from a given periode. Will return
@@ -428,7 +433,7 @@ class MyT:
         return statistics.as_list()
 
     async def get_driving_statistics_json(
-        self, vin: str, interval: str = MONTH, from_date: str = None
+        self, vin: str, interval: str = MONTH, from_date: str | None = None
     ) -> str:
         """Returns driving statistics from a given period as json.
 

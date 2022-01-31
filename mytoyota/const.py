@@ -16,10 +16,6 @@ SUPPORTED_REGIONS = {
     }
 }
 
-# LOGIN
-USERNAME = "username"
-PASSWORD = "password"
-
 # So we don't have to test the token if multiple endpoints is requested at the same time.
 TOKEN_DURATION = 900
 TOKEN_LENGTH = 114
