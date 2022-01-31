@@ -1,9 +1,10 @@
 """Toyota Connected Services Controller """
+from __future__ import annotations
 
 from datetime import datetime
 from http import HTTPStatus
 import logging
-from typing import Optional, Union
+from typing import Any
 
 import httpx
 
@@ -11,13 +12,11 @@ from mytoyota.const import (
     BASE_HEADERS,
     CUSTOMERPROFILE,
     ENDPOINT_AUTH,
-    PASSWORD,
     SUPPORTED_REGIONS,
     TIMEOUT,
     TOKEN,
     TOKEN_DURATION,
     TOKEN_VALID_URL,
-    USERNAME,
     UUID,
 )
 from mytoyota.exceptions import ToyotaApiError, ToyotaInternalError, ToyotaLoginError
@@ -28,10 +27,10 @@ _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 
 class Controller:
-    """Httpx async client controller class"""
+    """Controller class."""
 
-    _token: str = None
-    _token_expiration: datetime = None
+    _token: str | None = None
+    _token_expiration: datetime | None = None
 
     def __init__(
         self,
@@ -39,7 +38,7 @@ class Controller:
         region: str,
         username: str,
         password: str,
-        uuid: str = None,
+        uuid: str | None = None,
     ) -> None:
         self._locale = locale
         self._region = region
@@ -47,24 +46,23 @@ class Controller:
         self._password = password
         self._uuid = uuid
 
-    def _build_auth_body(self) -> dict:
-        """Return auth body in a dict"""
-        return {USERNAME: self._username, PASSWORD: self._password}
+    @property
+    def _auth_endpoint(self) -> str:
+        """Returns auth endpoint."""
+        return SUPPORTED_REGIONS[self._region].get(ENDPOINT_AUTH)
 
-    def _get_auth_endpoint(self) -> str:
-        """Returns auth endpoint"""
-        return SUPPORTED_REGIONS[self._region][ENDPOINT_AUTH]
+    @property
+    def _auth_valid_endpoint(self) -> str:
+        """Returns token is valid endpoint."""
+        return SUPPORTED_REGIONS[self._region].get(TOKEN_VALID_URL)
 
-    def _get_auth_valid_endpoint(self) -> str:
-        """Returns token is valid endpoint"""
-        return SUPPORTED_REGIONS[self._region][TOKEN_VALID_URL]
-
-    async def get_uuid(self) -> str:
-        """Returns uuid"""
+    @property
+    def uuid(self) -> str | None:
+        """Return uuid."""
         return self._uuid
 
     async def first_login(self) -> None:
-        """Perform first login"""
+        """Perform first login."""
         await self._update_token()
 
     @staticmethod
@@ -82,12 +80,12 @@ class Controller:
         _LOGGER.debug("Getting new token...")
         async with httpx.AsyncClient() as client:
             response = await client.post(
-                self._get_auth_endpoint(),
+                self._auth_endpoint,
                 headers={"X-TME-LC": self._locale},
-                json=self._build_auth_body(),
+                json={"username": self._username, "password": self._password},
             )
             if response.status_code == HTTPStatus.OK:
-                result = response.json()
+                result: dict[str, Any] = response.json()
 
                 if TOKEN not in result or UUID not in result[CUSTOMERPROFILE]:
                     raise ToyotaLoginError("Could not get token or UUID from result")
@@ -95,11 +93,10 @@ class Controller:
                 _LOGGER.debug("Extracting token from result")
 
                 token = result.get(TOKEN)
-                uuid = result[CUSTOMERPROFILE][UUID]
 
                 if is_valid_token(token):
                     _LOGGER.debug("Token is the correct format")
-                    self._uuid = uuid
+                    self._uuid = result[CUSTOMERPROFILE].get(UUID)
                     self._token = token
                     _LOGGER.debug("Saving token and uuid")
                     self._token_expiration = datetime.now()
@@ -120,13 +117,13 @@ class Controller:
         _LOGGER.debug("Checking if token is still valid...")
         async with httpx.AsyncClient() as client:
             response = await client.post(
-                self._get_auth_valid_endpoint(),
+                self._auth_valid_endpoint,
                 json={TOKEN: self._token},
             )
             if response.status_code == HTTPStatus.OK:  # pylint: disable=no-else-return
-                result = response.json()
+                result: dict[str, Any] = response.json()
 
-                if result["valid"]:
+                if result.get("valid") is True:
                     _LOGGER.debug("Token is still valid")
                     return True
                 _LOGGER.debug("Token is not valid anymore")
@@ -144,11 +141,11 @@ class Controller:
         self,
         method: str,
         endpoint: str,
-        base_url: Optional[str] = None,
-        body: Optional[dict] = None,
-        params: Optional[dict] = None,
-        headers: Optional[dict] = None,
-    ) -> Union[dict, list, None]:
+        base_url: str | None = None,
+        body: dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None,
+        headers: dict[str, Any] | None = None,
+    ) -> dict[str, Any] | list[Any] | None:
         """Shared request method"""
 
         if headers is None:
@@ -162,7 +159,7 @@ class Controller:
                 await self._update_token()
 
         if base_url:
-            url = SUPPORTED_REGIONS[self._region][base_url] + endpoint
+            url = SUPPORTED_REGIONS[self._region].get(base_url) + endpoint
         else:
             url = endpoint
 
@@ -180,7 +177,7 @@ class Controller:
             headers.update(
                 {
                     "Cookie": f"iPlanetDirectoryPro={self._token}",
-                    "uuid": self._uuid,
+                    "uuid": self.uuid,
                 }
             )
 
