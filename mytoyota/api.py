@@ -1,5 +1,7 @@
 """Toyota Connected Services API"""
-from typing import Optional
+from __future__ import annotations
+
+from typing import Any
 
 from .const import BASE_URL, BASE_URL_CARS
 from .controller import Controller
@@ -10,78 +12,69 @@ class Api:
 
     def __init__(self, controller: Controller) -> None:
         """Toyota Controller"""
-
         self.controller = controller
 
-    async def uuid(self):
+    @property
+    def uuid(self) -> str | None:
         """Returns uuid from controller"""
-        return await self.controller.get_uuid()
+        return self.controller.uuid
 
     async def set_vehicle_alias_endpoint(
         self, new_alias: str, vehicle_id: int
-    ) -> Optional[dict]:
+    ) -> dict[str, Any] | None:
         """Set vehicle alias."""
-
         return await self.controller.request(
             method="PUT",
             base_url=BASE_URL_CARS,
-            endpoint=f"/api/users/{await self.uuid()}/vehicles/{vehicle_id}",
+            endpoint=f"/api/users/{self.uuid}/vehicles/{vehicle_id}",
             body={"id": vehicle_id, "alias": new_alias},
         )
 
-    async def get_vehicles_endpoint(self) -> Optional[list]:
+    async def get_vehicles_endpoint(self) -> list[dict[str, Any] | None] | None:
         """Retrieves list of cars you have registered with MyT"""
-
-        arguments = "?services=uio&legacy=true"
-
         return await self.controller.request(
             method="GET",
             base_url=BASE_URL_CARS,
-            endpoint=f"/vehicle/user/{await self.uuid()}/vehicles{arguments}",
+            endpoint=f"/vehicle/user/{self.uuid}/vehicles?services=uio&legacy=true",
         )
 
-    async def get_connected_services_endpoint(self, vin: str) -> Optional[dict]:
+    async def get_connected_services_endpoint(self, vin: str) -> dict[str, Any] | None:
         """Get information about connected services for the given car."""
-
-        arguments = "?legacy=true&services=fud,connected"
-
         return await self.controller.request(
             method="GET",
             base_url=BASE_URL_CARS,
-            endpoint=f"/vehicle/user/{await self.uuid()}/vehicle/{vin}{arguments}",
+            endpoint=f"/vehicle/user/{self.uuid}/vehicle/{vin}?legacy=true&services=fud,connected",
         )
 
-    async def get_odometer_endpoint(self, vin: str) -> Optional[list]:
+    async def get_odometer_endpoint(self, vin: str) -> list[dict[str, Any]] | None:
         """Get information from odometer."""
-
         return await self.controller.request(
             method="GET",
             base_url=BASE_URL,
             endpoint=f"/vehicle/{vin}/addtionalInfo",
         )
 
-    async def get_parking_endpoint(self, vin: str) -> Optional[dict]:
+    async def get_parking_endpoint(self, vin: str) -> dict[str, Any] | None:
         """Get where you have parked your car."""
-
         return await self.controller.request(
             method="GET",
             base_url=BASE_URL,
-            endpoint=f"/users/{await self.uuid()}/vehicle/location",
+            endpoint=f"/users/{self.uuid}/vehicle/location",
             headers={"VIN": vin},
         )
 
-    async def get_vehicle_status_endpoint(self, vin: str) -> Optional[dict]:
+    async def get_vehicle_status_endpoint(self, vin: str) -> dict[str, Any] | None:
         """Get information about the vehicle."""
-
         return await self.controller.request(
             method="GET",
             base_url=BASE_URL,
-            endpoint=f"/users/{await self.uuid()}/vehicles/{vin}/vehicleStatus",
+            endpoint=f"/users/{self.uuid}/vehicles/{vin}/vehicleStatus",
         )
 
-    async def get_vehicle_status_legacy_endpoint(self, vin: str) -> Optional[dict]:
+    async def get_vehicle_status_legacy_endpoint(
+        self, vin: str
+    ) -> dict[str, Any] | None:
         """Get information about the vehicle."""
-
         return await self.controller.request(
             method="GET",
             base_url=BASE_URL,
@@ -89,10 +82,9 @@ class Api:
         )
 
     async def get_driving_statistics_endpoint(
-        self, vin: str, from_date: str, interval: Optional[str] = None
-    ) -> Optional[dict]:
+        self, vin: str, from_date: str, interval: str | None = None
+    ) -> dict[str, Any] | None:
         """Get driving statistic"""
-
         return await self.controller.request(
             method="GET",
             base_url=BASE_URL,

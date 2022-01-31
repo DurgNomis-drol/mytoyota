@@ -36,7 +36,8 @@ class OfflineController:
         self._password = password
         self._uuid = uuid
 
-    async def get_uuid(self) -> str:
+    @property
+    def uuid(self) -> str:
         """Returns uuid"""
         return "_OfflineController_"
 
@@ -210,7 +211,7 @@ class TestMyT:
     def test_get_uuid(self):
         """Test the retrieval of an uuid"""
         myt = self._create_offline_myt()
-        uuid = asyncio.get_event_loop().run_until_complete(myt.get_uuid())
+        uuid = myt.uuid
         assert uuid
         assert len(uuid) > 0
 
