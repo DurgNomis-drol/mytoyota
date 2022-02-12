@@ -1,6 +1,7 @@
 """pytest tests for mytoyota.client.MyT"""
 
 import asyncio
+import datetime
 import json
 import os.path
 import re
@@ -289,3 +290,88 @@ class TestMyT:
             myt.get_driving_statistics(vehicle["vin"], interval, unit=unit)
         )
         assert statistics is not None
+        for data in statistics:
+            assert data["bucket"] is not None
+            # And the unit should be requested unit
+            assert data["bucket"]["unit"] == unit
+            # And the year should be recent or (short) future
+            assert 2018 <= int(data["bucket"]["year"]) <= 2100
+            assert data["data"] is not None
+
+    @pytest.mark.parametrize(
+        "unit",
+        [
+            ("metric"),
+            ("imperial"),
+            ("imperial_liters"),
+        ],
+    )
+    def test_get_driving_statistics_has_day_of_year(self, unit):
+        """Test the retrieval of the status of a vehicle"""
+        myt = self._create_offline_myt()
+        vehicle = self._lookup_vehicle(myt, 4444444)
+        assert vehicle is not None
+        # Retrieve the actual status of the vehicle
+        statistics = asyncio.get_event_loop().run_until_complete(
+            myt.get_driving_statistics(vehicle["vin"], "day", unit=unit)
+        )
+        assert statistics is not None
+        for day_data in statistics:
+            bucket = day_data["bucket"]
+            date = datetime.date.fromisoformat(bucket["date"])
+            day_of_year = int(date.strftime("%j"))
+            assert bucket["dayOfYear"] == day_of_year
+            assert int(bucket["year"]) == date.year
+
+    @pytest.mark.parametrize(
+        "interval,unit",
+        [
+            ("day", "metric"),
+            ("day", "imperial"),
+            ("day", "imperial_liters"),
+            ("week", "metric"),
+            ("week", "imperial"),
+            ("week", "imperial_liters"),
+            ("month", "metric"),
+            ("month", "imperial"),
+            ("month", "imperial_liters"),
+        ],
+    )
+    def test_get_driving_statistics_year_is_int(self, interval, unit):
+        """Test the retrieval of the status of a vehicle"""
+        myt = self._create_offline_myt()
+        vehicle = self._lookup_vehicle(myt, 4444444)
+        assert vehicle is not None
+        # Retrieve the actual status of the vehicle
+        statistics = asyncio.get_event_loop().run_until_complete(
+            myt.get_driving_statistics(vehicle["vin"], interval, unit=unit)
+        )
+        assert statistics is not None
+        for day_data in statistics:
+            bucket = day_data["bucket"]
+            assert isinstance(bucket["year"], int)
+
+    @pytest.mark.parametrize(
+        "interval,unit",
+        [
+            ("isoweek", "metric"),
+            ("isoweek", "imperial"),
+            ("isoweek", "imperial_liters"),
+            ("year", "metric"),
+            ("year", "imperial"),
+            ("year", "imperial_liters"),
+        ],
+    )
+    def test_get_driving_statistics_year_is_str(self, interval, unit):
+        """Test the retrieval of the status of a vehicle"""
+        myt = self._create_offline_myt()
+        vehicle = self._lookup_vehicle(myt, 4444444)
+        assert vehicle is not None
+        # Retrieve the actual status of the vehicle
+        statistics = asyncio.get_event_loop().run_until_complete(
+            myt.get_driving_statistics(vehicle["vin"], interval, unit=unit)
+        )
+        assert statistics is not None
+        for day_data in statistics:
+            bucket = day_data["bucket"]
+            assert isinstance(bucket["year"], str)
