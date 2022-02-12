@@ -224,3 +224,6 @@ class TestSensors:  # pylint: disable=too-many-public-methods
         assert sensors.windows.passenger_seat.warning is False
         assert sensors.windows.passenger_seat.state == "close"
         assert isinstance(sensors.key, Key)
+
+        assert isinstance(sensors.raw_json, dict)
+        assert sensors.raw_json == fixture.get("protectionState")
