@@ -64,7 +64,9 @@ class OfflineController:
         """Shared request method"""
 
         if method not in ("GET", "POST", "PUT", "DELETE"):
-            raise ToyotaInternalError("Invalid request method provided")
+            raise ToyotaInternalError(
+                "Invalid request method provided"
+            )  # pragma: no cover
 
         _ = base_url
 
