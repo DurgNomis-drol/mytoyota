@@ -115,9 +115,11 @@ class Statistics:
                 day[BUCKET].update(
                     {
                         UNIT: METRIC,
-                        DATE: self._now.strptime(f"{dayofyear} {year}", "%j %Y").format(
-                            DATE_FORMAT
-                        ),
+                        # As we use 1 january of the year as the initial date
+                        # we only have to shift it with 1 day less
+                        DATE: arrow.Arrow(year, 1, 1)
+                        .shift(days=dayofyear - 1)
+                        .format(DATE_FORMAT),
                     }
                 )
             return data[HISTOGRAM]
