@@ -54,7 +54,9 @@ class Api:
             endpoint=f"/vehicle/{vin}/addtionalInfo",
         )
 
-    async def get_parking_endpoint(self, vin: str) -> dict[str, Any] | None:
+    async def get_parking_endpoint(
+        self, vin: str
+    ) -> dict[str, Any] | None:  # pragma: no cover
         """Get where you have parked your car."""
         return await self.controller.request(
             method="GET",
