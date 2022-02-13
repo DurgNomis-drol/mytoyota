@@ -9,7 +9,6 @@ from mytoyota.const import (
     DATA,
     DATE,
     DATE_FORMAT,
-    DATE_FORMAT_YEAR,
     DAY,
     DAYOFYEAR,
     HISTOGRAM,
@@ -127,8 +126,8 @@ class Statistics:
         if interval is ISOWEEK:
             data_with_bucket: dict = {
                 BUCKET: {
-                    YEAR: self._now.format(DATE_FORMAT_YEAR),
-                    WEEK: self._now.strftime("%V"),
+                    YEAR: self._now.year,
+                    WEEK: self._now.week,
                     UNIT: METRIC,
                     PERIODE_START: data["from"],
                 },
@@ -153,7 +152,7 @@ class Statistics:
         if interval is YEAR:
             data_with_bucket: dict = {
                 BUCKET: {
-                    YEAR: self._now.format(DATE_FORMAT_YEAR),
+                    YEAR: self._now.year,
                     UNIT: METRIC,
                     PERIODE_START: data["from"],
                 },
