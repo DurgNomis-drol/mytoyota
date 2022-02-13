@@ -6,6 +6,7 @@ import os.path
 import re
 from typing import Optional, Union
 
+import arrow
 import pytest  # pylint: disable=import-error
 
 from mytoyota.client import MyT
@@ -259,6 +260,92 @@ class TestMyT:
         )
         assert status is not None
 
+    def test_get_vehicle_statistics_invalid_interval_error(self):
+        """Test that retrieving the statistics of an unknown interval is not possible"""
+        myt = self._create_offline_myt()
+        vehicle = self._lookup_vehicle(myt, 4444444)
+        assert vehicle is not None
+        # Retrieve the actual status of the vehicle
+        stat = asyncio.get_event_loop().run_until_complete(
+            myt.get_driving_statistics(vehicle["vin"], "century")
+        )
+        assert stat is not None
+        assert "error_mesg" in stat[0]
+
+    def test_get_vehicle_statistics_tomorrow_error(self):
+        """Test that retrieving the statistics of tomorrow is not possible"""
+        myt = self._create_offline_myt()
+        vehicle = self._lookup_vehicle(myt, 4444444)
+        assert vehicle is not None
+        tomorrow = arrow.now().shift(days=1).format("YYYY-MM-DD")
+        # Retrieve the actual status of the vehicle
+        stat = asyncio.get_event_loop().run_until_complete(
+            myt.get_driving_statistics(vehicle["vin"], "year", from_date=tomorrow)
+        )
+        assert stat is not None
+        assert "error_mesg" in stat[0]
+
+    def test_get_vehicle_statistics_isoweek_error(self):
+        """Test that retrieving statistics of long ago of an isoweek is not possible"""
+        myt = self._create_offline_myt()
+        vehicle = self._lookup_vehicle(myt, 4444444)
+        assert vehicle is not None
+        # Retrieve the actual status of the vehicle
+        stat = asyncio.get_event_loop().run_until_complete(
+            myt.get_driving_statistics(
+                vehicle["vin"], "isoweek", from_date="2010-01-01"
+            )
+        )
+        assert stat is not None
+        assert "error_mesg" in stat[0]
+
+    def test_get_vehicle_statistics_year_error(self):
+        """Test that retrieving the previous year is not possible"""
+        myt = self._create_offline_myt()
+        vehicle = self._lookup_vehicle(myt, 4444444)
+        assert vehicle is not None
+        previous_year = arrow.now().shift(years=-1).format("YYYY-MM-DD")
+        # Retrieve the actual status of the vehicle
+        stat = asyncio.get_event_loop().run_until_complete(
+            myt.get_driving_statistics(vehicle["vin"], "year", from_date=previous_year)
+        )
+        assert stat is not None
+        assert "error_mesg" in stat[0]
+
+    @pytest.mark.parametrize(
+        "interval,unit",
+        [
+            ("day", "metric"),
+            ("day", "imperial"),
+            ("day", "imperial_liters"),
+            ("week", "metric"),
+            ("week", "imperial"),
+            ("week", "imperial_liters"),
+            ("isoweek", "metric"),
+            ("isoweek", "imperial"),
+            ("isoweek", "imperial_liters"),
+            ("month", "metric"),
+            ("month", "imperial"),
+            ("month", "imperial_liters"),
+            # Retrieving the year statistics of today is possible
+            # as it will get the current year statistics
+        ],
+    )
+    def test_get_vehicle_statistics_today_error(self, interval, unit):
+        """Test that retrieving the statistics of today is not possible"""
+        myt = self._create_offline_myt()
+        vehicle = self._lookup_vehicle(myt, 4444444)
+        assert vehicle is not None
+        today = arrow.now().format("YYYY-MM-DD")
+        # Retrieve the actual status of the vehicle
+        stat = asyncio.get_event_loop().run_until_complete(
+            myt.get_driving_statistics(
+                vehicle["vin"], interval, unit=unit, from_date=today
+            )
+        )
+        assert stat is not None
+        assert "error_mesg" in stat[0]
+
     @pytest.mark.parametrize(
         "interval,unit",
         [
@@ -289,3 +376,24 @@ class TestMyT:
             myt.get_driving_statistics(vehicle["vin"], interval, unit=unit)
         )
         assert statistics is not None
+
+    @pytest.mark.parametrize(
+        "interval",
+        [
+            ("day"),
+            ("week"),
+            ("isoweek"),
+            ("month"),
+            ("year"),
+        ],
+    )
+    def test_get_driving_statistics_json(self, interval):
+        """Test the retrieval of the statistics (in JSON format) of a vehicle"""
+        myt = self._create_offline_myt()
+        vehicle = self._lookup_vehicle(myt, 4444444)
+        assert vehicle is not None
+        # Retrieve the actual status of the vehicle
+        statistics_json = asyncio.get_event_loop().run_until_complete(
+            myt.get_driving_statistics_json(vehicle["vin"], interval)
+        )
+        assert json.loads(statistics_json) is not None
