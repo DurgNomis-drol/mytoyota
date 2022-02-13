@@ -306,12 +306,12 @@ class TestMyT:
             ("imperial_liters"),
         ],
     )
-    def test_get_driving_statistics_has_day_of_year(self, unit):
-        """Test the retrieval of the status of a vehicle"""
+    def test_get_driving_statistics_has_correct_day_of_year(self, unit):
+        """Test that the day-statistics contains the correct date for the day of the year"""
         myt = self._create_offline_myt()
         vehicle = self._lookup_vehicle(myt, 4444444)
         assert vehicle is not None
-        # Retrieve the actual status of the vehicle
+        # Retrieve the driving statistics of the vehicle
         statistics = asyncio.get_event_loop().run_until_complete(
             myt.get_driving_statistics(vehicle["vin"], "day", unit=unit)
         )
@@ -337,12 +337,12 @@ class TestMyT:
             ("month", "imperial_liters"),
         ],
     )
-    def test_get_driving_statistics_year_is_int(self, interval, unit):
-        """Test the retrieval of the status of a vehicle"""
+    def test_get_driving_statistics_contains_year_as_int(self, interval, unit):
+        """Test that the statistics contains the year as an integer"""
         myt = self._create_offline_myt()
         vehicle = self._lookup_vehicle(myt, 4444444)
         assert vehicle is not None
-        # Retrieve the actual status of the vehicle
+        # Retrieve the driving statistics of the vehicle
         statistics = asyncio.get_event_loop().run_until_complete(
             myt.get_driving_statistics(vehicle["vin"], interval, unit=unit)
         )
@@ -362,12 +362,12 @@ class TestMyT:
             ("year", "imperial_liters"),
         ],
     )
-    def test_get_driving_statistics_year_is_str(self, interval, unit):
-        """Test the retrieval of the status of a vehicle"""
+    def test_get_driving_statistics_contains_year_as_str(self, interval, unit):
+        """Test that the statistics contains the year as a string"""
         myt = self._create_offline_myt()
         vehicle = self._lookup_vehicle(myt, 4444444)
         assert vehicle is not None
-        # Retrieve the actual status of the vehicle
+        # Retrieve the driving statistics of the vehicle
         statistics = asyncio.get_event_loop().run_until_complete(
             myt.get_driving_statistics(vehicle["vin"], interval, unit=unit)
         )
