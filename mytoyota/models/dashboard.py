@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from mytoyota.utils.conversions import convert_to_miles
 
 if TYPE_CHECKING:
-    from mytoyota.models.vehicle import Vehicle
+    from mytoyota.models.vehicle import Vehicle  # pragma: no cover
 
 
 class Dashboard:

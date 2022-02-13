@@ -2,6 +2,8 @@
 import json
 import os
 
+import pytest
+
 from mytoyota.models.dashboard import Dashboard
 from mytoyota.models.hvac import Hvac
 from mytoyota.models.location import ParkingLocation
@@ -55,6 +57,28 @@ class TestVehicle:
             assert vehicle.hvac is None
             assert vehicle.parkinglocation is None
             assert vehicle.sensors is None
+
+    @pytest.mark.parametrize(
+        "vin,connected_services",
+        [
+            (None, {}),
+            (None, {"connectedService": {"status": "ACTIVE"}}),
+            ("VINVIN123VIN", None),
+            ("VINVIN123VIN", {}),
+            # ("VINVIN123VIN", {"connectedService": None}),
+            ("VINVIN123VIN", {"connectedService": {}}),
+            ("VINVIN123VIN", {"connectedService": {"status": None}}),
+            ("VINVIN123VIN", {"connectedService": {"status": ""}}),
+            ("VINVIN123VIN", {"connectedService": {"status": "DISABLED"}}),
+            ("VINVIN123VIN", {"connectedService": {"error_status": "ACTIVE"}}),
+            ("VINVIN123VIN", {"error_connectedService": {"status": "ACTIVE"}}),
+        ],
+    )
+    def test_vehicle_disabled_connected_services(self, vin, connected_services):
+        """Test the check if the connected services is disabled"""
+        car = {"vin": vin}
+        vehicle = Vehicle(vehicle_info=car, connected_services=connected_services)
+        assert vehicle.is_connected_services_enabled is False
 
     def test_vehicle_init(self):
         """Test vehicle initialization with connected services"""
