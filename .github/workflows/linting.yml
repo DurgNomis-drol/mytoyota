@@ -16,7 +16,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       OS: ${{ matrix.os }}
-      PYTHON: ${{ matrix.python-version }}    
+      PYTHON: ${{ matrix.python-version }}
     steps:
       - name: Check out the repository
         uses: actions/checkout@v2
