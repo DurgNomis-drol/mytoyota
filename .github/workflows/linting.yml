@@ -11,11 +11,10 @@ jobs:
     name: Pre-commit
     strategy:
       matrix:
-        os: [ubuntu-latest]
         python-version: [3.7, 3.8, 3.9, "3.10"]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     env:
-      OS: ${{ matrix.os }}
+      OS: ubuntu-latest
       PYTHON: ${{ matrix.python-version }}
     steps:
       - name: Check out the repository
