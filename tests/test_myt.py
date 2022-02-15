@@ -127,7 +127,27 @@ class OfflineController:
         return response
 
 
-class TestMyT:
+class TestMyTHelper:
+    """Helper class for the actual TestMyT pytest classes"""
+
+    def _create_offline_myt(self) -> MyT:
+        """Create a MyT instance that is using the OfflineController"""
+        return MyT(
+            username="user@domain.com",
+            password="xxxxx",
+            locale="en-gb",
+            region="europe",
+            controller_class=OfflineController,
+        )
+
+    def _lookup_vehicle(self, myt: MyT, vehicle_id: int):
+        """Retrieve all the vehicles, and find the vehicle with the specified 'id'"""
+        vehicles = asyncio.get_event_loop().run_until_complete(myt.get_vehicles())
+        vehicle = [veh for veh in vehicles if veh["id"] == vehicle_id]
+        return vehicle[0]
+
+
+class TestMyT(TestMyTHelper):
     """pytest functions to test MyT"""
 
     def test_myt(self):
@@ -197,16 +217,6 @@ class TestMyT:
         assert len(regions) > 0
         assert "europe" in regions
 
-    def _create_offline_myt(self) -> MyT:
-        """Create a MyT instance that is using the OfflineController"""
-        return MyT(
-            username="user@domain.com",
-            password="xxxxx",
-            locale="en-gb",
-            region="europe",
-            controller_class=OfflineController,
-        )
-
     def test_login(self):
         """Test the login"""
         myt = self._create_offline_myt()
@@ -246,12 +256,6 @@ class TestMyT:
         )
         assert json.loads(vehicles_json) is not None
 
-    def _lookup_vehicle(self, myt: MyT, vehicle_id: int):
-        """Retrieve all the vehicles, and find the vehicle with the specified 'id'"""
-        vehicles = asyncio.get_event_loop().run_until_complete(myt.get_vehicles())
-        vehicle = [veh for veh in vehicles if veh["id"] == vehicle_id]
-        return vehicle[0]
-
     def test_get_vehicle_status(self):
         """Test the retrieval of the status of a vehicle"""
         myt = self._create_offline_myt()
@@ -262,6 +266,10 @@ class TestMyT:
             myt.get_vehicle_status(vehicle)
         )
         assert status is not None
+
+
+class TestMyTStatistics(TestMyTHelper):
+    """pytest functions to test get_vehicle_statistics of MyT"""
 
     def test_get_vehicle_statistics_invalid_interval_error(self):
         """Test that retrieving the statistics of an unknown interval is not possible"""
