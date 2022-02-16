@@ -429,9 +429,15 @@ class TestMyTStatistics(TestMyTHelper):
             ("week", "metric"),
             ("week", "imperial"),
             ("week", "imperial_liters"),
+            ("isoweek", "metric"),
+            ("isoweek", "imperial"),
+            ("isoweek", "imperial_liters"),
             ("month", "metric"),
             ("month", "imperial"),
             ("month", "imperial_liters"),
+            ("year", "metric"),
+            ("year", "imperial"),
+            ("year", "imperial_liters"),
         ],
     )
     def test_get_driving_statistics_contains_year_as_int(self, interval, unit):
@@ -447,31 +453,6 @@ class TestMyTStatistics(TestMyTHelper):
         for day_data in statistics:
             bucket = day_data["bucket"]
             assert isinstance(bucket["year"], int)
-
-    @pytest.mark.parametrize(
-        "interval,unit",
-        [
-            ("isoweek", "metric"),
-            ("isoweek", "imperial"),
-            ("isoweek", "imperial_liters"),
-            ("year", "metric"),
-            ("year", "imperial"),
-            ("year", "imperial_liters"),
-        ],
-    )
-    def test_get_driving_statistics_contains_year_as_str(self, interval, unit):
-        """Test that the statistics contains the year as a string"""
-        myt = self._create_offline_myt()
-        vehicle = self._lookup_vehicle(myt, 4444444)
-        assert vehicle is not None
-        # Retrieve the driving statistics of the vehicle
-        statistics = asyncio.get_event_loop().run_until_complete(
-            myt.get_driving_statistics(vehicle["vin"], interval, unit=unit)
-        )
-        assert statistics is not None
-        for day_data in statistics:
-            bucket = day_data["bucket"]
-            assert isinstance(bucket["year"], str)
 
     @pytest.mark.parametrize(
         "interval",
