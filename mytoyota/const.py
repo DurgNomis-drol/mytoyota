@@ -46,7 +46,6 @@ IMPERIAL = "imperial"
 IMPERIAL_LITERS = "imperial_liters"
 
 # DATE FORMATS
-DATE_FORMAT_YEAR = "YYYY"
 DATE_FORMAT = "YYYY-MM-DD"
 
 # HTTP
