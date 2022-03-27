@@ -173,6 +173,7 @@ class Controller:
                 "X-TME-LC": self._locale,
                 "X-TME-LOCALE": self._locale,
                 "X-TME-TOKEN": self._token,
+                "X-TME-APP-VERSION": "4.4.0",
             }
         )
 
