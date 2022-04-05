@@ -62,7 +62,7 @@ async def get_information():
         mileage = vehicle.dashboard.odometer
         # Or retrieve the energy level (electric or gasoline)
         fuel = vehicle.dashboard.fuel_level
-        battery = vehicle.dashboard.batter_level
+        battery = vehicle.dashboard.battery_level
         # Or Parking information:
         latitude = vehicle.parkinglocation.latitude
 
