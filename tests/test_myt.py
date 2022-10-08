@@ -124,6 +124,14 @@ class OfflineController:
                 os.path.join(data_files, f"vehicle_{vin}_statistics_{interval}.json")
             )
 
+        match = re.match(r"/api/user/.*/cms/trips/v2/history/vin/([^?]+)/.*", endpoint)
+        if match:
+            # We should retrieve the trips
+            vin = match.group(1)
+            response = self._load_from_file(
+                os.path.join(data_files, f"vehicle_{vin}_trips.json")
+            )
+
         return response
 
 
@@ -266,6 +274,17 @@ class TestMyT(TestMyTHelper):
             myt.get_vehicle_status(vehicle)
         )
         assert status is not None
+
+    def test_get_trips(self):
+        """Test the retrieval of the trips of a vehicle"""
+        myt = self._create_offline_myt()
+        vehicle = self._lookup_vehicle(myt, 4444444)
+        assert vehicle is not None
+        # Retrieve the actual trips of the vehicle
+        trips = asyncio.get_event_loop().run_until_complete(
+            myt.get_trips_json(vehicle["vin"])
+        )
+        assert trips is not None
 
 
 class TestMyTStatistics(TestMyTHelper):
