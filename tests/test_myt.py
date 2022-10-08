@@ -132,6 +132,17 @@ class OfflineController:
                 os.path.join(data_files, f"vehicle_{vin}_trips.json")
             )
 
+        match = re.match(
+            r"/api/user/.*/cms/trips/v2/([^?]+)/events/vin/([^?]+)", endpoint
+        )
+        if match:
+            # We should retrieve the trips
+            trip_id = match.group(1)
+            vin = match.group(2)
+            response = self._load_from_file(
+                os.path.join(data_files, f"vehicle_{vin}_trip_{trip_id}.json")
+            )
+
         return response
 
 
@@ -285,6 +296,18 @@ class TestMyT(TestMyTHelper):
             myt.get_trips_json(vehicle["vin"])
         )
         assert trips is not None
+
+    def test_get_trip(self):
+        """Test the retrieval of a trip of a vehicle"""
+        trip_id = "971B8221-299E-4899-BC73-AE2EFF604D28"
+        myt = self._create_offline_myt()
+        vehicle = self._lookup_vehicle(myt, 4444444)
+        assert vehicle is not None
+        # Retrieve the actual trip
+        trip_json = asyncio.get_event_loop().run_until_complete(
+            myt.get_trip_json(vehicle["vin"], trip_id)
+        )
+        assert trip_json is not None
 
 
 class TestMyTStatistics(TestMyTHelper):
