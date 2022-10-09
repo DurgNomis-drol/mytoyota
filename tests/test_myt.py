@@ -17,7 +17,7 @@ from mytoyota.exceptions import (
     ToyotaLocaleNotValid,
     ToyotaRegionNotSupported,
 )
-from mytoyota.models.trip import DetailedTrip, Trip
+from mytoyota.models.trip import DetailedTrip, Trip, TripEvent
 
 # pylint: disable=no-self-use
 
@@ -304,7 +304,6 @@ class TestMyT(TestMyTHelper):
         myt = self._create_offline_myt()
         vehicle = self._lookup_vehicle(myt, 4444444)
         assert vehicle is not None
-        # Retrieve the actual trip
         trip_json = asyncio.get_event_loop().run_until_complete(
             myt.get_trip_json(vehicle["vin"], trip_id)
         )
@@ -315,13 +314,24 @@ class TestMyT(TestMyTHelper):
         myt = self._create_offline_myt()
         vehicle = self._lookup_vehicle(myt, 4444444)
         assert vehicle is not None
-        # Retrieve the actual trips of the vehicle
         trips = asyncio.get_event_loop().run_until_complete(
             myt.get_trips(vehicle["vin"])
         )
         assert trips is not None
         for trip in trips:
-            assert type(trip) == Trip
+            assert isinstance(trip, Trip)
+            assert trip.raw_json.get("tripId") is not None
+            assert isinstance(trip.trip_id, str)
+            assert trip.raw_json.get("startAddress") is not None
+            assert isinstance(trip.start_address, str)
+            assert trip.raw_json.get("endAddress") is not None
+            assert isinstance(trip.end_address, str)
+            assert trip.raw_json.get("startTimeGmt") is not None
+            assert isinstance(trip.start_time_gmt, datetime.datetime)
+            assert trip.raw_json.get("endTimeGmt") is not None
+            assert isinstance(trip.end_time_gmt, datetime.datetime)
+            assert trip.raw_json.get("classificationType") is not None
+            assert isinstance(trip.classification_type, int)
 
     def test_get_trip(self):
         """Test the retrieval of a trip of a vehicle"""
@@ -334,7 +344,24 @@ class TestMyT(TestMyTHelper):
             myt.get_trip(vehicle["vin"], trip_id)
         )
         assert trip is not None
-        assert type(trip) == DetailedTrip
+        assert isinstance(trip, DetailedTrip)
+        assert len(trip.trip_events) == 12
+        for event in trip.trip_events:
+            assert isinstance(event, TripEvent)
+            assert event.raw_json.get("lat") is not None
+            assert isinstance(event.latitude, float)
+            assert event.raw_json.get("lon") is not None
+            assert isinstance(event.longitude, float)
+            assert event.raw_json.get("overspeed") is not None
+            assert isinstance(event.overspeed, bool)
+            assert event.raw_json.get("isEv") is not None
+            assert isinstance(event.is_ev, bool)
+            assert event.raw_json.get("highway") is not None
+            assert isinstance(event.highway, bool)
+            assert event.raw_json.get("mode") is not None
+            assert isinstance(event.mode, int)
+        assert trip.raw_json.get("statistics") is not None
+        assert isinstance(trip.statistics, dict)
 
 
 class TestMyTStatistics(TestMyTHelper):

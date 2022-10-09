@@ -478,7 +478,7 @@ class MyT:
 
         raw_trips = await self.api.get_trips_endpoint(vin)
         _LOGGER.debug(f"received {len(raw_trips.get('recentTrips',[]))} trips")
-        return [Trip(trip) for trip in raw_trips]
+        return [Trip(trip) for trip in raw_trips.get("recentTrips", [])]
 
     async def get_trip(self, vin: str, trip_id: str) -> DetailedTrip:
         """Returns a trip.

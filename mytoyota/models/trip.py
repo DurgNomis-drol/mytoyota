@@ -1,10 +1,14 @@
 """Models for trips and detailed trips."""
 from __future__ import annotations
 
+from datetime import datetime
+
 from mytoyota.models.data import VehicleData
 
 
 class TripEvent(VehicleData):
+    """A single trip event including geo location."""
+
     @property
     def latitude(self) -> float:
         """Event latitude."""
@@ -42,7 +46,9 @@ class DetailedTrip(VehicleData):
     @property
     def trip_events(self) -> list(TripEvent):
         """Trip events."""
-        return self._data.get("tripEvents", [])
+        if not self._data.get("tripEvents"):
+            return []
+        return [TripEvent(event) for event in self._data.get("tripEvents", [])]
 
     @property
     def trip_events_type(self) -> list(dict):
@@ -69,14 +75,20 @@ class Trip(VehicleData):
         return self._data.get("startAddress", "")
 
     @property
-    def start_time_gmt(self) -> str:
+    def start_time_gmt(self) -> datetime.datetime | None:
         """Trip Start time GMT."""
-        return self._data.get("startTimeGmt", "")
+        start_time_str = self._data.get("startTimeGmt", None)
+        if not start_time_str:
+            return None
+        return datetime.strptime(start_time_str, "%Y-%m-%dT%H:%M:%SZ")
 
     @property
-    def end_time_gmt(self) -> str:
+    def end_time_gmt(self) -> datetime.datetime | None:
         """Trip End time GMT."""
-        return self._data.get("endTimeGmt", "")
+        end_time_str = self._data.get("endTimeGmt", None)
+        if not end_time_str:
+            return None
+        return datetime.strptime(end_time_str, "%Y-%m-%dT%H:%M:%SZ")
 
     @property
     def end_address(self) -> str:
@@ -84,6 +96,6 @@ class Trip(VehicleData):
         return self._data.get("endAddress", "")
 
     @property
-    def classification_type(self) -> str:
+    def classification_type(self) -> int | None:
         """Trip Classification type."""
-        return self._data.get("classificationType", "")
+        return self._data.get("classificationType", None)
