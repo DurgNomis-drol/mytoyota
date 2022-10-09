@@ -17,6 +17,7 @@ from mytoyota.exceptions import (
     ToyotaLocaleNotValid,
     ToyotaRegionNotSupported,
 )
+from mytoyota.models.trip import DetailedTrip, Trip
 
 # pylint: disable=no-self-use
 
@@ -286,7 +287,7 @@ class TestMyT(TestMyTHelper):
         )
         assert status is not None
 
-    def test_get_trips(self):
+    def test_get_trips_json(self):
         """Test the retrieval of the trips of a vehicle"""
         myt = self._create_offline_myt()
         vehicle = self._lookup_vehicle(myt, 4444444)
@@ -297,7 +298,7 @@ class TestMyT(TestMyTHelper):
         )
         assert trips is not None
 
-    def test_get_trip(self):
+    def test_get_trip_json(self):
         """Test the retrieval of a trip of a vehicle"""
         trip_id = "971B8221-299E-4899-BC73-AE2EFF604D28"
         myt = self._create_offline_myt()
@@ -308,6 +309,32 @@ class TestMyT(TestMyTHelper):
             myt.get_trip_json(vehicle["vin"], trip_id)
         )
         assert trip_json is not None
+
+    def test_get_trips(self):
+        """Test the retrieval of the trips of a vehicle"""
+        myt = self._create_offline_myt()
+        vehicle = self._lookup_vehicle(myt, 4444444)
+        assert vehicle is not None
+        # Retrieve the actual trips of the vehicle
+        trips = asyncio.get_event_loop().run_until_complete(
+            myt.get_trips(vehicle["vin"])
+        )
+        assert trips is not None
+        for trip in trips:
+            assert type(trip) == Trip
+
+    def test_get_trip(self):
+        """Test the retrieval of a trip of a vehicle"""
+        trip_id = "971B8221-299E-4899-BC73-AE2EFF604D28"
+        myt = self._create_offline_myt()
+        vehicle = self._lookup_vehicle(myt, 4444444)
+        assert vehicle is not None
+        # Retrieve the actual trip
+        trip = asyncio.get_event_loop().run_until_complete(
+            myt.get_trip(vehicle["vin"], trip_id)
+        )
+        assert trip is not None
+        assert type(trip) == DetailedTrip
 
 
 class TestMyTStatistics(TestMyTHelper):

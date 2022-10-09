@@ -108,9 +108,7 @@
     "overspeedDistanceInKm": 0,
     "averageSpeedInKmph": 26.63,
     "maxSpeedInKmph": 42,
-    "countriesVisited": [
-      "DE"
-    ],
+    "countriesVisited": ["DE"],
     "fuelConsumptionInL": 0.184,
     "nightTrip": false,
     "averageFuelConsumptionInL": 3.308,
