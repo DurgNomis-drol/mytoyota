@@ -94,3 +94,26 @@ class Api:
             headers={"vin": vin},
             params={"from": from_date, "calendarInterval": interval},
         )
+
+    async def get_trips_endpoint(
+        self,
+        vin: str,
+        page: int = 1,
+    ) -> dict[str, Any] | None:
+        """Get trip
+        The page parameter works a bit strange but setting to 1 gets last few trips"""
+        return await self.controller.request(
+            method="GET",
+            base_url=BASE_URL_CARS,
+            endpoint=f"/api/user/{self.uuid}/cms/trips/v2/history/vin/{vin}/{page}",
+            headers={"vin": vin},
+        )
+
+    async def get_trip_endpoint(self, vin: str, trip_id: str) -> dict[str, Any] | None:
+        """Get data for a single trip"""
+        return await self.controller.request(
+            method="GET",
+            base_url=BASE_URL_CARS,
+            endpoint=f"/api/user/{self.uuid}/cms/trips/v2/{trip_id}/events/vin/{vin}",
+            headers={"vin": vin},
+        )

@@ -1,0 +1,123 @@
+{
+  "tripEvents": [
+    {
+      "lat": 43.0599655849619,
+      "lon": 19.285899325125055,
+      "overspeed": false,
+      "highway": false,
+      "isEv": false,
+      "mode": 1
+    },
+    {
+      "lat": 45.45596952869966,
+      "lon": 6.649331429926187,
+      "overspeed": false,
+      "highway": false,
+      "isEv": false,
+      "mode": 1
+    },
+    {
+      "lat": 42.35129848390261,
+      "lon": 8.14705033189954,
+      "overspeed": false,
+      "highway": true,
+      "isEv": false,
+      "mode": 0
+    },
+    {
+      "lat": 46.90697367124385,
+      "lon": 14.424176444242189,
+      "overspeed": false,
+      "highway": false,
+      "isEv": true,
+      "mode": 0
+    },
+    {
+      "lat": 40.36832951568744,
+      "lon": 14.334902448782945,
+      "overspeed": true,
+      "highway": false,
+      "isEv": false,
+      "mode": 0
+    },
+    {
+      "lat": 46.76201504330655,
+      "lon": 11.171679542600685,
+      "overspeed": false,
+      "highway": false,
+      "isEv": false,
+      "mode": 1
+    },
+    {
+      "lat": 41.967287922031595,
+      "lon": 14.069634438784975,
+      "overspeed": false,
+      "highway": false,
+      "isEv": false,
+      "mode": 1
+    },
+    {
+      "lat": 44.253870810254426,
+      "lon": 6.451801310712202,
+      "overspeed": false,
+      "highway": false,
+      "isEv": false,
+      "mode": 1
+    },
+    {
+      "lat": 46.591210712906516,
+      "lon": 16.26693875683884,
+      "overspeed": false,
+      "highway": true,
+      "isEv": false,
+      "mode": 0
+    },
+    {
+      "lat": 47.2293176070377,
+      "lon": 19.867572180338332,
+      "overspeed": false,
+      "highway": false,
+      "isEv": false,
+      "mode": 0
+    },
+    {
+      "lat": 42.06782953005406,
+      "lon": 19.79735783159021,
+      "overspeed": false,
+      "highway": false,
+      "isEv": false,
+      "mode": 1
+    },
+    {
+      "lat": 47.0052904087079,
+      "lon": 7.274937469907062,
+      "overspeed": false,
+      "highway": false,
+      "isEv": false,
+      "mode": 0
+    }
+  ],
+  "tripEventsType": [],
+  "statistics": {
+    "totalDurationInSec": 752,
+    "idleDurationInSec": 38,
+    "highwayDurationInSec": 0,
+    "overspeedDurationInSec": 0,
+    "totalDistanceInKm": 5.563,
+    "highwayDistanceInKm": 0,
+    "overspeedDistanceInKm": 0,
+    "averageSpeedInKmph": 26.63,
+    "maxSpeedInKmph": 42,
+    "countriesVisited": ["DE"],
+    "fuelConsumptionInL": 0.184,
+    "nightTrip": false,
+    "averageFuelConsumptionInL": 3.308,
+    "hardAccelerationCount": 0,
+    "hardBrakingCount": 2,
+    "hardaccs": 0,
+    "hardbrakes": 0,
+    "totalDistanceInMiles": 3.46,
+    "averageSpeedInMph": 16.55,
+    "maxSpeedInMph": 26.1
+  }
+}
