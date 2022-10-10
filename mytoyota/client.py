@@ -37,6 +37,7 @@ from .exceptions import (
     ToyotaLocaleNotValid,
     ToyotaRegionNotSupported,
 )
+from .models.trip import DetailedTrip, Trip
 from .models.vehicle import Vehicle
 from .statistics import Statistics
 from .utils.locale import is_valid_locale
@@ -274,9 +275,9 @@ class MyT:
     ) -> list[dict[str, Any]]:
         """Returns driving statistics from a given period.
 
-        Retrieves and formats driving statistics from a given periode. Will return
+        Retrieves and formats driving statistics from a given period. Will return
         a error message on the first of each week, month or year. Or if no rides have been
-        performed in the given periode. This is due to a Toyota API limitation.
+        performed in the given period. This is due to a Toyota API limitation.
 
         Args:
             vin (str):
@@ -296,7 +297,7 @@ class MyT:
                 Defaults to "metric".
 
         Returns:
-            A list of data points for the given periode. Example response with interval "isoweek":
+            A list of data points for the given period. Example response with interval "isoweek":
 
             [
                 {
@@ -437,9 +438,9 @@ class MyT:
     ) -> str:
         """Returns driving statistics from a given period as json.
 
-        Retrieves and formats driving statistics from a given periode. Will return
+        Retrieves and formats driving statistics from a given period. Will return
         a error message on the first of each week, month or year. Or if no rides have been
-        performed in the given periode. This is due to a Toyota API limitation.
+        performed in the given period. This is due to a Toyota API limitation.
 
         See get_driving_statistics() for args.
 
@@ -455,3 +456,87 @@ class MyT:
         return json.dumps(
             await self.get_driving_statistics(vin, interval, from_date), indent=3
         )
+
+    async def get_trips(self, vin: str) -> list(Trip):
+        """Returns a list of trips.
+
+        Retrieves and formats trips.
+
+        Args:
+            vin (str):
+                Vehicle identification number.
+
+        Returns:
+            A list of trips.
+
+        Raises:
+            ToyotaLoginError: An error returned when updating token or invalid login information.
+            ToyotaInternalError: An error occurred when making a request.
+            ToyotaApiError: Toyota's API returned an error.
+        """
+        _LOGGER.debug(f"Getting trips for {censor_vin(vin)}...")
+
+        raw_trips = await self.api.get_trips_endpoint(vin)
+        _LOGGER.debug(f"received {len(raw_trips.get('recentTrips',[]))} trips")
+        return [Trip(trip) for trip in raw_trips.get("recentTrips", [])]
+
+    async def get_trip(self, vin: str, trip_id: str) -> DetailedTrip:
+        """Returns a trip.
+
+        Retrieves and formats a trip.
+
+        Args:
+            vin (str):
+                Vehicle identification number.
+            trip_id (str):
+                Trip id, UUID
+
+        Returns:
+            A trip.
+
+        Raises:
+            ToyotaLoginError: An error returned when updating token or invalid login information.
+            ToyotaInternalError: An error occurred when making a request.
+            ToyotaApiError: Toyota's API returned an error.
+        """
+        trip_id = trip_id.upper()
+        _LOGGER.debug(f"Getting trip {trip_id} for {censor_vin(vin)}...")
+
+        raw_trip = await self.api.get_trip_endpoint(vin, trip_id)
+        _LOGGER.debug(f"received trip {trip_id}")
+        return DetailedTrip(raw_trip)
+
+    async def get_trips_json(self, vin: str) -> str:
+        """Returns a list of trips for a given vehicle.
+
+        Args:
+            vin (str): Vehicle identification number.
+
+        Returns:
+            A list of trips for the given vehicle.
+
+        Raises:
+            ToyotaLoginError: An error returned when updating token or invalid login information.
+            ToyotaInternalError: An error occurred when making a request.
+            ToyotaApiError: Toyota's API returned an error.
+        """
+        trips = [trip.raw_json for trip in await self.get_trips(vin)]
+        return json.dumps(trips, indent=3)
+
+    async def get_trip_json(self, vin: str, trip_id: str) -> str:
+        """Returns a trip for a given vehicle.
+
+        Args:
+            vin (str): Vehicle identification number.
+            trip_id (str): Trip id (UUID, Capitalized)
+
+        Returns:
+            A Detailed Trip for the given vehicle.
+
+        Raises:
+            ToyotaLoginError: An error returned when updating token or invalid login information.
+            ToyotaInternalError: An error occurred when making a request.
+            ToyotaApiError: Toyota's API returned an error.
+        """
+        trip = await self.get_trip(vin, trip_id)
+        return json.dumps(trip.raw_json, indent=3)
