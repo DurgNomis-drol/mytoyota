@@ -2,7 +2,9 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import List
 
+from mytoyota.const import TRIP_TIMESTAMP_FORMAT
 from mytoyota.models.data import VehicleData
 
 
@@ -44,14 +46,14 @@ class DetailedTrip(VehicleData):
     """Detailed Trip model."""
 
     @property
-    def trip_events(self) -> list(TripEvent):
+    def trip_events(self) -> List[TripEvent]:
         """Trip events."""
         if not self._data.get("tripEvents"):
             return []
         return [TripEvent(event) for event in self._data.get("tripEvents", [])]
 
     @property
-    def trip_events_type(self) -> list(dict):
+    def trip_events_type(self) -> List[dict]:
         """Trip events type."""
         return self._data.get("tripEventsType", [])
 
@@ -75,20 +77,20 @@ class Trip(VehicleData):
         return self._data.get("startAddress", "")
 
     @property
-    def start_time_gmt(self) -> datetime.datetime | None:
+    def start_time_gmt(self) -> datetime | None:
         """Trip Start time GMT."""
         start_time_str = self._data.get("startTimeGmt", None)
         if not start_time_str:
             return None
-        return datetime.strptime(start_time_str, "%Y-%m-%dT%H:%M:%SZ")
+        return datetime.strptime(start_time_str, TRIP_TIMESTAMP_FORMAT)
 
     @property
-    def end_time_gmt(self) -> datetime.datetime | None:
+    def end_time_gmt(self) -> datetime | None:
         """Trip End time GMT."""
         end_time_str = self._data.get("endTimeGmt", None)
         if not end_time_str:
             return None
-        return datetime.strptime(end_time_str, "%Y-%m-%dT%H:%M:%SZ")
+        return datetime.strptime(end_time_str, TRIP_TIMESTAMP_FORMAT)
 
     @property
     def end_address(self) -> str:

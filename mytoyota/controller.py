@@ -193,9 +193,18 @@ class Controller:
                 f"Body: {censor_dict(body) if body else body} - Parameters: {params}"
             )
             response = await client.request(
-                method, url, headers=headers, json=body, params=params
+                method,
+                url,
+                headers=headers,
+                json=body,
+                params=params,
+                follow_redirects=True,
             )
-            if response.status_code == HTTPStatus.OK:
+            if response.status_code in [
+                HTTPStatus.OK,
+                HTTPStatus.ACCEPTED,
+                HTTPStatus.FOUND,
+            ]:
                 result = response.json()
             elif response.status_code == HTTPStatus.NO_CONTENT:
                 # This prevents raising or logging an error

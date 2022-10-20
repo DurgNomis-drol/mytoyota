@@ -54,7 +54,7 @@ class OfflineController:
         with open(filename, encoding="UTF-8") as json_file:
             return json.load(json_file)
 
-    async def request(
+    async def request(  # pylint: disable=R0915; # noqa
         self,
         method: str,
         endpoint: str,
@@ -144,6 +144,22 @@ class OfflineController:
                 os.path.join(data_files, f"vehicle_{vin}_trip_{trip_id}.json")
             )
 
+        match = re.match(r".*/vehicles/([^?]+)/lock", endpoint)
+        if match:
+            vin = match.group(1)
+            response = self._load_from_file(
+                os.path.join(data_files, f"vehicle_{vin}_lock_request.json")
+            )
+
+        match = re.match(r".*/vehicles/([^?]+)/lock/([^?]+)", endpoint)
+        if match:
+            vin = match.group(1)
+            request_id = match.group(2)
+            response = self._load_from_file(
+                os.path.join(
+                    data_files, f"vehicle_{vin}_lock_request_status_{request_id}.json"
+                )
+            )
         return response
 
 
