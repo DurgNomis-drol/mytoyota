@@ -54,7 +54,8 @@ class OfflineController:
         with open(filename, encoding="UTF-8") as json_file:
             return json.load(json_file)
 
-    async def request(  # pylint: disable=R0915; # noqa
+    # Disables pylint warning about too many statements when matching API paths
+    async def request(  # pylint: disable=R0915;
         self,
         method: str,
         endpoint: str,

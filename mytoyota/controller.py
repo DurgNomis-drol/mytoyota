@@ -203,7 +203,6 @@ class Controller:
             if response.status_code in [
                 HTTPStatus.OK,
                 HTTPStatus.ACCEPTED,
-                HTTPStatus.FOUND,
             ]:
                 result = response.json()
             elif response.status_code == HTTPStatus.NO_CONTENT:

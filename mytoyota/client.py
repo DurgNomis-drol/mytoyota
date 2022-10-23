@@ -13,7 +13,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
-from typing import Any, List
+from typing import Any
 
 import arrow
 
@@ -131,7 +131,7 @@ class MyT:
         """
         return self.api.uuid
 
-    async def set_alias(self, vehicle_id: int, new_alias: str) -> dict[str, Any] | None:
+    async def set_alias(self, vehicle_id: int, new_alias: str) -> dict[str, Any]:
         """Set a new alias for your vehicle.
 
         Sets a new alias for a vehicle specified by its vehicle id.
@@ -157,7 +157,7 @@ class MyT:
             vehicle_id=vehicle_id, new_alias=new_alias
         )
 
-    async def get_vehicles(self) -> List[dict[str, Any]] | None:
+    async def get_vehicles(self) -> list[dict[str, Any]]:
         """Returns a list of vehicles.
 
         Retrieves list of vehicles associated with the account. The list contains static
@@ -461,7 +461,7 @@ class MyT:
             await self.get_driving_statistics(vin, interval, from_date), indent=3
         )
 
-    async def get_trips(self, vin: str) -> List[Trip]:
+    async def get_trips(self, vin: str) -> list[Trip]:
         """Returns a list of trips.
 
         Retrieves and formats trips.
@@ -545,7 +545,7 @@ class MyT:
         trip = await self.get_trip(vin, trip_id)
         return json.dumps(trip.raw_json, indent=3)
 
-    async def request_lock_vehicle(self, vin: str) -> VehicleLockUnlockActionResponse:
+    async def set_lock_vehicle(self, vin: str) -> VehicleLockUnlockActionResponse:
         """Sends a lock command to the vehicle.
 
         Args:
@@ -562,7 +562,7 @@ class MyT:
         response = VehicleLockUnlockActionResponse(raw_response)
         return response
 
-    async def request_unlock_vehicle(self, vin: str) -> VehicleLockUnlockActionResponse:
+    async def set_unlock_vehicle(self, vin: str) -> VehicleLockUnlockActionResponse:
         """Send an unlock command to the vehicle.
 
         Args:
@@ -573,19 +573,21 @@ class MyT:
             ToyotaInternalError: An error occurred when making a request.
             ToyotaApiError: Toyota's API returned an error.
         """
-        _LOGGER.debug(f"Locking {censor_vin(vin)}...")
+        _LOGGER.debug(f"Unlocking {censor_vin(vin)}...")
         raw_response = await self.api.set_lock_unlock_vehicle_endpoint(vin, "unlock")
-        _LOGGER.debug(f"Locking {censor_vin(vin)}... {raw_response}")
+        _LOGGER.debug(f"Unlocking {censor_vin(vin)}... {raw_response}")
         response = VehicleLockUnlockActionResponse(raw_response)
         return response
 
-    async def get_lock_request_status(
+    async def get_lock_status(
         self, vin: str, req_id: str
     ) -> VehicleLockUnlockStatusResponse:
         """Get the status of a lock request.
 
         Args:
             vin (str): Vehicle identification number.
+            req_id (str): Lock/Unlock request id returned by
+                set_<lock/unlock>_vehicle (UUID)
 
         Raises:
             ToyotaLoginError: An error returned when updating token or invalid login information.
@@ -593,7 +595,7 @@ class MyT:
             ToyotaApiError: Toyota's API returned an error.
         """
         _LOGGER.debug(f"Getting lock request status for {censor_vin(vin)}...")
-        raw_response = await self.api.check_lock_unlock_request_status(vin, req_id)
+        raw_response = await self.api.get_lock_unlock_request_status(vin, req_id)
         _LOGGER.debug(
             f"Getting lock request status for {censor_vin(vin)}... {raw_response}"
         )

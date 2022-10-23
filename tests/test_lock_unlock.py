@@ -17,7 +17,7 @@ class TestLockUnlock(TestMyTHelper):
         myt = self._create_offline_myt()
         vehicle = self._lookup_vehicle(myt, 4444444)
         result = asyncio.get_event_loop().run_until_complete(
-            myt.request_lock_vehicle(vehicle["vin"])
+            myt.set_lock_vehicle(vehicle["vin"])
         )
         assert isinstance(result, VehicleLockUnlockActionResponse)
         assert result == {
@@ -34,7 +34,7 @@ class TestLockUnlock(TestMyTHelper):
         myt = self._create_offline_myt()
         vehicle = self._lookup_vehicle(myt, 4444444)
         result = asyncio.get_event_loop().run_until_complete(
-            myt.request_unlock_vehicle(vehicle["vin"])
+            myt.set_unlock_vehicle(vehicle["vin"])
         )
         assert isinstance(result, VehicleLockUnlockActionResponse)
         assert result == {
@@ -48,7 +48,7 @@ class TestLockUnlock(TestMyTHelper):
         myt = self._create_offline_myt()
         vehicle = self._lookup_vehicle(myt, 4444444)
         result = asyncio.get_event_loop().run_until_complete(
-            myt.get_lock_request_status(vehicle["vin"], self.lock_request_id)
+            myt.get_lock_status(vehicle["vin"], self.lock_request_id)
         )
         assert isinstance(result, VehicleLockUnlockActionResponse)
         assert result == {

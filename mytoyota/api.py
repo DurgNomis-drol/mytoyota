@@ -129,7 +129,7 @@ class Api:
             body={"action": action},
         )
 
-    async def check_lock_unlock_request_status(
+    async def get_lock_unlock_request_status(
         self, vin: str, request_id: str
     ) -> dict[str, Any] | None:
         """Check lock/unlock status given a request ID"""
