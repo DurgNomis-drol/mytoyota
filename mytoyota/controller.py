@@ -19,7 +19,12 @@ from mytoyota.const import (
     TOKEN_VALID_URL,
     UUID,
 )
-from mytoyota.exceptions import ToyotaApiError, ToyotaInternalError, ToyotaLoginError
+from mytoyota.exceptions import (
+    ToyotaApiError, 
+    ToyotaInternalError, 
+    ToyotaLoginError,
+    ToyotaActionNotSupported,
+)
 from mytoyota.utils.logs import censor_dict
 from mytoyota.utils.token import is_valid_token
 
@@ -229,6 +234,8 @@ class Controller:
                 raise ToyotaApiError("Servers are overloaded, try again later")
             elif response.status_code == HTTPStatus.SERVICE_UNAVAILABLE:
                 raise ToyotaApiError("Servers are temporarily unavailable")
+            elif response.status_code == HTTPStatus.FORBIDDEN:
+                raise ToyotaActionNotSupported("Action is not supported on this vehicle")
             else:
                 raise ToyotaApiError(
                     "HTTP: " + str(response.status_code) + " - " + response.text

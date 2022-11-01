@@ -16,6 +16,7 @@ from mytoyota.exceptions import (
     ToyotaInvalidUsername,
     ToyotaLocaleNotValid,
     ToyotaRegionNotSupported,
+    ToyotaActionNotSupported,
 )
 from mytoyota.models.trip import DetailedTrip, Trip, TripEvent
 
@@ -148,9 +149,12 @@ class OfflineController:
         match = re.match(r".*/vehicles/([^?]+)/lock", endpoint)
         if match:
             vin = match.group(1)
-            response = self._load_from_file(
-                os.path.join(data_files, f"vehicle_{vin}_lock_request.json")
-            )
+            try:
+                response = self._load_from_file(
+                    os.path.join(data_files, f"vehicle_{vin}_lock_request.json")
+                )
+            except FileNotFoundError:
+                raise ToyotaActionNotSupported("Action is not supported")
 
         match = re.match(r".*/vehicles/([^?]+)/lock/([^?]+)", endpoint)
         if match:

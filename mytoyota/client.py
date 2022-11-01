@@ -11,6 +11,7 @@ information, sensor data, fuel level, driving statistics and more.
 from __future__ import annotations
 
 import asyncio
+from http import HTTPStatus
 import json
 import logging
 from typing import Any
@@ -553,6 +554,7 @@ class MyT:
 
         Raises:
             ToyotaLoginError: An error returned when updating token or invalid login information.
+            ToyotaActionNotSupported: The lock action is not supported on this vehicle.
             ToyotaInternalError: An error occurred when making a request.
             ToyotaApiError: Toyota's API returned an error.
         """
@@ -570,6 +572,7 @@ class MyT:
 
         Raises:
             ToyotaLoginError: An error returned when updating token or invalid login information.
+            ToyotaActionNotSupported: The lock action is not supported on this vehicle.
             ToyotaInternalError: An error occurred when making a request.
             ToyotaApiError: Toyota's API returned an error.
         """
