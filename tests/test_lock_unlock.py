@@ -1,13 +1,14 @@
 """pytest tests for mytoyota.client.MyT sending lock/unlock requests"""
 import asyncio
 from datetime import datetime
+
 import pytest
 
+from mytoyota.exceptions import ToyotaActionNotSupported
 from mytoyota.models.lock_unlock import (
     VehicleLockUnlockActionResponse,
     VehicleLockUnlockStatusResponse,
 )
-from mytoyota.exceptions import ToyotaActionNotSupported
 from tests.test_myt import TestMyTHelper
 
 
@@ -71,7 +72,7 @@ class TestLockUnlock(TestMyTHelper):
         myt = self._create_offline_myt()
         vehicle = self._lookup_vehicle(myt, 1111111)
         with pytest.raises(ToyotaActionNotSupported):
-            result = asyncio.get_event_loop().run_until_complete(
+            asyncio.get_event_loop().run_until_complete(
                 myt.set_lock_vehicle(vehicle["vin"])
             )
 
@@ -80,7 +81,6 @@ class TestLockUnlock(TestMyTHelper):
         myt = self._create_offline_myt()
         vehicle = self._lookup_vehicle(myt, 1111111)
         with pytest.raises(ToyotaActionNotSupported):
-            result = asyncio.get_event_loop().run_until_complete(
+            asyncio.get_event_loop().run_until_complete(
                 myt.set_unlock_vehicle(vehicle["vin"])
             )
-

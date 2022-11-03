@@ -12,11 +12,11 @@ import pytest  # pylint: disable=import-error
 
 from mytoyota.client import MyT
 from mytoyota.exceptions import (
+    ToyotaActionNotSupported,
     ToyotaInternalError,
     ToyotaInvalidUsername,
     ToyotaLocaleNotValid,
     ToyotaRegionNotSupported,
-    ToyotaActionNotSupported,
 )
 from mytoyota.models.trip import DetailedTrip, Trip, TripEvent
 
@@ -55,8 +55,8 @@ class OfflineController:
         with open(filename, encoding="UTF-8") as json_file:
             return json.load(json_file)
 
-    # Disables pylint warning about too many statements when matching API paths
-    async def request(  # pylint: disable=R0915;
+    # Disables pylint warning about too many statements and branches when matching API paths
+    async def request(  # pylint: disable=too-many-statements, too-many-branches, too-many-locals
         self,
         method: str,
         endpoint: str,
@@ -153,8 +153,8 @@ class OfflineController:
                 response = self._load_from_file(
                     os.path.join(data_files, f"vehicle_{vin}_lock_request.json")
                 )
-            except FileNotFoundError:
-                raise ToyotaActionNotSupported("Action is not supported")
+            except FileNotFoundError as exc:
+                raise ToyotaActionNotSupported("Action is not supported") from exc
 
         match = re.match(r".*/vehicles/([^?]+)/lock/([^?]+)", endpoint)
         if match:
