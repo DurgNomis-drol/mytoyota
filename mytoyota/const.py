@@ -63,3 +63,6 @@ BASE_HEADERS = {
     "Sec-Fetch-Dest": "empty",
     "X-TME-BRAND": "TOYOTA",
 }
+
+# Timestamps
+UNLOCK_TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"

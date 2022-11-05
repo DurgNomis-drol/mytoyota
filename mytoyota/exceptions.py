@@ -27,3 +27,7 @@ class ToyotaApiError(Exception):
 
 class ToyotaInternalError(Exception):
     """Raise if an internal server error occurres from Toyota."""
+
+
+class ToyotaActionNotSupported(ToyotaApiError):
+    """Raise if an action is not supported on a vehicle."""

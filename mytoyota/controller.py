@@ -19,7 +19,12 @@ from mytoyota.const import (
     TOKEN_VALID_URL,
     UUID,
 )
-from mytoyota.exceptions import ToyotaApiError, ToyotaInternalError, ToyotaLoginError
+from mytoyota.exceptions import (
+    ToyotaActionNotSupported,
+    ToyotaApiError,
+    ToyotaInternalError,
+    ToyotaLoginError,
+)
 from mytoyota.utils.logs import censor_dict
 from mytoyota.utils.token import is_valid_token
 
@@ -193,9 +198,17 @@ class Controller:
                 f"Body: {censor_dict(body) if body else body} - Parameters: {params}"
             )
             response = await client.request(
-                method, url, headers=headers, json=body, params=params
+                method,
+                url,
+                headers=headers,
+                json=body,
+                params=params,
+                follow_redirects=True,
             )
-            if response.status_code == HTTPStatus.OK:
+            if response.status_code in [
+                HTTPStatus.OK,
+                HTTPStatus.ACCEPTED,
+            ]:
                 result = response.json()
             elif response.status_code == HTTPStatus.NO_CONTENT:
                 # This prevents raising or logging an error
@@ -221,6 +234,10 @@ class Controller:
                 raise ToyotaApiError("Servers are overloaded, try again later")
             elif response.status_code == HTTPStatus.SERVICE_UNAVAILABLE:
                 raise ToyotaApiError("Servers are temporarily unavailable")
+            elif response.status_code == HTTPStatus.FORBIDDEN:
+                raise ToyotaActionNotSupported(
+                    "Action is not supported on this vehicle"
+                )
             else:
                 raise ToyotaApiError(
                     "HTTP: " + str(response.status_code) + " - " + response.text

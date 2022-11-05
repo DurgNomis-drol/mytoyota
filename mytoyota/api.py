@@ -117,3 +117,24 @@ class Api:
             endpoint=f"/api/user/{self.uuid}/cms/trips/v2/{trip_id}/events/vin/{vin}",
             headers={"vin": vin},
         )
+
+    async def set_lock_unlock_vehicle_endpoint(
+        self, vin: str, action: str
+    ) -> dict[str, str] | None:
+        """Lock vehicle."""
+        return await self.controller.request(
+            method="POST",
+            base_url=BASE_URL,
+            endpoint=f"/vehicles/{vin}/lock",
+            body={"action": action},
+        )
+
+    async def get_lock_unlock_request_status(
+        self, vin: str, request_id: str
+    ) -> dict[str, Any] | None:
+        """Check lock/unlock status given a request ID"""
+        return await self.controller.request(
+            method="GET",
+            base_url=BASE_URL,
+            endpoint=f"/vehicles/{vin}/lock/{request_id}",
+        )

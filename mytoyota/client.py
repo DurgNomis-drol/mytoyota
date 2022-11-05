@@ -37,6 +37,10 @@ from .exceptions import (
     ToyotaLocaleNotValid,
     ToyotaRegionNotSupported,
 )
+from .models.lock_unlock import (
+    VehicleLockUnlockActionResponse,
+    VehicleLockUnlockStatusResponse,
+)
 from .models.trip import DetailedTrip, Trip
 from .models.vehicle import Vehicle
 from .statistics import Statistics
@@ -457,7 +461,7 @@ class MyT:
             await self.get_driving_statistics(vin, interval, from_date), indent=3
         )
 
-    async def get_trips(self, vin: str) -> list(Trip):
+    async def get_trips(self, vin: str) -> list[Trip]:
         """Returns a list of trips.
 
         Retrieves and formats trips.
@@ -540,3 +544,62 @@ class MyT:
         """
         trip = await self.get_trip(vin, trip_id)
         return json.dumps(trip.raw_json, indent=3)
+
+    async def set_lock_vehicle(self, vin: str) -> VehicleLockUnlockActionResponse:
+        """Sends a lock command to the vehicle.
+
+        Args:
+            vin (str): Vehicle identification number.
+
+        Raises:
+            ToyotaLoginError: An error returned when updating token or invalid login information.
+            ToyotaActionNotSupported: The lock action is not supported on this vehicle.
+            ToyotaInternalError: An error occurred when making a request.
+            ToyotaApiError: Toyota's API returned an error.
+        """
+        _LOGGER.debug(f"Locking {censor_vin(vin)}...")
+        raw_response = await self.api.set_lock_unlock_vehicle_endpoint(vin, "lock")
+        _LOGGER.debug(f"Locking {censor_vin(vin)}... {raw_response}")
+        response = VehicleLockUnlockActionResponse(raw_response)
+        return response
+
+    async def set_unlock_vehicle(self, vin: str) -> VehicleLockUnlockActionResponse:
+        """Send an unlock command to the vehicle.
+
+        Args:
+            vin (str): Vehicle identification number.
+
+        Raises:
+            ToyotaLoginError: An error returned when updating token or invalid login information.
+            ToyotaActionNotSupported: The lock action is not supported on this vehicle.
+            ToyotaInternalError: An error occurred when making a request.
+            ToyotaApiError: Toyota's API returned an error.
+        """
+        _LOGGER.debug(f"Unlocking {censor_vin(vin)}...")
+        raw_response = await self.api.set_lock_unlock_vehicle_endpoint(vin, "unlock")
+        _LOGGER.debug(f"Unlocking {censor_vin(vin)}... {raw_response}")
+        response = VehicleLockUnlockActionResponse(raw_response)
+        return response
+
+    async def get_lock_status(
+        self, vin: str, req_id: str
+    ) -> VehicleLockUnlockStatusResponse:
+        """Get the status of a lock request.
+
+        Args:
+            vin (str): Vehicle identification number.
+            req_id (str): Lock/Unlock request id returned by
+                set_<lock/unlock>_vehicle (UUID)
+
+        Raises:
+            ToyotaLoginError: An error returned when updating token or invalid login information.
+            ToyotaInternalError: An error occurred when making a request.
+            ToyotaApiError: Toyota's API returned an error.
+        """
+        _LOGGER.debug(f"Getting lock request status for {censor_vin(vin)}...")
+        raw_response = await self.api.get_lock_unlock_request_status(vin, req_id)
+        _LOGGER.debug(
+            f"Getting lock request status for {censor_vin(vin)}... {raw_response}"
+        )
+        response = VehicleLockUnlockStatusResponse(raw_response)
+        return response
