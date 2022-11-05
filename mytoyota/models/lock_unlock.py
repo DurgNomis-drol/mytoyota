@@ -48,3 +48,25 @@ class VehicleLockUnlockStatusResponse(VehicleData):
         """Request Timestamp."""
         raw_datetime = self._data.get("requestTimestamp")
         return datetime.strptime(raw_datetime, UNLOCK_TIMESTAMP_FORMAT)
+
+    @property
+    def error_code(self) -> str:
+        """Request Error code"""
+        if self.status != "error":
+            return None
+        return self._data.get("errorCode", "")
+
+    @property
+    def is_success(self) -> bool:
+        """Request was successful."""
+        return self.status == "completed"
+
+    @property
+    def is_error(self) -> bool:
+        """Request failed."""
+        return self.status == "error"
+
+    @property
+    def is_in_progress(self) -> bool:
+        """Request is processing."""
+        return self.status == "inprogress"
