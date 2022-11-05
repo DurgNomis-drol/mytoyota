@@ -1,0 +1,7 @@
+{
+  "id": "14f873d2-5da2-494f-a6d9-6e56d18d2ce9",
+  "status": "error",
+  "errorCode": "LU0004",
+  "requestTimestamp": "2022-10-22T08:49:20.071Z",
+  "type": "controlLock"
+}
