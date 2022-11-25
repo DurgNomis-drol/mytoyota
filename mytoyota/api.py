@@ -84,7 +84,7 @@ class Api:
         )
 
     async def get_driving_statistics_endpoint(
-        self, vin: str, from_date: str, interval: str | None = None
+        self, vin: str, from_date: str, to_date: str, interval: str | None = None
     ) -> dict[str, Any] | None:
         """Get driving statistic"""
         return await self.controller.request(
@@ -92,7 +92,7 @@ class Api:
             base_url=BASE_URL,
             endpoint="/v2/trips/summarize",
             headers={"vin": vin},
-            params={"from": from_date, "calendarInterval": interval},
+            params={"from": from_date, "to": to_date, "calendarInterval": interval},
         )
 
     async def get_trips_endpoint(

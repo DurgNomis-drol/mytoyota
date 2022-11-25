@@ -275,13 +275,16 @@ class MyT:
         vin: str,
         interval: str = MONTH,
         from_date: str | None = None,
+        to_date: str | None = None,
         unit: str = METRIC,
     ) -> list[dict[str, Any]]:
         """Returns driving statistics from a given period.
 
-        Retrieves and formats driving statistics from a given period. Will return
-        a error message on the first of each week, month or year. Or if no rides have been
-        performed in the given period. This is due to a Toyota API limitation.
+        Retrieves and formats driving statistics from a given period. To overcome
+        some Toyota API limitations it:
+            - Returns an error message if no rides have been performed in the given period
+            - Returns an error if date is beginning of the week, month or year
+            - Adjusts from_date and to_date to always behave as closed intervals
 
         Args:
             vin (str):
@@ -296,6 +299,10 @@ class MyT:
                 Date-string format: "YYYY-MM-DD".
                 Defaults to current day or the first of current week, month or year
                 depending interval chosen.
+            to_date (str):
+                Date-string format: "YYYY-MM-DD".
+                Defaults to the most appropiate value according to the interval
+                used (end of day/week/isoweek/month/year)
             unit (str):
                 Can be either: "metric", "imperial" OR "imperial_liters".
                 Defaults to "metric".
@@ -343,6 +350,15 @@ class MyT:
 
         if from_date is not None and arrow.get(from_date) > arrow.now():
             return [{"error_mesg": "This is not a time machine!", "error_code": 5}]
+        if to_date is not None and from_date is None:
+            return [
+                {
+                    "error_mesg": "You need to provide a from_date when setting a to_date",
+                    "error_code": 6,
+                }
+            ]
+        if to_date is not None and (arrow.get(to_date) <= arrow.get(from_date)):
+            return [{"error_mesg": "Invalid interval provided!", "error_code": 7}]
 
         if from_date is None:
             if interval is DAY:
@@ -361,6 +377,22 @@ class MyT:
             if interval is YEAR:
                 stats_interval = MONTH
                 from_date = arrow.now().floor(YEAR).format(DATE_FORMAT)
+
+        if to_date is None:
+            if interval is DAY:
+                to_date = arrow.now().format(DATE_FORMAT)
+
+            if interval is WEEK:
+                to_date = arrow.now().span(WEEK, week_start=7)[1].format(DATE_FORMAT)
+
+            if interval is ISOWEEK:
+                to_date = arrow.now().ceil(WEEK).format(DATE_FORMAT)
+
+            if interval is MONTH:
+                to_date = arrow.now().ceil(MONTH).format(DATE_FORMAT)
+
+            if interval is YEAR:
+                to_date = arrow.now().ceil(YEAR).format(DATE_FORMAT)
 
         if interval is ISOWEEK:
             stats_interval = DAY
@@ -393,16 +425,18 @@ class MyT:
 
         today = arrow.now().format(DATE_FORMAT)
 
-        if from_date == today:
+        if from_date == today and interval == DAY:
+            from_date = arrow.get(from_date).shift(days=-1).format(DATE_FORMAT)
+            to_date = arrow.now().format(DATE_FORMAT)
+        elif from_date == today:
             _LOGGER.debug(
                 "Aborting getting statistics because day is on the first of the week,"
                 " month or year"
             )
             raw_statistics = None
-
         else:
             raw_statistics = await self.api.get_driving_statistics_endpoint(
-                vin, from_date, stats_interval
+                vin, from_date, to_date, stats_interval
             )
 
         if raw_statistics is None:
