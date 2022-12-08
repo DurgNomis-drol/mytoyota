@@ -62,9 +62,11 @@ BASE_HEADERS = {
     "Accept": "application/json, text/plain, */*",
     "Sec-Fetch-Dest": "empty",
     "X-TME-BRAND": "TOYOTA",
-    "User-Agent": ("Mozilla/5.0 (X11; Linux x86_64) "
-                   "AppleWebKit/537.36 (KHTML, like Gecko) "
-                   "Chrome/51.0.2704.103 Safari/537.36"),
+    "User-Agent": (
+        "Mozilla/5.0 (X11; Linux x86_64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/51.0.2704.103 Safari/537.36"
+    ),
 }
 
 # Timestamps
