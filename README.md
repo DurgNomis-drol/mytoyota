@@ -30,6 +30,7 @@ username = "jane@doe.com"
 password = "MyPassword"
 
 # Get supported regions, can be passed to the optional 'region' argument of MyT
+# At this moment, only the 'europe' region is supported 
 print(MyT.get_supported_regions())
 
 client = MyT(username=username, password=password)
