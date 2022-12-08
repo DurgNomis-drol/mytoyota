@@ -8,7 +8,7 @@
 
 ## Description
 
-Python 3 package to communicate with Toyota Connected Services.
+Python 3 package to communicate with [Toyota Connected Europe](https://www.toyota-europe.com/about-us/toyota-in-europe/toyota-connected-europe) Services.
 This is an unofficial package and Toyota can change their API at any point without warning.
 
 ## Installation
