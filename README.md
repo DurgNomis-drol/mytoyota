@@ -95,7 +95,7 @@ Coming soon...
 
 ## Contributing
 
-This python module uses poetry and pre-commit.
+This python module uses poetry (>= 1.2.2) and pre-commit.
 
 To start contributing, fork this repository and run `poetry install`. Then create a new branch. Before making a PR, please run pre-commit `poetry run pre-commit run --all-files` and make sure that all tests passes locally first.
 
