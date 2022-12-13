@@ -8,7 +8,7 @@
 
 ## Description
 
-Python 3 package to communicate with Toyota Connected Services.
+Python 3 package to communicate with [Toyota Connected Europe](https://www.toyota-europe.com/about-us/toyota-in-europe/toyota-connected-europe) Services.
 This is an unofficial package and Toyota can change their API at any point without warning.
 
 ## Installation
@@ -30,6 +30,7 @@ username = "jane@doe.com"
 password = "MyPassword"
 
 # Get supported regions, can be passed to the optional 'region' argument of MyT
+# At this moment, only the 'europe' region is supported
 print(MyT.get_supported_regions())
 
 client = MyT(username=username, password=password)
