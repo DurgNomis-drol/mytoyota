@@ -38,7 +38,9 @@ class Api:
             endpoint=f"/vehicle/user/{self.uuid}/vehicles?services=uio&legacy=true",
         )
 
-    async def get_connected_services_endpoint(self, vin: str) -> dict[str, Any] | list[Any] | None:
+    async def get_connected_services_endpoint(
+        self, vin: str
+    ) -> dict[str, Any] | list[Any] | None:
         """Get information about connected services for the given car."""
         return await self.controller.request(
             method="GET",
@@ -46,7 +48,9 @@ class Api:
             endpoint=f"/vehicle/user/{self.uuid}/vehicle/{vin}?legacy=true&services=fud,connected",
         )
 
-    async def get_odometer_endpoint(self, vin: str) -> dict[str, Any] | list[Any] | None:
+    async def get_odometer_endpoint(
+        self, vin: str
+    ) -> dict[str, Any] | list[Any] | None:
         """Get information from odometer."""
         return await self.controller.request(
             method="GET",
@@ -65,7 +69,9 @@ class Api:
             headers={"VIN": vin},
         )
 
-    async def get_vehicle_status_endpoint(self, vin: str) -> dict[str, Any] | list[Any] | None:
+    async def get_vehicle_status_endpoint(
+        self, vin: str
+    ) -> dict[str, Any] | list[Any] | None:
         """Get information about the vehicle."""
         return await self.controller.request(
             method="GET",
@@ -109,7 +115,9 @@ class Api:
             headers={"vin": vin},
         )
 
-    async def get_trip_endpoint(self, vin: str, trip_id: str) -> dict[str, Any] | list[Any] | None:
+    async def get_trip_endpoint(
+        self, vin: str, trip_id: str
+    ) -> dict[str, Any] | list[Any] | None:
         """Get data for a single trip"""
         return await self.controller.request(
             method="GET",

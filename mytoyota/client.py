@@ -13,7 +13,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
-from typing import Any
+from typing import Any, Optional
 
 import arrow
 
@@ -63,7 +63,7 @@ class MyT:
         password: str,
         locale: str = "da-dk",
         region: str = "europe",
-        uuid: str = None,
+        uuid: Optional[str] = None,
         controller_class=Controller,
         disable_locale_check: bool = False,
     ) -> None:
@@ -75,11 +75,10 @@ class MyT:
         if region not in SUPPORTED_REGIONS:
             raise ToyotaRegionNotSupported(region)
 
-        if not disable_locale_check:
-            if not is_valid_locale(locale):
-                raise ToyotaLocaleNotValid(
-                    "Please provide a valid locale string! Valid format is: en-gb."
-                )
+        if not disable_locale_check and not is_valid_locale(locale):
+            raise ToyotaLocaleNotValid(
+                "Please provide a valid locale string! Valid format is: en-gb."
+            )
 
         self.api = Api(
             controller_class(
@@ -100,12 +99,7 @@ class MyT:
         Returns:
             A list of supported regions. For example: ["europe"]
         """
-        regions = []
-
-        for key, _ in SUPPORTED_REGIONS.items():  # pylint: disable=unused-variable
-            regions.append(key)
-
-        return regions
+        return [key for key, _ in SUPPORTED_REGIONS.items()]
 
     async def login(self) -> None:
         """Performs first login.
@@ -131,7 +125,9 @@ class MyT:
         """
         return self.api.uuid
 
-    async def set_alias(self, vehicle_id: int, new_alias: str) -> dict[str, Any]:
+    async def set_alias(
+        self, vehicle_id: int, new_alias: str
+    ) -> dict[str, Any] | list[Any] | None:
         """Set a new alias for your vehicle.
 
         Sets a new alias for a vehicle specified by its vehicle id.
@@ -157,7 +153,7 @@ class MyT:
             vehicle_id=vehicle_id, new_alias=new_alias
         )
 
-    async def get_vehicles(self) -> list[dict[str, Any]]:
+    async def get_vehicles(self) -> dict[str, Any] | list[Any] | None:
         """Returns a list of vehicles.
 
         Retrieves list of vehicles associated with the account. The list contains static
@@ -231,7 +227,7 @@ class MyT:
         _LOGGER.debug("Returning it as json...")
         return json.dumps(vehicles, indent=3)
 
-    async def get_vehicle_status(self, vehicle: dict[str, Any]) -> Vehicle:
+    async def get_vehicle_status(self, vehicle: dict[str, Any]) -> Optional[Vehicle]:
         """Returns vehicle status.
 
         Collects and formats different vehicle status endpoints into
@@ -251,24 +247,27 @@ class MyT:
         vin = vehicle.get("vin")
         _LOGGER.debug(f"Getting status for vehicle - {censor_vin(vin)}...")
 
-        data = await asyncio.gather(
-            *[
-                self.api.get_connected_services_endpoint(vin),
-                self.api.get_odometer_endpoint(vin),
-                self.api.get_vehicle_status_endpoint(vin),
-                self.api.get_vehicle_status_legacy_endpoint(vin),
-            ]
-        )
+        if vin is None:
+            _LOGGER.debug("Vehicle status could not be received.")
+        else:
+            data = await asyncio.gather(
+                *[
+                    self.api.get_connected_services_endpoint(vin),
+                    self.api.get_odometer_endpoint(vin),
+                    self.api.get_vehicle_status_endpoint(vin),
+                    self.api.get_vehicle_status_legacy_endpoint(vin),
+                ]
+            )
 
-        _LOGGER.debug("Presenting information as an object...")
+            _LOGGER.debug("Presenting information as an object...")
 
-        return Vehicle(
-            vehicle_info=vehicle,
-            connected_services=data[0],
-            odometer=data[1],
-            status=data[2],
-            status_legacy=data[3],
-        )
+            return Vehicle(
+                vehicle_info=vehicle,
+                connected_services=data[0],
+                odometer=data[1],
+                status=data[2],
+                status_legacy=data[3],
+            )
 
     async def get_driving_statistics(  # pylint: disable=too-many-branches
         self,
@@ -339,30 +338,29 @@ class MyT:
         if interval not in INTERVAL_SUPPORTED:
             return [{"error_mesg": "Invalid interval provided!", "error_code": 1}]
 
-        stats_interval = interval
-
         if from_date is not None and arrow.get(from_date) > arrow.now():
             return [{"error_mesg": "This is not a time machine!", "error_code": 5}]
 
+        stats_interval = interval
         if from_date is None:
-            if interval is DAY:
+            if interval == DAY:
                 from_date = arrow.now().shift(days=-1).format(DATE_FORMAT)
 
-            if interval is WEEK:
+            if interval == WEEK:
                 from_date = arrow.now().span(WEEK, week_start=7)[0].format(DATE_FORMAT)
 
-            if interval is ISOWEEK:
+            if interval == ISOWEEK:
                 stats_interval = DAY
                 from_date = arrow.now().floor(WEEK).format(DATE_FORMAT)
 
-            if interval is MONTH:
+            if interval == MONTH:
                 from_date = arrow.now().floor(MONTH).format(DATE_FORMAT)
 
-            if interval is YEAR:
+            if interval == YEAR:
                 stats_interval = MONTH
                 from_date = arrow.now().floor(YEAR).format(DATE_FORMAT)
 
-        if interval is ISOWEEK:
+        if interval == ISOWEEK and from_date is not None:
             stats_interval = DAY
             time_between = arrow.now() - arrow.get(from_date)
 
@@ -377,14 +375,14 @@ class MyT:
 
             arrow.get(from_date).floor(WEEK).format(DATE_FORMAT)
 
-        if interval is YEAR:
+        if interval == YEAR and from_date is not None:
             stats_interval = MONTH
 
             if arrow.get(from_date) < arrow.now().floor(YEAR):
                 return [
                     {
-                        "error_mesg": "Invalid date provided. from_date can"
-                        " only be current year. (" + interval + ")",
+                        "error_mesg": f"Invalid date provided. from_date can only be \
+                            current year. ({interval})",
                         "error_code": 4,
                     }
                 ]
@@ -393,6 +391,7 @@ class MyT:
 
         today = arrow.now().format(DATE_FORMAT)
 
+        raw_statistics = None
         if from_date == today:
             _LOGGER.debug(
                 "Aborting getting statistics because day is on the first of the week,"
@@ -400,7 +399,7 @@ class MyT:
             )
             raw_statistics = None
 
-        else:
+        elif from_date is not None:
             raw_statistics = await self.api.get_driving_statistics_endpoint(
                 vin, from_date, stats_interval
             )
@@ -408,9 +407,7 @@ class MyT:
         if raw_statistics is None:
             return [
                 {
-                    "error_mesg": "No data available for this period. ("
-                    + interval
-                    + ")",
+                    "error_mesg": f"No data available for this period. ({interval})",
                     "error_code": 2,
                 }
             ]
@@ -420,9 +417,9 @@ class MyT:
         imperial = False
         use_liters = False
 
-        if unit is IMPERIAL:
+        if unit == IMPERIAL:
             imperial = True
-        if unit is IMPERIAL_LITERS:
+        if unit == IMPERIAL_LITERS:
             imperial = True
             use_liters = True
 
@@ -461,7 +458,7 @@ class MyT:
             await self.get_driving_statistics(vin, interval, from_date), indent=3
         )
 
-    async def get_trips(self, vin: str) -> list[Trip]:
+    async def get_trips(self, vin: str) -> Optional[list[Trip]]:
         """Returns a list of trips.
 
         Retrieves and formats trips.
@@ -481,10 +478,13 @@ class MyT:
         _LOGGER.debug(f"Getting trips for {censor_vin(vin)}...")
 
         raw_trips = await self.api.get_trips_endpoint(vin)
-        _LOGGER.debug(f"received {len(raw_trips.get('recentTrips',[]))} trips")
-        return [Trip(trip) for trip in raw_trips.get("recentTrips", [])]
+        if not isinstance(raw_trips, dict):
+            _LOGGER.debug("'raw_trips' dict could not be received")
+        else:
+            _LOGGER.debug(f"received {len(raw_trips.get('recentTrips',[]))} trips")
+            return [Trip(trip) for trip in raw_trips.get("recentTrips", [])]
 
-    async def get_trip(self, vin: str, trip_id: str) -> DetailedTrip:
+    async def get_trip(self, vin: str, trip_id: str) -> Optional[DetailedTrip]:
         """Returns a trip.
 
         Retrieves and formats a trip.
@@ -507,8 +507,11 @@ class MyT:
         _LOGGER.debug(f"Getting trip {trip_id} for {censor_vin(vin)}...")
 
         raw_trip = await self.api.get_trip_endpoint(vin, trip_id)
-        _LOGGER.debug(f"received trip {trip_id}")
-        return DetailedTrip(raw_trip)
+        if not isinstance(raw_trip, dict):
+            _LOGGER.debug("'raw_trip' dict could not be received")
+        else:
+            _LOGGER.debug(f"received trip {trip_id}")
+            return DetailedTrip(raw_trip)
 
     async def get_trips_json(self, vin: str) -> str:
         """Returns a list of trips for a given vehicle.
@@ -527,7 +530,7 @@ class MyT:
         trips = [trip.raw_json for trip in await self.get_trips(vin)]
         return json.dumps(trips, indent=3)
 
-    async def get_trip_json(self, vin: str, trip_id: str) -> str:
+    async def get_trip_json(self, vin: str, trip_id: str) -> Optional[str]:
         """Returns a trip for a given vehicle.
 
         Args:
@@ -543,9 +546,14 @@ class MyT:
             ToyotaApiError: Toyota's API returned an error.
         """
         trip = await self.get_trip(vin, trip_id)
-        return json.dumps(trip.raw_json, indent=3)
+        if trip is None:
+            _LOGGER.debug("'trip' could not be received")
+        else:
+            return json.dumps(trip.raw_json, indent=3)
 
-    async def set_lock_vehicle(self, vin: str) -> VehicleLockUnlockActionResponse:
+    async def set_lock_vehicle(
+        self, vin: str
+    ) -> Optional[VehicleLockUnlockActionResponse]:
         """Sends a lock command to the vehicle.
 
         Args:
@@ -560,10 +568,14 @@ class MyT:
         _LOGGER.debug(f"Locking {censor_vin(vin)}...")
         raw_response = await self.api.set_lock_unlock_vehicle_endpoint(vin, "lock")
         _LOGGER.debug(f"Locking {censor_vin(vin)}... {raw_response}")
-        response = VehicleLockUnlockActionResponse(raw_response)
-        return response
+        if not isinstance(raw_response, dict):
+            _LOGGER.debug("'raw_response' dict could not be received")
+        else:
+            return VehicleLockUnlockActionResponse(raw_response)
 
-    async def set_unlock_vehicle(self, vin: str) -> VehicleLockUnlockActionResponse:
+    async def set_unlock_vehicle(
+        self, vin: str
+    ) -> Optional[VehicleLockUnlockActionResponse]:
         """Send an unlock command to the vehicle.
 
         Args:
@@ -578,12 +590,14 @@ class MyT:
         _LOGGER.debug(f"Unlocking {censor_vin(vin)}...")
         raw_response = await self.api.set_lock_unlock_vehicle_endpoint(vin, "unlock")
         _LOGGER.debug(f"Unlocking {censor_vin(vin)}... {raw_response}")
-        response = VehicleLockUnlockActionResponse(raw_response)
-        return response
+        if not isinstance(raw_response, dict):
+            _LOGGER.debug("'raw_response' dict could not be received")
+        else:
+            return VehicleLockUnlockActionResponse(raw_response)
 
     async def get_lock_status(
         self, vin: str, req_id: str
-    ) -> VehicleLockUnlockStatusResponse:
+    ) -> Optional[VehicleLockUnlockStatusResponse]:
         """Get the status of a lock request.
 
         Args:
@@ -601,5 +615,7 @@ class MyT:
         _LOGGER.debug(
             f"Getting lock request status for {censor_vin(vin)}... {raw_response}"
         )
-        response = VehicleLockUnlockStatusResponse(raw_response)
-        return response
+        if not isinstance(raw_response, dict):
+            _LOGGER.debug("'raw_response' dict could not be received")
+        else:
+            return VehicleLockUnlockStatusResponse(raw_response)
