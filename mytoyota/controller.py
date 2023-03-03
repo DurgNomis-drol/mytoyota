@@ -4,7 +4,7 @@ from __future__ import annotations
 from datetime import datetime
 from http import HTTPStatus
 import logging
-from typing import Any
+from typing import Any, Optional
 
 import httpx
 
@@ -34,8 +34,8 @@ _LOGGER: logging.Logger = logging.getLogger(__package__)
 class Controller:
     """Controller class."""
 
-    _token: str | None = None
-    _token_expiration: datetime | None = None
+    _token: Optional[str] = None
+    _token_expiration: Optional[datetime] = None
 
     def __init__(
         self,
@@ -52,12 +52,12 @@ class Controller:
         self._uuid = uuid
 
     @property
-    def _auth_endpoint(self) -> str:
+    def _auth_endpoint(self) -> Optional[str]:
         """Returns auth endpoint."""
         return SUPPORTED_REGIONS[self._region].get(ENDPOINT_AUTH)
 
     @property
-    def _auth_valid_endpoint(self) -> str:
+    def _auth_valid_endpoint(self) -> Optional[str]:
         """Returns token is valid endpoint."""
         return SUPPORTED_REGIONS[self._region].get(TOKEN_VALID_URL)
 
@@ -84,6 +84,8 @@ class Controller:
 
         _LOGGER.debug("Getting new token...")
         async with httpx.AsyncClient() as client:
+            if self._auth_endpoint is None:
+                raise ToyotaLoginError("Login failed, no auth_endpoint")
             response = await client.post(
                 self._auth_endpoint,
                 headers={"X-TME-LC": self._locale},
@@ -98,8 +100,7 @@ class Controller:
                 _LOGGER.debug("Extracting token from result")
 
                 token = result.get(TOKEN)
-
-                if is_valid_token(token):
+                if token is not None and is_valid_token(token):
                     _LOGGER.debug("Token is the correct format")
                     self._uuid = result[CUSTOMERPROFILE].get(UUID)
                     self._token = token
@@ -121,6 +122,8 @@ class Controller:
 
         _LOGGER.debug("Checking if token is still valid...")
         async with httpx.AsyncClient() as client:
+            if self._auth_valid_endpoint is None:
+                raise ToyotaLoginError("No valid endpoint")
             response = await client.post(
                 self._auth_valid_endpoint,
                 json={TOKEN: self._token},
@@ -159,12 +162,20 @@ class Controller:
         if method not in ("GET", "POST", "PUT", "DELETE"):
             raise ToyotaInternalError("Invalid request method provided")
 
-        if not self._token or self._has_expired(self._token_expiration, TOKEN_DURATION):
-            if not await self._is_token_valid():
-                await self._update_token()
+        if (
+            not self._token
+            or (
+                self._token_expiration is not None
+                and self._has_expired(self._token_expiration, TOKEN_DURATION)
+            )
+        ) and not await self._is_token_valid():
+            await self._update_token()
 
         if base_url:
-            url = SUPPORTED_REGIONS[self._region].get(base_url) + endpoint
+            supported_regions = SUPPORTED_REGIONS[self._region].get(base_url)
+            url = (
+                endpoint if supported_regions is None else supported_regions + endpoint
+            )
         else:
             url = endpoint
 
@@ -179,7 +190,7 @@ class Controller:
             }
         )
 
-        if method in ("GET", "POST"):
+        if method in {"GET", "POST"}:
             headers.update(
                 {
                     "Cookie": f"iPlanetDirectoryPro={self._token}",
@@ -226,7 +237,7 @@ class Controller:
                     )
                 else:
                     error = ToyotaApiError(
-                        "Internal server error occurred! - " + response
+                        f"Internal server error occurred! - {response}"
                     )
 
                 raise error
@@ -240,7 +251,7 @@ class Controller:
                 )
             else:
                 raise ToyotaApiError(
-                    "HTTP: " + str(response.status_code) + " - " + response.text
+                    f"HTTP: {str(response.status_code)} - {response.text}"
                 )
 
         return result
