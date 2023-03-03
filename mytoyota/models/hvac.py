@@ -1,7 +1,7 @@
 """Models for vehicle sensors."""
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Optional, Union
 
 from mytoyota.models.data import VehicleData
 
@@ -22,7 +22,7 @@ class Hvac(VehicleData):
         self.legacy = legacy
 
     @property
-    def current_temperature(self) -> float | None:
+    def current_temperature(self) -> Optional[float]:
         """Current temperature."""
         if self.legacy:
             return self._data.get("InsideTemperature")
@@ -31,77 +31,59 @@ class Hvac(VehicleData):
         )
 
     @property
-    def target_temperature(self) -> float | None:
+    def target_temperature(self) -> Optional[float]:
         """Target temperature."""
         if self.legacy:
             return self._data.get("SettingTemperature")
         return get_attr_in_dict(self._data.get("targetTemperature", {}), "value")
 
     @property
-    def started_at(self) -> str | None:
+    def started_at(self) -> Optional[str]:
         """Hvac started at."""
-        if self.legacy:
-            return None
-        return self._data.get("startedAt")
+        return None if self.legacy else self._data.get("startedAt")
 
     @property
-    def status(self) -> str | None:
+    def status(self) -> Optional[str]:
         """Hvac status."""
-        if self.legacy:
-            return None
-        return self._data.get("status")
+        return None if self.legacy else self._data.get("status")
 
     @property
-    def type(self) -> str | None:
+    def type(self) -> Optional[str]:
         """Hvac type."""
-        if self.legacy:
-            return None
-        return self._data.get("type")
+        return None if self.legacy else self._data.get("type")
 
     @property
-    def duration(self) -> str | None:
+    def duration(self) -> Optional[str]:
         """Hvac duration."""
-        if self.legacy:
-            return None
-        return self._data.get("duration")
+        return None if self.legacy else self._data.get("duration")
 
     @property
-    def options(self) -> dict | list | None:
+    def options(self) -> Optional[Union[list, dict]]:
         """Hvac options."""
-        if self.legacy:
-            return None
-        return self._data.get("options")
+        return None if self.legacy else self._data.get("options")
 
     @property
-    def command_id(self) -> str | int | None:
+    def command_id(self) -> Optional[Union[str, int]]:
         """Hvac command id."""
-        if self.legacy:
-            return None
-        return self._data.get("commandId")
+        return None if self.legacy else self._data.get("commandId")
 
     @property
-    def front_defogger_is_on(self) -> bool | None:
+    def front_defogger_is_on(self) -> Optional[bool]:
         """If the front defogger is on."""
-        if self.legacy:
-            return self._data.get("FrontDefoggerStatus") == 1
-        return None
+        return self._data.get("FrontDefoggerStatus") == 1 if self.legacy else None
 
     @property
-    def rear_defogger_is_on(self) -> bool | None:
+    def rear_defogger_is_on(self) -> Optional[bool]:
         """If the rear defogger is on."""
-        if self.legacy:
-            return self._data.get("RearDefoggerStatus") == 1
-        return None
+        return self._data.get("RearDefoggerStatus") == 1 if self.legacy else None
 
     @property
-    def blower_on(self) -> int | None:
+    def blower_on(self) -> Optional[int]:
         """Hvac blower setting."""
-        if self.legacy:
-            return self._data.get("BlowerStatus")
-        return None
+        return self._data.get("BlowerStatus") if self.legacy else None
 
     @property
-    def last_updated(self) -> str | None:
+    def last_updated(self) -> Optional[float]:
         """Hvac last updated."""
         if self.legacy:
             return None
