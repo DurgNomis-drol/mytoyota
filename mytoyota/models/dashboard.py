@@ -1,7 +1,7 @@
 """Models for vehicle sensors."""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from mytoyota.utils.conversions import convert_to_miles
 
@@ -28,9 +28,7 @@ class Dashboard:
     @property
     def legacy(self) -> bool:
         """If the car uses the legacy endpoints."""
-        if "Fuel" in self._vehicle.odometer:
-            return True
-        return False
+        return "Fuel" in self._vehicle.odometer
 
     @property
     def is_metric(self) -> bool:
@@ -38,64 +36,65 @@ class Dashboard:
         return self._vehicle.odometer.get("mileage_unit") == "km"
 
     @property
-    def odometer(self) -> int | None:
+    def odometer(self) -> Optional[int]:
         """Shows the odometer distance."""
         return self._vehicle.odometer.get("mileage")
 
     @property
-    def fuel_level(self) -> float | None:
+    def fuel_level(self) -> Optional[float]:
         """Shows the fuellevel of the vehicle."""
         if self.legacy:
             return self._vehicle.odometer.get("Fuel")
         return self._energy.get("level")
 
     @property
-    def fuel_range(self) -> float | None:
+    def fuel_range(self) -> Optional[float]:
         """Shows the range if available."""
         fuel_range = (
             self._chargeinfo.get("GasolineTravelableDistance")
             if self.legacy
             else self._energy.get("remainingRange", None)
         )
-        return convert_to_miles(fuel_range) if not self.is_metric else fuel_range
+        if fuel_range is not None:
+            return fuel_range if self.is_metric else convert_to_miles(fuel_range)
+        return fuel_range
 
     @property
-    def battery_level(self) -> float | None:
+    def battery_level(self) -> Optional[float]:
         """Shows the battery level if a hybrid."""
-        if self.legacy:
-            return self._chargeinfo.get("ChargeRemainingAmount")
-        return None
+        return self._chargeinfo.get("ChargeRemainingAmount") if self.legacy else None
 
     @property
-    def battery_range(self) -> float | None:
+    def battery_range(self) -> Optional[float]:
         """Shows the battery range if a hybrid."""
-        if self.legacy:
-            battery_range = self._chargeinfo.get("EvDistanceInKm")
-            return (
-                convert_to_miles(battery_range) if not self.is_metric else battery_range
+
+        battery_range = self._chargeinfo.get("EvDistanceInKm") if self.legacy else None
+        if battery_range is not None:
+            battery_range = (
+                battery_range if self.is_metric else convert_to_miles(battery_range)
             )
-        return None
+
+        return battery_range
 
     @property
-    def battery_range_with_aircon(self) -> float | None:
+    def battery_range_with_aircon(self) -> Optional[float]:
         """Shows the battery range with aircon on, if a hybrid."""
-        if self.legacy:
-            battery_range = self._chargeinfo.get("EvDistanceWithAirCoInKm")
-            return (
-                convert_to_miles(battery_range) if not self.is_metric else battery_range
+        battery_range = (
+            self._chargeinfo.get("EvDistanceWithAirCoInKm") if self.legacy else None
+        )
+        if battery_range is not None:
+            battery_range = (
+                battery_range if self.is_metric else convert_to_miles(battery_range)
             )
-        return None
+
+        return battery_range
 
     @property
-    def charging_status(self) -> str | None:
+    def charging_status(self) -> Optional[str]:
         """Shows the charging status if a hybrid."""
-        if self.legacy:
-            return self._chargeinfo.get("ChargingStatus")
-        return None
+        return self._chargeinfo.get("ChargingStatus") if self.legacy else None
 
     @property
-    def remaining_charge_time(self) -> int | None:
+    def remaining_charge_time(self) -> Optional[int]:
         """Shows the remaining time to a full charge, if a hybrid."""
-        if self.legacy:
-            return self._chargeinfo.get("RemainingChargeTime")
-        return None
+        return self._chargeinfo.get("RemainingChargeTime") if self.legacy else None
