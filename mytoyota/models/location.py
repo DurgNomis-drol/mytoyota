@@ -1,6 +1,8 @@
 """Models for vehicle location."""
 from __future__ import annotations
 
+from typing import Optional
+
 from mytoyota.models.data import VehicleData
 
 
@@ -18,6 +20,6 @@ class ParkingLocation(VehicleData):
         return float(self._data.get("lon", 0.0))
 
     @property
-    def timestamp(self) -> int | None:
+    def timestamp(self) -> Optional[int]:
         """Timestamp."""
         return self._data.get("timestamp")

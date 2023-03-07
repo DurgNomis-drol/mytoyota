@@ -1,7 +1,7 @@
 """Models for vehicle sensors."""
 from __future__ import annotations
 
-from typing import Any, Optional, Union
+from typing import Any, Dict, Optional, Union
 
 from mytoyota.models.data import VehicleData
 
@@ -14,7 +14,7 @@ def get_attr_in_dict(data: dict[str, float], attr: str) -> float | None:
 class Hvac(VehicleData):
     """HVAC data model."""
 
-    def __init__(self, data: dict[str, Any], legacy: bool = False) -> None:
+    def __init__(self, data: Dict[str, Any], legacy: bool = False) -> None:
         # Support legacy method. Toyota seems to be changing their api for newer
         # cars, though not a lot seems to use the method yet.
         # This option enables support for older cars.

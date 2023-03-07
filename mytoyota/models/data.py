@@ -5,7 +5,7 @@ from typing import Any, Dict
 class VehicleData:
     """Vehicle data base model."""
 
-    def __init__(self, data: dict) -> None:
+    def __init__(self, data: Dict) -> None:
         self._data = data or {}
 
     @property

@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Any
+from typing import Any, Dict, Optional
 
 from mytoyota.models.dashboard import Dashboard
 from mytoyota.models.hvac import Hvac
@@ -30,21 +30,21 @@ class Vehicle:
         self._vehicle_info = vehicle_info
 
         self.odometer = format_odometer(odometer) if odometer else {}
-        self._status = status if status else {}
-        self._status_legacy = status_legacy if status_legacy else {}
+        self._status = status or {}
+        self._status_legacy = status_legacy or {}
 
     @property
-    def vehicle_id(self) -> int | None:
+    def vehicle_id(self) -> Optional[int]:
         """Vehicle's id."""
         return self._vehicle_info.get("id")
 
     @property
-    def vin(self) -> str | None:
+    def vin(self) -> Optional[str]:
         """Vehicle's vinnumber."""
         return self._vehicle_info.get("vin")
 
     @property
-    def alias(self) -> str | None:
+    def alias(self) -> Optional[str]:
         """Vehicle's alias."""
         return self._vehicle_info.get("alias", "My vehicle")
 
@@ -56,22 +56,21 @@ class Vehicle:
     @property
     def fueltype(self) -> str:
         """Fuel type of the vehicle."""
-        if self._status:
-            if "energy" in self._status and self._status["energy"]:
-                return self._status["energy"][0].get("type", "Unknown").capitalize()
+        if self._status and "energy" in self._status and self._status["energy"]:
+            return self._status["energy"][0].get("type", "Unknown").capitalize()
 
         fueltype = self._vehicle_info.get("fuel", "Unknown")
         return "Petrol" if fueltype == "1.0P" else fueltype
 
     @property
-    def details(self) -> dict[str, Any] | None:
+    def details(self) -> Optional[Dict[str, Any]]:
         """Formats vehicle info into a dict."""
-        det: dict[str, Any] = {}
-        for i in sorted(self._vehicle_info):
-            if i in ("vin", "alias", "id", "hybrid"):
-                continue
-            det[i] = self._vehicle_info[i]
-        return det if det else None
+        det: dict[str, Any] = {
+            i: self._vehicle_info[i]
+            for i in sorted(self._vehicle_info)
+            if i not in ("vin", "alias", "id", "hybrid")
+        }
+        return det or None
 
     @property
     def is_connected_services_enabled(self) -> bool:
@@ -100,22 +99,25 @@ class Vehicle:
         return False
 
     @property
-    def parkinglocation(self) -> ParkingLocation | None:
+    def parkinglocation(self) -> Optional[ParkingLocation]:
         """Last parking location."""
         if self.is_connected_services_enabled and "event" in self._status:
             return ParkingLocation(self._status.get("event"))
         return None
 
     @property
-    def sensors(self) -> Sensors | None:
+    def sensors(self) -> Optional[Sensors]:
         """Vehicle sensors."""
-        if self.is_connected_services_enabled and self._status:
-            if "protectionState" in self._status:
-                return Sensors(self._status.get("protectionState"))
+        if (
+            self.is_connected_services_enabled
+            and self._status
+            and "protectionState" in self._status
+        ):
+            return Sensors(self._status.get("protectionState"))
         return None
 
     @property
-    def hvac(self) -> Hvac | None:
+    def hvac(self) -> Optional[Hvac]:
         """Vehicle hvac."""
         if self.is_connected_services_enabled:
             if self._status and "climate" in self._status:
@@ -127,7 +129,7 @@ class Vehicle:
         return None
 
     @property
-    def dashboard(self) -> Dashboard | None:
+    def dashboard(self) -> Optional[Dashboard]:
         """Vehicle dashboard."""
         if self.is_connected_services_enabled and self.odometer:
             return Dashboard(self)

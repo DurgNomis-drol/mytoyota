@@ -13,7 +13,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
-from typing import Any, Optional
+from typing import Any, Dict, List, Optional, Union
 
 import arrow
 
@@ -91,7 +91,7 @@ class MyT:
         )
 
     @staticmethod
-    def get_supported_regions() -> list:
+    def get_supported_regions() -> List:
         """Get supported regions.
 
         Retrieves a list of supported regions.
@@ -113,7 +113,7 @@ class MyT:
         await self.api.controller.first_login()
 
     @property
-    def uuid(self) -> str | None:
+    def uuid(self) -> Optional[str]:
         """Get UUID.
 
         Retrieves the UUID returned for the account.
@@ -127,7 +127,7 @@ class MyT:
 
     async def set_alias(
         self, vehicle_id: int, new_alias: str
-    ) -> dict[str, Any] | list[Any] | None:
+    ) -> Optional[Union[Dict[str, Any], List[Any]]]:
         """Set a new alias for your vehicle.
 
         Sets a new alias for a vehicle specified by its vehicle id.
@@ -153,7 +153,7 @@ class MyT:
             vehicle_id=vehicle_id, new_alias=new_alias
         )
 
-    async def get_vehicles(self) -> dict[str, Any] | list[Any] | None:
+    async def get_vehicles(self) -> Optional[Union[Dict[str, Any], List[Any]]]:
         """Returns a list of vehicles.
 
         Retrieves list of vehicles associated with the account. The list contains static
@@ -227,7 +227,7 @@ class MyT:
         _LOGGER.debug("Returning it as json...")
         return json.dumps(vehicles, indent=3)
 
-    async def get_vehicle_status(self, vehicle: dict[str, Any]) -> Optional[Vehicle]:
+    async def get_vehicle_status(self, vehicle: Dict[str, Any]) -> Optional[Vehicle]:
         """Returns vehicle status.
 
         Collects and formats different vehicle status endpoints into
@@ -273,9 +273,9 @@ class MyT:
         self,
         vin: str,
         interval: str = MONTH,
-        from_date: str | None = None,
+        from_date: Optional[str] = None,
         unit: str = METRIC,
-    ) -> list[dict[str, Any]]:
+    ) -> List[Dict[str, Any]]:
         """Returns driving statistics from a given period.
 
         Retrieves and formats driving statistics from a given period. Will return
@@ -435,7 +435,7 @@ class MyT:
         return statistics.as_list()
 
     async def get_driving_statistics_json(
-        self, vin: str, interval: str = MONTH, from_date: str | None = None
+        self, vin: str, interval: str = MONTH, from_date: Optional[str] = None
     ) -> str:
         """Returns driving statistics from a given period as json.
 
@@ -458,7 +458,7 @@ class MyT:
             await self.get_driving_statistics(vin, interval, from_date), indent=3
         )
 
-    async def get_trips(self, vin: str) -> Optional[list[Trip]]:
+    async def get_trips(self, vin: str) -> Optional[List[Trip]]:
         """Returns a list of trips.
 
         Retrieves and formats trips.

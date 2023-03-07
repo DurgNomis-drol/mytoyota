@@ -52,9 +52,7 @@ class VehicleLockUnlockStatusResponse(VehicleData):
     @property
     def error_code(self) -> str:
         """Request Error code"""
-        if self.status != "error":
-            return None
-        return self._data.get("errorCode", "")
+        return None if self.status != "error" else self._data.get("errorCode", "")
 
     @property
     def is_success(self) -> bool:

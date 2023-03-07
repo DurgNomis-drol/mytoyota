@@ -1,7 +1,8 @@
 """Formatters used"""
+from typing import Dict, List
 
 
-def format_odometer(raw: list) -> dict:
+def format_odometer(raw: List) -> Dict:
     """Formats odometer information from a list to a dict."""
     instruments: dict = {}
     for instrument in raw:

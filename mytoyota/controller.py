@@ -4,7 +4,7 @@ from __future__ import annotations
 from datetime import datetime
 from http import HTTPStatus
 import logging
-from typing import Any, Optional
+from typing import Any, Dict, List, Optional, Union
 
 import httpx
 
@@ -43,7 +43,7 @@ class Controller:
         region: str,
         username: str,
         password: str,
-        uuid: str | None = None,
+        uuid: Optional[str] = None,
     ) -> None:
         self._locale = locale
         self._region = region
@@ -62,7 +62,7 @@ class Controller:
         return SUPPORTED_REGIONS[self._region].get(TOKEN_VALID_URL)
 
     @property
-    def uuid(self) -> str | None:
+    def uuid(self) -> Optional[str]:
         """Return uuid."""
         return self._uuid
 
@@ -149,11 +149,11 @@ class Controller:
         self,
         method: str,
         endpoint: str,
-        base_url: str | None = None,
-        body: dict[str, Any] | None = None,
-        params: dict[str, Any] | None = None,
-        headers: dict[str, Any] | None = None,
-    ) -> dict[str, Any] | list[Any] | None:
+        base_url: Optional[str] = None,
+        body: Optional[Dict[str, Any]] = None,
+        params: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, Any]] = None,
+    ) -> Optional[Union[Dict[str, Any], List[Any]]]:
         """Shared request method"""
 
         if headers is None:

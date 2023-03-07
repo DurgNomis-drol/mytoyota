@@ -1,6 +1,6 @@
 """Statistics class"""
 import logging
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Optional, Union
 
 import arrow
 from arrow import Arrow
@@ -38,7 +38,7 @@ class Statistics:
 
     def __init__(
         self,
-        raw_statistics: Union[Dict[str, Any], List[Any], None],
+        raw_statistics: Optional[Union[Dict[str, Any], List[Any]]],
         interval: str,
         imperial: bool = False,
         use_liters: bool = False,
@@ -57,12 +57,12 @@ class Statistics:
 
         self._statistic = stats_as_list
 
-    def as_list(self) -> list:
+    def as_list(self) -> List:
         """Return formatted data."""
         return self._statistic
 
     @staticmethod
-    def _convert_to_imperial(data: list, use_liters: bool) -> list:
+    def _convert_to_imperial(data: List, use_liters: bool) -> List:
         """
         Toyota converts some of the data, but not all for some reason. This function
         corrects these values and adds the possibility to show them in MPG also.
@@ -102,7 +102,7 @@ class Statistics:
                     )
         return data
 
-    def _add_bucket(self, data: dict, interval: str) -> list:
+    def _add_bucket(self, data: Dict, interval: str) -> List:
         """Add bucket and return statistics in a uniform way."""
 
         _LOGGER.debug("Updating bucket for statistics....")

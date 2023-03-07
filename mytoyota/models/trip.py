@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Dict, List, Optional
 
 from mytoyota.models.data import VehicleData
 
@@ -44,19 +45,21 @@ class DetailedTrip(VehicleData):
     """Detailed Trip model."""
 
     @property
-    def trip_events(self) -> list(TripEvent):
+    def trip_events(self) -> List[TripEvent]:
         """Trip events."""
-        if not self._data.get("tripEvents"):
-            return []
-        return [TripEvent(event) for event in self._data.get("tripEvents", [])]
+        return (
+            [TripEvent(event) for event in self._data.get("tripEvents", [])]
+            if self._data.get("tripEvents")
+            else []
+        )
 
     @property
-    def trip_events_type(self) -> list(dict):
+    def trip_events_type(self) -> List[Dict]:
         """Trip events type."""
         return self._data.get("tripEventsType", [])
 
     @property
-    def statistics(self) -> dict:
+    def statistics(self) -> Dict:
         """Statistics."""
         return self._data.get("statistics", {})
 
@@ -75,20 +78,24 @@ class Trip(VehicleData):
         return self._data.get("startAddress", "")
 
     @property
-    def start_time_gmt(self) -> datetime.datetime | None:
+    def start_time_gmt(self) -> Optional[datetime]:
         """Trip Start time GMT."""
         start_time_str = self._data.get("startTimeGmt", None)
-        if not start_time_str:
-            return None
-        return datetime.strptime(start_time_str, "%Y-%m-%dT%H:%M:%SZ")
+        return (
+            datetime.strptime(start_time_str, "%Y-%m-%dT%H:%M:%SZ")
+            if start_time_str
+            else None
+        )
 
     @property
-    def end_time_gmt(self) -> datetime.datetime | None:
+    def end_time_gmt(self) -> Optional[datetime]:
         """Trip End time GMT."""
         end_time_str = self._data.get("endTimeGmt", None)
-        if not end_time_str:
-            return None
-        return datetime.strptime(end_time_str, "%Y-%m-%dT%H:%M:%SZ")
+        return (
+            datetime.strptime(end_time_str, "%Y-%m-%dT%H:%M:%SZ")
+            if end_time_str
+            else None
+        )
 
     @property
     def end_address(self) -> str:
@@ -96,6 +103,6 @@ class Trip(VehicleData):
         return self._data.get("endAddress", "")
 
     @property
-    def classification_type(self) -> int | None:
+    def classification_type(self) -> Optional[int]:
         """Trip Classification type."""
         return self._data.get("classificationType", None)

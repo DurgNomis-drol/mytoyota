@@ -1,7 +1,7 @@
 """Toyota Connected Services API"""
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Dict, List, Optional, Union
 
 from .const import BASE_URL, BASE_URL_CARS
 from .controller import Controller
@@ -15,13 +15,13 @@ class Api:
         self.controller = controller
 
     @property
-    def uuid(self) -> str | None:
+    def uuid(self) -> Optional[str]:
         """Returns uuid from controller"""
         return self.controller.uuid
 
     async def set_vehicle_alias_endpoint(
         self, new_alias: str, vehicle_id: int
-    ) -> dict[str, Any] | list[Any] | None:
+    ) -> Optional[Union[Dict[str, Any], List[Any]]]:
         """Set vehicle alias."""
         return await self.controller.request(
             method="PUT",
@@ -30,7 +30,7 @@ class Api:
             body={"id": vehicle_id, "alias": new_alias},
         )
 
-    async def get_vehicles_endpoint(self) -> dict[str, Any] | list[Any] | None:
+    async def get_vehicles_endpoint(self) -> Optional[Union[Dict[str, Any], List[Any]]]:
         """Retrieves list of cars you have registered with MyT"""
         return await self.controller.request(
             method="GET",
@@ -40,7 +40,7 @@ class Api:
 
     async def get_connected_services_endpoint(
         self, vin: str
-    ) -> dict[str, Any] | list[Any] | None:
+    ) -> Optional[Union[Dict[str, Any], List[Any]]]:
         """Get information about connected services for the given car."""
         return await self.controller.request(
             method="GET",
@@ -50,7 +50,7 @@ class Api:
 
     async def get_odometer_endpoint(
         self, vin: str
-    ) -> dict[str, Any] | list[Any] | None:
+    ) -> Optional[Union[Dict[str, Any], List[Any]]]:
         """Get information from odometer."""
         return await self.controller.request(
             method="GET",
@@ -60,7 +60,7 @@ class Api:
 
     async def get_parking_endpoint(
         self, vin: str
-    ) -> dict[str, Any] | list[Any] | None:  # pragma: no cover
+    ) -> Optional[Union[Dict[str, Any], List[Any]]]:  # pragma: no cover
         """Get where you have parked your car."""
         return await self.controller.request(
             method="GET",
@@ -71,7 +71,7 @@ class Api:
 
     async def get_vehicle_status_endpoint(
         self, vin: str
-    ) -> dict[str, Any] | list[Any] | None:
+    ) -> Optional[Union[Dict[str, Any], List[Any]]]:
         """Get information about the vehicle."""
         return await self.controller.request(
             method="GET",
@@ -81,7 +81,7 @@ class Api:
 
     async def get_vehicle_status_legacy_endpoint(
         self, vin: str
-    ) -> dict[str, Any] | list[Any] | None:
+    ) -> Optional[Union[Dict[str, Any], List[Any]]]:
         """Get information about the vehicle."""
         return await self.controller.request(
             method="GET",
@@ -90,8 +90,8 @@ class Api:
         )
 
     async def get_driving_statistics_endpoint(
-        self, vin: str, from_date: str, interval: str | None = None
-    ) -> dict[str, Any] | list[Any] | None:
+        self, vin: str, from_date: str, interval: Optional[str] = None
+    ) -> Optional[Union[Dict[str, Any], List[Any]]]:
         """Get driving statistic"""
         return await self.controller.request(
             method="GET",
@@ -105,7 +105,7 @@ class Api:
         self,
         vin: str,
         page: int = 1,
-    ) -> dict[str, Any] | list[Any] | None:
+    ) -> Optional[Union[Dict[str, Any], List[Any]]]:
         """Get trip
         The page parameter works a bit strange but setting to 1 gets last few trips"""
         return await self.controller.request(
@@ -117,7 +117,7 @@ class Api:
 
     async def get_trip_endpoint(
         self, vin: str, trip_id: str
-    ) -> dict[str, Any] | list[Any] | None:
+    ) -> Optional[Union[Dict[str, Any], List[Any]]]:
         """Get data for a single trip"""
         return await self.controller.request(
             method="GET",
@@ -128,7 +128,7 @@ class Api:
 
     async def set_lock_unlock_vehicle_endpoint(
         self, vin: str, action: str
-    ) -> dict[str, Any] | list[Any] | None:
+    ) -> Optional[Union[Dict[str, Any], List[Any]]]:
         """Lock vehicle."""
         return await self.controller.request(
             method="POST",
@@ -139,7 +139,7 @@ class Api:
 
     async def get_lock_unlock_request_status(
         self, vin: str, request_id: str
-    ) -> dict[str, Any] | list[Any] | None:
+    ) -> Optional[Union[Dict[str, Any], List[Any]]]:
         """Check lock/unlock status given a request ID"""
         return await self.controller.request(
             method="GET",
