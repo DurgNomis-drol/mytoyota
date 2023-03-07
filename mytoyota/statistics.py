@@ -1,6 +1,6 @@
 """Statistics class"""
 import logging
-from typing import Any, Union
+from typing import Any, Dict, List, Union
 
 import arrow
 from arrow import Arrow
@@ -38,7 +38,7 @@ class Statistics:
 
     def __init__(
         self,
-        raw_statistics: Union[dict[str, Any], list[Any], None],
+        raw_statistics: Union[Dict[str, Any], List[Any], None],
         interval: str,
         imperial: bool = False,
         use_liters: bool = False,
