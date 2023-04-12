@@ -110,7 +110,7 @@ A huge thanks go to [@calmjm](https://github.com/calmjm) for making [tojota](htt
 
 [releases-shield]: https://img.shields.io/github/release/DurgNomis-drol/mytoyota.svg?style=for-the-badge
 [releases]: https://github.com/DurgNomis-drol/mytoyota/releases
-[workflow-shield]: https://img.shields.io/github/workflow/status/DurgNomis-drol/mytoyota/Linting?style=for-the-badge
+[workflow-shield]: https://img.shields.io/github/actions/workflow/status/DurgNomis-drol/mytoyota/build.yml?branch=master&style=for-the-badge
 [workflow]: https://github.com/DurgNomis-drol/mytoyota/actions
 [commits-shield]: https://img.shields.io/github/commit-activity/y/DurgNomis-drol/mytoyota.svg?style=for-the-badge
 [commits]: https://github.com/DurgNomis-drol/mytoyota/commits/master
