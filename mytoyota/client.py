@@ -63,7 +63,8 @@ class MyT:
         password: str,
         locale: str = "da-dk",
         region: str = "europe",
-        uuid: str = None,
+        brand: str = "toyota",
+        uuid: str | None = None,
         controller_class=Controller,
         disable_locale_check: bool = False,
     ) -> None:
@@ -87,6 +88,7 @@ class MyT:
                 password=password,
                 locale=locale,
                 region=region,
+                brand=brand,
                 uuid=uuid,
             )
         )

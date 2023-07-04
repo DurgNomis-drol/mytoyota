@@ -30,13 +30,13 @@ from mytoyota.client import MyT
 
 username = "jane@doe.com"
 password = "MyPassword"
+brand = "toyota"  # or lexus
 
 # Get supported regions, can be passed to the optional 'region' argument of MyT
 # At this moment, only the 'europe' region is supported
 print(MyT.get_supported_regions())
 
-client = MyT(username=username, password=password)
-
+client = MyT(username=username, password=password, brand=brand)
 
 async def get_information():
     print("Logging in...")
