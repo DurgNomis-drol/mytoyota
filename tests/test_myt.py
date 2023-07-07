@@ -32,12 +32,14 @@ class OfflineController:
         region: str,
         username: str,
         password: str,
+        brand: str,
         uuid: str = None,
     ) -> None:
         self._locale = locale
         self._region = region
         self._username = username
         self._password = password
+        self._brand = brand
         self._uuid = uuid
 
     @property
