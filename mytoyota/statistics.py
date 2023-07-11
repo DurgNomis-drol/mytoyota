@@ -42,7 +42,6 @@ class Statistics:
         imperial: bool = False,
         use_liters: bool = False,
     ) -> None:
-
         self._now: Arrow = arrow.now()
 
         if not raw_statistics:
