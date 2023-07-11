@@ -25,7 +25,6 @@ class Vehicle:
         status: dict[str, Any] | None = None,
         status_legacy: dict[str, Any] | None = None,
     ) -> None:
-
         self._connected_services = connected_services
         self._vehicle_info = vehicle_info
 
