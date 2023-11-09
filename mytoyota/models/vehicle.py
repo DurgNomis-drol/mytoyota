@@ -85,7 +85,7 @@ class Vehicle:
             ):
                 vin_specific_connected_service = None
                 for device in self._connected_services["connectedService"]["devices"]:
-                    if (device.get("vin") == self.vin):
+                    if device.get("vin") == self.vin:
                         vin_specific_connected_service = device
                         break
                 if vin_specific_connected_service["state"] == "ACTIVE":

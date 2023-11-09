@@ -92,7 +92,17 @@ class TestVehicle:
         for veh in vehicle_fixtures:
             vehicle = Vehicle(
                 vehicle_info=veh,
-                connected_services={"connectedService": {"status": "ACTIVE"}},
+                connected_services={
+                    "connectedService": {
+                        "devices": [
+                            {
+                                "brand": "TOYOTA",
+                                "state": "ACTIVE",
+                                "vin": veh.get("vin"),
+                            }
+                        ]
+                    }
+                },
             )
 
             assert vehicle.vin == veh.get("vin")
@@ -134,7 +144,17 @@ class TestVehicle:
 
         vehicle = Vehicle(
             vehicle_info=vehicle_fixtures[0],
-            connected_services={"connectedService": {"status": "ACTIVE"}},
+            connected_services={
+                "connectedService": {
+                    "devices": [
+                        {
+                            "brand": "TOYOTA",
+                            "state": "ACTIVE",
+                            "vin": vehicle_fixtures[0].get("vin"),
+                        }
+                    ]
+                }
+            },
             odometer=odometer_fixture,
             status=status_fixture,
         )
@@ -175,7 +195,17 @@ class TestVehicle:
 
         vehicle = Vehicle(
             vehicle_info=vehicle_fixtures[0],
-            connected_services={"connectedService": {"status": "ACTIVE"}},
+            connected_services={
+                "connectedService": {
+                    "devices": [
+                        {
+                            "brand": "TOYOTA",
+                            "state": "ACTIVE",
+                            "vin": vehicle_fixtures[0].get("vin"),
+                        }
+                    ]
+                }
+            },
             odometer=odometer_fixture,
             status_legacy=status_fixture,
         )
