@@ -1,6 +1,7 @@
 """pytest tests for mytoyota.models.sensors"""
 import json
 import os
+import os.path
 
 from mytoyota.models.sensors import (
     Door,
