@@ -34,6 +34,7 @@ importlib-metadata = {version = "^1.0", python = "<3.8"}
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^2.20.0"
+pyyaml = {version = "^6.0.1", python = ">=3.12"}
 black = ">=22.3, !=22.10.0"  # https://github.com/psf/black/issues/3312
 flake8 = "^3.8.4"
 flake8-bugbear = "^22.10.27"
