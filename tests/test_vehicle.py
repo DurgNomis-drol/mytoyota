@@ -1,6 +1,7 @@
 """pytest tests for mytoyota.models.vehicle.Vehicle"""
 import json
 import os
+import os.path
 
 import pytest
 
