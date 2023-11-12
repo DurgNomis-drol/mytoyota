@@ -2,8 +2,6 @@
 
 from mytoyota.models.hvac import Hvac
 
-# pylint: disable=no-self-use
-
 
 class TestHvac:
     """pytest functions to test Hvac"""

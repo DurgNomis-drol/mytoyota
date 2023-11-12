@@ -3,8 +3,6 @@
 import pytest
 
 from mytoyota.exceptions import ToyotaInvalidToken
-
-# pylint: disable=no-self-use
 from mytoyota.utils.conversions import (
     convert_to_liter_per_100_miles,
     convert_to_miles,

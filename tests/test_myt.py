@@ -20,8 +20,6 @@ from mytoyota.exceptions import (
 )
 from mytoyota.models.trip import DetailedTrip, Trip, TripEvent
 
-# pylint: disable=no-self-use
-
 
 class OfflineController:
     """Provides a Controller class that can be used for testing."""

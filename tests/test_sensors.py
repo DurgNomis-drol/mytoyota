@@ -13,8 +13,6 @@ from mytoyota.models.sensors import (
     Windows,
 )
 
-# pylint: disable=no-self-use
-
 
 class TestSensors:  # pylint: disable=too-many-public-methods
     """pytest functions to test Sensors"""
