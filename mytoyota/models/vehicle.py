@@ -88,7 +88,7 @@ class Vehicle:
                     if device.get("vin") == self.vin:
                         vin_specific_connected_service = device
                         break
-                if vin_specific_connected_service["state"] == "ACTIVE":
+                if vin_specific_connected_service and vin_specific_connected_service.get("state") == "ACTIVE":
                     return True
 
                 _LOGGER.error(
