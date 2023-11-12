@@ -2,8 +2,6 @@
 
 from mytoyota.utils.logs import censor, censor_dict, censor_vin
 
-# pylint: disable=no-self-use
-
 
 class TestLogUtilities:
     """pytest functions for testing logs"""

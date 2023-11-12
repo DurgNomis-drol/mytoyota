@@ -7,8 +7,6 @@ import pytest  # pylint: disable=import-error
 from mytoyota.client import MyT
 from mytoyota.exceptions import ToyotaLoginError
 
-# pylint: disable=no-self-use
-
 
 class TestMyTOnline:
     """pytest functions to test MyT using the online services"""

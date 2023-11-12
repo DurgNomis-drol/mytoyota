@@ -10,8 +10,6 @@ from mytoyota.models.location import ParkingLocation
 from mytoyota.models.sensors import Sensors
 from mytoyota.models.vehicle import Vehicle
 
-# pylint: disable=no-self-use
-
 
 class TestVehicle:
     """pytest functions for Vehicle object"""
