@@ -81,9 +81,17 @@ class Vehicle:
         if self.vin and self._connected_services:
             if (
                 "connectedService" in self._connected_services
-                and "status" in self._connected_services["connectedService"]
+                and "devices" in self._connected_services["connectedService"]
             ):
-                if self._connected_services["connectedService"]["status"] == "ACTIVE":
+                vin_specific_connected_service = None
+                for device in self._connected_services["connectedService"]["devices"]:
+                    if device.get("vin") == self.vin:
+                        vin_specific_connected_service = device
+                        break
+                if (
+                    vin_specific_connected_service
+                    and vin_specific_connected_service.get("state") == "ACTIVE"
+                ):
                     return True
 
                 _LOGGER.error(

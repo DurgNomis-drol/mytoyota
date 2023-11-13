@@ -19,7 +19,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
-        python-version: [3.8, 3.9, "3.10", "3.11", "3.12"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
       fail-fast: false
 
     steps:
@@ -34,7 +34,7 @@ jobs:
       - name: Install Poetry
         uses: abatilo/actions-poetry@v2.3.0
         with:
-          poetry-version: 1.2.2
+          poetry-version: 1.5.1
 
       - name: Install dependencies
         run: poetry install
