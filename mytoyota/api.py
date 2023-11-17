@@ -1,10 +1,9 @@
 """Toyota Connected Services API"""
-from __future__ import annotations
-
 from typing import Any
 
-from .const import BASE_URL, BASE_URL_CARS
+from .const import BASE_URL
 from .controller import Controller
+from .exceptions import ToyotaApiError
 
 
 class Api:
@@ -22,66 +21,79 @@ class Api:
     async def set_vehicle_alias_endpoint(
         self, new_alias: str, vehicle_id: int
     ) -> dict[str, Any] | None:
-        """Set vehicle alias."""
-        return await self.controller.request(
-            method="PUT",
-            base_url=BASE_URL_CARS,
-            endpoint=f"/api/users/{self.uuid}/vehicles/{vehicle_id}",
-            body={"id": vehicle_id, "alias": new_alias},
-        )
+        # It does seem to support it. Need to find the endpoint.
+        raise NotImplemented("Endpoint not found")
 
     async def get_vehicles_endpoint(self) -> list[dict[str, Any] | None] | None:
         """Retrieves list of cars you have registered with MyT"""
         return await self.controller.request(
             method="GET",
-            base_url=BASE_URL_CARS,
-            endpoint=f"/vehicle/user/{self.uuid}/vehicles?services=uio&legacy=true",
+            base_url=BASE_URL,
+            endpoint="/v2/vehicle/guid",
         )
 
     async def get_connected_services_endpoint(self, vin: str) -> dict[str, Any] | None:
         """Get information about connected services for the given car."""
-        return await self.controller.request(
-            method="GET",
-            base_url=BASE_URL_CARS,
-            endpoint=f"/vehicle/user/{self.uuid}/vehicle/{vin}?legacy=true&services=fud,connected",
-        )
+        raise NotImplemented("Endpoint no longer supported")
 
     async def get_odometer_endpoint(self, vin: str) -> list[dict[str, Any]] | None:
         """Get information from odometer."""
-        return await self.controller.request(
-            method="GET",
-            base_url=BASE_URL,
-            endpoint=f"/vehicle/{vin}/addtionalInfo",
-        )
+        raise NotImplemented("Endpoint no longer supported")
 
-    async def get_parking_endpoint(
+    async def get_location_endpoint(
         self, vin: str
     ) -> dict[str, Any] | None:  # pragma: no cover
         """Get where you have parked your car."""
-        return await self.controller.request(
+        ret = await self.controller.request(
             method="GET",
             base_url=BASE_URL,
-            endpoint=f"/users/{self.uuid}/vehicle/location",
-            headers={"VIN": vin},
+            endpoint=f"/v1/location",
+            headers={"VIN": vin}
         )
+
+        # If car is in motion you can get an empty response back. This will have no payload.
+        if "status" in ret:
+            return None
+
+        return ret
 
     async def get_vehicle_status_endpoint(self, vin: str) -> dict[str, Any] | None:
         """Get information about the vehicle."""
         return await self.controller.request(
             method="GET",
             base_url=BASE_URL,
-            endpoint=f"/users/{self.uuid}/vehicles/{vin}/vehicleStatus",
+            endpoint="/v1/vehiclehealth/status",
+            headers={"VIN": vin}
+        )
+
+    async def get_vehicle_electric_status_endpoint(self, vin: str) -> dict[str, Any] | None:
+        """Get information about the vehicle."""
+        try:
+            return await self.controller.request(
+                method="GET",
+                base_url=BASE_URL,
+                endpoint="/v1/global/remote/electric/status",
+                headers={"VIN": vin}
+            )
+        except ToyotaApiError as e:
+            # TODO This is wrong, but lets change the Vehicle class
+            return None
+
+
+    async def get_telemetry_endpoint(self, vin: str) -> dict[str, Any] | None:
+        """Get information about the vehicle."""
+        return await self.controller.request(
+            method="GET",
+            base_url=BASE_URL,
+            endpoint="/v3/telemetry",
+            headers={"VIN": vin}
         )
 
     async def get_vehicle_status_legacy_endpoint(
         self, vin: str
     ) -> dict[str, Any] | None:
         """Get information about the vehicle."""
-        return await self.controller.request(
-            method="GET",
-            base_url=BASE_URL,
-            endpoint=f"/vehicles/{vin}/remoteControl/status",
-        )
+        raise NotImplemented("Endpoint no longer supported")
 
     async def get_driving_statistics_endpoint(
         self, vin: str, from_date: str, interval: str | None = None

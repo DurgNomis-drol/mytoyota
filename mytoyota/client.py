@@ -61,9 +61,9 @@ class MyT:
         self,
         username: str,
         password: str,
-        locale: str = "da-dk",
+        locale: str = "en-gb",
         region: str = "europe",
-        brand: str = "toyota",
+        brand: str = "T",
         uuid: str | None = None,
         controller_class=Controller,
         disable_locale_check: bool = False,
@@ -102,12 +102,7 @@ class MyT:
         Returns:
             A list of supported regions. For example: ["europe"]
         """
-        regions = []
-
-        for key, _ in SUPPORTED_REGIONS.items():  # pylint: disable=unused-variable
-            regions.append(key)
-
-        return regions
+        return [key for key in SUPPORTED_REGIONS.keys()]
 
     async def login(self) -> None:
         """Performs first login.
@@ -253,12 +248,18 @@ class MyT:
         vin = vehicle.get("vin")
         _LOGGER.debug(f"Getting status for vehicle - {censor_vin(vin)}...")
 
+        # TODO Is this still the correct approach? All API calls are now checking on errors and returning None.
+        # TODO If instead we created the Vehicle class with just the vehicle_info it could then "when" needed check
+        # TODO if the vehicle supports the endpoint and only call it if it does. I think this is the better approach.
+        # TODO However, it depends is the Vehicle class a snapshot in time or would we mind if every time we called
+        # TODO a call the result could be different? e.g. if your car is charing the range and other would change as
+        # TODO long as you held the vehicle class.
         data = await asyncio.gather(
             *[
-                self.api.get_connected_services_endpoint(vin),
-                self.api.get_odometer_endpoint(vin),
                 self.api.get_vehicle_status_endpoint(vin),
-                self.api.get_vehicle_status_legacy_endpoint(vin),
+                self.api.get_vehicle_electric_status_endpoint(vin),
+                self.api.get_telemetry_endpoint(vin),
+                self.api.get_location_endpoint(vin),
             ]
         )
 
@@ -266,10 +267,10 @@ class MyT:
 
         return Vehicle(
             vehicle_info=vehicle,
-            connected_services=data[0],
-            odometer=data[1],
-            status=data[2],
-            status_legacy=data[3],
+            status=data[0],
+            electric_status=data[1],
+            telemetry=data[2],
+            location=data[3]
         )
 
     async def get_driving_statistics(  # pylint: disable=too-many-branches

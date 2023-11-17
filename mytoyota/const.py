@@ -1,18 +1,20 @@
 """Toyota Connected Services API constants."""
 
 # URL ATTRIBUTE NAMES
+ACCESS_TOKEN_URL = "access_token_url"
+AUTHENTICATE_URL = "authenticate_url"
+AUTHORIZE_URL = "authorize_url"
+API_URL = "api_endpoint_url"
 BASE_URL = "base_url"
-BASE_URL_CARS = "base_url_cars"
-ENDPOINT_AUTH = "auth_endpoint"
-TOKEN_VALID_URL = "auth_valid"
 
 # REGIONS
 SUPPORTED_REGIONS = {
     "europe": {
-        TOKEN_VALID_URL: "https://ssoms.toyota-europe.com/isTokenValid",
-        BASE_URL: "https://myt-agg.toyota-europe.com/cma/api",
-        BASE_URL_CARS: "https://cpb2cs.toyota-europe.com",
-        ENDPOINT_AUTH: "https://ssoms.toyota-europe.com/authenticate",
+        ACCESS_TOKEN_URL: "https://b2c-login.toyota-europe.com/oauth2/realms/root/realms/tme/access_token",
+        AUTHENTICATE_URL: "https://b2c-login.toyota-europe.com/json/realms/root/realms/tme/authenticate?authIndexType=service&authIndexValue=oneapp",
+        AUTHORIZE_URL: "https://b2c-login.toyota-europe.com/oauth2/realms/root/realms/tme/authorize?client_id=oneapp&scope=openid profile write&response_type=code&redirect_uri=com.toyota.oneapp:/oauth2Callback&code_challenge=plain&code_challenge_method=plain",
+        API_URL: "https://ctpa-oneapi.tceu-ctp-prd.toyotaconnectedeurope.io",
+        BASE_URL: "https://ctpa-oneapi.tceu-ctp-prd.toyotaconnectedeurope.io",
     }
 }
 

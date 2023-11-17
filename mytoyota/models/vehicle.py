@@ -20,22 +20,23 @@ class Vehicle:
     def __init__(
         self,
         vehicle_info: dict[str, Any],
-        connected_services: dict[str, Any],
-        odometer: list[Any] | None = None,
         status: dict[str, Any] | None = None,
-        status_legacy: dict[str, Any] | None = None,
+        electric_status: dict[str, Any] | None = None,
+        telemetry: dict[str, Any] | None = None,
+        location: dict[str, Any] | None = None,
     ) -> None:
-        self._connected_services = connected_services
         self._vehicle_info = vehicle_info
+        self._status = status
+        self._electric_status = electric_status
+        self._telemetry = telemetry
+        self._location = location
 
-        self.odometer = format_odometer(odometer) if odometer else {}
-        self._status = status if status else {}
-        self._status_legacy = status_legacy if status_legacy else {}
 
     @property
     def vehicle_id(self) -> int | None:
         """Vehicle's id."""
-        return self._vehicle_info.get("id")
+        #  "id" no longer exists => try imei
+        return self._vehicle_info.get("imei")
 
     @property
     def vin(self) -> str | None:
@@ -50,24 +51,30 @@ class Vehicle:
     @property
     def hybrid(self) -> bool:
         """If the vehicle is a hybrid."""
-        return self._vehicle_info.get("hybrid", False)
+        # "hybrid" no longer exists. "Check evVehicle". Could possibly then further check electric status.
+        # Then change this to type if we have both Electric & Hybrid options
+        return self._vehicle_info.get("evVehicle", False)
 
     @property
     def fueltype(self) -> str:
         """Fuel type of the vehicle."""
-        if self._status:
-            if "energy" in self._status and self._status["energy"]:
-                return self._status["energy"][0].get("type", "Unknown").capitalize()
+        fuelType = self._vehicle_info.get("fuelType", "Unknown")
+        if fuelType != "Unknown":
+            # Need to know further types. Only seen "I" or petrol cars.
+            fuel_types = {"I": "Petrol"}
+            if fuelType in fuel_types:
+                return fuel_types["fuelType"]
+            else:
+                logging.warning(f"Unknown fuel type: {fuelType}")
 
-        fueltype = self._vehicle_info.get("fuel", "Unknown")
-        return "Petrol" if fueltype == "1.0P" else fueltype
+        return "Unknown"
 
     @property
     def details(self) -> dict[str, Any] | None:
         """Formats vehicle info into a dict."""
         det: dict[str, Any] = {}
         for i in sorted(self._vehicle_info):
-            if i in ("vin", "alias", "id", "hybrid"):
+            if i in ("vin", "alias", "imei", "evVehicle"):
                 continue
             det[i] = self._vehicle_info[i]
         return det if det else None
@@ -75,67 +82,51 @@ class Vehicle:
     @property
     def is_connected_services_enabled(self) -> bool:
         """Checks if the user has enabled connected services."""
-        # Check if vin is not None. Toyota's servers is a bit flacky and can
-        # return garbage from connected_services endpoint, this is just to
-        # make sure that we don't throw a error message.
-        if self.vin and self._connected_services:
-            if (
-                "connectedService" in self._connected_services
-                and "devices" in self._connected_services["connectedService"]
-            ):
-                vin_specific_connected_service = None
-                for device in self._connected_services["connectedService"]["devices"]:
-                    if device.get("vin") == self.vin:
-                        vin_specific_connected_service = device
-                        break
-                if (
-                    vin_specific_connected_service
-                    and vin_specific_connected_service.get("state") == "ACTIVE"
-                ):
-                    return True
-
-                _LOGGER.error(
-                    "Please setup Connected Services if you want live data from the car. (%s)",
-                    censor_vin(self.vin),
-                )
-                return False
-            _LOGGER.error(
-                "Your vehicle does not support Connected services (%s). You can find out if your "
-                "vehicle is compatible by checking the manual that comes with your car.",
-                censor_vin(self.vin),
-            )
-        return False
+        # Currently return true until we have connected to check what is and isn't available
+        return True
 
     @property
     def parkinglocation(self) -> ParkingLocation | None:
         """Last parking location."""
-        if self.is_connected_services_enabled and "event" in self._status:
-            return ParkingLocation(self._status.get("event"))
+        if self._location and 'vehicleLocation' in self._location:
+            return ParkingLocation(self._location["vehicleLocation"])
         return None
 
     @property
     def sensors(self) -> Sensors | None:
         """Vehicle sensors."""
-        if self.is_connected_services_enabled and self._status:
-            if "protectionState" in self._status:
-                return Sensors(self._status.get("protectionState"))
+        # None of my cars have "protectionState" what was this supposed to return?
         return None
 
     @property
     def hvac(self) -> Hvac | None:
         """Vehicle hvac."""
-        if self.is_connected_services_enabled:
-            if self._status and "climate" in self._status:
-                return Hvac(self._status.get("climate"))
-            if self._status_legacy:
-                rci = self._status_legacy.get("VehicleInfo", {})
-                if "RemoteHvacInfo" in rci:
-                    return Hvac(rci.get("RemoteHvacInfo"), True)
+        # This info is available need to find the endpoint.
         return None
 
     @property
     def dashboard(self) -> Dashboard | None:
         """Vehicle dashboard."""
-        if self.is_connected_services_enabled and self.odometer:
-            return Dashboard(self)
-        return None
+        # Merge both electric_status end point and telemetery information is spread across
+        # both depending on if EV or not. TODO: In __init_ method? Otherwise we are doing this on every call?
+        if self._electric_status:
+            self._telemetry.update(self._electric_status)
+        return Dashboard(self._telemetry)
+
+    def _dump_all(self):
+        """ Helper function for collecting data for further work"""
+        import pprint
+        deleted: str = "XX deleted XX"
+
+        dic: dict = {"vehicles": self._vehicle_info.copy(),
+                     "location": self._location.copy(),
+                     "telemetry": self._telemetry,
+                     "status": self._status.copy(),
+                     "electric_status": self._electric_status}
+        for remove in ["remoteUserGuid", "subscriberGuid", "vin", "contractId"]:
+            if remove in dic["vehicles"]:
+                dic["vehicles"]["remove"] = deleted
+        dic["location"]["vin"] = deleted
+        dic["status"]["vin"] = deleted
+
+        pprint.PrettyPrinter(indent=4).pprint(dic)
