@@ -43,12 +43,14 @@ class Controller:
         region: str,
         username: str,
         password: str,
+        brand: str,
         uuid: str | None = None,
     ) -> None:
         self._locale = locale
         self._region = region
         self._username = username
         self._password = password
+        self._brand = brand
         self._uuid = uuid
 
     @property
@@ -176,6 +178,7 @@ class Controller:
                 "X-TME-LOCALE": self._locale,
                 "X-TME-TOKEN": self._token,
                 "X-TME-APP-VERSION": "4.10.0",
+                "X-TME-BRAND": self._brand.upper(),
             }
         )
 

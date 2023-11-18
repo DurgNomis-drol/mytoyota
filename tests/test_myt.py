@@ -3,6 +3,7 @@
 import asyncio
 import datetime
 import json
+import os
 import os.path
 import re
 from typing import Optional, Union
@@ -20,8 +21,6 @@ from mytoyota.exceptions import (
 )
 from mytoyota.models.trip import DetailedTrip, Trip, TripEvent
 
-# pylint: disable=no-self-use
-
 
 class OfflineController:
     """Provides a Controller class that can be used for testing."""
@@ -32,12 +31,14 @@ class OfflineController:
         region: str,
         username: str,
         password: str,
+        brand: str,
         uuid: str = None,
     ) -> None:
         self._locale = locale
         self._region = region
         self._username = username
         self._password = password
+        self._brand = brand
         self._uuid = uuid
 
     @property

@@ -63,7 +63,8 @@ class MyT:
         password: str,
         locale: str = "da-dk",
         region: str = "europe",
-        uuid: str = None,
+        brand: str = "toyota",
+        uuid: str | None = None,
         controller_class=Controller,
         disable_locale_check: bool = False,
     ) -> None:
@@ -87,6 +88,7 @@ class MyT:
                 password=password,
                 locale=locale,
                 region=region,
+                brand=brand,
                 uuid=uuid,
             )
         )
@@ -515,7 +517,7 @@ class MyT:
         _LOGGER.debug(f"Getting trips for {censor_vin(vin)}...")
 
         raw_trips = await self.api.get_trips_endpoint(vin)
-        _LOGGER.debug(f"received {len(raw_trips.get('recentTrips',[]))} trips")
+        _LOGGER.debug(f"received {len(raw_trips.get('recentTrips', []))} trips")
         return [Trip(trip) for trip in raw_trips.get("recentTrips", [])]
 
     async def get_trip(self, vin: str, trip_id: str) -> DetailedTrip:

@@ -1,6 +1,7 @@
 """pytest tests for mytoyota.models.sensors"""
 import json
 import os
+import os.path
 
 from mytoyota.models.sensors import (
     Door,
@@ -12,8 +13,6 @@ from mytoyota.models.sensors import (
     Window,
     Windows,
 )
-
-# pylint: disable=no-self-use
 
 
 class TestSensors:  # pylint: disable=too-many-public-methods

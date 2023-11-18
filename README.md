@@ -2,13 +2,15 @@
 [![GitHub Release][releases-shield]][releases]
 [![GitHub Activity][commits-shield]][commits]
 
-# Toyota Connected Services Python module
+# Toyota Connected Services Europe Python module
 
 ### [!] **This is still in beta**
 
+### [!] **Only EU is supported, other regions are not possible so far. See [this](https://github.com/widewing/toyota-na) for North America**
+
 ## Description
 
-Python 3 package to communicate with Toyota Connected Services.
+Python 3 package to communicate with [Toyota Connected Europe](https://www.toyota-europe.com/about-us/toyota-in-europe/toyota-connected-europe) Services.
 This is an unofficial package and Toyota can change their API at any point without warning.
 
 ## Installation
@@ -28,12 +30,13 @@ from mytoyota.client import MyT
 
 username = "jane@doe.com"
 password = "MyPassword"
+brand = "toyota"  # or lexus
 
 # Get supported regions, can be passed to the optional 'region' argument of MyT
+# At this moment, only the 'europe' region is supported
 print(MyT.get_supported_regions())
 
-client = MyT(username=username, password=password)
-
+client = MyT(username=username, password=password, brand=brand)
 
 async def get_information():
     print("Logging in...")
@@ -95,7 +98,7 @@ Coming soon...
 
 ## Contributing
 
-This python module uses poetry and pre-commit.
+This python module uses poetry (>= 1.2.2) and pre-commit.
 
 To start contributing, fork this repository and run `poetry install`. Then create a new branch. Before making a PR, please run pre-commit `poetry run pre-commit run --all-files` and make sure that all tests passes locally first.
 
@@ -109,7 +112,7 @@ A huge thanks go to [@calmjm](https://github.com/calmjm) for making [tojota](htt
 
 [releases-shield]: https://img.shields.io/github/release/DurgNomis-drol/mytoyota.svg?style=for-the-badge
 [releases]: https://github.com/DurgNomis-drol/mytoyota/releases
-[workflow-shield]: https://img.shields.io/github/workflow/status/DurgNomis-drol/mytoyota/Linting?style=for-the-badge
+[workflow-shield]: https://img.shields.io/github/actions/workflow/status/DurgNomis-drol/mytoyota/build.yml?branch=master&style=for-the-badge
 [workflow]: https://github.com/DurgNomis-drol/mytoyota/actions
 [commits-shield]: https://img.shields.io/github/commit-activity/y/DurgNomis-drol/mytoyota.svg?style=for-the-badge
 [commits]: https://github.com/DurgNomis-drol/mytoyota/commits/master

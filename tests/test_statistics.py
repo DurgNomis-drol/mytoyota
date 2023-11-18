@@ -8,8 +8,6 @@ import pytest  # pylint: disable=import-error
 
 from mytoyota.statistics import Statistics
 
-# pylint: disable=no-self-use
-
 
 class TestStatistics:
     """pytest functions to test Statistics"""

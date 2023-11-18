@@ -2,8 +2,6 @@
 
 from mytoyota.models.location import ParkingLocation  # pylint: disable=import-error
 
-# pylint: disable=no-self-use
-
 
 class TestParkingLocation:
     """pytest functions to test ParkingLocation"""
