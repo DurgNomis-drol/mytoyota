@@ -7,7 +7,6 @@ import logging
 from typing import Any
 import jwt  # For decoding taok
 from urllib import parse  # For parse query string, can this be done with httpx?
-import base64
 import httpx
 
 from mytoyota.const import (
@@ -30,8 +29,6 @@ _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 class Controller:
     """Controller class."""
-    BASIC_AUTH_STRING: str = base64.b64encode(b"oneapp:oneapp")
-
     def __init__(
             self,
             locale: str,
@@ -186,15 +183,15 @@ class Controller:
             }
         )
 
-        _LOGGER.debug(f"Additional headers: {censor_dict(headers.copy())}")
+        #_LOGGER.debug(f"Additional headers: {censor_dict(headers.copy())}")
 
         # Cannot authenticate with aiohttp (returns 415),
         # but it works with httpx.
         _LOGGER.debug("Creating client...")
         async with httpx.AsyncClient(timeout=TIMEOUT) as client:
-            _LOGGER.debug(
-                f"Body: {censor_dict(body) if body else body} - Parameters: {params}"
-            )
+#            _LOGGER.debug(
+#                f"Body: {censor_dict(body) if body else body} - Parameters: {params}"
+#            )
             response = await client.request(
                 method,
                 url,

@@ -10,15 +10,14 @@ information, sensor data, fuel level, driving statistics and more.
 """
 from __future__ import annotations
 
-import asyncio
 import json
 import logging
 from typing import Any
 
 import arrow
 
-from .api import Api
-from .const import (
+from mytoyota.api import Api
+from mytoyota.const import (
     DATE_FORMAT,
     DAY,
     IMPERIAL,
@@ -42,7 +41,7 @@ from .models.lock_unlock import (
     VehicleLockUnlockStatusResponse,
 )
 from .models.trip import DetailedTrip, Trip
-from .models.vehicle import Vehicle
+from mytoyota.models.vehicle import Vehicle
 from .statistics import Statistics
 from .utils.locale import is_valid_locale
 from .utils.logs import censor, censor_vin
@@ -82,7 +81,7 @@ class MyT:
                     "Please provide a valid locale string! Valid format is: en-gb."
                 )
 
-        self.api = Api(
+        self._api = Api(
             controller_class(
                 username=username,
                 password=password,
@@ -113,496 +112,347 @@ class MyT:
 
         """
         _LOGGER.debug("Performing first login")
-        await self.api.controller.first_login()
+        await self._api.controller.first_login()
 
-    @property
-    def uuid(self) -> str | None:
-        """Get UUID.
 
-        Retrieves the UUID returned for the account.
-
-        Returns:
-            UUIDv4 unique ID for the logged in account. Example:
-
-            9cc70412-27d6-4b81-83fb-542b3a9feb65
-        """
-        return self.api.uuid
-
-    async def set_alias(self, vehicle_id: int, new_alias: str) -> dict[str, Any]:
-        """Set a new alias for your vehicle.
-
-        Sets a new alias for a vehicle specified by its vehicle id.
-
-        Args:
-            vehicle_id (int): Vehicle id is a 7 digit number identifying your vehicle.
-            new_alias (str): New alias of the vehicle.
-
-        Returns:
-            Returns a dict containing the changed alias and the vehicle id. Example:
-
-            {"id":"2199911","alias":"lightning mcqueen"}
-
-        Raises:
-            ToyotaLoginError: An error returned when updating token or invalid login information.
-            ToyotaInternalError: An error occurred when making a request.
-            ToyotaApiError: Toyota's API returned an error.
-        """
-        _LOGGER.debug(
-            f"Setting new alias: {new_alias} for vehicle with id: {censor(str(vehicle_id))}"
-        )
-        return await self.api.set_vehicle_alias_endpoint(
-            vehicle_id=vehicle_id, new_alias=new_alias
-        )
-
-    async def get_vehicles(self) -> list[dict[str, Any]]:
+    async def get_vehicles(self) -> list[Vehicle]:
         """Returns a list of vehicles.
-
-        Retrieves list of vehicles associated with the account. The list contains static
-        information about the vehicle, numberplate and starter battery health.
-
-        Returns:
-            Returns a list containing mostly static information about a vehicle. Example:
-
-            [
-               {
-                  "id":1111111,
-                  "vin":"XXXXGNEC00NXXXXXX",
-                  "isNC":true,
-                  "batteryHealth":"GOOD",
-                  "alias":"Aygo",
-                  "owner":true,
-                  "claimedBy":"MT-EHUB",
-                  "startDate":"2021-03-19T09:20:42.152Z",
-                  "vehicleAddedOn":"2021-03-12T09:43:42.350Z",
-                  "isEntitled":true,
-                  "entitledBy":"MT-EHUB",
-                  "entitledOn":"2021-03-19T09:20:42.152Z",
-                  "ownerFlag":true,
-                  "source":"NMSC",
-                  "horsePower":72,
-                  "hybrid":false,
-                  "fuel":"1.0P",
-                  "engine":"1.0P",
-                  "transmissionType":"MT",
-                  "transmission":"5 M/T",
-                  "grade":"Mid/High",
-                  "modelName":"Aygo 2B",
-                  "modelCode":"AY",
-                  "interiorColour":"20",
-                  "exteriorColour":"1E0 ",
-                  "imageUrl":"https://dj3z27z47basa.cloudfront.net/5957a713-f80f-483f-998c-97f956367048",  # pylint: disable=line-too-long
-                  "modelDocumentId":"12345",
-                  "productionYear":"2021",
-                  "licensePlate":"XX11111",
-                  "modelDescription":"Aygo 2B"
-               }
-            ]
-
-        Raises:
-            ToyotaLoginError: An error returned when updating token or invalid login information.
-            ToyotaInternalError: An error occurred when making a request.
-            ToyotaApiError: Toyota's API returned an error.
         """
         _LOGGER.debug("Getting list of vehicles associated with the account")
-        vehicles = await self.api.get_vehicles_endpoint()
-        if vehicles:
-            return vehicles
-
-    async def get_vehicles_json(self) -> str:
-        """Returns a list of vehicles as json string.
-
-        Retrieves list of vehicles associated with the account. The list contains static
-        information about the vehicle, numberplate and starter battery health.
-        Returns it as a json string.
-
-        Returns:
-            See get_vehicles() for an example of what this function returns.
-
-        Raises:
-            ToyotaLoginError: An error returned when updating token or invalid login information.
-            ToyotaInternalError: An error occurred when making a request.
-            ToyotaApiError: Toyota's API returned an error.
-        """
-        vehicles = await self.get_vehicles()
-
-        _LOGGER.debug("Returning it as json...")
-        return json.dumps(vehicles, indent=3)
-
-    async def get_vehicle_status(self, vehicle: dict[str, Any]) -> Vehicle:
-        """Returns vehicle status.
-
-        Collects and formats different vehicle status endpoints into
-        a easy accessible vehicle object.
-
-        Args:
-            vehicle (dict): dict for each vehicle returned in get_vehicles().
-
-        Returns:
-            Vehicle object containing odometer information, parking information, fuel and more.
-
-        Raises:
-            ToyotaLoginError: An error returned when updating token or invalid login information.
-            ToyotaInternalError: An error occurred when making a request.
-            ToyotaApiError: Toyota's API returned an error.
-        """
-        vin = vehicle.get("vin")
-        _LOGGER.debug(f"Getting status for vehicle - {censor_vin(vin)}...")
-
-        # TODO Is this still the correct approach? All API calls are now checking on errors and returning None.
-        # TODO If instead we created the Vehicle class with just the vehicle_info it could then "when" needed check
-        # TODO if the vehicle supports the endpoint and only call it if it does. I think this is the better approach.
-        # TODO However, it depends is the Vehicle class a snapshot in time or would we mind if every time we called
-        # TODO a call the result could be different? e.g. if your car is charing the range and other would change as
-        # TODO long as you held the vehicle class.
-        data = await asyncio.gather(
-            *[
-                self.api.get_vehicle_status_endpoint(vin),
-                self.api.get_vehicle_electric_status_endpoint(vin),
-                self.api.get_telemetry_endpoint(vin),
-                self.api.get_location_endpoint(vin),
-            ]
-        )
-
-        _LOGGER.debug("Presenting information as an object...")
-
-        return Vehicle(
-            vehicle_info=vehicle,
-            status=data[0],
-            electric_status=data[1],
-            telemetry=data[2],
-            location=data[3]
-        )
-
-    async def get_driving_statistics(  # pylint: disable=too-many-branches
-        self,
-        vin: str,
-        interval: str = MONTH,
-        from_date: str | None = None,
-        unit: str = METRIC,
-    ) -> list[dict[str, Any]]:
-        """Returns driving statistics from a given period.
-
-        Retrieves and formats driving statistics from a given period. Will return
-        a error message on the first of each week, month or year. Or if no rides have been
-        performed in the given period. This is due to a Toyota API limitation.
-
-        Args:
-            vin (str):
-                Vin number of vehicle you want statistics for.
-            interval (str):
-                Possible intervals are: "day", "week", "isoweek", "month" or "year".
-                Defaults to "month" if none specified.
-                Beware that "week" returns a week that starts on sunday and not monday.
-                Use "isoweek" for a `normal` week. "isoweek" can only get data from
-                the last/current week.
-            from_date (str):
-                Date-string format: "YYYY-MM-DD".
-                Defaults to current day or the first of current week, month or year
-                depending interval chosen.
-            unit (str):
-                Can be either: "metric", "imperial" OR "imperial_liters".
-                Defaults to "metric".
-
-        Returns:
-            A list of data points for the given period. Example response with interval "isoweek":
-
-            [
-                {
-                    "bucket": {
-                        "year": "2021",
-                        "week": "39",
-                        "unit": "metric",
-                        "periode_start": "2021-09-27"
-                    },
-                    "data": {
-                        "tripCount": 17,
-                        "totalDistanceInKm": 222.793,
-                        "totalDurationInSec": 13893,
-                        "idleDurationInSec": 852,
-                        "highwayDistanceInKm": 66.206,
-                        "nightTripsCount": 1,
-                        "hardAccelerationCount": 23,
-                        "hardBrakingCount": 12,
-                        "averageSpeedInKmph": 57.730867,
-                        "maxSpeedInKmph": 134.0,
-                        "highwayDistancePercentage": 29.716373494678916
-                    }
-                }
-            ]
-
-        Raises:
-            ToyotaLoginError: An error returned when updating token or invalid login information.
-            ToyotaInternalError: An error occurred when making a request.
-            ToyotaApiError: Toyota's API returned an error.
-        """
-
-        _LOGGER.debug(f"Getting statistics for {censor_vin(vin)}...")
-        _LOGGER.debug(f"Interval: {interval} - from_date: {from_date} - unit: {unit}")
-
-        if interval not in INTERVAL_SUPPORTED:
-            return [{"error_mesg": "Invalid interval provided!", "error_code": 1}]
-
-        stats_interval = interval
-
-        if from_date is not None and arrow.get(from_date) > arrow.now():
-            return [{"error_mesg": "This is not a time machine!", "error_code": 5}]
-
-        if from_date is None:
-            if interval is DAY:
-                from_date = arrow.now().shift(days=-1).format(DATE_FORMAT)
-
-            if interval is WEEK:
-                from_date = arrow.now().span(WEEK, week_start=7)[0].format(DATE_FORMAT)
-
-            if interval is ISOWEEK:
-                stats_interval = DAY
-                from_date = arrow.now().floor(WEEK).format(DATE_FORMAT)
-
-            if interval is MONTH:
-                from_date = arrow.now().floor(MONTH).format(DATE_FORMAT)
-
-            if interval is YEAR:
-                stats_interval = MONTH
-                from_date = arrow.now().floor(YEAR).format(DATE_FORMAT)
-
-        if interval is ISOWEEK:
-            stats_interval = DAY
-            time_between = arrow.now() - arrow.get(from_date)
-
-            if time_between.days > 7:
-                return [
-                    {
-                        "error_mesg": "Invalid date for isoweek provided! - from_date must not "
-                        "be older then 7 days from now.",
-                        "error_code": 3,
-                    }
-                ]
-
-            arrow.get(from_date).floor(WEEK).format(DATE_FORMAT)
-
-        if interval is YEAR:
-            stats_interval = MONTH
-
-            if arrow.get(from_date) < arrow.now().floor(YEAR):
-                return [
-                    {
-                        "error_mesg": "Invalid date provided. from_date can"
-                        " only be current year. (" + interval + ")",
-                        "error_code": 4,
-                    }
-                ]
-
-            from_date = arrow.get(from_date).floor(YEAR).format(DATE_FORMAT)
-
-        today = arrow.now().format(DATE_FORMAT)
-
-        if from_date == today:
-            _LOGGER.debug(
-                "Aborting getting statistics because day is on the first of the week,"
-                " month or year"
-            )
-            raw_statistics = None
-
-        else:
-            raw_statistics = await self.api.get_driving_statistics_endpoint(
-                vin, from_date, stats_interval
-            )
-
-        if raw_statistics is None:
-            return [
-                {
-                    "error_mesg": "No data available for this period. ("
-                    + interval
-                    + ")",
-                    "error_code": 2,
-                }
-            ]
-
-        # Format data so we get a uniform output.
-
-        imperial = False
-        use_liters = False
-
-        if unit is IMPERIAL:
-            imperial = True
-        if unit is IMPERIAL_LITERS:
-            imperial = True
-            use_liters = True
-
-        _LOGGER.debug("Parse statistics into the statistics object for formatting...")
-
-        statistics = Statistics(
-            raw_statistics=raw_statistics,
-            interval=interval,
-            imperial=imperial,
-            use_liters=use_liters,
-        )
-
-        return statistics.as_list()
-
-    async def get_driving_statistics_json(
-        self, vin: str, interval: str = MONTH, from_date: str | None = None
-    ) -> str:
-        """Returns driving statistics from a given period as json.
-
-        Retrieves and formats driving statistics from a given period. Will return
-        a error message on the first of each week, month or year. Or if no rides have been
-        performed in the given period. This is due to a Toyota API limitation.
-
-        See get_driving_statistics() for args.
-
-        Returns:
-            Pretty printed json string.
-
-        Raises:
-            ToyotaLoginError: An error returned when updating token or invalid login information.
-            ToyotaInternalError: An error occurred when making a request.
-            ToyotaApiError: Toyota's API returned an error.
-        """
-        _LOGGER.debug("Returning it as json...")
-        return json.dumps(
-            await self.get_driving_statistics(vin, interval, from_date), indent=3
-        )
-
-    async def get_trips(self, vin: str) -> list[Trip]:
-        """Returns a list of trips.
-
-        Retrieves and formats trips.
-
-        Args:
-            vin (str):
-                Vehicle identification number.
-
-        Returns:
-            A list of trips.
-
-        Raises:
-            ToyotaLoginError: An error returned when updating token or invalid login information.
-            ToyotaInternalError: An error occurred when making a request.
-            ToyotaApiError: Toyota's API returned an error.
-        """
-        _LOGGER.debug(f"Getting trips for {censor_vin(vin)}...")
-
-        raw_trips = await self.api.get_trips_endpoint(vin)
-        _LOGGER.debug(f"received {len(raw_trips.get('recentTrips', []))} trips")
-        return [Trip(trip) for trip in raw_trips.get("recentTrips", [])]
-
-    async def get_trip(self, vin: str, trip_id: str) -> DetailedTrip:
-        """Returns a trip.
-
-        Retrieves and formats a trip.
-
-        Args:
-            vin (str):
-                Vehicle identification number.
-            trip_id (str):
-                Trip id, UUID
-
-        Returns:
-            A trip.
-
-        Raises:
-            ToyotaLoginError: An error returned when updating token or invalid login information.
-            ToyotaInternalError: An error occurred when making a request.
-            ToyotaApiError: Toyota's API returned an error.
-        """
-        trip_id = trip_id.upper()
-        _LOGGER.debug(f"Getting trip {trip_id} for {censor_vin(vin)}...")
-
-        raw_trip = await self.api.get_trip_endpoint(vin, trip_id)
-        _LOGGER.debug(f"received trip {trip_id}")
-        return DetailedTrip(raw_trip)
-
-    async def get_trips_json(self, vin: str) -> str:
-        """Returns a list of trips for a given vehicle.
-
-        Args:
-            vin (str): Vehicle identification number.
-
-        Returns:
-            A list of trips for the given vehicle.
-
-        Raises:
-            ToyotaLoginError: An error returned when updating token or invalid login information.
-            ToyotaInternalError: An error occurred when making a request.
-            ToyotaApiError: Toyota's API returned an error.
-        """
-        trips = [trip.raw_json for trip in await self.get_trips(vin)]
-        return json.dumps(trips, indent=3)
-
-    async def get_trip_json(self, vin: str, trip_id: str) -> str:
-        """Returns a trip for a given vehicle.
-
-        Args:
-            vin (str): Vehicle identification number.
-            trip_id (str): Trip id (UUID, Capitalized)
-
-        Returns:
-            A Detailed Trip for the given vehicle.
-
-        Raises:
-            ToyotaLoginError: An error returned when updating token or invalid login information.
-            ToyotaInternalError: An error occurred when making a request.
-            ToyotaApiError: Toyota's API returned an error.
-        """
-        trip = await self.get_trip(vin, trip_id)
-        return json.dumps(trip.raw_json, indent=3)
-
-    async def set_lock_vehicle(self, vin: str) -> VehicleLockUnlockActionResponse:
-        """Sends a lock command to the vehicle.
-
-        Args:
-            vin (str): Vehicle identification number.
-
-        Raises:
-            ToyotaLoginError: An error returned when updating token or invalid login information.
-            ToyotaActionNotSupported: The lock action is not supported on this vehicle.
-            ToyotaInternalError: An error occurred when making a request.
-            ToyotaApiError: Toyota's API returned an error.
-        """
-        _LOGGER.debug(f"Locking {censor_vin(vin)}...")
-        raw_response = await self.api.set_lock_unlock_vehicle_endpoint(vin, "lock")
-        _LOGGER.debug(f"Locking {censor_vin(vin)}... {raw_response}")
-        response = VehicleLockUnlockActionResponse(raw_response)
-        return response
-
-    async def set_unlock_vehicle(self, vin: str) -> VehicleLockUnlockActionResponse:
-        """Send an unlock command to the vehicle.
-
-        Args:
-            vin (str): Vehicle identification number.
-
-        Raises:
-            ToyotaLoginError: An error returned when updating token or invalid login information.
-            ToyotaActionNotSupported: The lock action is not supported on this vehicle.
-            ToyotaInternalError: An error occurred when making a request.
-            ToyotaApiError: Toyota's API returned an error.
-        """
-        _LOGGER.debug(f"Unlocking {censor_vin(vin)}...")
-        raw_response = await self.api.set_lock_unlock_vehicle_endpoint(vin, "unlock")
-        _LOGGER.debug(f"Unlocking {censor_vin(vin)}... {raw_response}")
-        response = VehicleLockUnlockActionResponse(raw_response)
-        return response
-
-    async def get_lock_status(
-        self, vin: str, req_id: str
-    ) -> VehicleLockUnlockStatusResponse:
-        """Get the status of a lock request.
-
-        Args:
-            vin (str): Vehicle identification number.
-            req_id (str): Lock/Unlock request id returned by
-                set_<lock/unlock>_vehicle (UUID)
-
-        Raises:
-            ToyotaLoginError: An error returned when updating token or invalid login information.
-            ToyotaInternalError: An error occurred when making a request.
-            ToyotaApiError: Toyota's API returned an error.
-        """
-        _LOGGER.debug(f"Getting lock request status for {censor_vin(vin)}...")
-        raw_response = await self.api.get_lock_unlock_request_status(vin, req_id)
-        _LOGGER.debug(
-            f"Getting lock request status for {censor_vin(vin)}... {raw_response}"
-        )
-        response = VehicleLockUnlockStatusResponse(raw_response)
-        return response
+        vehicles = await self._api.get_vehicles_endpoint()
+
+        return [Vehicle(self._api, v) for v in vehicles]
+
+    # async def get_driving_statistics(  # pylint: disable=too-many-branches
+    #     self,
+    #     vin: str,
+    #     interval: str = MONTH,
+    #     from_date: str | None = None,
+    #     unit: str = METRIC,
+    # ) -> list[dict[str, Any]]:
+    #     """Returns driving statistics from a given period.
+    #
+    #     Retrieves and formats driving statistics from a given period. Will return
+    #     a error message on the first of each week, month or year. Or if no rides have been
+    #     performed in the given period. This is due to a Toyota API limitation.
+    #
+    #     Args:
+    #         vin (str):
+    #             Vin number of vehicle you want statistics for.
+    #         interval (str):
+    #             Possible intervals are: "day", "week", "isoweek", "month" or "year".
+    #             Defaults to "month" if none specified.
+    #             Beware that "week" returns a week that starts on sunday and not monday.
+    #             Use "isoweek" for a `normal` week. "isoweek" can only get data from
+    #             the last/current week.
+    #         from_date (str):
+    #             Date-string format: "YYYY-MM-DD".
+    #             Defaults to current day or the first of current week, month or year
+    #             depending interval chosen.
+    #         unit (str):
+    #             Can be either: "metric", "imperial" OR "imperial_liters".
+    #             Defaults to "metric".
+    #
+    #     Returns:
+    #         A list of data points for the given period. Example response with interval "isoweek":
+    #
+    #         [
+    #             {
+    #                 "bucket": {
+    #                     "year": "2021",
+    #                     "week": "39",
+    #                     "unit": "metric",
+    #                     "periode_start": "2021-09-27"
+    #                 },
+    #                 "data": {
+    #                     "tripCount": 17,
+    #                     "totalDistanceInKm": 222.793,
+    #                     "totalDurationInSec": 13893,
+    #                     "idleDurationInSec": 852,
+    #                     "highwayDistanceInKm": 66.206,
+    #                     "nightTripsCount": 1,
+    #                     "hardAccelerationCount": 23,
+    #                     "hardBrakingCount": 12,
+    #                     "averageSpeedInKmph": 57.730867,
+    #                     "maxSpeedInKmph": 134.0,
+    #                     "highwayDistancePercentage": 29.716373494678916
+    #                 }
+    #             }
+    #         ]
+    #
+    #     Raises:
+    #         ToyotaLoginError: An error returned when updating token or invalid login information.
+    #         ToyotaInternalError: An error occurred when making a request.
+    #         ToyotaApiError: Toyota's API returned an error.
+    #     """
+    #
+    #     _LOGGER.debug(f"Getting statistics for {censor_vin(vin)}...")
+    #     _LOGGER.debug(f"Interval: {interval} - from_date: {from_date} - unit: {unit}")
+    #
+    #     if interval not in INTERVAL_SUPPORTED:
+    #         return [{"error_mesg": "Invalid interval provided!", "error_code": 1}]
+    #
+    #     stats_interval = interval
+    #
+    #     if from_date is not None and arrow.get(from_date) > arrow.now():
+    #         return [{"error_mesg": "This is not a time machine!", "error_code": 5}]
+    #
+    #     if from_date is None:
+    #         if interval is DAY:
+    #             from_date = arrow.now().shift(days=-1).format(DATE_FORMAT)
+    #
+    #         if interval is WEEK:
+    #             from_date = arrow.now().span(WEEK, week_start=7)[0].format(DATE_FORMAT)
+    #
+    #         if interval is ISOWEEK:
+    #             stats_interval = DAY
+    #             from_date = arrow.now().floor(WEEK).format(DATE_FORMAT)
+    #
+    #         if interval is MONTH:
+    #             from_date = arrow.now().floor(MONTH).format(DATE_FORMAT)
+    #
+    #         if interval is YEAR:
+    #             stats_interval = MONTH
+    #             from_date = arrow.now().floor(YEAR).format(DATE_FORMAT)
+    #
+    #     if interval is ISOWEEK:
+    #         stats_interval = DAY
+    #         time_between = arrow.now() - arrow.get(from_date)
+    #
+    #         if time_between.days > 7:
+    #             return [
+    #                 {
+    #                     "error_mesg": "Invalid date for isoweek provided! - from_date must not "
+    #                     "be older then 7 days from now.",
+    #                     "error_code": 3,
+    #                 }
+    #             ]
+    #
+    #         arrow.get(from_date).floor(WEEK).format(DATE_FORMAT)
+    #
+    #     if interval is YEAR:
+    #         stats_interval = MONTH
+    #
+    #         if arrow.get(from_date) < arrow.now().floor(YEAR):
+    #             return [
+    #                 {
+    #                     "error_mesg": "Invalid date provided. from_date can"
+    #                     " only be current year. (" + interval + ")",
+    #                     "error_code": 4,
+    #                 }
+    #             ]
+    #
+    #         from_date = arrow.get(from_date).floor(YEAR).format(DATE_FORMAT)
+    #
+    #     today = arrow.now().format(DATE_FORMAT)
+    #
+    #     if from_date == today:
+    #         _LOGGER.debug(
+    #             "Aborting getting statistics because day is on the first of the week,"
+    #             " month or year"
+    #         )
+    #         raw_statistics = None
+    #
+    #     else:
+    #         raw_statistics = await self.api.get_driving_statistics_endpoint(
+    #             vin, from_date, stats_interval
+    #         )
+    #
+    #     if raw_statistics is None:
+    #         return [
+    #             {
+    #                 "error_mesg": "No data available for this period. ("
+    #                 + interval
+    #                 + ")",
+    #                 "error_code": 2,
+    #             }
+    #         ]
+    #
+    #     # Format data so we get a uniform output.
+    #
+    #     imperial = False
+    #     use_liters = False
+    #
+    #     if unit is IMPERIAL:
+    #         imperial = True
+    #     if unit is IMPERIAL_LITERS:
+    #         imperial = True
+    #         use_liters = True
+    #
+    #     _LOGGER.debug("Parse statistics into the statistics object for formatting...")
+    #
+    #     statistics = Statistics(
+    #         raw_statistics=raw_statistics,
+    #         interval=interval,
+    #         imperial=imperial,
+    #         use_liters=use_liters,
+    #     )
+    #
+    #     return statistics.as_list()
+    #
+    # async def get_driving_statistics_json(
+    #     self, vin: str, interval: str = MONTH, from_date: str | None = None
+    # ) -> str:
+    #     """Returns driving statistics from a given period as json.
+    #
+    #     Retrieves and formats driving statistics from a given period. Will return
+    #     a error message on the first of each week, month or year. Or if no rides have been
+    #     performed in the given period. This is due to a Toyota API limitation.
+    #
+    #     See get_driving_statistics() for args.
+    #
+    #     Returns:
+    #         Pretty printed json string.
+    #
+    #     Raises:
+    #         ToyotaLoginError: An error returned when updating token or invalid login information.
+    #         ToyotaInternalError: An error occurred when making a request.
+    #         ToyotaApiError: Toyota's API returned an error.
+    #     """
+    #     _LOGGER.debug("Returning it as json...")
+    #     return json.dumps(
+    #         await self.get_driving_statistics(vin, interval, from_date), indent=3
+    #     )
+    #
+    # async def get_trips(self, vin: str) -> list[Trip]:
+    #     """Returns a list of trips.
+    #
+    #     Retrieves and formats trips.
+    #
+    #     Args:
+    #         vin (str):
+    #             Vehicle identification number.
+    #
+    #     Returns:
+    #         A list of trips.
+    #
+    #     Raises:
+    #         ToyotaLoginError: An error returned when updating token or invalid login information.
+    #         ToyotaInternalError: An error occurred when making a request.
+    #         ToyotaApiError: Toyota's API returned an error.
+    #     """
+    #     _LOGGER.debug(f"Getting trips for {censor_vin(vin)}...")
+    #
+    #     raw_trips = await self.api.get_trips_endpoint(vin)
+    #     _LOGGER.debug(f"received {len(raw_trips.get('recentTrips', []))} trips")
+    #     return [Trip(trip) for trip in raw_trips.get("recentTrips", [])]
+    #
+    # async def get_trip(self, vin: str, trip_id: str) -> DetailedTrip:
+    #     """Returns a trip.
+    #
+    #     Retrieves and formats a trip.
+    #
+    #     Args:
+    #         vin (str):
+    #             Vehicle identification number.
+    #         trip_id (str):
+    #             Trip id, UUID
+    #
+    #     Returns:
+    #         A trip.
+    #
+    #     Raises:
+    #         ToyotaLoginError: An error returned when updating token or invalid login information.
+    #         ToyotaInternalError: An error occurred when making a request.
+    #         ToyotaApiError: Toyota's API returned an error.
+    #     """
+    #     trip_id = trip_id.upper()
+    #     _LOGGER.debug(f"Getting trip {trip_id} for {censor_vin(vin)}...")
+    #
+    #     raw_trip = await self.api.get_trip_endpoint(vin, trip_id)
+    #     _LOGGER.debug(f"received trip {trip_id}")
+    #     return DetailedTrip(raw_trip)
+    #
+    # async def get_trips_json(self, vin: str) -> str:
+    #     """Returns a list of trips for a given vehicle.
+    #
+    #     Args:
+    #         vin (str): Vehicle identification number.
+    #
+    #     Returns:
+    #         A list of trips for the given vehicle.
+    #
+    #     Raises:
+    #         ToyotaLoginError: An error returned when updating token or invalid login information.
+    #         ToyotaInternalError: An error occurred when making a request.
+    #         ToyotaApiError: Toyota's API returned an error.
+    #     """
+    #     trips = [trip.raw_json for trip in await self.get_trips(vin)]
+    #     return json.dumps(trips, indent=3)
+    #
+    # async def get_trip_json(self, vin: str, trip_id: str) -> str:
+    #     """Returns a trip for a given vehicle.
+    #
+    #     Args:
+    #         vin (str): Vehicle identification number.
+    #         trip_id (str): Trip id (UUID, Capitalized)
+    #
+    #     Returns:
+    #         A Detailed Trip for the given vehicle.
+    #
+    #     Raises:
+    #         ToyotaLoginError: An error returned when updating token or invalid login information.
+    #         ToyotaInternalError: An error occurred when making a request.
+    #         ToyotaApiError: Toyota's API returned an error.
+    #     """
+    #     trip = await self.get_trip(vin, trip_id)
+    #     return json.dumps(trip.raw_json, indent=3)
+    #
+    # async def set_lock_vehicle(self, vin: str) -> VehicleLockUnlockActionResponse:
+    #     """Sends a lock command to the vehicle.
+    #
+    #     Args:
+    #         vin (str): Vehicle identification number.
+    #
+    #     Raises:
+    #         ToyotaLoginError: An error returned when updating token or invalid login information.
+    #         ToyotaActionNotSupported: The lock action is not supported on this vehicle.
+    #         ToyotaInternalError: An error occurred when making a request.
+    #         ToyotaApiError: Toyota's API returned an error.
+    #     """
+    #     _LOGGER.debug(f"Locking {censor_vin(vin)}...")
+    #     raw_response = await self.api.set_lock_unlock_vehicle_endpoint(vin, "lock")
+    #     _LOGGER.debug(f"Locking {censor_vin(vin)}... {raw_response}")
+    #     response = VehicleLockUnlockActionResponse(raw_response)
+    #     return response
+    #
+    # async def set_unlock_vehicle(self, vin: str) -> VehicleLockUnlockActionResponse:
+    #     """Send an unlock command to the vehicle.
+    #
+    #     Args:
+    #         vin (str): Vehicle identification number.
+    #
+    #     Raises:
+    #         ToyotaLoginError: An error returned when updating token or invalid login information.
+    #         ToyotaActionNotSupported: The lock action is not supported on this vehicle.
+    #         ToyotaInternalError: An error occurred when making a request.
+    #         ToyotaApiError: Toyota's API returned an error.
+    #     """
+    #     _LOGGER.debug(f"Unlocking {censor_vin(vin)}...")
+    #     raw_response = await self.api.set_lock_unlock_vehicle_endpoint(vin, "unlock")
+    #     _LOGGER.debug(f"Unlocking {censor_vin(vin)}... {raw_response}")
+    #     response = VehicleLockUnlockActionResponse(raw_response)
+    #     return response
+    #
+    # async def get_lock_status(
+    #     self, vin: str, req_id: str
+    # ) -> VehicleLockUnlockStatusResponse:
+    #     """Get the status of a lock request.
+    #
+    #     Args:
+    #         vin (str): Vehicle identification number.
+    #         req_id (str): Lock/Unlock request id returned by
+    #             set_<lock/unlock>_vehicle (UUID)
+    #
+    #     Raises:
+    #         ToyotaLoginError: An error returned when updating token or invalid login information.
+    #         ToyotaInternalError: An error occurred when making a request.
+    #         ToyotaApiError: Toyota's API returned an error.
+    #     """
+    #     _LOGGER.debug(f"Getting lock request status for {censor_vin(vin)}...")
+    #     raw_response = await self.api.get_lock_unlock_request_status(vin, req_id)
+    #     _LOGGER.debug(
+    #         f"Getting lock request status for {censor_vin(vin)}... {raw_response}"
+    #     )
+    #     response = VehicleLockUnlockStatusResponse(raw_response)
+    #     return response

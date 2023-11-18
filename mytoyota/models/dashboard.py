@@ -8,11 +8,6 @@ class Dashboard(VehicleData):
     """Instrumentation data model."""
 
     @property
-    def legacy(self) -> bool:
-        """If the car uses the legacy endpoints."""
-        return False
-
-    @property
     def is_metric(self) -> bool:
         """If the car is reporting data in metric."""
         # Annoyingly the data is both in imperial & metric.

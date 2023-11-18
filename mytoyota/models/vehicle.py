@@ -1,42 +1,67 @@
 """Vehicle model."""
-from __future__ import annotations
-
+import asyncio
 import logging
+from datetime import timedelta, datetime
 from typing import Any
+from functools import partial
 
+from mytoyota.api import Api
 from mytoyota.models.dashboard import Dashboard
 from mytoyota.models.hvac import Hvac
 from mytoyota.models.location import ParkingLocation
-from mytoyota.models.sensors import Sensors
-from mytoyota.utils.formatters import format_odometer
-from mytoyota.utils.logs import censor_vin
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
-
 
 class Vehicle:
     """Vehicle data representation."""
 
     def __init__(
-        self,
-        vehicle_info: dict[str, Any],
-        status: dict[str, Any] | None = None,
-        electric_status: dict[str, Any] | None = None,
-        telemetry: dict[str, Any] | None = None,
-        location: dict[str, Any] | None = None,
+            self,
+            api: Api,
+            vehicle_info: dict[str, Any],
+            refresh_delay: timedelta = timedelta(minutes=1)
     ) -> None:
+        assert ("vin" in vehicle_info)
+        assert ("extendedCapabilities" in vehicle_info)
+
         self._vehicle_info = vehicle_info
-        self._status = status
-        self._electric_status = electric_status
-        self._telemetry = telemetry
-        self._location = location
+        self._api = api
+        self._endpoint_data: [str, Any] = {}
 
+        # Endpoint Name, Function to check if car supports the endpoint, endpoint to call to update
+        self._all_endpoints = [
+                                ["location",
+                                    partial(self._supports, "lastParkedCapable", "lastParked"),
+                                    partial(self._api.get_location_endpoint, vin=vehicle_info["vin"])],
+                                ["status",
+                                    partial(self._supports, None, None),
+                                    partial(self._api.get_vehicle_status_endpoint, vin=vehicle_info["vin"])],  # TODO Unsure of the required capability
+                                ["electric_status",
+                                    partial(self._supports, "econnectVehicleStatusCapable", None),
+                                    partial(self._api.get_vehicle_electric_status_endpoint, vin=vehicle_info["vin"])],
+                                ["telemetry",
+                                    partial(self._supports, "telemetryCapable", None),
+                                    partial(self._api.get_telemetry_endpoint, vin=vehicle_info["vin"])]
+                              ]
 
-    @property
-    def vehicle_id(self) -> int | None:
-        """Vehicle's id."""
-        #  "id" no longer exists => try imei
-        return self._vehicle_info.get("imei")
+    def _supports(self,
+                  extendedCapability: str | None,
+                  feature: str | None) -> bool:
+        # If both set to None then nothing to check for
+        if extendedCapability is None and feature is None:
+            return True
+        if extendedCapability is not None and self._vehicle_info["extendedCapabilities"][extendedCapability]:
+            return True
+        if feature is not None and self._vehicle_info["features"][feature] == 1:
+            return True
+
+        return False
+
+    async def update(self):
+        # TODO work out how to this is parallel
+        for endpoint in self._all_endpoints:
+            if endpoint[1]():
+                self._endpoint_data[endpoint[0]] = await endpoint[2]()
 
     @property
     def vin(self) -> str | None:
@@ -46,26 +71,28 @@ class Vehicle:
     @property
     def alias(self) -> str | None:
         """Vehicle's alias."""
-        return self._vehicle_info.get("alias", "My vehicle")
+        return self._vehicle_info.get("nickName", "Not set")
+
+    async def set_alias(self, value) -> None:
+        await self._api.set_vehicle_alias_endpoint(value, self._vehicle_info["subscriberGuid"], self.vin)
 
     @property
     def hybrid(self) -> bool:
         """If the vehicle is a hybrid."""
-        # "hybrid" no longer exists. "Check evVehicle". Could possibly then further check electric status.
-        # Then change this to type if we have both Electric & Hybrid options
+        # TODO need more details to check of electric cars return different capabilities
         return self._vehicle_info.get("evVehicle", False)
 
     @property
     def fueltype(self) -> str:
         """Fuel type of the vehicle."""
-        fuelType = self._vehicle_info.get("fuelType", "Unknown")
-        if fuelType != "Unknown":
+        fuel_type = self._vehicle_info.get("fuelType", "Unknown")
+        if fuel_type != "Unknown":
             # Need to know further types. Only seen "I" or petrol cars.
             fuel_types = {"I": "Petrol"}
-            if fuelType in fuel_types:
+            if fuel_type in fuel_types:
                 return fuel_types["fuelType"]
             else:
-                logging.warning(f"Unknown fuel type: {fuelType}")
+                logging.warning(f"Unknown fuel type: {fuel_type}")
 
         return "Unknown"
 
@@ -80,22 +107,11 @@ class Vehicle:
         return det if det else None
 
     @property
-    def is_connected_services_enabled(self) -> bool:
-        """Checks if the user has enabled connected services."""
-        # Currently return true until we have connected to check what is and isn't available
-        return True
-
-    @property
-    def parkinglocation(self) -> ParkingLocation | None:
+    def location(self) -> ParkingLocation | None:
         """Last parking location."""
-        if self._location and 'vehicleLocation' in self._location:
-            return ParkingLocation(self._location["vehicleLocation"])
-        return None
+        if "location" in self._endpoint_data:
+            return ParkingLocation(self._endpoint_data["location"]["vehicleLocation"])
 
-    @property
-    def sensors(self) -> Sensors | None:
-        """Vehicle sensors."""
-        # None of my cars have "protectionState" what was this supposed to return?
         return None
 
     @property
@@ -107,26 +123,20 @@ class Vehicle:
     @property
     def dashboard(self) -> Dashboard | None:
         """Vehicle dashboard."""
-        # Merge both electric_status end point and telemetery information is spread across
-        # both depending on if EV or not. TODO: In __init_ method? Otherwise we are doing this on every call?
-        if self._electric_status:
-            self._telemetry.update(self._electric_status)
-        return Dashboard(self._telemetry)
+        # Depending on car the required information is split across multiple endpoints
+        # All cars seen have the status endpoint. This contains total milage.
+        status = self._endpoint_data["telemetry"].copy()
+        if "electric_status" in self._endpoint_data:
+            status.update(self._endpoint_data["electric_status"])
+            return Dashboard(status)
 
-    def _dump_all(self):
+        return Dashboard(status)
+
+    def _dump_all(self) -> dict[str, Any]:
         """ Helper function for collecting data for further work"""
         import pprint
-        deleted: str = "XX deleted XX"
+        dump: [str, Any] = {"vehicle_info": self._vehicle_info}
+        for name, data in self._endpoint_data.items():
+            dump[name] = data
 
-        dic: dict = {"vehicles": self._vehicle_info.copy(),
-                     "location": self._location.copy(),
-                     "telemetry": self._telemetry,
-                     "status": self._status.copy(),
-                     "electric_status": self._electric_status}
-        for remove in ["remoteUserGuid", "subscriberGuid", "vin", "contractId"]:
-            if remove in dic["vehicles"]:
-                dic["vehicles"]["remove"] = deleted
-        dic["location"]["vin"] = deleted
-        dic["status"]["vin"] = deleted
-
-        pprint.PrettyPrinter(indent=4).pprint(dic)
+        return dump

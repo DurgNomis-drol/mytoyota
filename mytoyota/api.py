@@ -1,5 +1,7 @@
 """Toyota Connected Services API"""
 from typing import Any
+from datetime import datetime
+from uuid import uuid4
 
 from .const import BASE_URL
 from .controller import Controller
@@ -19,10 +21,27 @@ class Api:
         return self.controller.uuid
 
     async def set_vehicle_alias_endpoint(
-        self, new_alias: str, vehicle_id: int
-    ) -> dict[str, Any] | None:
+        self,
+        alias: str,
+        guid: str,
+        vin: str
+    ):
         # It does seem to support it. Need to find the endpoint.
-        raise NotImplemented("Endpoint not found")
+        t = "b5ee3984-2f04-474b-b71c-6b3819155928"
+        resp = await self.controller.request(
+            method="PUT",
+            base_url=BASE_URL,
+            endpoint="/v1/vehicle-association/vehicle",
+            headers={"datetime": str(int(datetime.utcnow().timestamp())),
+                     "x-correlationid": str(uuid4()),
+                     "Content-Type": "application/json"
+                     },
+            body={"guid": guid,
+                  "vin": vin,
+                  "nickName": alias}
+        )
+
+        return resp
 
     async def get_vehicles_endpoint(self) -> list[dict[str, Any] | None] | None:
         """Retrieves list of cars you have registered with MyT"""
