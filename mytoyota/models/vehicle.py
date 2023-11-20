@@ -1,6 +1,6 @@
 """Vehicle model."""
 import asyncio
-from datetime import datetime, timedelta
+import copy
 from functools import partial
 import logging
 from typing import Any
@@ -10,6 +10,7 @@ from mytoyota.models.dashboard import Dashboard
 from mytoyota.models.hvac import Hvac
 from mytoyota.models.location import ParkingLocation
 from mytoyota.models.nofication import Notification
+from mytoyota.utils.logs import censor_all
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -21,7 +22,6 @@ class Vehicle:
         self,
         api: Api,
         vehicle_info: dict[str, Any],
-        refresh_delay: timedelta = timedelta(minutes=1),
     ) -> None:
         assert "vin" in vehicle_info
         assert "extendedCapabilities" in vehicle_info
@@ -38,11 +38,14 @@ class Vehicle:
                 partial(self._api.get_location_endpoint, vin=vehicle_info["vin"]),
             ],
             [
-                "status",
+                "health_status",
                 partial(
                     self._supported, None, None
                 ),  # TODO Unsure of the required capability
-                partial(self._api.get_vehicle_status_endpoint, vin=vehicle_info["vin"]),
+                partial(
+                    self._api.get_vehicle_health_status_endpoint,
+                    vin=vehicle_info["vin"],
+                ),
             ],
             [
                 "electric_status",
@@ -63,6 +66,11 @@ class Vehicle:
                     self._supported, None, None
                 ),  # TODO Unsure of the required capability
                 partial(self._api.get_notification_endpoint, vin=vehicle_info["vin"]),
+            ],
+            [
+                "status",
+                partial(self._supported, "vehicleStatus", None),
+                partial(self._api.get_vehicle_status_endpoint, vin=vehicle_info["vin"]),
             ],
         ]
         self._endpoint_collect: list[tuple[str, partial]] = []
@@ -184,10 +192,11 @@ class Vehicle:
 
     def _dump_all(self) -> dict[str, Any]:
         """Helper function for collecting data for further work"""
-        import pprint
-
         dump: [str, Any] = {"vehicle_info": self._vehicle_info}
         for name, data in self._endpoint_data.items():
-            dump[name] = data
+            if name == "notifications":
+                dump[name] = data[:5]
+            else:
+                dump[name] = data
 
-        return dump
+        return censor_all(copy.deepcopy(dump))

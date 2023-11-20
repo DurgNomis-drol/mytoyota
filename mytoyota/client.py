@@ -10,26 +10,10 @@ information, sensor data, fuel level, driving statistics and more.
 """
 from __future__ import annotations
 
-import json
 import logging
-from typing import Any
-
-import arrow
 
 from mytoyota.api import Api
-from mytoyota.const import (
-    DATE_FORMAT,
-    DAY,
-    IMPERIAL,
-    IMPERIAL_LITERS,
-    INTERVAL_SUPPORTED,
-    ISOWEEK,
-    METRIC,
-    MONTH,
-    SUPPORTED_REGIONS,
-    WEEK,
-    YEAR,
-)
+from mytoyota.const import SUPPORTED_REGIONS
 from mytoyota.models.vehicle import Vehicle
 
 from .controller import Controller
@@ -38,14 +22,7 @@ from .exceptions import (
     ToyotaLocaleNotValid,
     ToyotaRegionNotSupported,
 )
-from .models.lock_unlock import (
-    VehicleLockUnlockActionResponse,
-    VehicleLockUnlockStatusResponse,
-)
-from .models.trip import DetailedTrip, Trip
-from .statistics import Statistics
 from .utils.locale import is_valid_locale
-from .utils.logs import censor, censor_vin
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -102,7 +79,7 @@ class MyT:
         Returns:
             A list of supported regions. For example: ["europe"]
         """
-        return [key for key in SUPPORTED_REGIONS.keys()]
+        return list(SUPPORTED_REGIONS.keys())
 
     async def login(self) -> None:
         """Performs first login.

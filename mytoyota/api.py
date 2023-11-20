@@ -1,14 +1,11 @@
 """Toyota Connected Services API"""
 from datetime import datetime
-import pprint
 from typing import Any
 from uuid import uuid4
 
 from .const import BASE_URL
 from .controller import Controller
 from .exceptions import ToyotaApiError
-
-pp = pprint.PrettyPrinter(indent=4)
 
 
 class Api:
@@ -24,8 +21,6 @@ class Api:
         return self.controller.uuid
 
     async def set_vehicle_alias_endpoint(self, alias: str, guid: str, vin: str):
-        # It does seem to support it. Need to find the endpoint.
-        t = "b5ee3984-2f04-474b-b71c-6b3819155928"
         resp = await self.controller.request(
             method="PUT",
             base_url=BASE_URL,
@@ -43,7 +38,7 @@ class Api:
 
     async def get_wake_endpoint(self) -> None:
         # TODO What does this do?
-        resp = await self.controller.request(
+        await self.controller.request(
             method="POST", base_url=BASE_URL, endpoint="/v2/global/remote/wake"
         )
 
@@ -55,14 +50,6 @@ class Api:
             endpoint="/v2/vehicle/guid",
         )
 
-    async def get_connected_services_endpoint(self, vin: str) -> dict[str, Any] | None:
-        """Get information about connected services for the given car."""
-        raise NotImplemented("Endpoint no longer supported")
-
-    async def get_odometer_endpoint(self, vin: str) -> list[dict[str, Any]] | None:
-        """Get information from odometer."""
-        raise NotImplemented("Endpoint no longer supported")
-
     async def get_location_endpoint(
         self, vin: str
     ) -> dict[str, Any] | None:  # pragma: no cover
@@ -70,7 +57,7 @@ class Api:
         ret = await self.controller.request(
             method="GET",
             base_url=BASE_URL,
-            endpoint=f"/v1/location",
+            endpoint="/v1/location",
             headers={"VIN": vin},
         )
 
@@ -80,12 +67,23 @@ class Api:
 
         return ret
 
-    async def get_vehicle_status_endpoint(self, vin: str) -> dict[str, Any] | None:
+    async def get_vehicle_health_status_endpoint(
+        self, vin: str
+    ) -> dict[str, Any] | None:
         """Get information about the vehicle."""
         return await self.controller.request(
             method="GET",
             base_url=BASE_URL,
             endpoint="/v1/vehiclehealth/status",
+            headers={"VIN": vin},
+        )
+
+    async def get_vehicle_status_endpoint(self, vin: str) -> dict[str, Any] | None:
+        """Get information about the vehicle."""
+        return await self.controller.request(
+            method="GET",
+            base_url=BASE_URL,
+            endpoint="/v1/global/remote/status",
             headers={"VIN": vin},
         )
 
@@ -100,7 +98,7 @@ class Api:
                 endpoint="/v1/global/remote/electric/status",
                 headers={"VIN": vin},
             )
-        except ToyotaApiError as e:
+        except ToyotaApiError:
             # TODO This is wrong, but lets change the Vehicle class
             return None
 

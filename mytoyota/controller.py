@@ -2,7 +2,6 @@
 from datetime import datetime, timedelta
 from http import HTTPStatus
 import logging
-import pprint
 from typing import Any
 from urllib import parse  # For parse query string, can this be done with httpx?
 
@@ -16,15 +15,9 @@ from mytoyota.const import (
     SUPPORTED_REGIONS,
     TIMEOUT,
 )
-from mytoyota.exceptions import (
-    ToyotaActionNotSupported,
-    ToyotaApiError,
-    ToyotaInternalError,
-    ToyotaLoginError,
-)
+from mytoyota.exceptions import ToyotaApiError, ToyotaInternalError, ToyotaLoginError
 from mytoyota.utils.logs import censor_dict
 
-pp = pprint.PrettyPrinter(indent=4)
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 
@@ -152,7 +145,13 @@ class Controller:
                 raise ToyotaLoginError("Failed to retrieve required tokens")
 
             access_tokens: dict[str, Any] = resp.json()
-            assert "access_token" in access_tokens and "id_token" in access_tokens
+            if (
+                "access_token" not in access_tokens
+                or "id_token" not in access_tokens
+                or "refresh_token" not in access_tokens
+                or "expires_in" not in access_tokens
+            ):
+                raise ToyotaLoginError("Missing tokens in response")
 
             self._token = access_tokens["access_token"]
             self._uuid = jwt.decode(
@@ -169,7 +168,7 @@ class Controller:
 
     def _is_token_valid(self, retry: bool = True) -> bool:
         """Checks if token is valid"""
-        if self._token == None:
+        if self._token is None:
             return False
 
         return self._token_expiration > datetime.now()
@@ -231,35 +230,17 @@ class Controller:
                 HTTPStatus.ACCEPTED,
             ]:
                 ret: dict[str, Any] = response.json()
-                if "payload" in ret:
-                    return ret["payload"]
 
-                return ret
+                return ret.get("payload", ret)
 
             # Errored if we get here
+            # import pprint
+            # pp = pprint.PrettyPrinter(indent=4)
             # pp.pprint(response.request.method)
             # pp.pprint(response.request.url)
             # pp.pprint(response.request.headers)
             # pp.pprint(response.request.content)
 
-            if response.status_code == HTTPStatus.NO_CONTENT:
-                # TODO
-                raise ToyotaApiError("NO_CONTENT")
-            elif response.status_code == HTTPStatus.INTERNAL_SERVER_ERROR:
-                # TODO
-                raise ToyotaApiError("INTERNAL_SERVER_ERROR")
-            elif response.status_code == HTTPStatus.BAD_GATEWAY:
-                # TODO
-                raise ToyotaApiError("Servers are overloaded, try again later")
-            elif response.status_code == HTTPStatus.SERVICE_UNAVAILABLE:
-                # TODO
-                raise ToyotaApiError("Servers are temporarily unavailable")
-            elif response.status_code == HTTPStatus.FORBIDDEN:
-                # TODO
-                raise ToyotaActionNotSupported(
-                    "Action is not supported on this vehicle"
-                )
-            else:
-                raise ToyotaApiError(f"HTTP: {response.status_code} - {response.text}")
-
-        return None  # Should not get here
+        raise ToyotaApiError(
+            f"Status Code: {response.status_code}, Description: {response.reason_phrase}"
+        )

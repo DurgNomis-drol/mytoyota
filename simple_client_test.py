@@ -1,6 +1,7 @@
-import json
 import asyncio
+import json
 import pprint
+
 from mytoyota.client import MyT
 
 # Set your username and password here OR
@@ -15,11 +16,15 @@ try:
     credentials = json.load(open("credentials.json"))
     username = credentials["username"]
     password = credentials["password"]
-except FileNotFoundError or json.decoder.JSONDecodeError:
+except FileNotFoundError:
+    pass
+except json.decoder.JSONDecodeError:
     pass
 
 if username is None or password is None:
-    print("Did you forget to set your username and password? Or supply the credentials file")
+    print(
+        "Did you forget to set your username and password? Or supply the credentials file"
+    )
     exit()
 
 # Pretty Printer used below
@@ -27,6 +32,7 @@ pp = pprint.PrettyPrinter(indent=4)
 
 
 client = MyT(username=username, password=password, brand="T")
+
 
 async def get_information():
     print("Logging in...")
@@ -40,7 +46,7 @@ async def get_information():
         await car.update()
 
         # Dump all the information collected so far
-        #pp.pprint(car._dump_all())
+        # pp.pprint(car._dump_all())
 
         # Alias
         print(f"Alias: {car.alias}")
@@ -65,7 +71,6 @@ async def get_information():
             print("Notifications:")
             for notification in notifications:
                 print(f"    {notification.date} : {notification.message}")
-
 
 
 loop = asyncio.get_event_loop()
