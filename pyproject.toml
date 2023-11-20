@@ -32,6 +32,7 @@ langcodes = "^3.1"
 httpx = ">=0.18.1"
 arrow = "^1.1"
 importlib-metadata = {version = "^1.0", python = "<3.8"}
+pyjwt = "^2.8.0"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^3.0.0"
