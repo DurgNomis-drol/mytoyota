@@ -1,20 +1,20 @@
 """Toyota Connected Services Controller """
-# import annotations
-
 from datetime import datetime, timedelta
 from http import HTTPStatus
 import logging
+import pprint
 from typing import Any
-import jwt  # For decoding taok
 from urllib import parse  # For parse query string, can this be done with httpx?
+
 import httpx
+import jwt
 
 from mytoyota.const import (
-    SUPPORTED_REGIONS,
-    TIMEOUT,
     ACCESS_TOKEN_URL,
     AUTHENTICATE_URL,
     AUTHORIZE_URL,
+    SUPPORTED_REGIONS,
+    TIMEOUT,
 )
 from mytoyota.exceptions import (
     ToyotaActionNotSupported,
@@ -24,19 +24,21 @@ from mytoyota.exceptions import (
 )
 from mytoyota.utils.logs import censor_dict
 
+pp = pprint.PrettyPrinter(indent=4)
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 
 class Controller:
     """Controller class."""
+
     def __init__(
-            self,
-            locale: str,
-            region: str,
-            username: str,
-            password: str,
-            brand: str,
-            uuid: str | None = None,
+        self,
+        locale: str,
+        region: str,
+        username: str,
+        password: str,
+        brand: str,
+        uuid: str | None = None,
     ) -> None:
         self._locale: str = locale
         self._region: str = region
@@ -87,16 +89,21 @@ class Controller:
             for _ in range(10):
                 if "callbacks" in data:
                     for cb in data["callbacks"]:
-                        if cb["type"] == "NameCallback" and cb["output"][0]["value"] == "User Name":
+                        if (
+                            cb["type"] == "NameCallback"
+                            and cb["output"][0]["value"] == "User Name"
+                        ):
                             cb["input"][0]["value"] = self._username
                         elif cb["type"] == "PasswordCallback":
                             cb["input"][0]["value"] = self._password
                 resp = await client.post(self._authenticate_endpoint, json=data)
                 if resp.status_code != HTTPStatus.OK:
-                    _LOGGER.error(f"Authenticcation failed:\n"
-                                  f"  Status_Code = {resp.status_code}\n"
-                                  f"  Text        = {resp.text}\n"
-                                  f"  Headers     = {resp.headers}")
+                    _LOGGER.error(
+                        f"Authenticcation failed:\n"
+                        f"  Status_Code = {resp.status_code}\n"
+                        f"  Text        = {resp.text}\n"
+                        f"  Headers     = {resp.headers}"
+                    )
                     raise ToyotaLoginError("Could not authenticate")
                 data = resp.json()
                 if "tokenId" in data:
@@ -106,41 +113,59 @@ class Controller:
                 raise ToyotaLoginError("Authentication process looping")
 
             # Authorise
-            resp = await client.get(self._authorize_endpoint,
-                                    headers={"cookie": f"iPlanetDirectoryPro={data['tokenId']}"})
+            resp = await client.get(
+                self._authorize_endpoint,
+                headers={"cookie": f"iPlanetDirectoryPro={data['tokenId']}"},
+            )
             if resp.status_code != HTTPStatus.FOUND:
-                _LOGGER.error(f"Authorization failed:\n"
-                              f"  Status_Code = {resp.status_code}\n"
-                              f"  Text        = {resp.text}\n"
-                              f"  Headers     = {resp.headers}")
+                _LOGGER.error(
+                    f"Authorization failed:\n"
+                    f"  Status_Code = {resp.status_code}\n"
+                    f"  Text        = {resp.text}\n"
+                    f"  Headers     = {resp.headers}"
+                )
                 raise ToyotaLoginError("Authorization failed")
-            authentication_code = parse.parse_qs(httpx.URL(resp.headers.get("location")).query.decode())["code"]
+            authentication_code = parse.parse_qs(
+                httpx.URL(resp.headers.get("location")).query.decode()
+            )["code"]
 
             # Retrieve tokens
-            resp = await client.post(self._access_token_endpoint,
-                                     headers={"authorization": "basic b25lYXBwOm9uZWFwcA=="},
-                                     # f"basic {self.BASIC_AUTH_STRING}"},
-                                     data={"client_id": "oneapp",
-                                           "code": authentication_code,
-                                           "redirect_uri": "com.toyota.oneapp:/oauth2Callback",
-                                           "grant_type": "authorization_code",
-                                           "code_verifier": "plain"})
+            resp = await client.post(
+                self._access_token_endpoint,
+                headers={"authorization": "basic b25lYXBwOm9uZWFwcA=="},
+                # f"basic {self.BASIC_AUTH_STRING}"},
+                data={
+                    "client_id": "oneapp",
+                    "code": authentication_code,
+                    "redirect_uri": "com.toyota.oneapp:/oauth2Callback",
+                    "grant_type": "authorization_code",
+                    "code_verifier": "plain",
+                },
+            )
             if resp.status_code != HTTPStatus.OK:
-                _LOGGER.debug(f"Authorization failed:\n"
-                              f"  Status_Code = {resp.status_code}\n"
-                              f"  Text        = {resp.text}\n"
-                              f"  Headers     = {resp.headers}")
+                _LOGGER.debug(
+                    f"Authorization failed:\n"
+                    f"  Status_Code = {resp.status_code}\n"
+                    f"  Text        = {resp.text}\n"
+                    f"  Headers     = {resp.headers}"
+                )
                 raise ToyotaLoginError("Failed to retrieve required tokens")
 
             access_tokens: dict[str, Any] = resp.json()
-            assert ("access_token" in access_tokens and "id_token" in access_tokens)
+            assert "access_token" in access_tokens and "id_token" in access_tokens
 
             self._token = access_tokens["access_token"]
-            self._uuid = jwt.decode(access_tokens["id_token"],
-                                    algorithms=["RS256"],
-                                    options={"verify_signature": False},
-                                    audience="oneappsdkclient")["uuid"]  # Usefully found in toyota_na
-            self._token_expiration = datetime.now() + timedelta(seconds=access_tokens["expires_in"])
+            self._uuid = jwt.decode(
+                access_tokens["id_token"],
+                algorithms=["RS256"],
+                options={"verify_signature": False},
+                audience="oneappsdkclient",
+            )[
+                "uuid"
+            ]  # Usefully found in toyota_na
+            self._token_expiration = datetime.now() + timedelta(
+                seconds=access_tokens["expires_in"]
+            )
 
     def _is_token_valid(self, retry: bool = True) -> bool:
         """Checks if token is valid"""
@@ -150,13 +175,13 @@ class Controller:
         return self._token_expiration > datetime.now()
 
     async def request(  # pylint: disable=too-many-branches
-            self,
-            method: str,
-            endpoint: str,
-            base_url: str | None = None,
-            body: dict[str, Any] | None = None,
-            params: dict[str, Any] | None = None,
-            headers: dict[str, Any] | None = None,
+        self,
+        method: str,
+        endpoint: str,
+        base_url: str | None = None,
+        body: dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None,
+        headers: dict[str, Any] | None = None,
     ) -> dict[str, Any] | list[Any] | None:
         """Shared request method"""
         if method not in ("GET", "POST", "PUT", "DELETE"):
@@ -177,21 +202,22 @@ class Controller:
             {
                 "x-api-key": "tTZipv6liF74PwMfk9Ed68AQ0bISswwf3iHQdqcF",
                 "x-guid": self._uuid,
+                "guid": self._uuid,
                 "authorization": f"Bearer {self._token}",
                 "x-channel": "ONEAPP",
-                "x-brand": self._brand.upper()
+                "x-brand": self._brand.upper(),
             }
         )
 
-        #_LOGGER.debug(f"Additional headers: {censor_dict(headers.copy())}")
+        _LOGGER.debug(f"Additional headers: {censor_dict(headers.copy())}")
 
         # Cannot authenticate with aiohttp (returns 415),
         # but it works with httpx.
         _LOGGER.debug("Creating client...")
         async with httpx.AsyncClient(timeout=TIMEOUT) as client:
-#            _LOGGER.debug(
-#                f"Body: {censor_dict(body) if body else body} - Parameters: {params}"
-#            )
+            _LOGGER.debug(
+                f"Body: {censor_dict(body) if body else body} - Parameters: {params}"
+            )
             response = await client.request(
                 method,
                 url,
@@ -209,7 +235,14 @@ class Controller:
                     return ret["payload"]
 
                 return ret
-            elif response.status_code == HTTPStatus.NO_CONTENT:
+
+            # Errored if we get here
+            # pp.pprint(response.request.method)
+            # pp.pprint(response.request.url)
+            # pp.pprint(response.request.headers)
+            # pp.pprint(response.request.content)
+
+            if response.status_code == HTTPStatus.NO_CONTENT:
                 # TODO
                 raise ToyotaApiError("NO_CONTENT")
             elif response.status_code == HTTPStatus.INTERNAL_SERVER_ERROR:
@@ -227,8 +260,6 @@ class Controller:
                     "Action is not supported on this vehicle"
                 )
             else:
-                raise ToyotaApiError(
-                    f"HTTP: {response.status_code} - {response.text}"
-                )
+                raise ToyotaApiError(f"HTTP: {response.status_code} - {response.text}")
 
         return None  # Should not get here

@@ -1,5 +1,6 @@
 """Models for vehicle location."""
 from datetime import datetime
+
 from mytoyota.models.data import VehicleData
 
 

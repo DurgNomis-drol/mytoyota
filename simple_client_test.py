@@ -3,15 +3,30 @@ import asyncio
 import pprint
 from mytoyota.client import MyT
 
+# Set your username and password here OR
+# in a file called credentials.json in the format
+#   {
+#       "username": "<username>",
+#       "password": "<password>"
+#   }
+username = None
+password = None
+try:
+    credentials = json.load(open("credentials.json"))
+    username = credentials["username"]
+    password = credentials["password"]
+except FileNotFoundError or json.decoder.JSONDecodeError:
+    pass
 
-username = "somebody@someplace.overthere"
-password = "password"
-brand = "T"  # or lexus
+if username is None or password is None:
+    print("Did you forget to set your username and password? Or supply the credentials file")
+    exit()
 
+# Pretty Printer used below
 pp = pprint.PrettyPrinter(indent=4)
 
 
-client = MyT(username=username, password=password, brand=brand)
+client = MyT(username=username, password=password, brand="T")
 
 async def get_information():
     print("Logging in...")
@@ -27,12 +42,12 @@ async def get_information():
         # Dump all the information collected so far
         #pp.pprint(car._dump_all())
 
+        # Alias
         print(f"Alias: {car.alias}")
+        # Set alis
+        # await car.set_alias("RAV4")
 
-        # This is not working something to do with incorrect headers!
-        #await car.set_alias("My Car")
-
-        # You can access odometer data like this:
+        # Basic information
         mileage = car.dashboard.odometer
         print(f"Mileage : {mileage}")
         # Or retrieve the energy level (electric or gasoline)
@@ -43,6 +58,15 @@ async def get_information():
         # Or Parking information:
         latitude = car.location.latitude
         print(f"Latitude : {latitude}")
+
+        # Notifications => True retrieve all, False just unread
+        notifications = car.notifications(True)[:5]
+        if notifications:
+            print("Notifications:")
+            for notification in notifications:
+                print(f"    {notification.date} : {notification.message}")
+
+
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(get_information())

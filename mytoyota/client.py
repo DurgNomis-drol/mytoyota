@@ -30,6 +30,8 @@ from mytoyota.const import (
     WEEK,
     YEAR,
 )
+from mytoyota.models.vehicle import Vehicle
+
 from .controller import Controller
 from .exceptions import (
     ToyotaInvalidUsername,
@@ -41,7 +43,6 @@ from .models.lock_unlock import (
     VehicleLockUnlockStatusResponse,
 )
 from .models.trip import DetailedTrip, Trip
-from mytoyota.models.vehicle import Vehicle
 from .statistics import Statistics
 from .utils.locale import is_valid_locale
 from .utils.logs import censor, censor_vin
@@ -114,10 +115,8 @@ class MyT:
         _LOGGER.debug("Performing first login")
         await self._api.controller.first_login()
 
-
     async def get_vehicles(self) -> list[Vehicle]:
-        """Returns a list of vehicles.
-        """
+        """Returns a list of vehicles."""
         _LOGGER.debug("Getting list of vehicles associated with the account")
         vehicles = await self._api.get_vehicles_endpoint()
 

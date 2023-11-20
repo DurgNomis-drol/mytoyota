@@ -135,3 +135,4 @@ TestResults/
 .myt_app/
 /blahblah.py
 .idea/
+/credentials.json

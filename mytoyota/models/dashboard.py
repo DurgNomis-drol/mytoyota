@@ -4,6 +4,7 @@ import logging
 from mytoyota.models.data import VehicleData
 from mytoyota.utils.conversions import convert_to_miles
 
+
 class Dashboard(VehicleData):
     """Instrumentation data model."""
 
