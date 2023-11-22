@@ -2,10 +2,12 @@
 from datetime import datetime
 from typing import Any
 from uuid import uuid4
+from datetime import date
 
 from .const import BASE_URL
 from .controller import Controller
 from .exceptions import ToyotaApiError
+from .models.endpoints.trip import Trips
 
 
 class Api:
@@ -137,25 +139,34 @@ class Api:
     async def get_trips_endpoint(
         self,
         vin: str,
-        page: int = 1,
-    ) -> dict[str, Any] | None:
+        from_: date,
+        to: date,
+        route: bool = False,
+        summary: bool = True,
+        limit: int = 5,
+        offset: int = 0,
+    ) -> Trips:
         """Get trip
         The page parameter works a bit strange but setting to 1 gets last few trips"""
-        return await self.controller.request(
+        data = await self.controller.request_json(
             method="GET",
-            base_url=BASE_URL_CARS,
-            endpoint=f"/api/user/{self.uuid}/cms/trips/v2/history/vin/{vin}/{page}",
+            base_url=BASE_URL,
+            endpoint=f"/v1/trips?from={from_}&to={to}&route={route}&summary={summary}&limit={limit}&offset={offset}",
             headers={"vin": vin},
         )
 
-    async def get_trip_endpoint(self, vin: str, trip_id: str) -> dict[str, Any] | None:
+        return Trips(**data["payload"])
+
+    async def get_trip_endpoint(self, vin: str, trip_id: str) -> Trips:
         """Get data for a single trip"""
-        return await self.controller.request(
+        data = await self.controller.request(
             method="GET",
             base_url=BASE_URL_CARS,
             endpoint=f"/api/user/{self.uuid}/cms/trips/v2/{trip_id}/events/vin/{vin}",
             headers={"vin": vin},
         )
+
+        return Trips(**data)
 
     async def set_lock_unlock_vehicle_endpoint(
         self, vin: str, action: str

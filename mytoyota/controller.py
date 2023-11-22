@@ -1,7 +1,7 @@
 """Toyota Connected Services Controller """
+import logging
 from datetime import datetime, timedelta
 from http import HTTPStatus
-import logging
 from typing import Any
 from urllib import parse  # For parse query string, can this be done with httpx?
 
@@ -173,15 +173,15 @@ class Controller:
 
         return self._token_expiration > datetime.now()
 
-    async def request(  # pylint: disable=too-many-branches
-        self,
+    async def request_raw(
+        self,  # pylint: disable=too-many-branches
         method: str,
         endpoint: str,
         base_url: str | None = None,
         body: dict[str, Any] | None = None,
         params: dict[str, Any] | None = None,
         headers: dict[str, Any] | None = None,
-    ) -> dict[str, Any] | list[Any] | None:
+    ) -> httpx.Response:
         """Shared request method"""
         if method not in ("GET", "POST", "PUT", "DELETE"):
             raise ToyotaInternalError("Invalid request method provided")
@@ -229,18 +229,48 @@ class Controller:
                 HTTPStatus.OK,
                 HTTPStatus.ACCEPTED,
             ]:
-                ret: dict[str, Any] = response.json()
-
-                return ret.get("payload", ret)
+                return response
 
             # Errored if we get here
-            # import pprint
-            # pp = pprint.PrettyPrinter(indent=4)
-            # pp.pprint(response.request.method)
-            # pp.pprint(response.request.url)
-            # pp.pprint(response.request.headers)
-            # pp.pprint(response.request.content)
+            import pprint
+
+            pp = pprint.PrettyPrinter(indent=4)
+            pp.pprint(response.request.method)
+            pp.pprint(response.request.url)
+            pp.pprint(response.request.headers)
+            pp.pprint(response.request.content)
 
         raise ToyotaApiError(
             f"Status Code: {response.status_code}, Description: {response.reason_phrase}"
         )
+
+    async def request_json(
+        self,
+        method: str,
+        endpoint: str,
+        base_url: str | None = None,
+        body: dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None,
+        headers: dict[str, Any] | None = None,
+    ):
+        response = await self.request_raw(
+            method, endpoint, base_url, body, params, headers
+        )
+
+        return response.json()
+
+    async def request(
+        self,
+        method: str,
+        endpoint: str,
+        base_url: str | None = None,
+        body: dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None,
+        headers: dict[str, Any] | None = None,
+    ) -> dict[str, Any] | list[Any] | None:
+        # TODO possibly remove if/when fully pydantic
+        response = await self.request_raw(
+            method, endpoint, base_url, body, params, headers
+        )
+        ret: dict[str, Any] = response.json()
+        return response.json().get("payload", ret)
