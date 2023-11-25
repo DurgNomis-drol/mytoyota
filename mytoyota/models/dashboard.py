@@ -1,4 +1,6 @@
 """Models for vehicle sensors."""
+from typing import Optional
+
 from mytoyota.models.data import VehicleData
 from mytoyota.utils.conversions import convert_to_miles
 
@@ -14,7 +16,7 @@ class Dashboard(VehicleData):
         return False
 
     @property
-    def odometer(self) -> int | None:
+    def odometer(self) -> Optional[int]:
         """Shows the odometer distance."""
         if self._data["odometer"]["unit"] == "mi":
             return self._data["odometer"]["value"]
@@ -22,12 +24,12 @@ class Dashboard(VehicleData):
         return convert_to_miles(self._data["odometer"]["value"])
 
     @property
-    def fuel_level(self) -> float | None:
+    def fuel_level(self) -> Optional[float]:
         """Shows the fuellevel of the vehicle."""
         return self._data["fuelLevel"]
 
     @property
-    def fuel_range(self) -> float | None:
+    def fuel_range(self) -> Optional[float]:
         """Shows the range if available."""
         if self._data["fuelRange"]["unit"] == "mi":
             return self._data["odometer"]["value"]
@@ -35,7 +37,7 @@ class Dashboard(VehicleData):
         return convert_to_miles(self._data["fuelRange"]["value"])
 
     @property
-    def battery_level(self) -> float | None:
+    def battery_level(self) -> Optional[float]:
         """Shows the battery level if a hybrid."""
         if "batteryLevel" in self._data:
             return self._data["batteryLevel"]
@@ -43,7 +45,7 @@ class Dashboard(VehicleData):
         return None
 
     @property
-    def battery_range(self) -> float | None:
+    def battery_range(self) -> Optional[float]:
         """Shows the battery range if a hybrid."""
         if "evRange" in self._data:
             if self._data["evRange"]["unit"] == "mi":
@@ -54,7 +56,7 @@ class Dashboard(VehicleData):
         return None
 
     @property
-    def battery_range_with_aircon(self) -> float | None:
+    def battery_range_with_aircon(self) -> Optional[float]:
         """Shows the battery range with aircon on, if a hybrid."""
         if "evRangeWithAc" in self._data:
             if self._data["evRangeWithAc"]["unit"] == "mi":
@@ -65,7 +67,7 @@ class Dashboard(VehicleData):
         return None
 
     @property
-    def charging_status(self) -> str | None:
+    def charging_status(self) -> Optional[str]:
         """Shows the charging status if a hybrid."""
         if "chargingStatus" in self._data:
             return self._data["chargingStatus"]
@@ -73,7 +75,7 @@ class Dashboard(VehicleData):
         return None
 
     @property
-    def remaining_charge_time(self) -> int | None:
+    def remaining_charge_time(self) -> Optional[int]:
         """Shows the remaining time to a full charge, if a hybrid."""
         # TODO: What units?
         if "remainingChargeTime" in self._data:

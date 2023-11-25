@@ -1,6 +1,8 @@
-from pydantic import BaseModel, Field
 from datetime import date, datetime
+from typing import Optional
 from uuid import UUID
+
+from pydantic import BaseModel, Field
 
 
 class _Pagination(BaseModel):
@@ -27,7 +29,7 @@ class _Scores(BaseModel):
     advice: int = Field(ge=0, le=100, default=0)
     braking: int = Field(ge=0, le=100)
     constantSpeed: int = Field(ge=0, le=100, default=0)
-    global_: int | None = Field(ge=0, le=100, alias="global", default=None)
+    global_: Optional[int] = Field(ge=0, le=100, alias="global", default=None)
 
 
 class _Summary(BaseModel):
@@ -59,7 +61,7 @@ class _HDC(BaseModel):
 
 
 class _MonthSummary(BaseModel):
-    hdc: _HDC | None = Field(default=None)  # Only available on EV cars
+    hdc: Optional[_HDC] = Field(default=None)  # Only available on EV cars
     # histograms not imported
     month: int = Field(..., ge=1, le=12)
     scores: _Scores
@@ -81,7 +83,7 @@ class _TripSummary(_Summary):
 class _Trip(BaseModel):
     # behaviours not imported
     category: int
-    hdc: _HDC | None = Field(default=None)  # Only available on EV cars
+    hdc: Optional[_HDC] = Field(default=None)  # Only available on EV cars
     id: UUID
     scores: _Scores
     summary: _TripSummary

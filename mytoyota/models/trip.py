@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Optional
 
 from mytoyota.models.data import VehicleData
 
@@ -75,7 +76,7 @@ class Trip(VehicleData):
         return self._data.get("startAddress", "")
 
     @property
-    def start_time_gmt(self) -> datetime.datetime | None:
+    def start_time_gmt(self) -> Optional[datetime.datetime]:
         """Trip Start time GMT."""
         start_time_str = self._data.get("startTimeGmt", None)
         if not start_time_str:
@@ -83,7 +84,7 @@ class Trip(VehicleData):
         return datetime.strptime(start_time_str, "%Y-%m-%dT%H:%M:%SZ")
 
     @property
-    def end_time_gmt(self) -> datetime.datetime | None:
+    def end_time_gmt(self) -> Optional[datetime.datetime]:
         """Trip End time GMT."""
         end_time_str = self._data.get("endTimeGmt", None)
         if not end_time_str:
@@ -96,6 +97,6 @@ class Trip(VehicleData):
         return self._data.get("endAddress", "")
 
     @property
-    def classification_type(self) -> int | None:
+    def classification_type(self) -> Optional[int]:
         """Trip Classification type."""
         return self._data.get("classificationType", None)

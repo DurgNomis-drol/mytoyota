@@ -1,6 +1,8 @@
 """Models for vehicle sensors."""
 from __future__ import annotations
 
+from typing import Optional
+
 from mytoyota.models.data import VehicleData
 
 
@@ -8,17 +10,17 @@ class Door(VehicleData):
     """Door/hood data model."""
 
     @property
-    def warning(self) -> bool | None:
+    def warning(self) -> Optional[bool]:
         """If warning exists for the door."""
         return self._data.get("warning")
 
     @property
-    def closed(self) -> bool | None:
+    def closed(self) -> Optional[bool]:
         """If the door is closed."""
         return self._data.get("closed")
 
     @property
-    def locked(self) -> bool | None:
+    def locked(self) -> Optional[bool]:
         """If the door is locked."""
         return self._data.get("locked")
 
@@ -27,7 +29,7 @@ class Doors(VehicleData):
     """Trunk/doors/hood data model."""
 
     @property
-    def warning(self) -> bool | None:
+    def warning(self) -> Optional[bool]:
         """If warning exists for one of the doors."""
         return self._data.get("warning")
 
@@ -61,12 +63,12 @@ class Window(VehicleData):
     """Window data model."""
 
     @property
-    def warning(self) -> bool | None:
+    def warning(self) -> Optional[bool]:
         """If a warning exists for the window."""
         return self._data.get("warning")
 
     @property
-    def state(self) -> str | None:
+    def state(self) -> Optional[str]:
         """Window state."""
         return self._data.get("state")
 
@@ -75,7 +77,7 @@ class Windows(VehicleData):
     """Windows data model."""
 
     @property
-    def warning(self) -> bool | None:
+    def warning(self) -> Optional[bool]:
         """If a warning exists for one of the windows."""
         return self._data.get("warning")
 
@@ -104,12 +106,12 @@ class Light(VehicleData):
     """Vehicle light data model."""
 
     @property
-    def warning(self) -> bool | None:
+    def warning(self) -> Optional[bool]:
         """If a warning exists for the light."""
         return self._data.get("warning")
 
     @property
-    def off(self) -> bool | None:
+    def off(self) -> Optional[bool]:
         """If the light is off."""
         return self._data.get("off")
 
@@ -118,7 +120,7 @@ class Lights(VehicleData):
     """Vehicle lights data model."""
 
     @property
-    def warning(self) -> bool | None:
+    def warning(self) -> Optional[bool]:
         """If a warning exists for one of the lights."""
         return self._data.get("warning")
 
@@ -142,12 +144,12 @@ class Key(VehicleData):
     """Keyfob data model."""
 
     @property
-    def warning(self) -> bool | None:
+    def warning(self) -> Optional[bool]:
         """If a warning exists for the key.."""
         return self._data.get("warning")
 
     @property
-    def in_car(self) -> bool | None:
+    def in_car(self) -> Optional[bool]:
         """If the key is in the car."""
         return self._data.get("inCar")
 
@@ -156,12 +158,12 @@ class Sensors(VehicleData):
     """Vehicle sensors data model."""
 
     @property
-    def overallstatus(self) -> str | None:
+    def overallstatus(self) -> Optional[str]:
         """If a warning exists for any of the sensors."""
         return self._data.get("overallStatus")
 
     @property
-    def last_updated(self) -> str | None:
+    def last_updated(self) -> Optional[str]:
         """Last time data was recieved from the car."""
         return self._data.get("timestamp")
 

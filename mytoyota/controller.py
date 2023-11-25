@@ -1,8 +1,8 @@
 """Toyota Connected Services Controller """
-import logging
 from datetime import datetime, timedelta
 from http import HTTPStatus
-from typing import Any
+import logging
+from typing import Any, Optional, Union
 from urllib import parse  # For parse query string, can this be done with httpx?
 
 import httpx
@@ -31,7 +31,7 @@ class Controller:
         username: str,
         password: str,
         brand: str,
-        uuid: str | None = None,
+        uuid: Optional[str] = None,
     ) -> None:
         self._locale: str = locale
         self._region: str = region
@@ -39,8 +39,8 @@ class Controller:
         self._password: str = password
         self._brand: str = brand
         self._uuid: str = uuid
-        self._token: str | None = None
-        self._token_expiration: datetime | None = None
+        self._token: Optional[str] = None
+        self._token_expiration: Optional[datetime] = None
 
     @property
     def _authorize_endpoint(self) -> str:
@@ -64,7 +64,7 @@ class Controller:
 
     @property
     # TODO Dont think this is required outside of the controller anymore.
-    def uuid(self) -> str | None:
+    def uuid(self) -> Optional[str]:
         """Return uuid."""
         return self._uuid
 
@@ -177,10 +177,10 @@ class Controller:
         self,  # pylint: disable=too-many-branches
         method: str,
         endpoint: str,
-        base_url: str | None = None,
-        body: dict[str, Any] | None = None,
-        params: dict[str, Any] | None = None,
-        headers: dict[str, Any] | None = None,
+        base_url: Optional[str] = None,
+        body: Optional[dict[str, Any]] = None,
+        params: Optional[dict[str, Any]] = None,
+        headers: Optional[dict[str, Any]] = None,
     ) -> httpx.Response:
         """Shared request method"""
         if method not in ("GET", "POST", "PUT", "DELETE"):
@@ -248,10 +248,10 @@ class Controller:
         self,
         method: str,
         endpoint: str,
-        base_url: str | None = None,
-        body: dict[str, Any] | None = None,
-        params: dict[str, Any] | None = None,
-        headers: dict[str, Any] | None = None,
+        base_url: Optional[str] = None,
+        body: Optional[dict[str, Any]] = None,
+        params: Optional[dict[str, Any]] = None,
+        headers: Optional[dict[str, Any]] = None,
     ):
         response = await self.request_raw(
             method, endpoint, base_url, body, params, headers
@@ -263,11 +263,11 @@ class Controller:
         self,
         method: str,
         endpoint: str,
-        base_url: str | None = None,
-        body: dict[str, Any] | None = None,
-        params: dict[str, Any] | None = None,
-        headers: dict[str, Any] | None = None,
-    ) -> dict[str, Any] | list[Any] | None:
+        base_url: Optional[str] = None,
+        body: Optional[dict[str, Any]] = None,
+        params: Optional[dict[str, Any]] = None,
+        headers: Optional[dict[str, Any]] = None,
+    ) -> Optional[Union[dict[str, Any], list[Any]]]:
         # TODO possibly remove if/when fully pydantic
         response = await self.request_raw(
             method, endpoint, base_url, body, params, headers

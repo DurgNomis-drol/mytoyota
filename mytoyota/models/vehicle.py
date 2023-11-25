@@ -3,7 +3,7 @@ import asyncio
 import copy
 from functools import partial
 import logging
-from typing import Any
+from typing import Any, Optional
 
 from mytoyota.api import Api
 from mytoyota.models.dashboard import Dashboard
@@ -78,7 +78,9 @@ class Vehicle:
             if ep[1]():
                 self._endpoint_collect.append((ep[0], ep[2]))
 
-    def _supported(self, extendedCapability: str | None, feature: str | None) -> bool:
+    def _supported(
+        self, extendedCapability: Optional[str], feature: Optional[str]
+    ) -> bool:
         # If both set to None then nothing to check for
         if extendedCapability is None and feature is None:
             return True
@@ -106,12 +108,12 @@ class Vehicle:
             self._endpoint_data[name] = data
 
     @property
-    def vin(self) -> str | None:
+    def vin(self) -> Optional[str]:
         """Vehicle's vinnumber."""
         return self._vehicle_info.get("vin")
 
     @property
-    def alias(self) -> str | None:
+    def alias(self) -> Optional[str]:
         """Vehicle's alias."""
         return self._vehicle_info.get("nickName", "Not set")
 
@@ -141,7 +143,7 @@ class Vehicle:
         return "Unknown"
 
     @property
-    def details(self) -> dict[str, Any] | None:
+    def details(self) -> Optional[dict[str, Any]]:
         """Formats vehicle info into a dict."""
         det: dict[str, Any] = {}
         for i in sorted(self._vehicle_info):
@@ -151,14 +153,14 @@ class Vehicle:
         return det if det else None
 
     @property
-    def location(self) -> ParkingLocation | None:
+    def location(self) -> Optional[ParkingLocation]:
         """Last parking location."""
         if "location" in self._endpoint_data:
             return ParkingLocation(self._endpoint_data["location"]["vehicleLocation"])
 
         return None
 
-    def notifications(self, include_read: bool = False) -> list[Notification] | None:
+    def notifications(self, include_read: bool = False) -> Optional[list[Notification]]:
         if "notifications" in self._endpoint_data:
             ret = []
             for notification in self._endpoint_data["notifications"]:
@@ -173,13 +175,13 @@ class Vehicle:
         return None
 
     @property
-    def hvac(self) -> Hvac | None:
+    def hvac(self) -> Optional[Hvac]:
         """Vehicle hvac."""
         # This info is available need to find the endpoint.
         return None
 
     @property
-    def dashboard(self) -> Dashboard | None:
+    def dashboard(self) -> Optional[Dashboard]:
         """Vehicle dashboard."""
         # Depending on car the required information is split across multiple endpoints
         # All cars seen have the status endpoint. This contains total milage.

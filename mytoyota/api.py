@@ -1,8 +1,7 @@
 """Toyota Connected Services API"""
-from datetime import datetime
-from typing import Any
+from datetime import date, datetime
+from typing import Any, Optional
 from uuid import uuid4
-from datetime import date
 
 from .const import BASE_URL
 from .controller import Controller
@@ -18,7 +17,7 @@ class Api:
         self.controller = controller
 
     @property
-    def uuid(self) -> str | None:
+    def uuid(self) -> Optional[str]:
         """Returns uuid from controller"""
         return self.controller.uuid
 
@@ -44,7 +43,7 @@ class Api:
             method="POST", base_url=BASE_URL, endpoint="/v2/global/remote/wake"
         )
 
-    async def get_vehicles_endpoint(self) -> list[dict[str, Any] | None] | None:
+    async def get_vehicles_endpoint(self) -> Optional[list[Optional[dict[str, Any]]]]:
         """Retrieves list of cars you have registered with MyT"""
         return await self.controller.request(
             method="GET",
@@ -54,7 +53,7 @@ class Api:
 
     async def get_location_endpoint(
         self, vin: str
-    ) -> dict[str, Any] | None:  # pragma: no cover
+    ) -> Optional[dict[str, Any]]:  # pragma: no cover
         """Get where you have parked your car."""
         ret = await self.controller.request(
             method="GET",
@@ -71,7 +70,7 @@ class Api:
 
     async def get_vehicle_health_status_endpoint(
         self, vin: str
-    ) -> dict[str, Any] | None:
+    ) -> Optional[dict[str, Any]]:
         """Get information about the vehicle."""
         return await self.controller.request(
             method="GET",
@@ -80,7 +79,7 @@ class Api:
             headers={"VIN": vin},
         )
 
-    async def get_vehicle_status_endpoint(self, vin: str) -> dict[str, Any] | None:
+    async def get_vehicle_status_endpoint(self, vin: str) -> Optional[dict[str, Any]]:
         """Get information about the vehicle."""
         return await self.controller.request(
             method="GET",
@@ -91,7 +90,7 @@ class Api:
 
     async def get_vehicle_electric_status_endpoint(
         self, vin: str
-    ) -> dict[str, Any] | None:
+    ) -> Optional[dict[str, Any]]:
         """Get information about the vehicle."""
         try:
             return await self.controller.request(
@@ -104,7 +103,7 @@ class Api:
             # TODO This is wrong, but lets change the Vehicle class
             return None
 
-    async def get_telemetry_endpoint(self, vin: str) -> dict[str, Any] | None:
+    async def get_telemetry_endpoint(self, vin: str) -> Optional[dict[str, Any]]:
         """Get information about the vehicle."""
         return await self.controller.request(
             method="GET",
@@ -113,7 +112,7 @@ class Api:
             headers={"vin": vin},
         )
 
-    async def get_notification_endpoint(self, vin: str) -> dict[str, Any] | None:
+    async def get_notification_endpoint(self, vin: str) -> Optional[dict[str, Any]]:
         """Get information about the vehicle."""
         resp = await self.controller.request(
             method="GET",
@@ -125,8 +124,8 @@ class Api:
         return resp[0]["notifications"]
 
     async def get_driving_statistics_endpoint(
-        self, vin: str, from_date: str, interval: str | None = None
-    ) -> dict[str, Any] | None:
+        self, vin: str, from_date: str, interval: Optional[str] = None
+    ) -> Optional[dict[str, Any]]:
         """Get driving statistic"""
         return await self.controller.request(
             method="GET",
@@ -170,7 +169,7 @@ class Api:
 
     async def set_lock_unlock_vehicle_endpoint(
         self, vin: str, action: str
-    ) -> dict[str, str] | None:
+    ) -> Optional[dict[str, str]]:
         """Lock vehicle."""
         return await self.controller.request(
             method="POST",
@@ -181,7 +180,7 @@ class Api:
 
     async def get_lock_unlock_request_status(
         self, vin: str, request_id: str
-    ) -> dict[str, Any] | None:
+    ) -> Optional[dict[str, Any]]:
         """Check lock/unlock status given a request ID"""
         return await self.controller.request(
             method="GET",

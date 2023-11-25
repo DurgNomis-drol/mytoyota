@@ -11,6 +11,7 @@ information, sensor data, fuel level, driving statistics and more.
 from __future__ import annotations
 
 import logging
+from typing import Optional
 
 from mytoyota.api import Api
 from mytoyota.const import SUPPORTED_REGIONS
@@ -41,7 +42,7 @@ class MyT:
         locale: str = "en-gb",
         region: str = "europe",
         brand: str = "T",
-        uuid: str | None = None,
+        uuid: Optional[str] = None,
         controller_class=Controller,
         disable_locale_check: bool = False,
     ) -> None:
