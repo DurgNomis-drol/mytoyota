@@ -1,17 +1,18 @@
 # This workflow will upload a Python Package using Twine when a release is created
 # For more information see: https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
 
-name: Upload Python Package to PyPi
+name: "Upload Python Package to PyPi"
 
 on:
   release:
-    types: [published]
+    types: ["published"]
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: "ubuntu-latest"
     steps:
-      - uses: actions/checkout@v4
-      - name: Build package and publish to pypi
-        uses: JRubics/poetry-publish@v1.17
+      - name: "⤵️ Check out code from GitHub"
+        uses: "actions/checkout@v4"
+      - name: "🚀 Build package and publish to pypi"
+        uses: "JRubics/poetry-publish@v1.17"
         with:
-          pypi_token: ${{ secrets.PYPI_PASSWORD }}
+          pypi_token: "${{ secrets.PYPI_PASSWORD }}"
