@@ -8,7 +8,7 @@ Please follow these guidelines to ensure a smooth contribution process.
 
 If you've found a bug, please create a bug report. Make sure to provide the following information:
 
-- **Environment Information:** (e.g., Home Assistant version, HA Toyota version)
+- **Environment Information:** (e.g., mytoyota version, Python version)
 - **Steps to Reproduce the Bug:**
 - **Expected Behavior:**
 - **Current Behavior:**
