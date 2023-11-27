@@ -23,6 +23,7 @@ class Api:
         return self.controller.uuid
 
     async def set_vehicle_alias_endpoint(self, alias: str, guid: str, vin: str):
+        """Set the alias for a vehicle."""
         return await self.controller.request(
             method="PUT",
             base_url=BASE_URL,
@@ -36,8 +37,9 @@ class Api:
             body={"guid": guid, "vin": vin, "nickName": alias},
         )
 
+    # TODO What does this do?
     async def get_wake_endpoint(self) -> None:
-        # TODO What does this do?
+        """Send a wake request to the vehicle."""
         await self.controller.request(
             method="POST", base_url=BASE_URL, endpoint="/v2/global/remote/wake"
         )
@@ -150,7 +152,7 @@ class Api:
         data = await self.controller.request_json(
             method="GET",
             base_url=BASE_URL,
-            endpoint=f"/v1/trips?from={from_}&to={to}&route={route}&summary={summary}&limit={limit}&offset={offset}", # pylint: C0301: Line too long
+            endpoint=f"/v1/trips?from={from_}&to={to}&route={route}&summary={summary}&limit={limit}&offset={offset}",  # pylint: disable=C0301
             headers={"vin": vin},
         )
 
