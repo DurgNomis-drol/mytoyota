@@ -52,7 +52,7 @@ class Api:
 
     async def get_location_endpoint(
         self, vin: str
-    ) -> Optional[dict[str, Any]]:  # pragma: no cover
+    ) -> Optional[Union[dict[str, Any], list[Any]]]:  # pragma: no cover
         """Get where you have parked your car."""
         ret = await self.controller.request(
             method="GET",
@@ -62,7 +62,7 @@ class Api:
         )
 
         # If car is in motion you can get an empty response back. This will have no payload.
-        return None if "status" in ret else ret
+        return None if "status" in str(ret) else ret
 
     async def get_vehicle_health_status_endpoint(
         self, vin: str
