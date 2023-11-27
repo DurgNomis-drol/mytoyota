@@ -13,7 +13,9 @@ def censor_value(value: Any, key: str, to_censor: set) -> Any:
     return value
 
 
-def censor_all(dictionary: dict[str, Any], to_censor: Optional[set] = None) -> dict[str, Any]:
+def censor_all(
+    dictionary: dict[str, Any], to_censor: Optional[set] = None
+) -> dict[str, Any]:
     if to_censor is None:
         to_censor = {
             "vin",
