@@ -1,8 +1,12 @@
+""" Toyota Connected Services API - V1 Trips Models """
 from datetime import date, datetime
 from typing import Optional, List
 from uuid import UUID
-
 from pydantic import BaseModel, Field
+
+from .common import _StatusModel
+
+# pylint: disable=missing-class-docstring
 
 
 class _PaginationModel(BaseModel):
@@ -33,12 +37,13 @@ class _ScoresModel(BaseModel):
 
 
 class _SummaryModel(BaseModel):
+    average_speed: float = Field(alias="averageSpeed")
     countries: List[str]
     duration: int
     durationHighway: int
     durationIdle: int
     durationOverspeed: int
-    fuelConsumption: float
+    fuelConsumption: Optional[float] = None
     length: int
     lengthHighway: int
     lengthOverspeed: int
@@ -60,9 +65,18 @@ class _HDCModel(BaseModel):
     powerTime: int = 0
 
 
-class _MonthSummaryModel(BaseModel):
+class _HistogramsModel(BaseModel):
+    day: int
+    hdc: Optional[_HDCModel]
+    month: int
+    scores: _ScoresModel
+    summary: _SummaryModel
+    year: int
+
+
+class _AllSummaryModel(BaseModel):
     hdc: Optional[_HDCModel] = None  # Only available on EV cars
-    # histograms not imported
+    histograms: List[_HistogramsModel]
     month: int = Field(..., ge=1, le=12)
     scores: _ScoresModel
     summary: _SummaryModel
@@ -80,18 +94,50 @@ class _TripSummaryModel(_SummaryModel):
     startTs: datetime
 
 
+class _ContextModel(BaseModel):
+    slope: float
+
+
+class _BehavioursModel(BaseModel):
+    coaching_msg: int = Field(alias="coachingMsg")
+    context: _ContextModel
+    diagnostic_msg: int = Field(alias="diagnosticMsg")
+    good: bool
+    lat: float
+    lon: float
+    priority: bool
+    severity: float
+    ts: datetime
+
+
+class _RouteModel(BaseModel):
+    highway: bool
+    index_in_points: int = Field(alias="indexInPoints")
+    is_ev: bool = Field(alias="isEv")
+    lat: float
+    lon: float
+    mode: int
+    overspeed: bool
+
+
 class _TripModel(BaseModel):
-    # behaviours not imported
+    behaviours: List[_BehavioursModel]
     category: int
     hdc: Optional[_HDCModel] = None  # Only available on EV cars
     id: UUID
+    route: List[_RouteModel]
     scores: _ScoresModel
     summary: _TripSummaryModel
 
 
-class TripsModel(BaseModel):
+class _TripsModel(BaseModel):
     _metadata: _MetaDataModel
     from_date: date = Field(..., alias="from")
+    summary: List[_AllSummaryModel] = []
     to_date: date = Field(..., alias="to")
-    summary: List[_MonthSummaryModel] = []
     trips: List[_TripModel] = []
+
+
+class V1TripsModel(BaseModel):
+    payload: _TripsModel
+    status: _StatusModel

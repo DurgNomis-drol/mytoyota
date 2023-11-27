@@ -7,9 +7,9 @@ from uuid import uuid4
 from .const import BASE_URL
 from .controller import Controller
 from .exceptions import ToyotaApiError
-from .models.endpoints.health_status import HealthStatusModel
-from .models.endpoints.location import LocationModel
-from .models.endpoints.trip import TripsModel
+from .models.endpoints.v1_vehicle_health import V1VehicleHealthModel
+from .models.endpoints.v1_location import V1LocationModel
+from .models.endpoints.v1_trips import V1TripsModel
 
 
 class Api:
@@ -56,7 +56,7 @@ class Api:
 
     async def get_location_endpoint(
         self, vin: str
-    ) -> Optional[LocationModel]:  # pragma: no cover
+    ) -> Optional[V1LocationModel]:  # pragma: no cover
         """Get where you have parked your car."""
         responce = await self.controller.request_json(
             method="GET",
@@ -66,9 +66,11 @@ class Api:
         )
 
         # If car is in motion you can get an empty response back. This will have no payload.
-        return LocationModel(**responce["payload"])
+        return V1LocationModel(**responce["payload"])
 
-    async def get_vehicle_health_status_endpoint(self, vin: str) -> HealthStatusModel:
+    async def get_vehicle_health_status_endpoint(
+        self, vin: str
+    ) -> V1VehicleHealthModel:
         """Get information about the vehicle."""
         responce = await self.controller.request_json(
             method="GET",
@@ -77,7 +79,7 @@ class Api:
             headers={"VIN": vin},
         )
 
-        return HealthStatusModel(**responce["payload"])
+        return V1VehicleHealthModel(**responce["payload"])
 
     async def get_vehicle_status_endpoint(
         self, vin: str
@@ -148,7 +150,7 @@ class Api:
         summary: bool = True,
         limit: int = 5,
         offset: int = 0,
-    ) -> TripsModel:
+    ) -> V1TripsModel:
         """Get trip
         The page parameter works a bit strange but setting to 1 gets last few trips"""
         responce = await self.controller.request_json(
@@ -158,37 +160,4 @@ class Api:
             headers={"vin": vin},
         )
 
-        return TripsModel(**responce["payload"])
-
-    # TODO: Check if this is still in use and delete it otherwise
-    async def get_trip_endpoint(self, vin: str, trip_id: str) -> TripsModel:
-        """Get data for a single trip"""
-        data = await self.controller.request(
-            method="GET",
-            base_url=BASE_URL,
-            endpoint=f"/api/user/{self.uuid}/cms/trips/v2/{trip_id}/events/vin/{vin}",
-            headers={"vin": vin},
-        )
-
-        return TripsModel(**data)
-
-    async def set_lock_unlock_vehicle_endpoint(
-        self, vin: str, action: str
-    ) -> Optional[Union[Dict[str, Any], List[Any]]]:
-        """Lock vehicle."""
-        return await self.controller.request(
-            method="POST",
-            base_url=BASE_URL,
-            endpoint=f"/vehicles/{vin}/lock",
-            body={"action": action},
-        )
-
-    async def get_lock_unlock_request_status(
-        self, vin: str, request_id: str
-    ) -> Optional[Union[Dict[str, Any], List[Any]]]:
-        """Check lock/unlock status given a request ID"""
-        return await self.controller.request(
-            method="GET",
-            base_url=BASE_URL,
-            endpoint=f"/vehicles/{vin}/lock/{request_id}",
-        )
+        return V1TripsModel(**responce["payload"])

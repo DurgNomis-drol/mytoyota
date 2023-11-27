@@ -1,14 +1,12 @@
+""" Toyota Connected Services API - V4 Account Models """
 from datetime import datetime
-from typing import List, Union, Iterable, Tuple, Any
+from typing import List, Optional
 from uuid import UUID
+from pydantic import BaseModel, Field
 
-from pydantic import BaseModel, Field, field_validator
+from .common import _StatusModel
 
-
-def censor_sensitive_fields(args: Iterable[Tuple[Union[str, None], Any]],
-                            replace: List[str]) -> str:
-    return " ".join(repr(v) if a is None else f"{a}='*** CENSORED ***'" if a in replace else f"{a}={v!r}" for a, v in
-                    args)
+# pylint: disable=locally-disabled, missing-class-docstring, fixme
 
 
 class _TermsActivityModel(BaseModel):
@@ -27,9 +25,6 @@ class _EmailModel(BaseModel):
     email_verified: bool = Field(alias="emailVerified")
     verification_date: datetime = Field(alias="verificationDate")
 
-    def __repr__(self):
-        return censor_sensitive_fields(self.__repr_args__(), ["email_address"])
-
 
 class _PhoneNumberModel(BaseModel):
     country_code: int = Field(alias="countryCode")
@@ -37,15 +32,12 @@ class _PhoneNumberModel(BaseModel):
     phone_verified: bool = Field(alias="phoneVerified")
     verification_date: datetime = Field("verificationDate")
 
-    @field_validator("phone_number")
-    def censor_original_vin(cls, v):
-        v = "POOP"
-        return v
-
 
 class _CustomerModel(BaseModel):
     account_status: str = Field(alias="accountStatus")
-    additional_attributes: _AdditionalAttributesModel = Field(alias="additionalAttributes")
+    additional_attributes: _AdditionalAttributesModel = Field(
+        alias="additionalAttributes"
+    )
     create_date: datetime = Field(alias="createDate")
     create_source: str = Field(alias="createSource")
     customer_type: str = Field(alias="customerType")
@@ -63,56 +55,10 @@ class _CustomerModel(BaseModel):
     ui_language: str = Field(alias="uiLanguage")
 
 
-class _PayloadModel(BaseModel):  # TODO common across all?
+class _PayloadModel(BaseModel):
     customer: _CustomerModel
 
 
-class _MessageModel(BaseModel):
-    description: str
-    response_code: str = Field(alias="responseCode")
-
-
-class _StatusModel(BaseModel):
-    messages: List[_MessageModel]
-
-
 class V4AccountModel(BaseModel):
-    payload: Union[_PayloadModel, None] = None
+    payload: Optional[_PayloadModel] = None
     status: _StatusModel
-
-
-if __name__ == "__main__":
-    data = {'payload': {'customer': {'accountStatus': 'active',
-                                     'additionalAttributes': {'isTermsAccepted': True,
-                                                              'termsActivity': [{'timeStamp': 1695059143310,
-                                                                                 'version': 'TME_CP_GB_V7'},
-                                                                                {'timeStamp': 1699214753709,
-                                                                                 'version': 'TME_CP_GB_V8'}]},
-                                     'createDate': 1670190933340,
-                                     'createSource': 'TME_FR',
-                                     'customerType': 'PERSON',
-                                     'emails': [{'emailAddress': 'car@rebeccaodonnell.co.uk',
-                                                 'emailType': 'forgerock',
-                                                 'emailVerified': True,
-                                                 'verificationDate': 1670190933340}],
-                                     'firstName': 'Rebecca',
-                                     'forgerockId': 'd95b0b58-3b3f-40e3-99ca-a3aa2a22a204',
-                                     'guid': 'd95b0b58-3b3f-40e3-99ca-a3aa2a22a204',
-                                     'isCpMigrated': False,
-                                     'lastName': "O'Donnell",
-                                     'lastUpdateDate': 1699214742826,
-                                     'lastUpdateSource': 'CT_FR',
-                                     'phoneNumbers': [{'countryCode': 44,
-                                                       'phoneNumber': 7903093574,
-                                                       'phoneType': 'MOBILE',
-                                                       'phoneVerified': True,
-                                                       'verificationDate': 1699214742826}],
-                                     'preferredLanguage': 'en-GB',
-                                     'signupType': 'regular',
-                                     'uiLanguage': 'en-GB'}},
-            'status': {'messages': [{'description': 'Customer Found',
-                                     'responseCode': 'OCPR-0000'}]}}
-
-    model = V4AccountModel(**data)
-    print(model)
-    print(model.payload.customer.phone_numbers)
