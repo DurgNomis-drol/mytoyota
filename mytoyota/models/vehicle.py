@@ -1,6 +1,7 @@
 """Vehicle model."""
 import asyncio
 import copy
+from datetime import date, timedelta
 from functools import partial
 import logging
 from typing import Any, Optional
@@ -28,7 +29,7 @@ class Vehicle:
 
         self._vehicle_info = vehicle_info
         self._api = api
-        self._endpoint_data: [str, Any] = {}
+        self._endpoint_data: dict[str, Any] = {}
 
         # Endpoint Name, Function to check if car supports the endpoint, endpoint to call to update
         all_endpoints = [
@@ -71,6 +72,18 @@ class Vehicle:
                 "status",
                 partial(self._supported, "vehicleStatus", None),
                 partial(self._api.get_vehicle_status_endpoint, vin=vehicle_info["vin"]),
+            ],
+            [
+                "trips",
+                partial(
+                    self._supported, None, None
+                ),  # TODO Unsure of the required capability
+                partial(
+                    self._api.get_trips_endpoint,
+                    vin=vehicle_info["vin"],
+                    from_date=date.today() - timedelta(days=30),
+                    to_date=date.today(),
+                ),
             ],
         ]
         self._endpoint_collect: list[tuple[str, partial]] = []

@@ -7,7 +7,7 @@ from uuid import uuid4
 from .const import BASE_URL
 from .controller import Controller
 from .exceptions import ToyotaApiError
-from .models.endpoints.trip import Trips
+from .models.endpoints.trip import TripsModel
 
 
 class Api:
@@ -140,26 +140,26 @@ class Api:
     async def get_trips_endpoint(
         self,
         vin: str,
-        from_: date,
-        to: date,
+        from_date: date,
+        to_date: date,
         route: bool = False,
         summary: bool = True,
         limit: int = 5,
         offset: int = 0,
-    ) -> Trips:
+    ) -> TripsModel:
         """Get trip
         The page parameter works a bit strange but setting to 1 gets last few trips"""
         data = await self.controller.request_json(
             method="GET",
             base_url=BASE_URL,
-            endpoint=f"/v1/trips?from={from_}&to={to}&route={route}&summary={summary}&limit={limit}&offset={offset}",  # pylint: disable=C0301
+            endpoint=f"/v1/trips?from={from_date}&to={to_date}&route={route}&summary={summary}&limit={limit}&offset={offset}",  # pylint: disable=C0301
             headers={"vin": vin},
         )
 
-        return Trips(**data["payload"])
+        return TripsModel(**data["payload"])
 
     # TODO: Check if this is still in use and delete it otherwise
-    async def get_trip_endpoint(self, vin: str, trip_id: str) -> Trips:
+    async def get_trip_endpoint(self, vin: str, trip_id: str) -> TripsModel:
         """Get data for a single trip"""
         data = await self.controller.request(
             method="GET",
@@ -168,7 +168,7 @@ class Api:
             headers={"vin": vin},
         )
 
-        return Trips(**data)
+        return TripsModel(**data)
 
     async def set_lock_unlock_vehicle_endpoint(
         self, vin: str, action: str

@@ -5,7 +5,7 @@ from uuid import UUID
 from pydantic import BaseModel, Field
 
 
-class _Pagination(BaseModel):
+class _PaginationModel(BaseModel):
     currentPage: int
     limit: int
     offset: int
@@ -14,17 +14,17 @@ class _Pagination(BaseModel):
     totalCount: int
 
 
-class _SortedBy(BaseModel):
+class _SortedByModel(BaseModel):
     field: str
     order: str
 
 
-class _MetaData(BaseModel):
-    pagination: _Pagination
-    sortedBy: list[_SortedBy]
+class _MetaDataModel(BaseModel):
+    pagination: _PaginationModel
+    sortedBy: list[_SortedByModel]
 
 
-class _Scores(BaseModel):
+class _ScoresModel(BaseModel):
     acceleration: int = Field(ge=0, le=100)
     advice: int = Field(ge=0, le=100, default=0)
     braking: int = Field(ge=0, le=100)
@@ -32,7 +32,7 @@ class _Scores(BaseModel):
     global_: Optional[int] = Field(ge=0, le=100, alias="global", default=None)
 
 
-class _Summary(BaseModel):
+class _SummaryModel(BaseModel):
     countries: list[str]
     duration: int
     durationHighway: int
@@ -45,31 +45,31 @@ class _Summary(BaseModel):
     maxSpeed: float
 
 
-class _HDC(BaseModel):
+class _HDCModel(BaseModel):
     # Depending on
     #    car not being EV
     #    car being ev only
     #    car being hybrid but only used ev/fuel
-    chargeDist: int = Field(0)
-    chargeTime: int = Field(0)
-    ecoDist: int = Field(0)
-    ecoTime: int = Field(0)
-    evDistance: int = Field(0)
-    evTime: int = Field(0)
-    powerDist: int = Field(0)
-    powerTime: int = Field(0)
+    chargeDist: int = 0
+    chargeTime: int = 0
+    ecoDist: int = 0
+    ecoTime: int = 0
+    evDistance: int = 0
+    evTime: int = 0
+    powerDist: int = 0
+    powerTime: int = 0
 
 
-class _MonthSummary(BaseModel):
-    hdc: Optional[_HDC] = Field(default=None)  # Only available on EV cars
+class _MonthSummaryModel(BaseModel):
+    hdc: Optional[_HDCModel] = None  # Only available on EV cars
     # histograms not imported
     month: int = Field(..., ge=1, le=12)
-    scores: _Scores
-    summary: _Summary
+    scores: _ScoresModel
+    summary: _SummaryModel
     year: int
 
 
-class _TripSummary(_Summary):
+class _TripSummaryModel(_SummaryModel):
     averageSpeed: float
     endLat: float
     endLon: float
@@ -80,18 +80,18 @@ class _TripSummary(_Summary):
     startTs: datetime
 
 
-class _Trip(BaseModel):
+class _TripModel(BaseModel):
     # behaviours not imported
     category: int
-    hdc: Optional[_HDC] = Field(default=None)  # Only available on EV cars
+    hdc: Optional[_HDCModel] = None  # Only available on EV cars
     id: UUID
-    scores: _Scores
-    summary: _TripSummary
+    scores: _ScoresModel
+    summary: _TripSummaryModel
 
 
-class Trips(BaseModel):
-    _metadata: _MetaData
-    from_: date = Field(..., alias="from")
-    summary: list[_MonthSummary] = []
-    to: date
-    trips: list[_Trip] = []
+class TripsModel(BaseModel):
+    _metadata: _MetaDataModel
+    from_date: date = Field(..., alias="from")
+    to_date: date = Field(..., alias="to")
+    summary: list[_MonthSummaryModel] = []
+    trips: list[_TripModel] = []
