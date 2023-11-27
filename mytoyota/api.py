@@ -1,5 +1,6 @@
 """Toyota Connected Services API"""
-from datetime import date, datetime
+
+from datetime import date, datetime, timezone
 from typing import Any, Optional, Union
 from uuid import uuid4
 
@@ -27,7 +28,7 @@ class Api:
             base_url=BASE_URL,
             endpoint="/v1/vehicle-association/vehicle",
             headers={
-                "datetime": str(int(datetime.utcnow().timestamp() * 1000)),
+                "datetime": str(int(datetime.now(timezone.utc).timestamp() * 1000)),
                 "x-correlationid": str(uuid4()),
                 "Content-Type": "application/json",
                 "vin": vin,
@@ -61,10 +62,7 @@ class Api:
         )
 
         # If car is in motion you can get an empty response back. This will have no payload.
-        if "status" in ret:
-            return None
-
-        return ret
+        return None if "status" in ret else ret
 
     async def get_vehicle_health_status_endpoint(
         self, vin: str
