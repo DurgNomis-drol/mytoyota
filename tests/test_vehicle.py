@@ -7,7 +7,7 @@ import pytest
 
 from mytoyota.models.dashboard import Dashboard
 from mytoyota.models.hvac import Hvac
-from mytoyota.models.location import ParkingLocation
+from mytoyota.models.parking_location import ParkingLocation
 from mytoyota.models.sensors import Sensors
 from mytoyota.models.vehicle import Vehicle
 

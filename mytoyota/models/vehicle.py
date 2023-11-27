@@ -9,8 +9,8 @@ from typing import Any, Optional, List, Tuple, Dict
 from mytoyota.api import Api
 from mytoyota.models.dashboard import Dashboard
 from mytoyota.models.hvac import Hvac
-from mytoyota.models.location import ParkingLocation
 from mytoyota.models.nofication import Notification
+from mytoyota.models.parking_location import ParkingLocation
 from mytoyota.utils.logs import censor_all
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -32,7 +32,7 @@ class Vehicle:
         self._endpoint_data: Dict[str, Any] = {}
 
         # Endpoint Name, Function to check if car supports the endpoint, endpoint to call to update
-        all_endpoints = [
+        endpoints = [
             [
                 "location",
                 partial(self._supported, "lastParkedCapable", "lastParked"),
@@ -87,9 +87,9 @@ class Vehicle:
             ],
         ]
         self._endpoint_collect: List[Tuple[str, partial]] = []
-        for ep in all_endpoints:
-            if ep[1]():
-                self._endpoint_collect.append((ep[0], ep[2]))
+        for endpoint in endpoints:
+            if endpoint[1]():
+                self._endpoint_collect.append((endpoint[0], endpoint[2]))
 
     def _supported(
         self, extendedCapability: Optional[str], feature: Optional[str]
@@ -169,7 +169,7 @@ class Vehicle:
     def location(self) -> Optional[ParkingLocation]:
         """Last parking location."""
         if "location" in self._endpoint_data:
-            return ParkingLocation(self._endpoint_data["location"]["vehicleLocation"])
+            return ParkingLocation(self._endpoint_data["location"])
 
         return None
 

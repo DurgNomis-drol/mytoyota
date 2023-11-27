@@ -3,7 +3,7 @@ from typing import Any, Optional
 
 from pydantic import BaseModel, field_validator
 
-from mytoyota.utils.logs import censor_vin
+from mytoyota.utils.logs import censor_string
 
 
 class HealtStatusModel(BaseModel):
@@ -13,6 +13,6 @@ class HealtStatusModel(BaseModel):
     wnglastUpdTime: datetime
 
     @field_validator("vin")
-    def censor_original_vin(cls, v):
-        v = censor_vin(v)
+    def censor_vin(cls, v):
+        v = censor_string(v)
         return v
