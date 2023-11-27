@@ -78,7 +78,7 @@ class Controller:
         _LOGGER.debug("Authenticate")
         async with httpx.AsyncClient() as client:
             # Authenticate. (Better approach as found in toyota_na, as opposed to multiple stages)
-            data = {}
+            data: dict[str, Any] = {}
             for _ in range(10):
                 if "callbacks" in data:
                     for cb in data["callbacks"]:
