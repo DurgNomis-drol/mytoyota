@@ -22,7 +22,7 @@ class Api:
         return self.controller.uuid
 
     async def set_vehicle_alias_endpoint(self, alias: str, guid: str, vin: str):
-        resp = await self.controller.request(
+        return await self.controller.request(
             method="PUT",
             base_url=BASE_URL,
             endpoint="/v1/vehicle-association/vehicle",
@@ -34,8 +34,6 @@ class Api:
             },
             body={"guid": guid, "vin": vin, "nickName": alias},
         )
-
-        return resp
 
     async def get_wake_endpoint(self) -> None:
         # TODO What does this do?
