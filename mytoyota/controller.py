@@ -2,7 +2,7 @@
 from datetime import datetime, timedelta
 from http import HTTPStatus
 import logging
-from typing import Any, Optional, Union
+from typing import Any, Optional, Union, Dict, List
 from urllib import parse  # For parse query string, can this be done with httpx?
 
 import httpx
@@ -178,9 +178,9 @@ class Controller:
         method: str,
         endpoint: str,
         base_url: Optional[str] = None,
-        body: Optional[dict[str, Any]] = None,
-        params: Optional[dict[str, Any]] = None,
-        headers: Optional[dict[str, Any]] = None,
+        body: Optional[Dict[str, Any]] = None,
+        params: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, Any]] = None,
     ) -> httpx.Response:
         """Shared request method"""
         if method not in ("GET", "POST", "PUT", "DELETE"):
@@ -249,9 +249,9 @@ class Controller:
         method: str,
         endpoint: str,
         base_url: Optional[str] = None,
-        body: Optional[dict[str, Any]] = None,
-        params: Optional[dict[str, Any]] = None,
-        headers: Optional[dict[str, Any]] = None,
+        body: Optional[Dict[str, Any]] = None,
+        params: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, Any]] = None,
     ):
         response = await self.request_raw(
             method, endpoint, base_url, body, params, headers
@@ -264,13 +264,13 @@ class Controller:
         method: str,
         endpoint: str,
         base_url: Optional[str] = None,
-        body: Optional[dict[str, Any]] = None,
-        params: Optional[dict[str, Any]] = None,
-        headers: Optional[dict[str, Any]] = None,
-    ) -> Optional[Union[dict[str, Any], list[Any]]]:
+        body: Optional[Dict[str, Any]] = None,
+        params: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, Any]] = None,
+    ) -> Optional[Union[Dict[str, Any], List[Any]]]:
         # TODO possibly remove if/when fully pydantic
         response = await self.request_raw(
             method, endpoint, base_url, body, params, headers
         )
-        ret: dict[str, Any] = response.json()
+        ret: Dict[str, Any] = response.json()
         return response.json().get("payload", ret)

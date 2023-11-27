@@ -4,7 +4,7 @@ import copy
 from datetime import date, timedelta
 from functools import partial
 import logging
-from typing import Any, Optional
+from typing import Any, Optional, List, Tuple, Dict
 
 from mytoyota.api import Api
 from mytoyota.models.dashboard import Dashboard
@@ -22,14 +22,14 @@ class Vehicle:
     def __init__(
         self,
         api: Api,
-        vehicle_info: dict[str, Any],
+        vehicle_info: Dict[str, Any],
     ) -> None:
         assert "vin" in vehicle_info
         assert "extendedCapabilities" in vehicle_info
 
         self._vehicle_info = vehicle_info
         self._api = api
-        self._endpoint_data: dict[str, Any] = {}
+        self._endpoint_data: Dict[str, Any] = {}
 
         # Endpoint Name, Function to check if car supports the endpoint, endpoint to call to update
         all_endpoints = [
@@ -86,7 +86,7 @@ class Vehicle:
                 ),
             ],
         ]
-        self._endpoint_collect: list[tuple[str, partial]] = []
+        self._endpoint_collect: List[Tuple[str, partial]] = []
         for ep in all_endpoints:
             if ep[1]():
                 self._endpoint_collect.append((ep[0], ep[2]))
@@ -110,7 +110,7 @@ class Vehicle:
     async def update(self):
         async def parallel_wrapper(
             name: str, fn: partial
-        ) -> tuple[str, dict[str, Any]]:
+        ) -> Tuple[str, Dict[str, Any]]:
             r = await fn()
             return name, r
 
@@ -156,9 +156,9 @@ class Vehicle:
         return "Unknown"
 
     @property
-    def details(self) -> Optional[dict[str, Any]]:
+    def details(self) -> Optional[Dict[str, Any]]:
         """Formats vehicle info into a dict."""
-        det: dict[str, Any] = {}
+        det: Dict[str, Any] = {}
         for i in sorted(self._vehicle_info):
             if i in ("vin", "alias", "imei", "evVehicle"):
                 continue
@@ -173,7 +173,7 @@ class Vehicle:
 
         return None
 
-    def notifications(self, include_read: bool = False) -> Optional[list[Notification]]:
+    def notifications(self, include_read: bool = False) -> Optional[List[Notification]]:
         if "notifications" in self._endpoint_data:
             ret = []
             for notification in self._endpoint_data["notifications"]:
@@ -205,7 +205,7 @@ class Vehicle:
 
         return Dashboard(status)
 
-    def _dump_all(self) -> dict[str, Any]:
+    def _dump_all(self) -> Dict[str, Any]:
         """Helper function for collecting data for further work"""
         dump: [str, Any] = {"vehicle_info": self._vehicle_info}
         for name, data in self._endpoint_data.items():

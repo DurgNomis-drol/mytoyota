@@ -1,7 +1,7 @@
 """Toyota Connected Services API"""
 
 from datetime import date, datetime, timezone
-from typing import Any, Optional, Union
+from typing import Any, Optional, Union, Dict, List
 from uuid import uuid4
 
 from .const import BASE_URL
@@ -45,7 +45,7 @@ class Api:
             method="POST", base_url=BASE_URL, endpoint="/v2/global/remote/wake"
         )
 
-    async def get_vehicles_endpoint(self) -> Optional[Union[dict[str, Any], list[Any]]]:
+    async def get_vehicles_endpoint(self) -> Optional[Union[Dict[str, Any], List[Any]]]:
         """Retrieves list of cars you have registered with MyT"""
         return await self.controller.request(
             method="GET",
@@ -55,7 +55,7 @@ class Api:
 
     async def get_location_endpoint(
         self, vin: str
-    ) -> Optional[Union[dict[str, Any], list[Any]]]:  # pragma: no cover
+    ) -> Optional[Union[Dict[str, Any], List[Any]]]:  # pragma: no cover
         """Get where you have parked your car."""
         ret = await self.controller.request(
             method="GET",
@@ -80,7 +80,7 @@ class Api:
 
     async def get_vehicle_status_endpoint(
         self, vin: str
-    ) -> Optional[Union[dict[str, Any], list[Any]]]:
+    ) -> Optional[Union[Dict[str, Any], List[Any]]]:
         """Get information about the vehicle."""
         return await self.controller.request(
             method="GET",
@@ -91,7 +91,7 @@ class Api:
 
     async def get_vehicle_electric_status_endpoint(
         self, vin: str
-    ) -> Optional[Union[dict[str, Any], list[Any]]]:
+    ) -> Optional[Union[Dict[str, Any], List[Any]]]:
         """Get information about the vehicle."""
         try:
             return await self.controller.request(
@@ -106,7 +106,7 @@ class Api:
 
     async def get_telemetry_endpoint(
         self, vin: str
-    ) -> Optional[Union[dict[str, Any], list[Any]]]:
+    ) -> Optional[Union[Dict[str, Any], List[Any]]]:
         """Get information about the vehicle."""
         return await self.controller.request(
             method="GET",
@@ -115,7 +115,7 @@ class Api:
             headers={"vin": vin},
         )
 
-    async def get_notification_endpoint(self, vin: str) -> Optional[dict[str, Any]]:
+    async def get_notification_endpoint(self, vin: str) -> Optional[Dict[str, Any]]:
         """Get information about the vehicle."""
         resp = await self.controller.request(
             method="GET",
@@ -128,7 +128,7 @@ class Api:
 
     async def get_driving_statistics_endpoint(
         self, vin: str, from_date: str, interval: Optional[str] = None
-    ) -> Optional[Union[dict[str, Any], list[Any]]]:
+    ) -> Optional[Union[Dict[str, Any], List[Any]]]:
         """Get driving statistic"""
         return await self.controller.request(
             method="GET",
@@ -173,7 +173,7 @@ class Api:
 
     async def set_lock_unlock_vehicle_endpoint(
         self, vin: str, action: str
-    ) -> Optional[Union[dict[str, Any], list[Any]]]:
+    ) -> Optional[Union[Dict[str, Any], List[Any]]]:
         """Lock vehicle."""
         return await self.controller.request(
             method="POST",
@@ -184,7 +184,7 @@ class Api:
 
     async def get_lock_unlock_request_status(
         self, vin: str, request_id: str
-    ) -> Optional[Union[dict[str, Any], list[Any]]]:
+    ) -> Optional[Union[Dict[str, Any], List[Any]]]:
         """Check lock/unlock status given a request ID"""
         return await self.controller.request(
             method="GET",

@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any, Optional, Dict
 
 
 def censor_value(value: Any, key: str, to_censor: set) -> Any:
@@ -14,8 +14,8 @@ def censor_value(value: Any, key: str, to_censor: set) -> Any:
 
 
 def censor_all(
-    dictionary: dict[str, Any], to_censor: Optional[set] = None
-) -> dict[str, Any]:
+    dictionary: Dict[str, Any], to_censor: Optional[set] = None
+) -> Dict[str, Any]:
     if to_censor is None:
         to_censor = {
             "vin",

@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from typing import Optional
+from typing import Optional, List
 from uuid import UUID
 
 from pydantic import BaseModel, Field
@@ -21,7 +21,7 @@ class _SortedByModel(BaseModel):
 
 class _MetaDataModel(BaseModel):
     pagination: _PaginationModel
-    sortedBy: list[_SortedByModel]
+    sortedBy: List[_SortedByModel]
 
 
 class _ScoresModel(BaseModel):
@@ -33,7 +33,7 @@ class _ScoresModel(BaseModel):
 
 
 class _SummaryModel(BaseModel):
-    countries: list[str]
+    countries: List[str]
     duration: int
     durationHighway: int
     durationIdle: int
@@ -93,5 +93,5 @@ class TripsModel(BaseModel):
     _metadata: _MetaDataModel
     from_date: date = Field(..., alias="from")
     to_date: date = Field(..., alias="to")
-    summary: list[_MonthSummaryModel] = []
-    trips: list[_TripModel] = []
+    summary: List[_MonthSummaryModel] = []
+    trips: List[_TripModel] = []
