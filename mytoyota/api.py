@@ -7,7 +7,7 @@ from uuid import uuid4
 from .const import BASE_URL
 from .controller import Controller
 from .exceptions import ToyotaApiError
-from .models.endpoints.healt_status import HealtStatusModel
+from .models.endpoints.health_status import HealthStatusModel
 from .models.endpoints.location import LocationModel
 from .models.endpoints.trip import TripsModel
 
@@ -68,7 +68,7 @@ class Api:
         # If car is in motion you can get an empty response back. This will have no payload.
         return LocationModel(**responce["payload"])
 
-    async def get_vehicle_health_status_endpoint(self, vin: str) -> HealtStatusModel:
+    async def get_vehicle_health_status_endpoint(self, vin: str) -> HealthStatusModel:
         """Get information about the vehicle."""
         responce = await self.controller.request_json(
             method="GET",
@@ -77,7 +77,7 @@ class Api:
             headers={"VIN": vin},
         )
 
-        return HealtStatusModel(**responce["payload"])
+        return HealthStatusModel(**responce["payload"])
 
     async def get_vehicle_status_endpoint(
         self, vin: str

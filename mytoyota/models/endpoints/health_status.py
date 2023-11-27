@@ -6,7 +6,7 @@ from pydantic import BaseModel, field_validator
 from mytoyota.utils.logs import censor_string
 
 
-class HealtStatusModel(BaseModel):
+class HealthStatusModel(BaseModel):
     quantityOfEngOilIcon: Optional[Any] = None
     vin: str
     warning: Optional[Any] = None
