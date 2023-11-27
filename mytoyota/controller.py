@@ -16,7 +16,7 @@ from mytoyota.const import (
     TIMEOUT,
 )
 from mytoyota.exceptions import ToyotaApiError, ToyotaInternalError, ToyotaLoginError
-from mytoyota.utils.logs import censor_dict
+from mytoyota.utils.logs import censor_all
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -208,14 +208,14 @@ class Controller:
             }
         )
 
-        _LOGGER.debug(f"Additional headers: {censor_dict(headers.copy())}")
+        _LOGGER.debug(f"Additional headers: {censor_all(headers.copy())}")
 
         # Cannot authenticate with aiohttp (returns 415),
         # but it works with httpx.
         _LOGGER.debug("Creating client...")
         async with httpx.AsyncClient(timeout=TIMEOUT) as client:
             _LOGGER.debug(
-                f"Body: {censor_dict(body) if body else body} - Parameters: {params}"
+                f"Body: {censor_all(body) if body else body} - Parameters: {params}"
             )
             response = await client.request(
                 method,

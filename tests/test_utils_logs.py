@@ -1,6 +1,6 @@
 """pytest tests for mytoyota.utils.logs"""
 
-from mytoyota.utils.logs import censor, censor_dict, censor_vin
+from mytoyota.utils.logs import censor, censor_all, censor_vin
 
 
 class TestLogUtilities:
@@ -30,10 +30,10 @@ class TestLogUtilities:
 
         assert vin == ""
 
-    def test_censor_dict(self):
-        """Test censor_dict"""
+    def test_censor_all(self):
+        """Test censor_all"""
 
-        dictionary = censor_dict(
+        dictionary = censor_all(
             {
                 "vin": "JTDKGNEC00N999999",
                 "VIN": "JTDKGNEC00N999999",
@@ -56,10 +56,10 @@ class TestLogUtilities:
             "Today": "Tomorrow Toyota",
         }
 
-    def test_censor_dict_no_data(self):
-        """Test censor_dict with no data"""
+    def test_censor_all_no_data(self):
+        """Test censor_all with no data"""
 
-        dictionary = censor_dict({})
+        dictionary = censor_all({})
 
         assert isinstance(dictionary, dict)
         assert not dictionary
