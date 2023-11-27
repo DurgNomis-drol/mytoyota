@@ -150,7 +150,7 @@ class Api:
         data = await self.controller.request_json(
             method="GET",
             base_url=BASE_URL,
-            endpoint=f"/v1/trips?from={from_}&to={to}&route={route}&summary={summary}&limit={limit}&offset={offset}",
+            endpoint=f"/v1/trips?from={from_}&to={to}&route={route}&summary={summary}&limit={limit}&offset={offset}", # pylint: C0301: Line too long
             headers={"vin": vin},
         )
 
