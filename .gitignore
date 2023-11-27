@@ -131,6 +131,7 @@ dmypy.json
 # MS Visual studio
 .vs/
 TestResults/
+.vscode/
 
 .myt_app/
 /blahblah.py
