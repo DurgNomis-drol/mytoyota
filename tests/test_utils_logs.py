@@ -1,6 +1,6 @@
 """pytest tests for mytoyota.utils.logs"""
 
-from mytoyota.utils.logs import censor, censor_all, censor_vin
+from mytoyota.utils.logs import censor_all, censor_string, censor_vin
 
 
 class TestLogUtilities:
@@ -8,13 +8,13 @@ class TestLogUtilities:
 
     def test_censor(self):
         """Testing sensitive info censoring"""
-        string = censor("5957a713-f80f-483f-998c-97f956367048")
+        string = censor_string("5957a713-f80f-483f-998c-97f956367048")
 
         assert string == "5***********************************"
 
     def test_censor_no_data(self):
         """Testing sensitive info censoring"""
-        string = censor("")
+        string = censor_string("")
 
         assert string == ""
 

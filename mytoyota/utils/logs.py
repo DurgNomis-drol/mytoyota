@@ -3,7 +3,7 @@ from typing import Any, Optional
 
 def censor_value(value: Any, key: str, to_censor: set) -> Any:
     if isinstance(value, str) and key.lower() in to_censor:
-        return censor(value)
+        return censor_string(value)
     elif isinstance(value, float) and key.lower() in to_censor:
         return round(value)
     elif isinstance(value, dict):
@@ -40,13 +40,13 @@ def censor_all(
     return {k: censor_value(v, k, to_censor) for k, v in dictionary.items()}
 
 
-def censor(text: str) -> str:
-    return text[:2] + (len(text) - 2) * "*" if text else text
+def censor_string(string: str) -> str:
+    return string[:2] + (len(string) - 2) * "*" if string else string
 
 
 def censor_cookie(cookie: str) -> str:
     string = cookie.split("=")
-    return f"{string[0]}={censor(string[1])}"
+    return f"{string[0]}={censor_string(string[1])}"
 
 
 def censor_vin(vin: str) -> str:
