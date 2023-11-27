@@ -8,6 +8,7 @@ from .const import BASE_URL
 from .controller import Controller
 from .exceptions import ToyotaApiError
 from .models.endpoints.healt_status import HealtStatusModel
+from .models.endpoints.location import LocationModel
 from .models.endpoints.trip import TripsModel
 
 
@@ -55,9 +56,9 @@ class Api:
 
     async def get_location_endpoint(
         self, vin: str
-    ) -> Optional[Union[dict[str, Any], list[Any]]]:  # pragma: no cover
+    ) -> Optional[LocationModel]:  # pragma: no cover
         """Get where you have parked your car."""
-        ret = await self.controller.request(
+        responce = await self.controller.request_json(
             method="GET",
             base_url=BASE_URL,
             endpoint="/v1/location",
@@ -65,7 +66,7 @@ class Api:
         )
 
         # If car is in motion you can get an empty response back. This will have no payload.
-        return None if "status" in str(ret) else ret
+        return LocationModel(**responce["payload"])
 
     async def get_vehicle_health_status_endpoint(self, vin: str) -> HealtStatusModel:
         """Get information about the vehicle."""
