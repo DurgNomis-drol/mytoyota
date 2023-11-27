@@ -46,7 +46,7 @@ async def get_information():
         await car.update()
 
         # Dump all the information collected so far
-        # pp.pprint(car._dump_all())
+        pp.pprint(car._dump_all())
 
         # Alias
         print(f"Alias: {car.alias}")

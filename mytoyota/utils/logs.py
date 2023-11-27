@@ -25,6 +25,7 @@ def censor_all(
             "authorization",
             "latitude",
             "longitude",
+            "link",
             "emergencycontact",
             "remoteuserguid",
             "subscriberguid",
