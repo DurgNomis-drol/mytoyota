@@ -7,6 +7,7 @@ from uuid import uuid4
 from .const import BASE_URL
 from .controller import Controller
 from .exceptions import ToyotaApiError
+from .models.endpoints.healt_status import HealtStatusModel
 from .models.endpoints.trip import TripsModel
 
 
@@ -66,16 +67,16 @@ class Api:
         # If car is in motion you can get an empty response back. This will have no payload.
         return None if "status" in str(ret) else ret
 
-    async def get_vehicle_health_status_endpoint(
-        self, vin: str
-    ) -> Optional[Union[dict[str, Any], list[Any]]]:
+    async def get_vehicle_health_status_endpoint(self, vin: str) -> HealtStatusModel:
         """Get information about the vehicle."""
-        return await self.controller.request(
+        responce = await self.controller.request_json(
             method="GET",
             base_url=BASE_URL,
             endpoint="/v1/vehiclehealth/status",
             headers={"VIN": vin},
         )
+
+        return HealtStatusModel(**responce["payload"])
 
     async def get_vehicle_status_endpoint(
         self, vin: str
@@ -149,14 +150,14 @@ class Api:
     ) -> TripsModel:
         """Get trip
         The page parameter works a bit strange but setting to 1 gets last few trips"""
-        data = await self.controller.request_json(
+        responce = await self.controller.request_json(
             method="GET",
             base_url=BASE_URL,
             endpoint=f"/v1/trips?from={from_date}&to={to_date}&route={route}&summary={summary}&limit={limit}&offset={offset}",  # pylint: disable=C0301
             headers={"vin": vin},
         )
 
-        return TripsModel(**data["payload"])
+        return TripsModel(**responce["payload"])
 
     # TODO: Check if this is still in use and delete it otherwise
     async def get_trip_endpoint(self, vin: str, trip_id: str) -> TripsModel:
