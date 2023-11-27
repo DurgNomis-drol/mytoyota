@@ -156,11 +156,12 @@ class Api:
 
         return Trips(**data["payload"])
 
+    # TODO: Check if this is still in use and delete it otherwise
     async def get_trip_endpoint(self, vin: str, trip_id: str) -> Trips:
         """Get data for a single trip"""
         data = await self.controller.request(
             method="GET",
-            base_url=BASE_URL_CARS,
+            base_url=BASE_URL,
             endpoint=f"/api/user/{self.uuid}/cms/trips/v2/{trip_id}/events/vin/{vin}",
             headers={"vin": vin},
         )

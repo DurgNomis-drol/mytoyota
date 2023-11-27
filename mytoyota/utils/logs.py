@@ -1,34 +1,35 @@
 """Log utilities"""
+from typing import Any
 
 
-def censor(text) -> str:
+def censor(text: str) -> str:
     """
     Replaces characters in a str with the asterisks
     text: The text to censure.
     """
     char = "*"
-    text = text if text else ""
+    text = text or ""
     return text[:2] + (len(text) - 2) * char if text else text
 
 
-def censor_cookie(cookie) -> str:
+def censor_cookie(cookie: str) -> str:
     """
     Replaces characters in a str with the asterisks
     text: The text to censure.
     """
     string = cookie.split("=")
-    return string[0] + "=" + censor(string[1])
+    return f"{string[0]}={censor(string[1])}"
 
 
-def censor_vin(vin) -> str:
+def censor_vin(vin: str) -> str:
     """
     Replaces parts of the vin number with asterisks.
     """
-    vin = vin if vin else ""
-    return vin[:-8] + "********" if vin else vin
+    vin = vin or ""
+    return f"{vin[:-8]}********" if vin else vin
 
 
-def censor_dict(dictionary) -> dict:
+def censor_dict(dictionary: dict[str, Any]) -> dict[str, Any]:
     # TODO combine this with censor_all
     """
     Censors token, vin and other private info in a dict.
@@ -54,7 +55,7 @@ def censor_dict(dictionary) -> dict:
     return dictionary
 
 
-def censor_all(dictionary: dict[str, any]) -> dict:
+def censor_all(dictionary: dict[str, Any]) -> dict[str, Any]:
     to_censor = [
         "vin",
         "uuid",
