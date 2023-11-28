@@ -2,9 +2,10 @@
 from datetime import datetime
 from typing import List, Optional
 from uuid import UUID
+
 from pydantic import BaseModel, Field
 
-from .common import StatusModel
+from mytoyota.models.endpoints.common import StatusModel
 
 # pylint: disable=locally-disabled, missing-class-docstring, fixme
 
@@ -59,6 +60,5 @@ class AccountModel(BaseModel):
     customer: _CustomerModel
 
 
-class AccountResponseModel(BaseModel):
+class AccountResponseModel(StatusModel):
     payload: Optional[AccountModel] = None
-    status: StatusModel

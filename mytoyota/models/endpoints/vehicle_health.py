@@ -1,9 +1,10 @@
 """ Toyota Connected Services API - Endpoint Model """
 from datetime import datetime
-from typing import Any, Optional, List, Union
+from typing import Any, List, Optional
+
 from pydantic import BaseModel, Field
 
-from .common import StatusModel
+from mytoyota.models.endpoints.common import StatusModel
 
 # pylint: disable=locally-disabled, missing-class-docstring, fixme
 
@@ -17,8 +18,5 @@ class VehicleHealthModel(BaseModel):
     wng_last_upd_time: datetime = Field(alias="wnglastUpdTime")
 
 
-class VehicleHealthResponseModel(BaseModel):
-    code: Optional[int] = None  # HTML Status code
-    errors: Optional[List[Any]] = None  # TODO unsure what this returns
+class VehicleHealthResponseModel(StatusModel):
     payload: Optional[VehicleHealthModel] = None
-    status: Union[str, StatusModel]

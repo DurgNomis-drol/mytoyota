@@ -1,7 +1,7 @@
 """Toyota Connected Services API"""
 
 from datetime import date, datetime, timezone
-from typing import Any, Optional, Union, Dict, List
+from typing import Any, Dict, List, Optional, Union
 from uuid import uuid4
 
 from .const import BASE_URL
@@ -69,7 +69,6 @@ class Api:
             headers={"VIN": vin},
         )
 
-        # If car is in motion you can get an empty response back. This will have no payload.
         return LocationResponseModel(**response)
 
     async def get_vehicle_health_status_endpoint(
@@ -163,8 +162,5 @@ class Api:
             endpoint=f"/v1/trips?from={from_date}&to={to_date}&route={route}&summary={summary}&limit={limit}&offset={offset}",  # pylint: disable=C0301
             headers={"vin": vin},
         )
-
-        import pprint
-        pprint.PrettyPrinter().pprint(response)
 
         return TripsResponseModel(**response)

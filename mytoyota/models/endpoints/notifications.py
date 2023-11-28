@@ -21,6 +21,5 @@ class NotificationModel(BaseModel):
     display_category: str = Field(alias="displayCategory")
 
 
-class NotificationResponse(BaseModel):
+class NotificationResponse(StatusModel):
     payload: NotificationModel
-    status: StatusModel

@@ -1,9 +1,10 @@
 """ Toyota Connected Services API - V1 Location Models """
 from datetime import datetime
-from typing import Optional, List, Any, Union
+from typing import Optional
+
 from pydantic import BaseModel, Field
 
-from .common import StatusModel
+from mytoyota.models.endpoints.common import StatusModel
 
 # pylint: disable=locally-disabled, missing-class-docstring, fixme
 
@@ -23,9 +24,5 @@ class LocationModel(BaseModel):
     vin: Optional[str] = None
 
 
-class LocationResponseModel(BaseModel):
-    code: Optional[int] = None
-    errors: Optional[List[Any]] = None  # TODO unsure what this returns
-    message: Optional[str] = None
+class LocationResponseModel(StatusModel):
     payload: Optional[LocationModel] = None
-    status: Union[str, StatusModel]

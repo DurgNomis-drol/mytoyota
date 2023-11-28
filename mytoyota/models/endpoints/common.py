@@ -1,5 +1,6 @@
 """ Toyota Connected Services API - Commend Endpoint Models """
-from typing import List, Optional
+from typing import List, Optional, Union
+
 from pydantic import BaseModel, Field
 
 
@@ -16,5 +17,12 @@ class _Range(BaseModel):
     value: float
 
 
-class StatusModel(BaseModel):
+class _MessagesModel(BaseModel):
     messages: List[_MessageModel]
+
+
+class StatusModel(BaseModel):
+    status: Union[str, _MessagesModel]
+    code: Optional[int] = None
+    errors: Optional[List] = []
+    message: Optional[str] = None

@@ -11,18 +11,18 @@ class ParkingLocation(VehicleData):
     @property
     def latitude(self) -> float:
         """Latitude."""
-        return self._data.vehicleLocation.latitude
+        return self._data.payload.vehicle_location.latitude
 
     @property
     def longitude(self) -> float:
         """Longitude."""
-        return self._data.vehicleLocation.longitude
+        return self._data.payload.vehicle_location.longitude
 
     @property
     def timestamp(self) -> Optional[datetime]:
         """Timestamp."""
-        return self._data.vehicleLocation.locationAcquisitionDatetime
+        return self._data.payload.vehicle_location.location_acquisition_datetime
 
     @property
     def state(self) -> str:
-        return self._data.vehicleLocation.displayName
+        return self._data.payload.vehicle_location.display_name

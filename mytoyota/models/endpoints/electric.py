@@ -18,6 +18,5 @@ class ElectricStatusModel(BaseModel):
     last_update_timestamp: datetime = Field(alias="lastUpdateTimestamp")
 
 
-class ElectricResponseModel(BaseModel):
+class ElectricResponseModel(StatusModel):
     payload: ElectricStatusModel
-    status: StatusModel
