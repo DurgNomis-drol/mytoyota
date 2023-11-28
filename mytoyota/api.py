@@ -7,6 +7,7 @@ from uuid import uuid4
 from mytoyota.models.endpoints.location import LocationResponseModel
 from mytoyota.models.endpoints.notifications import NotificationResponse
 from mytoyota.models.endpoints.status import RemoteStatusResponseModel
+from mytoyota.models.endpoints.telemetry import TelemetryResponceModel
 from mytoyota.models.endpoints.trips import TripsResponseModel
 from mytoyota.models.endpoints.vehicle_guid import VehiclesResponseModel
 from mytoyota.models.endpoints.vehicle_health import VehicleHealthResponseModel
@@ -84,7 +85,7 @@ class Api:
 
         return VehicleHealthResponseModel(**response)
 
-    async def get_vehicle_status_endpoint(self, vin: str) -> RemoteStatusResponseModel:
+    async def get_remote_status_endpoint(self, vin: str) -> RemoteStatusResponseModel:
         """Get information about the vehicle."""
         response = await self.controller.request_json(
             method="GET",
@@ -114,12 +115,14 @@ class Api:
         self, vin: str
     ) -> Optional[Union[Dict[str, Any], List[Any]]]:
         """Get information about the vehicle."""
-        return await self.controller.request(
+        response = await self.controller.request_json(
             method="GET",
             base_url=BASE_URL,
             endpoint="/v3/telemetry",
             headers={"vin": vin},
         )
+
+        return TelemetryResponceModel(**response)
 
     async def get_notification_endpoint(self, vin: str) -> NotificationResponse:
         """Get information about the vehicle."""

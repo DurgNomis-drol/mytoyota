@@ -66,7 +66,7 @@ class Vehicle:
             [
                 "status",
                 vehicle_info.extended_capabilities.vehicle_status,
-                partial(self._api.get_vehicle_status_endpoint, vin=vehicle_info.vin),
+                partial(self._api.get_remote_status_endpoint, vin=vehicle_info.vin),
             ],
             [
                 "trips",
@@ -185,6 +185,6 @@ class Vehicle:
         """Helper function for collecting data for further work"""
         dump: [str, Any] = {"vehicle_info": self._vehicle_info}
         for name, data in self._endpoint_data.items():
-            dump[name] = data
+            dump[name] = data.json()
 
         return censor_all(copy.deepcopy(dump))
