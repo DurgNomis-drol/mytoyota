@@ -310,7 +310,7 @@ class VehicleGuidModel(BaseModel):
     contract_id: str = Field(alias="contractId")
     cts_links: _LinksModel = Field(alias="ctsLinks")
     data_consent: _DataConsentModel = Field(alias="dataConsent")
-    date_of_first_use: date = Field(alias="dateOfFirstUse")
+    date_of_first_use: Optional[date] = Field(alias="dateOfFirstUse")
     dcm: _DcmModel
     dcm_active: bool = Field(alias="dcmActive")
     dcms: Optional[Any]  # TODO unsure what this returns
