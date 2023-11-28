@@ -1,6 +1,6 @@
 """ Toyota Connected Services API - Notification Models """
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Union
 from uuid import UUID
 
 from pydantic import BaseModel, Field
@@ -20,7 +20,7 @@ class NotificationModel(BaseModel):
     read_timestamp: datetime = Field(alias="readTimestamp")
     icon_url: str = Field(alias="iconUrl")
     message: str
-    status: int
+    status: Union[int, str]
     type: str
     category: str
     display_category: str = Field(alias="displayCategory")

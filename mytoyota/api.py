@@ -11,6 +11,7 @@ from mytoyota.models.endpoints.telemetry import TelemetryResponseModel
 from mytoyota.models.endpoints.trips import TripsResponseModel
 from mytoyota.models.endpoints.vehicle_guid import VehiclesResponseModel
 from mytoyota.models.endpoints.vehicle_health import VehicleHealthResponseModel
+from mytoyota.models.endpoints.electric import ElectricResponseModel
 
 from .const import BASE_URL
 from .controller import Controller
@@ -98,18 +99,16 @@ class Api:
 
     async def get_vehicle_electric_status_endpoint(
         self, vin: str
-    ) -> Optional[Union[Dict[str, Any], List[Any]]]:
+    ) -> ElectricResponseModel:
         """Get information about the vehicle."""
-        try:
-            return await self.controller.request(
-                method="GET",
-                base_url=BASE_URL,
-                endpoint="/v1/global/remote/electric/status",
-                headers={"VIN": vin},
-            )
-        except ToyotaApiError:
-            # TODO This is wrong, but lets change the Vehicle class
-            return None
+        response = await self.controller.request(
+            method="GET",
+            base_url=BASE_URL,
+            endpoint="/v1/global/remote/electric/status",
+            headers={"VIN": vin},
+        )
+
+        return ElectricResponseModel(**response)
 
     async def get_telemetry_endpoint(self, vin: str) -> TelemetryResponseModel:
         """Get information about the vehicle."""
