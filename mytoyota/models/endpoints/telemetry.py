@@ -3,24 +3,14 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from mytoyota.models.endpoints.common import StatusModel
-
-
-class _OdometerModel(BaseModel):
-    value: int
-    unit: str
-
-
-class _DistanceToEmptyModel(BaseModel):
-    value: int
-    unit: str
+from mytoyota.models.endpoints.common import StatusModel, UnitValueModel
 
 
 class TelemetryModel(BaseModel):
     fuelType: str
-    odometer: _OdometerModel
+    odometer: UnitValueModel
     fuelLevel: int
-    distanceToEmpty: _DistanceToEmptyModel
+    distanceToEmpty: UnitValueModel
     timestamp: datetime
 
 

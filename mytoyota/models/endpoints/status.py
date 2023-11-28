@@ -4,17 +4,17 @@ from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
-from mytoyota.models.endpoints.common import StatusModel
+from mytoyota.models.endpoints.common import StatusModel, UnitValueModel
 
 
-class _ValueModel(BaseModel):
+class _ValueStatusModel(BaseModel):
     value: str
     status: int
 
 
 class _SectionModel(BaseModel):
     section: str
-    values: List[_ValueModel]
+    values: List[_ValueStatusModel]
 
 
 class _VehicleStatusModel(BaseModel):
@@ -23,25 +23,10 @@ class _VehicleStatusModel(BaseModel):
     sections: List[_SectionModel]
 
 
-class _FugageModel(BaseModel):
-    value: float
-    unit: str
-
-
-class _RageModel(BaseModel):
-    value: float
-    unit: str
-
-
-class _OdoModel(BaseModel):
-    value: float
-    unit: str
-
-
 class _TelemetryModel(BaseModel):
-    fugage: _FugageModel
-    rage: _RageModel
-    odo: _OdoModel
+    fugage: UnitValueModel
+    rage: UnitValueModel
+    odo: UnitValueModel
 
 
 class RemoteStatusModel(BaseModel):
