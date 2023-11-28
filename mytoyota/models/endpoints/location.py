@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Optional, List, Any, Union
 from pydantic import BaseModel, Field
 
-from .common import _StatusModel
+from .common import StatusModel
 
 # pylint: disable=locally-disabled, missing-class-docstring, fixme
 
@@ -15,7 +15,7 @@ class _VehicleLocationModel(BaseModel):
     longitude: float
 
 
-class _LocationModel(BaseModel):
+class LocationModel(BaseModel):
     last_timestamp: Optional[datetime] = Field(alias="lastTimestamp", default=None)
     vehicle_location: Optional[_VehicleLocationModel] = Field(
         alias="vehicleLocation", default=None
@@ -23,9 +23,9 @@ class _LocationModel(BaseModel):
     vin: Optional[str] = None
 
 
-class V1LocationModel(BaseModel):
+class LocationResponseModel(BaseModel):
     code: Optional[int] = None
     errors: Optional[List[Any]] = None  # TODO unsure what this returns
     message: Optional[str] = None
-    payload: Optional[_LocationModel] = None
-    status: Union[str, _StatusModel]
+    payload: Optional[LocationModel] = None
+    status: Union[str, StatusModel]

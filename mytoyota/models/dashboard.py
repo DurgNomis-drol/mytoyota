@@ -18,6 +18,8 @@ class Dashboard(VehicleData):
     @property
     def odometer(self) -> Optional[int]:
         """Shows the odometer distance."""
+
+
         if self._data["odometer"]["unit"] == "mi":
             return self._data["odometer"]["value"]
 

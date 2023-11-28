@@ -273,4 +273,4 @@ class Controller:
             method, endpoint, base_url, body, params, headers
         )
         ret: Dict[str, Any] = response.json()
-        return response.json().get("payload", ret)
+        return ret

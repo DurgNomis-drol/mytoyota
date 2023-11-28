@@ -1,10 +1,10 @@
 """ Toyota Connected Services API - V2 Vehicle Models """
 from datetime import date
-from typing import List, Any, Optional, Dict
+from typing import List, Any, Optional, Dict, Union
 from uuid import UUID
 from pydantic import BaseModel, Field
 
-from .common import _StatusModel
+from .common import StatusModel
 
 # pylint: disable=locally-disabled, missing-class-docstring, fixme
 
@@ -97,7 +97,7 @@ class _ExtendedCapabilitiesModel(BaseModel):
     )
     rear_passenger_seat_heater: bool = Field(alias="rearPassengerSeatHeater")
     rear_passenger_seat_ventilation: bool = Field(alias="rearPassengerSeatVentilation")
-    remote_e_connect_capable: bool = Field(alias="remoteEConnectCapable")
+    remote_econnect_capable: bool = Field(alias="remoteEConnectCapable")
     remote_engine_start_stop: bool = Field(alias="remoteEngineStartStop")
     smart_key_status: bool = Field(alias="smartKeyStatus")
     steering_heater: bool = Field(alias="steeringHeater")
@@ -128,7 +128,7 @@ class _DcmModel(BaseModel):  # Data connection model
     country_code: str = Field(alias="countryCode")
     destination: str = Field(alias="dcmDestination")
     grade: str = Field(alias="dcmGrade")
-    model_year: str = Field(alias="dcmModelYear")
+#    model_year: str = Field(alias="dcmModelYear")  # TODO conflict with pydantic namepsace
     supplier: str = Field(alias="dcmSupplier")
     supplier_name: str = Field(alias="dcmSupplierName")
     euicc_id: str = Field(alias="euiccid")
@@ -298,7 +298,7 @@ class _FeaturesModel(BaseModel):
     xcapp: bool = Field(alias="xcapp")
 
 
-class V2VehicleGuid(BaseModel):
+class VehicleGuidModel(BaseModel):
     alerts: List[Any]  # TODO unsure what this returns
     asiCode: str
     brand: str
@@ -336,10 +336,10 @@ class V2VehicleGuid(BaseModel):
     katashiki_code: str = Field(alias="katashikiCode")
     manufactured_date: date = Field(alias="manufacturedDate")
     manufactured_code: str = Field(alias="manufacturerCode")
-    model_code: str = Field(alias="modelCode")
-    model_description: str = Field(alias="modelDescription")
-    model_name: str = Field(alias="modelName")
-    model_year: str = Field(alias="modelYear")
+#    model_code: str = Field(alias="modelCode") # TODO conflicts with pydantic namespace
+#    model_description: str = Field(alias="modelDescription") # TODO conflicts with pydantic namespace
+#    model_name: str = Field(alias="modelName") # TODO conflicts with pydantic namespace
+#    model_year: str = Field(alias="modelYear") # TODO conflicts with pydantic namespace
     nickname: Optional[str] = Field(alias="nickName")
     non_cvt_vehicle: bool = Field(alias="nonCvtVehicle")
     old_imei: Optional[Any] = Field(alias="oldImei")  # TODO unsure what this returns
@@ -363,7 +363,7 @@ class V2VehicleGuid(BaseModel):
     remote_subscription_exists: bool = Field(alias="remoteSubscriptionExists")
     remote_subscription_status: str = Field(alias="remoteSubscriptionStatus")
     remote_user: bool = Field(alias="remoteUser")
-    remote_user_guid: UUID = Field(alias="remoteUserGuid")
+    remote_user_guid: Optional[Union[UUID, str]] = Field(alias="remoteUserGuid", default=None)
     service_connect_status: Optional[Any] = Field(
         alias="serviceConnectStatus"
     )  # TODO unsure what this returns
@@ -384,6 +384,6 @@ class V2VehicleGuid(BaseModel):
     vin: str
 
 
-class VehiclesModel(BaseModel):
-    payload: Optional[List[V2VehicleGuid]]
-    status: _StatusModel
+class VehiclesResponseModel(BaseModel):
+    payload: Optional[List[VehicleGuidModel]]
+    status: StatusModel

@@ -7,9 +7,11 @@ from uuid import uuid4
 from .const import BASE_URL
 from .controller import Controller
 from .exceptions import ToyotaApiError
-from .models.endpoints.v1_vehicle_health import V1VehicleHealthModel
-from .models.endpoints.v1_location import V1LocationModel
-from .models.endpoints.v1_trips import V1TripsModel
+from .models.endpoints.vehicle_health import VehicleHealthResponseModel
+from .models.endpoints.location import LocationResponseModel
+from .models.endpoints.trips import TripsResponseModel
+from .models.endpoints.vehicle_guid import VehiclesResponseModel
+from .models.endpoints.notifications import NotificationResponse
 
 
 class Api:
@@ -46,19 +48,21 @@ class Api:
             method="POST", base_url=BASE_URL, endpoint="/v2/global/remote/wake"
         )
 
-    async def get_vehicles_endpoint(self) -> Optional[Union[Dict[str, Any], List[Any]]]:
+    async def get_vehicles_endpoint(self) -> VehiclesResponseModel:
         """Retrieves list of cars you have registered with MyT"""
-        return await self.controller.request(
+        resp = await self.controller.request(
             method="GET",
             base_url=BASE_URL,
             endpoint="/v2/vehicle/guid",
         )
 
+        return VehiclesResponseModel(**resp)
+
     async def get_location_endpoint(
         self, vin: str
-    ) -> Optional[V1LocationModel]:  # pragma: no cover
+    ) -> LocationResponseModel:
         """Get where you have parked your car."""
-        responce = await self.controller.request_json(
+        response = await self.controller.request_json(
             method="GET",
             base_url=BASE_URL,
             endpoint="/v1/location",
@@ -66,31 +70,31 @@ class Api:
         )
 
         # If car is in motion you can get an empty response back. This will have no payload.
-        return V1LocationModel(**responce["payload"])
+        return LocationResponseModel(**response)
 
     async def get_vehicle_health_status_endpoint(
         self, vin: str
-    ) -> V1VehicleHealthModel:
+    ) -> VehicleHealthResponseModel:
         """Get information about the vehicle."""
-        responce = await self.controller.request_json(
+        response = await self.controller.request_json(
             method="GET",
             base_url=BASE_URL,
             endpoint="/v1/vehiclehealth/status",
             headers={"VIN": vin},
         )
 
-        return V1VehicleHealthModel(**responce["payload"])
+        return VehicleHealthResponseModel(**response)
 
-    async def get_vehicle_status_endpoint(
-        self, vin: str
-    ) -> Optional[Union[Dict[str, Any], List[Any]]]:
-        """Get information about the vehicle."""
-        return await self.controller.request(
-            method="GET",
-            base_url=BASE_URL,
-            endpoint="/v1/global/remote/status",
-            headers={"VIN": vin},
-        )
+    # async def get_vehicle_status_endpoint(
+    #     self, vin: str
+    # ) -> Optional[Union[Dict[str, Any], List[Any]]]:
+    #     """Get information about the vehicle."""
+    #     return await self.controller.request(
+    #         method="GET",
+    #         base_url=BASE_URL,
+    #         endpoint="/v1/global/remote/status",
+    #         headers={"VIN": vin},
+    #     )
 
     async def get_vehicle_electric_status_endpoint(
         self, vin: str
@@ -118,7 +122,7 @@ class Api:
             headers={"vin": vin},
         )
 
-    async def get_notification_endpoint(self, vin: str) -> Optional[Dict[str, Any]]:
+    async def get_notification_endpoint(self, vin: str) -> NotificationResponse:
         """Get information about the vehicle."""
         resp = await self.controller.request(
             method="GET",
@@ -127,7 +131,7 @@ class Api:
             headers={"vin": vin},
         )
 
-        return resp[0]["notifications"] if len(resp) else []
+        return NotificationResponse(**resp)
 
     async def get_driving_statistics_endpoint(
         self, vin: str, from_date: str, interval: Optional[str] = None
@@ -150,14 +154,17 @@ class Api:
         summary: bool = True,
         limit: int = 5,
         offset: int = 0,
-    ) -> V1TripsModel:
+    ) -> TripsResponseModel:
         """Get trip
         The page parameter works a bit strange but setting to 1 gets last few trips"""
-        responce = await self.controller.request_json(
+        response = await self.controller.request_json(
             method="GET",
             base_url=BASE_URL,
             endpoint=f"/v1/trips?from={from_date}&to={to_date}&route={route}&summary={summary}&limit={limit}&offset={offset}",  # pylint: disable=C0301
             headers={"vin": vin},
         )
 
-        return V1TripsModel(**responce["payload"])
+        import pprint
+        pprint.PrettyPrinter().pprint(response)
+
+        return TripsResponseModel(**response)

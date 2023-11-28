@@ -6,24 +6,28 @@
 import pytest
 import json
 
-from mytoyota.models.endpoints.v4_account import V4AccountModel
-from mytoyota.models.endpoints.v2_vehicle_guid import VehiclesModel
-from mytoyota.models.endpoints.v1_vehicle_health import V1VehicleHealthModel
-from mytoyota.models.endpoints.v1_location import V1LocationModel
-from mytoyota.models.endpoints.v1_trips import V1TripsModel
+from mytoyota.models.endpoints.account import AccountResponseModel
+from mytoyota.models.endpoints.electric import ElectricResponseModel
+from mytoyota.models.endpoints.location import LocationResponseModel
+from mytoyota.models.endpoints.notifications import NotificationResponse
+from mytoyota.models.endpoints.trips import TripsResponseModel
+from mytoyota.models.endpoints.vehicle_guid import VehiclesResponseModel
+from mytoyota.models.endpoints.vehicle_health import VehicleHealthResponseModel
 
 
 
 @pytest.mark.parametrize(
     "model,json_file",
     [
-        (V4AccountModel, "v4accountmodel"),
-        (VehiclesModel, "v2vehicleguid"),
-        (V1VehicleHealthModel, "v1_vehicle_health_ok"),
-        (V1VehicleHealthModel, "v1_vehicle_health_error"),
-        (V1LocationModel, "v1_location_ok"),
-        (V1LocationModel, "v1_location_error"),
-        (V1TripsModel, "v1_trips"),
+        (AccountResponseModel, "v4accountmodel"),
+        (VehiclesResponseModel, "v2vehicleguid"),
+        (VehicleHealthResponseModel, "v1_vehicle_health_ok"),
+        (VehicleHealthResponseModel, "v1_vehicle_health_error"),
+        (LocationResponseModel, "v1_location_ok"),
+        (LocationResponseModel, "v1_location_error"),
+        (TripsResponseModel, "v1_trips"),
+        (ElectricResponseModel, "v1_global_remote_electric_status"),
+#        (NotificationResponse, "")
     ],
 )
 def test_models(model, json_file):

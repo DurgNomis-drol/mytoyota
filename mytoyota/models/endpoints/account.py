@@ -4,7 +4,7 @@ from typing import List, Optional
 from uuid import UUID
 from pydantic import BaseModel, Field
 
-from .common import _StatusModel
+from .common import StatusModel
 
 # pylint: disable=locally-disabled, missing-class-docstring, fixme
 
@@ -55,10 +55,10 @@ class _CustomerModel(BaseModel):
     ui_language: str = Field(alias="uiLanguage")
 
 
-class _PayloadModel(BaseModel):
+class AccountModel(BaseModel):
     customer: _CustomerModel
 
 
-class V4AccountModel(BaseModel):
-    payload: Optional[_PayloadModel] = None
-    status: _StatusModel
+class AccountResponseModel(BaseModel):
+    payload: Optional[AccountModel] = None
+    status: StatusModel

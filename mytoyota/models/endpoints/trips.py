@@ -4,7 +4,7 @@ from typing import Optional, List
 from uuid import UUID
 from pydantic import BaseModel, Field
 
-from .common import _StatusModel
+from .common import StatusModel
 
 # pylint: disable=missing-class-docstring
 
@@ -67,7 +67,7 @@ class _HDCModel(BaseModel):
 
 class _HistogramsModel(BaseModel):
     day: int
-    hdc: Optional[_HDCModel]
+    hdc: Optional[_HDCModel] = None
     month: int
     scores: _ScoresModel
     summary: _SummaryModel
@@ -99,15 +99,16 @@ class _ContextModel(BaseModel):
 
 
 class _BehavioursModel(BaseModel):
-    coaching_msg: int = Field(alias="coachingMsg")
+    coaching_msg: Optional[int] = Field(alias="coachingMsg", default=None)
     context: _ContextModel
-    diagnostic_msg: int = Field(alias="diagnosticMsg")
+    diagnostic_msg: Optional[int] = Field(alias="diagnosticMsg", default=None)
     good: bool
     lat: float
     lon: float
     priority: bool
     severity: float
     ts: datetime
+    type: Optional[str] = None
 
 
 class _RouteModel(BaseModel):
@@ -125,12 +126,12 @@ class _TripModel(BaseModel):
     category: int
     hdc: Optional[_HDCModel] = None  # Only available on EV cars
     id: UUID
-    route: List[_RouteModel]
+    route: Optional[List[_RouteModel]] = None
     scores: _ScoresModel
     summary: _TripSummaryModel
 
 
-class _TripsModel(BaseModel):
+class TripsModel(BaseModel):
     _metadata: _MetaDataModel
     from_date: date = Field(..., alias="from")
     summary: List[_AllSummaryModel] = []
@@ -138,6 +139,6 @@ class _TripsModel(BaseModel):
     trips: List[_TripModel] = []
 
 
-class V1TripsModel(BaseModel):
-    payload: _TripsModel
-    status: _StatusModel
+class TripsResponseModel(BaseModel):
+    payload: TripsModel
+    status: StatusModel

@@ -11,5 +11,10 @@ class _MessageModel(BaseModel):
     response_code: str = Field(alias="responseCode")
 
 
-class _StatusModel(BaseModel):
+class _Range(BaseModel):
+    unit: str
+    value: float
+
+
+class StatusModel(BaseModel):
     messages: List[_MessageModel]

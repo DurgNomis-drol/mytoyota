@@ -98,7 +98,7 @@ class MyT:
         _LOGGER.debug("Getting list of vehicles associated with the account")
         vehicles = await self._api.get_vehicles_endpoint()
 
-        return [Vehicle(self._api, v) for v in vehicles]
+        return [Vehicle(self._api, v) for v in vehicles.payload]
 
     # async def get_driving_statistics(  # pylint: disable=too-many-branches
     #     self,
