@@ -36,6 +36,15 @@ def censor_all(
             "cookie",
             "x-tme-token",
             "id",
+            "subscription_id",
+            "euicc_id",
+            "contract_id",
+            "start_lat",
+            "start_lon",
+            "end_lat",
+            "end_lon",
+            "lat",
+            "lon",
         }
     return {k: censor_value(v, k, to_censor) for k, v in dictionary.items()}
 

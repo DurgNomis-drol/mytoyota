@@ -73,13 +73,24 @@ class _HDCModel(BaseModel):
     power_dist: Optional[int] = Field(alias="powerDist", default=None)
 
 
+class _RouteModel(BaseModel):
+    lat: float
+    lon: float
+    overspeed: bool
+    highway: bool
+    index_in_points: int = Field(alias="indexInPoints")
+    mode: int
+    is_ev: bool = Field(alias="isEv")
+
+
 class _TripModel(BaseModel):
     id: UUID
     category: int
     summary: _SummaryModel
     scores: _ScoresModel
-    behaviours: List[_BehaviourModel]
+    behaviours: Optional[List[_BehaviourModel]] = None
     hdc: Optional[_HDCModel] = None
+    route: Optional[List[_RouteModel]] = None
 
 
 class _HistogramModel(BaseModel):
@@ -120,12 +131,15 @@ class _MetadataModel(BaseModel):
     sorted_by: List[_SortedByItemModel] = Field(alias="sortedBy")
 
 
+
+
 class TripsModel(BaseModel):
     from_date: date = Field(..., alias="from")
     to_date: date = Field(..., alias="to")
     trips: List[_TripModel]
     summary: List[_SummaryItemModel]
     metadata: _MetadataModel = Field(..., alias="_metadata")
+    route: Optional[_RouteModel] = None
 
 
 class TripsResponseModel(StatusModel):
