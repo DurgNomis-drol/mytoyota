@@ -2,7 +2,7 @@
 from datetime import datetime, timedelta
 from http import HTTPStatus
 import logging
-from typing import Any, Optional, Union, Dict, List
+from typing import Any, Dict, List, Optional, Union
 from urllib import parse  # For parse query string, can this be done with httpx?
 
 import httpx

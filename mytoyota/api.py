@@ -111,9 +111,7 @@ class Api:
             # TODO This is wrong, but lets change the Vehicle class
             return None
 
-    async def get_telemetry_endpoint(
-        self, vin: str
-    ) -> TelemetryResponceModel:
+    async def get_telemetry_endpoint(self, vin: str) -> TelemetryResponceModel:
         """Get information about the vehicle."""
         response = await self.controller.request_json(
             method="GET",

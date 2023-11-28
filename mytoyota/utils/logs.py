@@ -1,4 +1,4 @@
-from typing import Any, Optional, Dict
+from typing import Any, Dict, Optional
 
 
 def censor_value(value: Any, key: str, to_censor: set) -> Any:

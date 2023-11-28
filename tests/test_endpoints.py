@@ -11,10 +11,10 @@ from mytoyota.models.endpoints.account import AccountResponseModel
 from mytoyota.models.endpoints.electric import ElectricResponseModel
 from mytoyota.models.endpoints.location import LocationResponseModel
 from mytoyota.models.endpoints.notifications import NotificationResponse
+from mytoyota.models.endpoints.telemetry import TelemetryResponceModel
 from mytoyota.models.endpoints.trips import TripsResponseModel
 from mytoyota.models.endpoints.vehicle_guid import VehiclesResponseModel
 from mytoyota.models.endpoints.vehicle_health import VehicleHealthResponseModel
-from mytoyota.models.endpoints.telemetry import TelemetryResponceModel
 
 
 @pytest.mark.parametrize(
