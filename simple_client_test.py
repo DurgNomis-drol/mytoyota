@@ -53,24 +53,24 @@ async def get_information():
         # Set alis
         # await car.set_alias("RAV4")
 
-        # Basic information
-        mileage = car.dashboard.odometer
-        print(f"Mileage : {mileage}")
-        # Or retrieve the energy level (electric or gasoline)
-        fuel = car.dashboard.fuel_level
-        print(f"Fuel    : {fuel}")
-        battery = car.dashboard.battery_level
-        print(f"Battery : {battery}")
-        # Or Parking information:
-        latitude = car.location.latitude
-        print(f"Latitude : {latitude}")
+        ## Basic information
+        # mileage = car.dashboard.odometer
+        # print(f"Mileage : {mileage}")
+        ## Or retrieve the energy level (electric or gasoline)
+        # fuel = car.dashboard.fuel_level
+        # print(f"Fuel    : {fuel}")
+        # battery = car.dashboard.battery_level
+        # print(f"Battery : {battery}")
+        ## Or Parking information:
+        # latitude = car.location.latitude
+        # print(f"Latitude : {latitude}")
 
-        # Notifications => True retrieve all, False just unread
-        notifications = car.notifications(True)[:5]
-        if notifications:
-            print("Notifications:")
-            for notification in notifications:
-                print(f"    {notification.date} : {notification.message}")
+        ## Notifications => True retrieve all, False just unread
+        # notifications = car.notifications(True)[:5]
+        # if notifications:
+        #    print("Notifications:")
+        #    for notification in notifications:
+        #        print(f"    {notification.date} : {notification.message}")
 
 
 loop = asyncio.get_event_loop()
