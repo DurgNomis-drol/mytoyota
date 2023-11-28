@@ -4,14 +4,14 @@ from datetime import date, datetime, timezone
 from typing import Any, Dict, List, Optional, Union
 from uuid import uuid4
 
+from mytoyota.models.endpoints.electric import ElectricResponseModel
 from mytoyota.models.endpoints.location import LocationResponseModel
-from mytoyota.models.endpoints.notifications import NotificationResponse
+from mytoyota.models.endpoints.notifications import NotificationResponseModel
 from mytoyota.models.endpoints.status import RemoteStatusResponseModel
 from mytoyota.models.endpoints.telemetry import TelemetryResponseModel
 from mytoyota.models.endpoints.trips import TripsResponseModel
 from mytoyota.models.endpoints.vehicle_guid import VehiclesResponseModel
 from mytoyota.models.endpoints.vehicle_health import VehicleHealthResponseModel
-from mytoyota.models.endpoints.electric import ElectricResponseModel
 
 from .const import BASE_URL
 from .controller import Controller
@@ -121,7 +121,7 @@ class Api:
 
         return TelemetryResponseModel(**response)
 
-    async def get_notification_endpoint(self, vin: str) -> NotificationResponse:
+    async def get_notification_endpoint(self, vin: str) -> NotificationResponseModel:
         """Get information about the vehicle."""
         response = await self.controller.request_json(
             method="GET",
@@ -130,7 +130,7 @@ class Api:
             headers={"vin": vin},
         )
 
-        return NotificationResponse(**response)
+        return NotificationResponseModel(**response)
 
     async def get_driving_statistics_endpoint(
         self, vin: str, from_date: str, interval: Optional[str] = None

@@ -10,8 +10,8 @@ import pytest
 from mytoyota.models.endpoints.account import AccountResponseModel
 from mytoyota.models.endpoints.electric import ElectricResponseModel
 from mytoyota.models.endpoints.location import LocationResponseModel
-from mytoyota.models.endpoints.notifications import NotificationResponse
-from mytoyota.models.endpoints.telemetry import TelemetryResponceModel
+from mytoyota.models.endpoints.notifications import NotificationResponseModel
+from mytoyota.models.endpoints.telemetry import TelemetryResponseModel
 from mytoyota.models.endpoints.trips import TripsResponseModel
 from mytoyota.models.endpoints.vehicle_guid import VehiclesResponseModel
 from mytoyota.models.endpoints.vehicle_health import VehicleHealthResponseModel
@@ -28,8 +28,8 @@ from mytoyota.models.endpoints.vehicle_health import VehicleHealthResponseModel
         (LocationResponseModel, "v1_location_error"),
         (TripsResponseModel, "v1_trips"),
         (ElectricResponseModel, "v1_global_remote_electric_status"),
-        (NotificationResponse, "v2_notification"),
-        (TelemetryResponceModel, "v3_telemetry"),
+        (NotificationResponseModel, "v2_notification"),
+        (TelemetryResponseModel, "v3_telemetry"),
     ],
 )
 def test_models(model, json_file):
