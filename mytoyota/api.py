@@ -101,7 +101,7 @@ class Api:
         self, vin: str
     ) -> ElectricResponseModel:
         """Get information about the vehicle."""
-        response = await self.controller.request(
+        response = await self.controller.request_json(
             method="GET",
             base_url=BASE_URL,
             endpoint="/v1/global/remote/electric/status",
