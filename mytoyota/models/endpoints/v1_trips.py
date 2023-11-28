@@ -5,7 +5,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
-from mytoyota.models.endpoints.common import _StatusModel
+from mytoyota.models.endpoints.common import StatusModel
 
 # pylint: disable=missing-class-docstring
 
@@ -134,6 +134,5 @@ class _TripsModel(BaseModel):
     metadata: _MetadataModel = Field(..., alias="_metadata")
 
 
-class V1TripsModel(BaseModel):
+class V1TripsModel(StatusModel):
     payload: _TripsModel
-    status: _StatusModel

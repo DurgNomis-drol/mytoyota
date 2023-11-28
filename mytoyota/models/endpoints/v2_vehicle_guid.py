@@ -1,10 +1,11 @@
 """ Toyota Connected Services API - V2 Vehicle Models """
 from datetime import date
-from typing import List, Any, Optional, Dict
+from typing import Any, Dict, List, Optional
 from uuid import UUID
+
 from pydantic import BaseModel, Field
 
-from .common import _StatusModel
+from mytoyota.models.endpoints.common import StatusModel
 
 # pylint: disable=locally-disabled, missing-class-docstring, fixme
 
@@ -384,6 +385,5 @@ class V2VehicleGuid(BaseModel):
     vin: str
 
 
-class VehiclesModel(BaseModel):
+class VehiclesModel(StatusModel):
     payload: Optional[List[V2VehicleGuid]]
-    status: _StatusModel
