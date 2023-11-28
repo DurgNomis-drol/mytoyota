@@ -74,7 +74,7 @@ class _HDCModel(BaseModel):
 
 
 class _RouteModel(BaseModel):
-    lat: float
+    lat: float = Field(repr=False)
     lon: float
     overspeed: bool
     highway: bool
@@ -129,8 +129,6 @@ class _SortedByItemModel(BaseModel):
 class _MetadataModel(BaseModel):
     pagination: _PaginationModel
     sorted_by: List[_SortedByItemModel] = Field(alias="sortedBy")
-
-
 
 
 class TripsModel(BaseModel):

@@ -1,4 +1,5 @@
 from typing import Any, Dict, Optional
+from httpx import Response
 
 
 def censor_value(value: Any, key: str, to_censor: set) -> Any:
@@ -11,6 +12,20 @@ def censor_value(value: Any, key: str, to_censor: set) -> Any:
     elif isinstance(value, list):
         return [censor_value(item, key, to_censor) for item in value]
     return value
+
+
+def format_httpx_response(response: Response) -> str:
+    return (
+        f"Request:\n"
+        f"  Method : {response.request.method}\n"
+        f"  URL    : {response.request.url}\n"
+        f"  Headers: {response.request.headers}\n"
+        f"  Body   : {response.request.content}\n"
+        f"Response:\n"
+        f"  Status : ({response.status_code},{response.reason_phrase})\n"
+        f"  Headers: {response.headers}\n"
+        f"  Content: {response.content}"
+    )
 
 
 def censor_all(

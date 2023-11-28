@@ -13,9 +13,7 @@ from mytoyota.models.endpoints.vehicle_guid import VehiclesResponseModel
 from mytoyota.models.endpoints.vehicle_health import VehicleHealthResponseModel
 from mytoyota.models.endpoints.electric import ElectricResponseModel
 
-from .const import BASE_URL
 from .controller import Controller
-from .exceptions import ToyotaApiError
 
 
 class Api:
@@ -34,7 +32,6 @@ class Api:
         """Set the alias for a vehicle."""
         return await self.controller.request(
             method="PUT",
-            base_url=BASE_URL,
             endpoint="/v1/vehicle-association/vehicle",
             headers={
                 "datetime": str(int(datetime.now(timezone.utc).timestamp() * 1000)),
@@ -48,15 +45,15 @@ class Api:
     # TODO What does this do?
     async def get_wake_endpoint(self) -> None:
         """Send a wake request to the vehicle."""
-        await self.controller.request(
-            method="POST", base_url=BASE_URL, endpoint="/v2/global/remote/wake"
-        )
+        pass
+        # await self.controller.request(
+        #     method="POST", endpoint="/v2/global/remote/wake"
+        # )
 
     async def get_vehicles_endpoint(self) -> VehiclesResponseModel:
         """Retrieves list of cars you have registered with MyT"""
         response = await self.controller.request_json(
             method="GET",
-            base_url=BASE_URL,
             endpoint="/v2/vehicle/guid",
         )
 
@@ -66,7 +63,6 @@ class Api:
         """Get where you have parked your car."""
         response = await self.controller.request_json(
             method="GET",
-            base_url=BASE_URL,
             endpoint="/v1/location",
             headers={"VIN": vin},
         )
@@ -79,7 +75,6 @@ class Api:
         """Get information about the vehicle."""
         response = await self.controller.request_json(
             method="GET",
-            base_url=BASE_URL,
             endpoint="/v1/vehiclehealth/status",
             headers={"VIN": vin},
         )
@@ -90,7 +85,6 @@ class Api:
         """Get information about the vehicle."""
         response = await self.controller.request_json(
             method="GET",
-            base_url=BASE_URL,
             endpoint="/v1/global/remote/status",
             headers={"VIN": vin},
         )
@@ -101,9 +95,8 @@ class Api:
         self, vin: str
     ) -> ElectricResponseModel:
         """Get information about the vehicle."""
-        response = await self.controller.request(
+        response = await self.controller.request_json(
             method="GET",
-            base_url=BASE_URL,
             endpoint="/v1/global/remote/electric/status",
             headers={"VIN": vin},
         )
@@ -114,7 +107,6 @@ class Api:
         """Get information about the vehicle."""
         response = await self.controller.request_json(
             method="GET",
-            base_url=BASE_URL,
             endpoint="/v3/telemetry",
             headers={"vin": vin},
         )
@@ -125,7 +117,6 @@ class Api:
         """Get information about the vehicle."""
         response = await self.controller.request_json(
             method="GET",
-            base_url=BASE_URL,
             endpoint="/v2/notification/history",
             headers={"vin": vin},
         )
@@ -138,7 +129,6 @@ class Api:
         """Get driving statistic"""
         return await self.controller.request(
             method="GET",
-            base_url=BASE_URL,
             endpoint="/v2/trips/summarize",
             headers={"vin": vin},
             params={"from": from_date, "calendarInterval": interval},
@@ -149,7 +139,7 @@ class Api:
         vin: str,
         from_date: date,
         to_date: date,
-        route: bool = False,
+        route: bool = True,
         summary: bool = True,
         limit: int = 5,
         offset: int = 0,
@@ -158,7 +148,6 @@ class Api:
         The page parameter works a bit strange but setting to 1 gets last few trips"""
         response = await self.controller.request_json(
             method="GET",
-            base_url=BASE_URL,
             endpoint=f"/v1/trips?from={from_date}&to={to_date}&route={route}&summary={summary}&limit={limit}&offset={offset}",  # pylint: disable=C0301
             headers={"vin": vin},
         )

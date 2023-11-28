@@ -14,14 +14,12 @@ import logging
 from typing import Optional
 
 from mytoyota.api import Api
-from mytoyota.const import SUPPORTED_REGIONS
 from mytoyota.models.vehicle import Vehicle
 
 from .controller import Controller
 from .exceptions import (
     ToyotaInvalidUsername,
     ToyotaLocaleNotValid,
-    ToyotaRegionNotSupported,
 )
 from .utils.locale import is_valid_locale
 
@@ -40,7 +38,6 @@ class MyT:
         username: str,
         password: str,
         locale: str = "en-gb",
-        region: str = "europe",
         brand: str = "T",
         uuid: Optional[str] = None,
         controller_class=Controller,
@@ -50,9 +47,6 @@ class MyT:
 
         if username is None or "@" not in username:
             raise ToyotaInvalidUsername
-
-        if region not in SUPPORTED_REGIONS:
-            raise ToyotaRegionNotSupported(region)
 
         if not disable_locale_check:
             if not is_valid_locale(locale):
@@ -64,23 +58,8 @@ class MyT:
             controller_class(
                 username=username,
                 password=password,
-                locale=locale,
-                region=region,
-                brand=brand,
-                uuid=uuid,
             )
         )
-
-    @staticmethod
-    def get_supported_regions() -> list:
-        """Get supported regions.
-
-        Retrieves a list of supported regions.
-
-        Returns:
-            A list of supported regions. For example: ["europe"]
-        """
-        return list(SUPPORTED_REGIONS.keys())
 
     async def login(self) -> None:
         """Performs first login.
@@ -91,7 +70,7 @@ class MyT:
 
         """
         _LOGGER.debug("Performing first login")
-        await self._api.controller.first_login()
+        await self._api.controller.login()
 
     async def get_vehicles(self) -> list[Vehicle]:
         """Returns a list of vehicles."""
