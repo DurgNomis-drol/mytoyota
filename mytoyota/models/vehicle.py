@@ -4,15 +4,15 @@ import copy
 from datetime import date, timedelta
 from functools import partial
 import logging
-from typing import Any, Optional, List, Tuple, Dict
+from typing import Any, Dict, List, Optional, Tuple
 
 from mytoyota.api import Api
 from mytoyota.models.dashboard import Dashboard
+from mytoyota.models.endpoints.vehicle_guid import VehicleGuidModel
 from mytoyota.models.hvac import Hvac
 from mytoyota.models.nofication import Notification
 from mytoyota.models.parking_location import ParkingLocation
 from mytoyota.utils.logs import censor_all
-from mytoyota.models.endpoints.vehicle_guid import VehicleGuidModel
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -33,12 +33,13 @@ class Vehicle:
         endpoints = [
             [
                 "location",
-                vehicle_info.extended_capabilities.last_parked_capable or vehicle_info.features.last_parked,
+                vehicle_info.extended_capabilities.last_parked_capable
+                or vehicle_info.features.last_parked,
                 partial(self._api.get_location_endpoint, vin=vehicle_info.vin),
             ],
             [
                 "health_status",
-                True, # TODO Unsure of the required capability
+                True,  # TODO Unsure of the required capability
                 partial(
                     self._api.get_vehicle_health_status_endpoint,
                     vin=vehicle_info.vin,
@@ -57,11 +58,11 @@ class Vehicle:
                 vehicle_info.extended_capabilities.telemetry_capable,
                 partial(self._api.get_telemetry_endpoint, vin=vehicle_info.vin),
             ],
-            #[
+            # [
             #    "notifications",
             #    True, # TODO Unsure of the required capability
             #    partial(self._api.get_notification_endpoint, vin=vehicle_info.vin),
-            #],
+            # ],
             # [
             #     "status",
             #     vehicle_info.extended_capabilities.vehicle_status,
@@ -69,7 +70,7 @@ class Vehicle:
             # ],
             [
                 "trips",
-                True, # TODO Unsure of the required capability
+                True,  # TODO Unsure of the required capability
                 partial(
                     self._api.get_trips_endpoint,
                     vin=vehicle_info.vin,
@@ -79,17 +80,14 @@ class Vehicle:
             ],
         ]
         self._endpoint_collect: List[Tuple[str, partial]] = []
-        for endpoint in endpoints:
-            if endpoint[1]:
-                self._endpoint_collect.append((endpoint[0], endpoint[2]))
-
+        self._endpoint_collect.extend(
+            (endpoint[0], endpoint[2]) for endpoint in endpoints if endpoint[1]
+        )
 
     async def update(self):
         async def parallel_wrapper(
             name: str, fn: partial
         ) -> Tuple[str, Dict[str, Any]]:
-
-
             r = await fn()
             return name, r
 
