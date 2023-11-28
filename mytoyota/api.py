@@ -1,15 +1,15 @@
 """Toyota Connected Services API"""
 
 from datetime import date, datetime, timezone
-from typing import Any, Optional, Union, Dict, List
+from typing import Any, Dict, List, Optional, Union
 from uuid import uuid4
 
 from .const import BASE_URL
 from .controller import Controller
 from .exceptions import ToyotaApiError
-from .models.endpoints.v1_vehicle_health import V1VehicleHealthModel
 from .models.endpoints.v1_location import V1LocationModel
 from .models.endpoints.v1_trips import V1TripsModel
+from .models.endpoints.v1_vehicle_health import V1VehicleHealthModel
 
 
 class Api:
@@ -64,9 +64,8 @@ class Api:
             endpoint="/v1/location",
             headers={"VIN": vin},
         )
-
         # If car is in motion you can get an empty response back. This will have no payload.
-        return V1LocationModel(**responce["payload"])
+        return V1LocationModel(**responce)
 
     async def get_vehicle_health_status_endpoint(
         self, vin: str
@@ -79,7 +78,7 @@ class Api:
             headers={"VIN": vin},
         )
 
-        return V1VehicleHealthModel(**responce["payload"])
+        return V1VehicleHealthModel(**responce)
 
     async def get_vehicle_status_endpoint(
         self, vin: str
@@ -159,5 +158,4 @@ class Api:
             endpoint=f"/v1/trips?from={from_date}&to={to_date}&route={route}&summary={summary}&limit={limit}&offset={offset}",  # pylint: disable=C0301
             headers={"vin": vin},
         )
-
-        return V1TripsModel(**responce["payload"])
+        return V1TripsModel(**responce)

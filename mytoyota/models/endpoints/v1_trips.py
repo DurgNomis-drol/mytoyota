@@ -1,7 +1,8 @@
 """ Toyota Connected Services API - V1 Trips Models """
 from datetime import date, datetime
-from typing import Optional, List
+from typing import Any, List, Optional
 from uuid import UUID
+
 from pydantic import BaseModel, Field
 
 from .common import _StatusModel
@@ -9,133 +10,128 @@ from .common import _StatusModel
 # pylint: disable=missing-class-docstring
 
 
-class _PaginationModel(BaseModel):
-    currentPage: int
-    limit: int
-    offset: int
-    pageCount: int
-    previousOffset: int
-    totalCount: int
-
-
-class _SortedByModel(BaseModel):
-    field: str
-    order: str
-
-
-class _MetaDataModel(BaseModel):
-    pagination: _PaginationModel
-    sortedBy: List[_SortedByModel]
-
-
-class _ScoresModel(BaseModel):
-    acceleration: int = Field(ge=0, le=100)
-    advice: int = Field(ge=0, le=100, default=0)
-    braking: int = Field(ge=0, le=100)
-    constantSpeed: int = Field(ge=0, le=100, default=0)
-    global_: Optional[int] = Field(ge=0, le=100, alias="global", default=None)
-
-
-class _SummaryModel(BaseModel):
-    average_speed: float = Field(alias="averageSpeed")
-    countries: List[str]
-    duration: int
-    durationHighway: int
-    durationIdle: int
-    durationOverspeed: int
-    fuelConsumption: Optional[float] = None
+class _SummaryBaseModel(BaseModel):
     length: int
-    lengthHighway: int
-    lengthOverspeed: int
-    maxSpeed: float
+    duration: int
+    duration_idle: int = Field(alias="durationIdle")
+    countries: List[str]
+    max_speed: float = Field(alias="maxSpeed")
+    average_speed: float = Field(alias="averageSpeed")
+    length_overspeed: int = Field(alias="lengthOverspeed")
+    duration_overspeed: int = Field(alias="durationOverspeed")
+    length_highway: int = Field(alias="lengthHighway")
+    duration_highway: int = Field(alias="durationHighway")
+    fuel_consumption: float = Field(alias="fuelConsumption")
 
 
-class _HDCModel(BaseModel):
-    # Depending on
-    #    car not being EV
-    #    car being ev only
-    #    car being hybrid but only used ev/fuel
-    chargeDist: int = 0
-    chargeTime: int = 0
-    ecoDist: int = 0
-    ecoTime: int = 0
-    evDistance: int = 0
-    evTime: int = 0
-    powerDist: int = 0
-    powerTime: int = 0
-
-
-class _HistogramsModel(BaseModel):
-    day: int
-    hdc: Optional[_HDCModel]
-    month: int
-    scores: _ScoresModel
-    summary: _SummaryModel
-    year: int
-
-
-class _AllSummaryModel(BaseModel):
-    hdc: Optional[_HDCModel] = None  # Only available on EV cars
-    histograms: List[_HistogramsModel]
-    month: int = Field(..., ge=1, le=12)
-    scores: _ScoresModel
-    summary: _SummaryModel
-    year: int
-
-
-class _TripSummaryModel(_SummaryModel):
-    averageSpeed: float
-    endLat: float
-    endLon: float
-    endTs: datetime
-    nightTrip: bool
-    startLat: float
-    startLon: float
-    startTs: datetime
+class _SummaryModel(_SummaryBaseModel):
+    start_lat: float = Field(alias="startLat")
+    start_lon: float = Field(alias="startLon")
+    start_ts: str = Field(alias="startTs")
+    end_lat: float = Field(alias="endLat")
+    end_lon: float = Field(alias="endLon")
+    end_ts: str = Field(alias="endTs")
+    night_trip: bool = Field(alias="nightTrip")
 
 
 class _ContextModel(BaseModel):
     slope: float
 
 
-class _BehavioursModel(BaseModel):
-    coaching_msg: int = Field(alias="coachingMsg")
-    context: _ContextModel
-    diagnostic_msg: int = Field(alias="diagnosticMsg")
-    good: bool
+class _CoachingMsgParamModel(BaseModel):
+    name: str
+    unit: str
+    value: int
+
+
+class _BehaviourModel(BaseModel):
     lat: float
     lon: float
+    ts: str
+    type: str
+    good: bool
+    diagnostic_msg: int = Field(alias="diagnosticMsg", default=None)
+    coaching_msg: int = Field(alias="coachingMsg", default=None)
+    context: _ContextModel
     priority: bool
     severity: float
-    ts: datetime
+    coaching_msg_params: Optional[List[_CoachingMsgParamModel]] = Field(
+        alias="coachingMsgParams", default=None
+    )
 
 
-class _RouteModel(BaseModel):
-    highway: bool
-    index_in_points: int = Field(alias="indexInPoints")
-    is_ev: bool = Field(alias="isEv")
-    lat: float
-    lon: float
-    mode: int
-    overspeed: bool
+class _ScoresModel(BaseModel):
+    global_: int = Field(..., alias="global")
+    acceleration: int
+    braking: int
+    advice: Optional[int] = None
+    constantSpeed: Optional[int] = None
+
+
+class _HDCModel(BaseModel):
+    ev_time: Optional[int] = Field(alias="global", default=None)
+    ev_distance: Optional[int] = Field(alias="global", default=None)
+    charge_time: Optional[int] = Field(alias="global", default=None)
+    charge_dist: Optional[int] = Field(alias="global", default=None)
+    eco_time: Optional[int] = Field(alias="global", default=None)
+    eco_dist: Optional[int] = Field(alias="global", default=None)
+    power_time: Optional[int] = Field(alias="global", default=None)
+    power_dist: Optional[int] = Field(alias="global", default=None)
 
 
 class _TripModel(BaseModel):
-    behaviours: List[_BehavioursModel]
+    id: str
     category: int
-    hdc: Optional[_HDCModel] = None  # Only available on EV cars
-    id: UUID
-    route: List[_RouteModel]
+    summary: _SummaryModel
     scores: _ScoresModel
-    summary: _TripSummaryModel
+    behaviours: List[_BehaviourModel]
+    hdc: _HDCModel
+
+
+class _HistogramModel(BaseModel):
+    year: int
+    month: int
+    day: int
+    summary: _SummaryBaseModel
+    scores: _ScoresModel
+    hdc: _HDCModel
+
+
+class _SummaryItemModel(BaseModel):
+    year: int
+    month: int
+    summary: _SummaryBaseModel
+    scores: _ScoresModel
+    hdc: _HDCModel
+    histograms: List[_HistogramModel]
+
+
+class _PaginationModel(BaseModel):
+    limit: int
+    offset: int
+    previous_offset: Optional[Any] = Field(alias="previousOffset", default=None)
+    next_offset: int = Field(alias="nextOffset")
+    current_page: int = Field(alias="currentPage")
+    total_count: int = Field(alias="totalCount")
+    page_count: int = Field(alias="pageCount")
+
+
+class _SortedByItemModel(BaseModel):
+    field: str
+    order: str
+
+
+class _MetadataModel(BaseModel):
+    pagination: _PaginationModel
+    sorted_by: List[_SortedByItemModel] = Field(alias="sortedBy")
 
 
 class _TripsModel(BaseModel):
-    _metadata: _MetaDataModel
-    from_date: date = Field(..., alias="from")
-    summary: List[_AllSummaryModel] = []
-    to_date: date = Field(..., alias="to")
-    trips: List[_TripModel] = []
+    from_date: str = Field(..., alias="from")
+    to_date: str = Field(..., alias="to")
+    trips: List[_TripModel]
+    summary: List[_SummaryItemModel]
+    metadata: _MetadataModel = Field(..., alias="_metadata")
 
 
 class V1TripsModel(BaseModel):
