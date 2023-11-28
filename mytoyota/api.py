@@ -4,6 +4,8 @@ from datetime import date, datetime, timezone
 from typing import Any, Dict, List, Optional, Union
 from uuid import uuid4
 
+from mytoyota.const import BASE_URL
+from mytoyota.controller import Controller
 from mytoyota.models.endpoints.electric import ElectricResponseModel
 from mytoyota.models.endpoints.location import LocationResponseModel
 from mytoyota.models.endpoints.notifications import NotificationResponseModel
@@ -12,10 +14,6 @@ from mytoyota.models.endpoints.telemetry import TelemetryResponseModel
 from mytoyota.models.endpoints.trips import TripsResponseModel
 from mytoyota.models.endpoints.vehicle_guid import VehiclesResponseModel
 from mytoyota.models.endpoints.vehicle_health import VehicleHealthResponseModel
-
-from .const import BASE_URL
-from .controller import Controller
-from .exceptions import ToyotaApiError
 
 
 class Api:
