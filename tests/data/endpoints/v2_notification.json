@@ -1,0 +1,158 @@
+{
+  "guid": "4cdf8879-fad7-4671-aa48-82bb423593a7",
+  "statusCode": 200,
+  "headers": {
+    "Content-Type": "text/plain"
+  },
+  "body": "Success",
+  "payload": [
+    {
+      "vin": "Not0My8Vin15",
+      "notifications": [
+        {
+          "messageId": "654b5bce89146fe1dcde1c4f",
+          "vin": "Not0My8Vin15",
+          "notificationDate": "2023-11-08T09:58:38.687Z",
+          "isRead": true,
+          "readTimestamp": "2023-11-09T07:56:20.011Z",
+          "iconUrl": "https://assets.preprod.ctdevops.com/assets/notification/icons/critical_alert.png",
+          "message": "2019 Corolla HB/TS mehrere Türen entriegelt, bitte prüfen Sie die App für weitere Details.",
+          "status": 0,
+          "type": "alert",
+          "category": "VehicleStatusAlert",
+          "displayCategory": "Vehicle Alerts"
+        },
+        {
+          "messageId": "654a3da42b1dfee3530570dc",
+          "vin": "Not0My8Vin15",
+          "notificationDate": "2023-11-07T13:37:40.899Z",
+          "isRead": true,
+          "readTimestamp": "2023-11-09T07:56:20.011Z",
+          "iconUrl": "https://assets.preprod.ctdevops.com/assets/notification/icons/critical_alert.png",
+          "message": "2019 Corolla HB/TS mehrere Türen entriegelt, bitte prüfen Sie die App für weitere Details.",
+          "status": 0,
+          "type": "alert",
+          "category": "VehicleStatusAlert",
+          "displayCategory": "Vehicle Alerts"
+        },
+        {
+          "messageId": "654a3a116992523ebe9a9594",
+          "vin": "Not0My8Vin15",
+          "notificationDate": "2023-11-07T13:22:25.985Z",
+          "isRead": true,
+          "readTimestamp": "2023-11-09T07:56:20.011Z",
+          "iconUrl": "https://assets.preprod.ctdevops.com/assets/notification/icons/critical_alert.png",
+          "message": "2019 Corolla HB/TS Fahrertür offen.",
+          "status": 0,
+          "type": "alert",
+          "category": "VehicleStatusAlert",
+          "displayCategory": "Vehicle Alerts"
+        },
+        {
+          "messageId": "654a37fee4770b7ca1b54704",
+          "vin": "Not0My8Vin15",
+          "notificationDate": "2023-11-07T13:13:34.968Z",
+          "isRead": true,
+          "readTimestamp": "2023-11-09T07:56:20.011Z",
+          "iconUrl": "https://assets.preprod.ctdevops.com/assets/notification/icons/critical_alert.png",
+          "message": "2019 Corolla HB/TS mehrere Türen entriegelt, bitte prüfen Sie die App für weitere Details.",
+          "status": 0,
+          "type": "alert",
+          "category": "VehicleStatusAlert",
+          "displayCategory": "Vehicle Alerts"
+        },
+        {
+          "messageId": "654a2c7005dbda98a304e580",
+          "vin": "Not0My8Vin15",
+          "notificationDate": "2023-11-07T12:24:16.203Z",
+          "isRead": true,
+          "readTimestamp": "2023-11-09T07:56:20.011Z",
+          "iconUrl": "https://assets.preprod.ctdevops.com/assets/notification/icons/critical_alert.png",
+          "message": "2019 Corolla HB/TS mehrere Türen entriegelt, bitte prüfen Sie die App für weitere Details.",
+          "status": 0,
+          "type": "alert",
+          "category": "VehicleStatusAlert",
+          "displayCategory": "Vehicle Alerts"
+        },
+        {
+          "messageId": "65492ec33f510e170fe5146d",
+          "vin": "Not0My8Vin15",
+          "notificationDate": "2023-11-06T18:21:55.165Z",
+          "isRead": true,
+          "readTimestamp": "2023-11-09T07:56:20.011Z",
+          "iconUrl": "https://assets.preprod.ctdevops.com/assets/notification/icons/critical_alert.png",
+          "message": "2019 Corolla HB/TS mehrere Türen entriegelt, bitte prüfen Sie die App für weitere Details.",
+          "status": 0,
+          "type": "alert",
+          "category": "VehicleStatusAlert",
+          "displayCategory": "Vehicle Alerts"
+        },
+        {
+          "messageId": "6547ce408ad4f16916836695",
+          "vin": "Not0My8Vin15",
+          "notificationDate": "2023-11-05T17:17:52.406Z",
+          "isRead": true,
+          "readTimestamp": "2023-11-06T05:20:47.985Z",
+          "iconUrl": "https://assets.preprod.ctdevops.com/assets/notification/icons/critical_alert.png",
+          "message": "2019 Corolla HB/TS mehrere Türen entriegelt, bitte prüfen Sie die App für weitere Details.",
+          "status": 0,
+          "type": "alert",
+          "category": "VehicleStatusAlert",
+          "displayCategory": "Vehicle Alerts"
+        },
+        {
+          "messageId": "6547a1fbfc25822d4c52c47c",
+          "vin": "Not0My8Vin15",
+          "notificationDate": "2023-11-05T14:08:59.748Z",
+          "isRead": true,
+          "readTimestamp": "2023-11-06T05:20:47.985Z",
+          "iconUrl": "https://assets.preprod.ctdevops.com/assets/notification/icons/critical_alert.png",
+          "message": "2019 Corolla HB/TS mehrere Türen entriegelt, bitte prüfen Sie die App für weitere Details.",
+          "status": 0,
+          "type": "alert",
+          "category": "VehicleStatusAlert",
+          "displayCategory": "Vehicle Alerts"
+        },
+        {
+          "messageId": "65451782581159f1eddc2b31",
+          "vin": "Not0My8Vin15",
+          "notificationDate": "2023-11-03T15:53:38.575Z",
+          "isRead": true,
+          "readTimestamp": "2023-11-06T05:20:47.985Z",
+          "iconUrl": "https://assets.preprod.ctdevops.com/assets/notification/icons/critical_alert.png",
+          "message": "2019 Corolla HB/TS Hintere Tür auf der Fahrerseite offen.",
+          "status": 0,
+          "type": "alert",
+          "category": "VehicleStatusAlert",
+          "displayCategory": "Vehicle Alerts"
+        },
+        {
+          "messageId": "6540e84142e4d41d6443222f",
+          "vin": "Not0My8Vin15",
+          "notificationDate": "2023-10-31T11:42:57.690Z",
+          "isRead": true,
+          "readTimestamp": "2023-10-31T17:04:37.990Z",
+          "iconUrl": "https://assets.preprod.ctdevops.com/assets/notification/icons/critical_alert.png",
+          "message": "2019 Corolla HB/TS mehrere Türen entriegelt, bitte prüfen Sie die App für weitere Details.",
+          "status": 0,
+          "type": "alert",
+          "category": "VehicleStatusAlert",
+          "displayCategory": "Vehicle Alerts"
+        },
+        {
+          "messageId": "6540dd4d8ff01b76f1875e14",
+          "vin": "Not0My8Vin15",
+          "notificationDate": "2023-10-31T10:56:13.484Z",
+          "isRead": true,
+          "readTimestamp": "2023-10-31T11:11:20.049Z",
+          "iconUrl": "https://assets.preprod.ctdevops.com/assets/notification/icons/critical_alert.png",
+          "message": "2019 Corolla HB/TS mehrere Türen entriegelt, bitte prüfen Sie die App für weitere Details.",
+          "status": 0,
+          "type": "alert",
+          "category": "VehicleStatusAlert",
+          "displayCategory": "Vehicle Alerts"
+        }
+      ]
+    }
+  ]
+}
