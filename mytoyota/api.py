@@ -4,14 +4,16 @@ from datetime import date, datetime, timezone
 from typing import Any, Dict, List, Optional, Union
 from uuid import uuid4
 
+from mytoyota.models.endpoints.location import LocationResponseModel
+from mytoyota.models.endpoints.notifications import NotificationResponse
+from mytoyota.models.endpoints.status import RemoteStatusResponseModel
+from mytoyota.models.endpoints.trips import TripsResponseModel
+from mytoyota.models.endpoints.vehicle_guid import VehiclesResponseModel
+from mytoyota.models.endpoints.vehicle_health import VehicleHealthResponseModel
+
 from .const import BASE_URL
 from .controller import Controller
 from .exceptions import ToyotaApiError
-from .models.endpoints.location import LocationResponseModel
-from .models.endpoints.notifications import NotificationResponse
-from .models.endpoints.trips import TripsResponseModel
-from .models.endpoints.vehicle_guid import VehiclesResponseModel
-from .models.endpoints.vehicle_health import VehicleHealthResponseModel
 
 
 class Api:
@@ -82,16 +84,16 @@ class Api:
 
         return VehicleHealthResponseModel(**response)
 
-    # async def get_vehicle_status_endpoint(
-    #     self, vin: str
-    # ) -> Optional[Union[Dict[str, Any], List[Any]]]:
-    #     """Get information about the vehicle."""
-    #     return await self.controller.request(
-    #         method="GET",
-    #         base_url=BASE_URL,
-    #         endpoint="/v1/global/remote/status",
-    #         headers={"VIN": vin},
-    #     )
+    async def get_vehicle_status_endpoint(self, vin: str) -> RemoteStatusResponseModel:
+        """Get information about the vehicle."""
+        response = await self.controller.request_json(
+            method="GET",
+            base_url=BASE_URL,
+            endpoint="/v1/global/remote/status",
+            headers={"VIN": vin},
+        )
+
+        return RemoteStatusResponseModel(**response)
 
     async def get_vehicle_electric_status_endpoint(
         self, vin: str

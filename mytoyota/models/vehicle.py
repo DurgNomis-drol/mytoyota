@@ -63,11 +63,11 @@ class Vehicle:
                 True,  # TODO Unsure of the required capability
                 partial(self._api.get_notification_endpoint, vin=vehicle_info.vin),
             ],
-            # [
-            #     "status",
-            #     vehicle_info.extended_capabilities.vehicle_status,
-            #     partial(self._api.get_vehicle_status_endpoint, vin=vehicle_info.vin),
-            # ],
+            [
+                "status",
+                vehicle_info.extended_capabilities.vehicle_status,
+                partial(self._api.get_vehicle_status_endpoint, vin=vehicle_info.vin),
+            ],
             [
                 "trips",
                 True,  # TODO Unsure of the required capability
