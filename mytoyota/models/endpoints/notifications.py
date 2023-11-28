@@ -1,10 +1,15 @@
 """ Toyota Connected Services API - Notification Models """
 from datetime import datetime
+from typing import List, Optional
+from uuid import UUID
+
 from pydantic import BaseModel, Field
 
-from .common import StatusModel
-
 # pylint: disable=locally-disabled, missing-class-docstring, fixme
+
+
+class _HeadersModel(BaseModel):
+    content_type: str = Field(..., alias="Content-Type")
 
 
 class NotificationModel(BaseModel):
@@ -21,5 +26,14 @@ class NotificationModel(BaseModel):
     display_category: str = Field(alias="displayCategory")
 
 
-class NotificationResponse(StatusModel):
-    payload: NotificationModel
+class _PayloadItemModel(BaseModel):
+    vin: str
+    notifications: List[NotificationModel]
+
+
+class NotificationResponse(BaseModel):
+    guid: UUID
+    statusCode: int
+    headers: _HeadersModel
+    body: str
+    payload: Optional[List[_PayloadItemModel]] = None

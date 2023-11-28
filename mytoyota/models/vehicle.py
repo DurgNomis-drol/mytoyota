@@ -58,11 +58,11 @@ class Vehicle:
                 vehicle_info.extended_capabilities.telemetry_capable,
                 partial(self._api.get_telemetry_endpoint, vin=vehicle_info.vin),
             ],
-            # [
-            #    "notifications",
-            #    True, # TODO Unsure of the required capability
-            #    partial(self._api.get_notification_endpoint, vin=vehicle_info.vin),
-            # ],
+            [
+                "notifications",
+                True,  # TODO Unsure of the required capability
+                partial(self._api.get_notification_endpoint, vin=vehicle_info.vin),
+            ],
             # [
             #     "status",
             #     vehicle_info.extended_capabilities.vehicle_status,
@@ -185,9 +185,6 @@ class Vehicle:
         """Helper function for collecting data for further work"""
         dump: [str, Any] = {"vehicle_info": self._vehicle_info}
         for name, data in self._endpoint_data.items():
-            if name == "notifications":
-                dump[name] = data[:5]
-            else:
-                dump[name] = data
+            dump[name] = data
 
         return censor_all(copy.deepcopy(dump))
