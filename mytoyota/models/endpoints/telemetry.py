@@ -10,9 +10,9 @@ class TelemetryModel(BaseModel):
     fuelType: str
     odometer: UnitValueModel
     fuelLevel: int
-    distanceToEmpty: UnitValueModel
+    distanceToEmpty: Optional[UnitValueModel] = None
     timestamp: datetime
 
 
-class TelemetryResponceModel(StatusModel):
+class TelemetryResponseModel(StatusModel):
     payload: Optional[TelemetryModel] = None

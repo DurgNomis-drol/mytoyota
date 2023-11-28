@@ -7,7 +7,7 @@ from uuid import uuid4
 from mytoyota.models.endpoints.location import LocationResponseModel
 from mytoyota.models.endpoints.notifications import NotificationResponse
 from mytoyota.models.endpoints.status import RemoteStatusResponseModel
-from mytoyota.models.endpoints.telemetry import TelemetryResponceModel
+from mytoyota.models.endpoints.telemetry import TelemetryResponseModel
 from mytoyota.models.endpoints.trips import TripsResponseModel
 from mytoyota.models.endpoints.vehicle_guid import VehiclesResponseModel
 from mytoyota.models.endpoints.vehicle_health import VehicleHealthResponseModel
@@ -111,7 +111,7 @@ class Api:
             # TODO This is wrong, but lets change the Vehicle class
             return None
 
-    async def get_telemetry_endpoint(self, vin: str) -> TelemetryResponceModel:
+    async def get_telemetry_endpoint(self, vin: str) -> TelemetryResponseModel:
         """Get information about the vehicle."""
         response = await self.controller.request_json(
             method="GET",
@@ -120,7 +120,7 @@ class Api:
             headers={"vin": vin},
         )
 
-        return TelemetryResponceModel(**response)
+        return TelemetryResponseModel(**response)
 
     async def get_notification_endpoint(self, vin: str) -> NotificationResponse:
         """Get information about the vehicle."""

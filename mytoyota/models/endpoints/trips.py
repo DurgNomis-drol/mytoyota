@@ -79,7 +79,7 @@ class _TripModel(BaseModel):
     summary: _SummaryModel
     scores: _ScoresModel
     behaviours: List[_BehaviourModel]
-    hdc: _HDCModel
+    hdc: Optional[_HDCModel] = None
 
 
 class _HistogramModel(BaseModel):
@@ -88,7 +88,7 @@ class _HistogramModel(BaseModel):
     day: int
     summary: _SummaryBaseModel
     scores: _ScoresModel
-    hdc: _HDCModel
+    hdc: Optional[_HDCModel] = None
 
 
 class _SummaryItemModel(BaseModel):
@@ -96,7 +96,7 @@ class _SummaryItemModel(BaseModel):
     month: int
     summary: _SummaryBaseModel
     scores: _ScoresModel
-    hdc: _HDCModel
+    hdc: Optional[_HDCModel] = None
     histograms: List[_HistogramModel]
 
 
