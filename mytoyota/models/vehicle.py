@@ -100,7 +100,7 @@ class Vehicle:
     @property
     def vin(self) -> Optional[str]:
         """Vehicle's vinnumber."""
-        return self._vehicle_info.get("vin")
+        return self._vehicle_info.vin
 
     @property
     def alias(self) -> Optional[str]:
@@ -109,28 +109,27 @@ class Vehicle:
 
     async def set_alias(self, value) -> None:
         await self._api.set_vehicle_alias_endpoint(
-            value, self._vehicle_info["subscriberGuid"], self.vin
+            value, self._vehicle_info.subscriber_guid, self.vin
         )
 
     @property
     def hybrid(self) -> bool:
         """If the vehicle is a hybrid."""
         # TODO need more details to check of electric cars return different capabilities
-        return self._vehicle_info.get("evVehicle", False)
+        return self._vehicle_info.ev_vehicle
 
-    @property
-    def fueltype(self) -> str:
-        """Fuel type of the vehicle."""
-        fuel_type = self._vehicle_info.get("fuelType", "Unknown")
-        if fuel_type != "Unknown":
-            # Need to know further types. Only seen "I" or petrol cars.
-            fuel_types = {"I": "Petrol"}
-            if fuel_type in fuel_types:
-                return fuel_types["fuelType"]
-            else:
-                logging.warning(f"Unknown fuel type: {fuel_type}")
-
-        return "Unknown"
+    # @property
+    # def fueltype(self) -> str:
+    #    """Fuel type of the vehicle."""
+    #    fuel_type = self._vehicle_info.get("fuelType", "Unknown")
+    #    if fuel_type != "Unknown":
+    #        # Need to know further types. Only seen "I" or petrol cars.
+    #        fuel_types = {"I": "Petrol"}
+    #        if fuel_type in fuel_types:
+    #            return fuel_types["fuelType"]
+    #        else:
+    #            logging.warning(f"Unknown fuel type: {fuel_type}")
+    #    return "Unknown"
 
     @property
     def details(self) -> Optional[Dict[str, Any]]:
