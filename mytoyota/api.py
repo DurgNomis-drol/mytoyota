@@ -7,11 +7,11 @@ from uuid import uuid4
 from .const import BASE_URL
 from .controller import Controller
 from .exceptions import ToyotaApiError
-from .models.endpoints.vehicle_health import VehicleHealthResponseModel
 from .models.endpoints.location import LocationResponseModel
+from .models.endpoints.notifications import NotificationResponse
 from .models.endpoints.trips import TripsResponseModel
 from .models.endpoints.vehicle_guid import VehiclesResponseModel
-from .models.endpoints.notifications import NotificationResponse
+from .models.endpoints.vehicle_health import VehicleHealthResponseModel
 
 
 class Api:
@@ -50,17 +50,15 @@ class Api:
 
     async def get_vehicles_endpoint(self) -> VehiclesResponseModel:
         """Retrieves list of cars you have registered with MyT"""
-        resp = await self.controller.request(
+        response = await self.controller.request_json(
             method="GET",
             base_url=BASE_URL,
             endpoint="/v2/vehicle/guid",
         )
 
-        return VehiclesResponseModel(**resp)
+        return VehiclesResponseModel(**response)
 
-    async def get_location_endpoint(
-        self, vin: str
-    ) -> LocationResponseModel:
+    async def get_location_endpoint(self, vin: str) -> LocationResponseModel:
         """Get where you have parked your car."""
         response = await self.controller.request_json(
             method="GET",
