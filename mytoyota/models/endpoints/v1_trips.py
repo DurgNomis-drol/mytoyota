@@ -5,7 +5,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
-from .common import _StatusModel
+from mytoyota.models.endpoints.common import _StatusModel
 
 # pylint: disable=missing-class-docstring
 
@@ -27,10 +27,10 @@ class _SummaryBaseModel(BaseModel):
 class _SummaryModel(_SummaryBaseModel):
     start_lat: float = Field(alias="startLat")
     start_lon: float = Field(alias="startLon")
-    start_ts: str = Field(alias="startTs")
+    start_ts: datetime = Field(alias="startTs")
     end_lat: float = Field(alias="endLat")
     end_lon: float = Field(alias="endLon")
-    end_ts: str = Field(alias="endTs")
+    end_ts: datetime = Field(alias="endTs")
     night_trip: bool = Field(alias="nightTrip")
 
 
@@ -47,7 +47,7 @@ class _CoachingMsgParamModel(BaseModel):
 class _BehaviourModel(BaseModel):
     lat: float
     lon: float
-    ts: str
+    ts: datetime
     type: str
     good: bool
     diagnostic_msg: int = Field(alias="diagnosticMsg", default=None)
@@ -69,18 +69,18 @@ class _ScoresModel(BaseModel):
 
 
 class _HDCModel(BaseModel):
-    ev_time: Optional[int] = Field(alias="global", default=None)
-    ev_distance: Optional[int] = Field(alias="global", default=None)
-    charge_time: Optional[int] = Field(alias="global", default=None)
-    charge_dist: Optional[int] = Field(alias="global", default=None)
-    eco_time: Optional[int] = Field(alias="global", default=None)
-    eco_dist: Optional[int] = Field(alias="global", default=None)
-    power_time: Optional[int] = Field(alias="global", default=None)
-    power_dist: Optional[int] = Field(alias="global", default=None)
+    ev_time: Optional[int] = Field(alias="evTime", default=None)
+    ev_distance: Optional[int] = Field(alias="evDistance", default=None)
+    charge_time: Optional[int] = Field(alias="chargeTime", default=None)
+    charge_dist: Optional[int] = Field(alias="chargeDist", default=None)
+    eco_time: Optional[int] = Field(alias="ecoTime", default=None)
+    eco_dist: Optional[int] = Field(alias="ecoDist", default=None)
+    power_time: Optional[int] = Field(alias="powerTime", default=None)
+    power_dist: Optional[int] = Field(alias="powerDist", default=None)
 
 
 class _TripModel(BaseModel):
-    id: str
+    id: UUID
     category: int
     summary: _SummaryModel
     scores: _ScoresModel
@@ -127,8 +127,8 @@ class _MetadataModel(BaseModel):
 
 
 class _TripsModel(BaseModel):
-    from_date: str = Field(..., alias="from")
-    to_date: str = Field(..., alias="to")
+    from_date: date = Field(..., alias="from")
+    to_date: date = Field(..., alias="to")
     trips: List[_TripModel]
     summary: List[_SummaryItemModel]
     metadata: _MetadataModel = Field(..., alias="_metadata")
