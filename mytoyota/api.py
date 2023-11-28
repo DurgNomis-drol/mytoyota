@@ -121,14 +121,14 @@ class Api:
 
     async def get_notification_endpoint(self, vin: str) -> NotificationResponse:
         """Get information about the vehicle."""
-        resp = await self.controller.request(
+        response = await self.controller.request_json(
             method="GET",
             base_url=BASE_URL,
             endpoint="/v2/notification/history",
             headers={"vin": vin},
         )
 
-        return NotificationResponse(**resp)
+        return NotificationResponse(**response)
 
     async def get_driving_statistics_endpoint(
         self, vin: str, from_date: str, interval: Optional[str] = None
