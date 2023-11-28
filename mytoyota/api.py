@@ -113,7 +113,7 @@ class Api:
 
     async def get_telemetry_endpoint(
         self, vin: str
-    ) -> Optional[Union[Dict[str, Any], List[Any]]]:
+    ) -> TelemetryResponceModel:
         """Get information about the vehicle."""
         response = await self.controller.request_json(
             method="GET",
