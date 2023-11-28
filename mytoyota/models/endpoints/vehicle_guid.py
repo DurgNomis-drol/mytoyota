@@ -126,10 +126,10 @@ class _LinksModel(BaseModel):
 
 
 class _DcmModel(BaseModel):  # Data connection model
-    country_code: str = Field(alias="countryCode")
+    country_code: Optional[str] = Field(alias="countryCode", default=None)
     destination: str = Field(alias="dcmDestination")
     grade: str = Field(alias="dcmGrade")
-#    model_year: str = Field(alias="dcmModelYear")  # TODO conflict with pydantic namepsace
+    car_model_year: str = Field(alias="dcmModelYear")
     supplier: str = Field(alias="dcmSupplier")
     supplier_name: str = Field(alias="dcmSupplierName")
     euicc_id: str = Field(alias="euiccid")
@@ -337,10 +337,10 @@ class VehicleGuidModel(BaseModel):
     katashiki_code: str = Field(alias="katashikiCode")
     manufactured_date: date = Field(alias="manufacturedDate")
     manufactured_code: str = Field(alias="manufacturerCode")
-#    model_code: str = Field(alias="modelCode") # TODO conflicts with pydantic namespace
-#    model_description: str = Field(alias="modelDescription") # TODO conflicts with pydantic namespace
-#    model_name: str = Field(alias="modelName") # TODO conflicts with pydantic namespace
-#    model_year: str = Field(alias="modelYear") # TODO conflicts with pydantic namespace
+    car_model_code: str = Field(alias="modelCode")
+    car_model_description: str = Field(alias="modelDescription")
+    car_model_name: str = Field(alias="modelName")
+    car_model_year: str = Field(alias="modelYear")
     nickname: Optional[str] = Field(alias="nickName")
     non_cvt_vehicle: bool = Field(alias="nonCvtVehicle")
     old_imei: Optional[Any] = Field(alias="oldImei")  # TODO unsure what this returns
@@ -364,7 +364,9 @@ class VehicleGuidModel(BaseModel):
     remote_subscription_exists: bool = Field(alias="remoteSubscriptionExists")
     remote_subscription_status: str = Field(alias="remoteSubscriptionStatus")
     remote_user: bool = Field(alias="remoteUser")
-    remote_user_guid: Optional[Union[UUID, str]] = Field(alias="remoteUserGuid", default=None)
+    remote_user_guid: Optional[Union[UUID, str]] = Field(
+        alias="remoteUserGuid", default=None
+    )
     service_connect_status: Optional[Any] = Field(
         alias="serviceConnectStatus"
     )  # TODO unsure what this returns

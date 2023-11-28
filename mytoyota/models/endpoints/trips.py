@@ -21,7 +21,9 @@ class _SummaryBaseModel(BaseModel):
     duration_overspeed: int = Field(alias="durationOverspeed")
     length_highway: int = Field(alias="lengthHighway")
     duration_highway: int = Field(alias="durationHighway")
-    fuel_consumption: Optional[float] = Field(alias="fuelConsumption", default=None) # Electric cars might not use fuel
+    fuel_consumption: Optional[float] = Field(
+        alias="fuelConsumption", default=None
+    )  # Electric cars might not use fuel
 
 
 class _SummaryModel(_SummaryBaseModel):
@@ -102,7 +104,7 @@ class _PaginationModel(BaseModel):
     limit: int
     offset: int
     previous_offset: Optional[Any] = Field(alias="previousOffset", default=None)
-    next_offset: int = Field(alias="nextOffset")
+    next_offset: Optional[int] = Field(alias="nextOffset", default=None)
     current_page: int = Field(alias="currentPage")
     total_count: int = Field(alias="totalCount")
     page_count: int = Field(alias="pageCount")
