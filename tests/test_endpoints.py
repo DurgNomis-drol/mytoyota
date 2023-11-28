@@ -14,6 +14,7 @@ from mytoyota.models.endpoints.notifications import NotificationResponse
 from mytoyota.models.endpoints.trips import TripsResponseModel
 from mytoyota.models.endpoints.vehicle_guid import VehiclesResponseModel
 from mytoyota.models.endpoints.vehicle_health import VehicleHealthResponseModel
+from mytoyota.models.endpoints.telemetry import TelemetryResponceModel
 
 
 @pytest.mark.parametrize(
@@ -28,6 +29,7 @@ from mytoyota.models.endpoints.vehicle_health import VehicleHealthResponseModel
         (TripsResponseModel, "v1_trips"),
         (ElectricResponseModel, "v1_global_remote_electric_status"),
         (NotificationResponse, "v2_notification"),
+        (TelemetryResponceModel, "v3_telemetry"),
     ],
 )
 def test_models(model, json_file):
