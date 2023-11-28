@@ -25,4 +25,4 @@ class TelemetryModel(BaseModel):
 
 
 class TelemetryResponceModel(StatusModel):
-    payload: Optional[TelemetryModel]
+    payload: Optional[TelemetryModel] = None

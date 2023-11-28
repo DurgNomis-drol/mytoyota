@@ -129,4 +129,4 @@ class TripsModel(BaseModel):
 
 
 class TripsResponseModel(StatusModel):
-    payload: TripsModel
+    payload: Optional[TripsModel] = None

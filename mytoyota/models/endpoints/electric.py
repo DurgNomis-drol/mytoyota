@@ -1,8 +1,10 @@
 """ Toyota Connected Services API - Electric Models """
-from pydantic import BaseModel, Field
 from datetime import datetime
+from typing import Optional
 
-from .common import StatusModel, _Range
+from pydantic import BaseModel, Field
+
+from mytoyota.models.endpoints.common import StatusModel, _Range
 
 # pylint: disable=locally-disabled, missing-class-docstring, fixme
 
@@ -19,4 +21,4 @@ class ElectricStatusModel(BaseModel):
 
 
 class ElectricResponseModel(StatusModel):
-    payload: ElectricStatusModel
+    payload: Optional[ElectricStatusModel] = None

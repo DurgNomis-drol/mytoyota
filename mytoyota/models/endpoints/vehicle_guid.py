@@ -388,4 +388,4 @@ class VehicleGuidModel(BaseModel):
 
 
 class VehiclesResponseModel(StatusModel):
-    payload: Optional[List[VehicleGuidModel]]
+    payload: Optional[List[VehicleGuidModel]] = None
