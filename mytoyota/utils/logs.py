@@ -21,11 +21,11 @@ def format_httpx_response(response: Response) -> str:
         f"  Method : {response.request.method}\n"
         f"  URL    : {response.request.url}\n"
         f"  Headers: {response.request.headers}\n"
-        f"  Body   : {response.request.content}\n"
+        f"  Body   : {response.request.content.decode('utf-8')}\n"
         f"Response:\n"
         f"  Status : ({response.status_code},{response.reason_phrase})\n"
         f"  Headers: {response.headers}\n"
-        f"  Content: {response.content}"
+        f"  Content: {response.content.decode('utf-8')}"
     )
 
 
