@@ -31,7 +31,7 @@ class _PayloadItemModel(BaseModel):
     notifications: List[NotificationModel]
 
 
-class NotificationResponse(BaseModel):
+class NotificationResponseModel(BaseModel):
     guid: UUID
     statusCode: int
     headers: _HeadersModel
