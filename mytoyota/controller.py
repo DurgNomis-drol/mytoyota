@@ -17,13 +17,17 @@ _LOGGER: logging.Logger = logging.getLogger(__package__)
 class Controller:
     """Controller class."""
 
-    ACCESS_TOKEN_URL: httpx.URL = (
-        "https://b2c-login.toyota-europe.com/oauth2/realms/root/realms/tme/access_token"
+    ACCESS_TOKEN_URL = httpx.URL(
+        "HTTPS://b2c-login.toyota-europe.com/oauth2/realms/root/realms/tme/access_token"  # pylint: disable=C0301
     )
-    AUTHENTICATE_URL: httpx.URL = "https://b2c-login.toyota-europe.com/json/realms/root/realms/tme/authenticate?authIndexType=service&authIndexValue=oneapp"
-    AUTHORIZE_URL: httpx.URL = "https://b2c-login.toyota-europe.com/oauth2/realms/root/realms/tme/authorize?client_id=oneapp&scope=openid profile write&response_type=code&redirect_uri=com.toyota.oneapp:/oauth2Callback&code_challenge=plain&code_challenge_method=plain"
-    API_URL: httpx.URL = "https://ctpa-oneapi.tceu-ctp-prd.toyotaconnectedeurope.io"
-    BASE_URL: httpx.URL = "https://ctpa-oneapi.tceu-ctp-prd.toyotaconnectedeurope.io"
+    AUTHENTICATE_URL = httpx.URL(
+        "HTTPS://b2c-login.toyota-europe.com/json/realms/root/realms/tme/authenticate?authIndexType=service&authIndexValue=oneapp"  # pylint: disable=C0301
+    )
+    AUTHORIZE_URL = httpx.URL(
+        "HTTPS://b2c-login.toyota-europe.com/oauth2/realms/root/realms/tme/authorize?client_id=oneapp&scope=openid profile write&response_type=code&redirect_uri=com.toyota.oneapp:/oauth2Callback&code_challenge=plain&code_challenge_method=plain"  # pylint: disable=C0301
+    )
+    API_URL = httpx.URL("HTTPS://ctpa-oneapi.tceu-ctp-prd.toyotaconnectedeurope.io")
+    BASE_URL = httpx.URL("HTTPS://ctpa-oneapi.tceu-ctp-prd.toyotaconnectedeurope.io")
 
     def __init__(self, username: str, password: str, timeout: int = 30) -> None:
         self._username: str = username
