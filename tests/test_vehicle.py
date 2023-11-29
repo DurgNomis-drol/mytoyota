@@ -43,9 +43,7 @@ class TestVehicle:
 
         data_files = os.path.join(os.path.curdir, "tests", "data")
 
-        vehicle_fixtures = self._load_from_file(
-            os.path.join(data_files, "vehicles.json")
-        )
+        vehicle_fixtures = self._load_from_file(os.path.join(data_files, "vehicles.json"))
 
         for veh in vehicle_fixtures:
             vehicle = Vehicle(vehicle_info=veh, connected_services={})
@@ -84,9 +82,7 @@ class TestVehicle:
 
         data_files = os.path.join(os.path.curdir, "tests", "data")
 
-        vehicle_fixtures = self._load_from_file(
-            os.path.join(data_files, "vehicles.json")
-        )
+        vehicle_fixtures = self._load_from_file(os.path.join(data_files, "vehicles.json"))
 
         for veh in vehicle_fixtures:
             vehicle = Vehicle(
@@ -131,9 +127,7 @@ class TestVehicle:
 
         data_files = os.path.join(os.path.curdir, "tests", "data")
 
-        vehicle_fixtures = self._load_from_file(
-            os.path.join(data_files, "vehicles.json")
-        )
+        vehicle_fixtures = self._load_from_file(os.path.join(data_files, "vehicles.json"))
         odometer_fixture = self._load_from_file(
             os.path.join(data_files, "vehicle_JTMW1234565432109_odometer.json")
         )
@@ -167,10 +161,7 @@ class TestVehicle:
         assert vehicle.dashboard.fuel_level == status_fixture["energy"][0]["level"]
         assert vehicle.dashboard.is_metric is True
         assert vehicle.dashboard.odometer == odometer_fixture[0]["value"]
-        assert (
-            vehicle.dashboard.fuel_range
-            == status_fixture["energy"][0]["remainingRange"]
-        )
+        assert vehicle.dashboard.fuel_range == status_fixture["energy"][0]["remainingRange"]
         assert vehicle.dashboard.battery_level is None
         assert vehicle.dashboard.battery_range is None
         assert vehicle.dashboard.battery_range_with_aircon is None
@@ -182,9 +173,7 @@ class TestVehicle:
 
         data_files = os.path.join(os.path.curdir, "tests", "data")
 
-        vehicle_fixtures = self._load_from_file(
-            os.path.join(data_files, "vehicles.json")
-        )
+        vehicle_fixtures = self._load_from_file(os.path.join(data_files, "vehicles.json"))
         odometer_fixture = self._load_from_file(
             os.path.join(data_files, "vehicle_JTMW1234565432109_odometer_legacy.json")
         )

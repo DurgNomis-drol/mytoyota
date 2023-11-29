@@ -58,6 +58,9 @@ disable = [
 [tool.pylint.format]
 max-line-length = 99
 
+[tool.black]
+line-length = 99
+
 [tool.ruff]
 select = [
     # Pyflakes

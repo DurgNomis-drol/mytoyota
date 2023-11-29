@@ -26,9 +26,7 @@ class Hvac(VehicleData):
         """Current temperature."""
         if self.legacy:
             return self._data.get("InsideTemperature")
-        return get_attr_in_dict(
-            self._data.get("currentTemperatureIndication", {}), "value"
-        )
+        return get_attr_in_dict(self._data.get("currentTemperatureIndication", {}), "value")
 
     @property
     def target_temperature(self) -> Optional[float]:
@@ -105,6 +103,4 @@ class Hvac(VehicleData):
         """Hvac last updated."""
         if self.legacy:
             return None
-        return get_attr_in_dict(
-            self._data.get("currentTemperatureIndication", {}), "timestamp"
-        )
+        return get_attr_in_dict(self._data.get("currentTemperatureIndication", {}), "timestamp")

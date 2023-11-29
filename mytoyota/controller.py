@@ -88,9 +88,7 @@ class Controller:
             )
             _LOGGER.debug(format_httpx_response(resp))
             if resp.status_code != HTTPStatus.FOUND:
-                raise ToyotaLoginError(
-                    f"Authorization failed. {resp.status_code}, {resp.text}."
-                )
+                raise ToyotaLoginError(f"Authorization failed. {resp.status_code}, {resp.text}.")
             authentication_code = parse.parse_qs(
                 httpx.URL(resp.headers.get("location")).query.decode()
             )["code"]
@@ -109,9 +107,7 @@ class Controller:
             )
             _LOGGER.debug(format_httpx_response(resp))
             if resp.status_code != HTTPStatus.OK:
-                raise ToyotaLoginError(
-                    f"Token retrieval failed. {resp.status_code}, {resp.text}."
-                )
+                raise ToyotaLoginError(f"Token retrieval failed. {resp.status_code}, {resp.text}.")
 
             access_tokens: Dict[str, Any] = resp.json()
             if (
@@ -192,9 +188,7 @@ class Controller:
             ]:
                 return response
 
-        raise ToyotaApiError(
-            f"Request Failed.  {response.status_code}, {response.text}."
-        )
+        raise ToyotaApiError(f"Request Failed.  {response.status_code}, {response.text}.")
 
     async def request_json(
         self,

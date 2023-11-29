@@ -69,9 +69,7 @@ class OfflineController:
         """Shared request method"""
 
         if method not in ("GET", "POST", "PUT", "DELETE"):
-            raise ToyotaInternalError(
-                "Invalid request method provided"
-            )  # pragma: no cover
+            raise ToyotaInternalError("Invalid request method provided")  # pragma: no cover
 
         _ = base_url
 
@@ -89,9 +87,7 @@ class OfflineController:
         if match:
             response = self._load_from_file(os.path.join(data_files, "vehicles.json"))
 
-        match = re.match(
-            r"/vehicle/user/.*/vehicle/([^?]+)\?.*services=fud,connected", endpoint
-        )
+        match = re.match(r"/vehicle/user/.*/vehicle/([^?]+)\?.*services=fud,connected", endpoint)
         if match:
             vin = match.group(1)
             response = self._load_from_file(
@@ -108,9 +104,7 @@ class OfflineController:
         match = re.match(r".*/vehicles/([^/]+)/vehicleStatus", endpoint)
         if match:
             vin = match.group(1)
-            response = self._load_from_file(
-                os.path.join(data_files, f"vehicle_{vin}_status.json")
-            )
+            response = self._load_from_file(os.path.join(data_files, f"vehicle_{vin}_status.json"))
 
         match = re.match(r".*/vehicles/([^/]+)/remoteControl/status", endpoint)
         if match:
@@ -132,13 +126,9 @@ class OfflineController:
         if match:
             # We should retrieve the trips
             vin = match.group(1)
-            response = self._load_from_file(
-                os.path.join(data_files, f"vehicle_{vin}_trips.json")
-            )
+            response = self._load_from_file(os.path.join(data_files, f"vehicle_{vin}_trips.json"))
 
-        match = re.match(
-            r"/api/user/.*/cms/trips/v2/([^?]+)/events/vin/([^?]+)", endpoint
-        )
+        match = re.match(r"/api/user/.*/cms/trips/v2/([^?]+)/events/vin/([^?]+)", endpoint)
         if match:
             # We should retrieve the trips
             trip_id = match.group(1)
@@ -162,9 +152,7 @@ class OfflineController:
             vin = match.group(1)
             request_id = match.group(2)
             response = self._load_from_file(
-                os.path.join(
-                    data_files, f"vehicle_{vin}_lock_request_status_{request_id}.json"
-                )
+                os.path.join(data_files, f"vehicle_{vin}_lock_request_status_{request_id}.json")
             )
         return response
 
@@ -210,9 +198,7 @@ class TestMyT(TestMyTHelper):
     def test_myt_invalid_username(self, username):
         """Test an invalid username in MyT"""
         with pytest.raises(ToyotaInvalidUsername):
-            _ = MyT(
-                username=username, password="xxxxx", locale="en-gb", region="europe"
-            )
+            _ = MyT(username=username, password="xxxxx", locale="en-gb", region="europe")
 
     @pytest.mark.parametrize(
         "locale",
@@ -293,9 +279,7 @@ class TestMyT(TestMyTHelper):
     def test_get_vehicles_json(self):
         """Test the retrieval of the available vehicles in json format"""
         myt = self._create_offline_myt()
-        vehicles_json = asyncio.get_event_loop().run_until_complete(
-            myt.get_vehicles_json()
-        )
+        vehicles_json = asyncio.get_event_loop().run_until_complete(myt.get_vehicles_json())
         assert json.loads(vehicles_json) is not None
 
     def test_get_vehicle_status(self):
@@ -304,9 +288,7 @@ class TestMyT(TestMyTHelper):
         vehicle = self._lookup_vehicle(myt, 4444444)
         assert vehicle is not None
         # Retrieve the actual status of the vehicle
-        status = asyncio.get_event_loop().run_until_complete(
-            myt.get_vehicle_status(vehicle)
-        )
+        status = asyncio.get_event_loop().run_until_complete(myt.get_vehicle_status(vehicle))
         assert status is not None
 
     def test_get_trips_json(self):
@@ -315,9 +297,7 @@ class TestMyT(TestMyTHelper):
         vehicle = self._lookup_vehicle(myt, 4444444)
         assert vehicle is not None
         # Retrieve the actual trips of the vehicle
-        trips = asyncio.get_event_loop().run_until_complete(
-            myt.get_trips_json(vehicle["vin"])
-        )
+        trips = asyncio.get_event_loop().run_until_complete(myt.get_trips_json(vehicle["vin"]))
         assert trips is not None
 
     def test_get_trip_json(self):
@@ -336,9 +316,7 @@ class TestMyT(TestMyTHelper):
         myt = self._create_offline_myt()
         vehicle = self._lookup_vehicle(myt, 4444444)
         assert vehicle is not None
-        trips = asyncio.get_event_loop().run_until_complete(
-            myt.get_trips(vehicle["vin"])
-        )
+        trips = asyncio.get_event_loop().run_until_complete(myt.get_trips(vehicle["vin"]))
         assert trips is not None
         for trip in trips:
             assert isinstance(trip, Trip)
@@ -362,9 +340,7 @@ class TestMyT(TestMyTHelper):
         vehicle = self._lookup_vehicle(myt, 4444444)
         assert vehicle is not None
         # Retrieve the actual trip
-        trip = asyncio.get_event_loop().run_until_complete(
-            myt.get_trip(vehicle["vin"], trip_id)
-        )
+        trip = asyncio.get_event_loop().run_until_complete(myt.get_trip(vehicle["vin"], trip_id))
         assert trip is not None
         assert isinstance(trip, DetailedTrip)
         assert len(trip.trip_events) == 12
@@ -421,9 +397,7 @@ class TestMyTStatistics(TestMyTHelper):
         assert vehicle is not None
         # Retrieve the actual status of the vehicle
         stat = asyncio.get_event_loop().run_until_complete(
-            myt.get_driving_statistics(
-                vehicle["vin"], "isoweek", from_date="2010-01-01"
-            )
+            myt.get_driving_statistics(vehicle["vin"], "isoweek", from_date="2010-01-01")
         )
         assert stat is not None
         assert "error_mesg" in stat[0]
@@ -468,9 +442,7 @@ class TestMyTStatistics(TestMyTHelper):
         today = arrow.now().format("YYYY-MM-DD")
         # Retrieve the actual status of the vehicle
         stat = asyncio.get_event_loop().run_until_complete(
-            myt.get_driving_statistics(
-                vehicle["vin"], interval, unit=unit, from_date=today
-            )
+            myt.get_driving_statistics(vehicle["vin"], interval, unit=unit, from_date=today)
         )
         assert stat is not None
         assert "error_mesg" in stat[0]

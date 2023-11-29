@@ -24,9 +24,7 @@ class Api:
 
     async def _request_and_parse(self, model, method: str, endpoint: str, **kwargs):
         """Generic request and response parsing."""
-        response = await self.controller.request_json(
-            method=method, endpoint=endpoint, **kwargs
-        )
+        response = await self.controller.request_json(method=method, endpoint=endpoint, **kwargs)
         return model(**response)
 
     async def set_vehicle_alias_endpoint(self, alias: str, guid: str, vin: str):
@@ -58,48 +56,32 @@ class Api:
     async def get_location_endpoint(self, vin: str) -> LocationResponseModel:
         """Get where you have parked your car."""
         endpoint = "/v1/location"
-        return await self._request_and_parse(
-            LocationResponseModel, "GET", endpoint, vin=vin
-        )
+        return await self._request_and_parse(LocationResponseModel, "GET", endpoint, vin=vin)
 
-    async def get_vehicle_health_status_endpoint(
-        self, vin: str
-    ) -> VehicleHealthResponseModel:
+    async def get_vehicle_health_status_endpoint(self, vin: str) -> VehicleHealthResponseModel:
         """Get information about the vehicle."""
         endpoint = "/v1/vehiclehealth/status"
-        return await self._request_and_parse(
-            VehicleHealthResponseModel, "GET", endpoint, vin=vin
-        )
+        return await self._request_and_parse(VehicleHealthResponseModel, "GET", endpoint, vin=vin)
 
     async def get_remote_status_endpoint(self, vin: str) -> RemoteStatusResponseModel:
         """Get information about the vehicle."""
         endpoint = "/v1/global/remote/status"
-        return await self._request_and_parse(
-            RemoteStatusResponseModel, "GET", endpoint, vin=vin
-        )
+        return await self._request_and_parse(RemoteStatusResponseModel, "GET", endpoint, vin=vin)
 
-    async def get_vehicle_electric_status_endpoint(
-        self, vin: str
-    ) -> ElectricResponseModel:
+    async def get_vehicle_electric_status_endpoint(self, vin: str) -> ElectricResponseModel:
         """Get information about the vehicle."""
         endpoint = "/v1/global/remote/electric/status"
-        return await self._request_and_parse(
-            ElectricResponseModel, "GET", endpoint, vin=vin
-        )
+        return await self._request_and_parse(ElectricResponseModel, "GET", endpoint, vin=vin)
 
     async def get_telemetry_endpoint(self, vin: str) -> TelemetryResponseModel:
         """Get information about the vehicle."""
         endpoint = "/v3/telemetry"
-        return await self._request_and_parse(
-            TelemetryResponseModel, "GET", endpoint, vin=vin
-        )
+        return await self._request_and_parse(TelemetryResponseModel, "GET", endpoint, vin=vin)
 
     async def get_notification_endpoint(self, vin: str) -> NotificationResponseModel:
         """Get information about the vehicle."""
         endpoint = "/v2/notification/history"
-        return await self._request_and_parse(
-            NotificationResponseModel, "GET", endpoint, vin=vin
-        )
+        return await self._request_and_parse(NotificationResponseModel, "GET", endpoint, vin=vin)
 
     async def get_trips_endpoint(
         self,
@@ -114,6 +96,4 @@ class Api:
         """Get trip
         The page parameter works a bit strange but setting to 1 gets last few trips"""
         endpoint = f"/v1/trips?from={from_date}&to={to_date}&route={route}&summary={summary}&limit={limit}&offset={offset}"  # pylint: disable=C0301 # noqa: E501
-        return await self._request_and_parse(
-            TripsResponseModel, "GET", endpoint, vin=vin
-        )
+        return await self._request_and_parse(TripsResponseModel, "GET", endpoint, vin=vin)

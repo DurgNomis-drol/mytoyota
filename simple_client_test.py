@@ -22,9 +22,7 @@ except json.decoder.JSONDecodeError:
     pass
 
 if username is None or password is None:
-    print(
-        "Did you forget to set your username and password? Or supply the credentials file"
-    )
+    print("Did you forget to set your username and password? Or supply the credentials file")
     exit()
 
 # Pretty Printer used below
