@@ -11,8 +11,10 @@ information, sensor data, fuel level, driving statistics and more.
 from __future__ import annotations
 
 import logging
+from typing import List, Optional
 
 from mytoyota.api import Api
+from mytoyota.exceptions import ToyotaApiError
 from mytoyota.models.vehicle import Vehicle
 
 from .controller import Controller
@@ -42,11 +44,10 @@ class MyT:
         if username is None or "@" not in username:
             raise ToyotaInvalidUsername
 
-        if not disable_locale_check:
-            if not is_valid_locale(locale):
-                raise ToyotaLocaleNotValid(
-                    "Please provide a valid locale string! Valid format is: en-gb."
-                )
+        if not disable_locale_check and not is_valid_locale(locale):
+            raise ToyotaLocaleNotValid(
+                "Please provide a valid locale string! Valid format is: en-gb."
+            )
 
         self._api = Api(
             controller_class(
@@ -66,12 +67,13 @@ class MyT:
         _LOGGER.debug("Performing first login")
         await self._api.controller.login()
 
-    async def get_vehicles(self) -> list[Vehicle]:
+    async def get_vehicles(self) -> Optional[List[Vehicle]]:
         """Returns a list of vehicles."""
         _LOGGER.debug("Getting list of vehicles associated with the account")
         vehicles = await self._api.get_vehicles_endpoint()
-
-        return [Vehicle(self._api, v) for v in vehicles.payload]
+        if vehicles.payload is not None:
+            return [Vehicle(self._api, v) for v in vehicles.payload]
+        raise ToyotaApiError("No vehicle information received.")
 
     # async def get_driving_statistics(  # pylint: disable=too-many-branches
     #     self,
