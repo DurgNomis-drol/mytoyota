@@ -17,10 +17,7 @@ from mytoyota.api import Api
 from mytoyota.models.vehicle import Vehicle
 
 from .controller import Controller
-from .exceptions import (
-    ToyotaInvalidUsername,
-    ToyotaLocaleNotValid,
-)
+from .exceptions import ToyotaInvalidUsername, ToyotaLocaleNotValid
 from .utils.locale import is_valid_locale
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)

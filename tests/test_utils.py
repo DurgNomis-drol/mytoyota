@@ -2,7 +2,6 @@
 # pylint: disable=import-error
 import pytest
 
-from mytoyota.exceptions import ToyotaInvalidToken
 from mytoyota.utils.conversions import (
     convert_to_liter_per_100_miles,
     convert_to_miles,
@@ -41,7 +40,6 @@ class TestUtils:
     def test_not_is_valid_locale(self, invalid_locale: str):
         """Test invalid cases for is_valid_locale"""
         assert not is_valid_locale(invalid_locale)
-
 
     @pytest.mark.parametrize(
         "distance_km,distance_miles",
