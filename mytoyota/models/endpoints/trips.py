@@ -36,10 +36,6 @@ class _SummaryModel(_SummaryBaseModel):
     night_trip: bool = Field(alias="nightTrip")
 
 
-class _ContextModel(BaseModel):
-    slope: float
-
-
 class _CoachingMsgParamModel(BaseModel):
     name: str
     unit: str
