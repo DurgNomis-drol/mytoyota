@@ -35,8 +35,6 @@ class MyT:
         username: str,
         password: str,
         locale: str = "en-gb",
-        brand: str = "T",
-        uuid: Optional[str] = None,
         controller_class=Controller,
         disable_locale_check: bool = False,
     ) -> None:

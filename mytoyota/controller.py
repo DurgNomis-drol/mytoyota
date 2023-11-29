@@ -45,6 +45,13 @@ class Controller:
     async def _update_token(self, retry: bool = True) -> None:
         """Performs login to toyota servers and retrieves token and uuid for the account."""
 
+        # Does this help with "Access Denied" issues?
+        standard_headers: dict = {
+            "accept-api-version": "resource=2.1, protocol=1.0",
+            "x-brand": "T",
+            "user-agent": "okhttp/4.10.0",
+        }
+
         _LOGGER.debug("Authenticating")
         async with httpx.AsyncClient() as client:
             data: Dict[str, Any] = {}
@@ -58,7 +65,9 @@ class Controller:
                             cb["input"][0]["value"] = self._username
                         elif cb["type"] == "PasswordCallback":
                             cb["input"][0]["value"] = self._password
-                resp = await client.post(self.AUTHENTICATE_URL, json=data)
+                resp = await client.post(
+                    self.AUTHENTICATE_URL, json=data, headers=standard_headers
+                )
                 _LOGGER.debug(format_httpx_response(resp))
                 if resp.status_code != HTTPStatus.OK:
                     raise ToyotaLoginError(
@@ -138,6 +147,7 @@ class Controller:
         self,  # pylint: disable=too-many-branches
         method: str,
         endpoint: str,
+        vin: Optional[str] = None,
         body: Optional[Dict[str, Any]] = None,
         params: Optional[Dict[str, Any]] = None,
         headers: Optional[Dict[str, Any]] = None,
@@ -159,8 +169,12 @@ class Controller:
                 "authorization": f"Bearer {self._token}",
                 "x-channel": "ONEAPP",
                 "x-brand": "T",
+                "user-agent": "okhttp/4.10.0",
             }
         )
+        # Add vin if passed
+        if vin is not None:
+            headers.update({"vin": vin})
 
         async with httpx.AsyncClient(timeout=self._timeout) as client:
             response = await client.request(
@@ -186,10 +200,11 @@ class Controller:
         self,
         method: str,
         endpoint: str,
+        vin: Optional[str] = None,
         body: Optional[Dict[str, Any]] = None,
         params: Optional[Dict[str, Any]] = None,
         headers: Optional[Dict[str, Any]] = None,
     ):
-        response = await self.request_raw(method, endpoint, body, params, headers)
+        response = await self.request_raw(method, endpoint, vin, body, params, headers)
 
         return response.json()
