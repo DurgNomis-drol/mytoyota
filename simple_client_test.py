@@ -31,7 +31,7 @@ if username is None or password is None:
 pp = pprint.PrettyPrinter(indent=4)
 
 
-client = MyT(username=username, password=password, brand="T")
+client = MyT(username=username, password=password)
 
 
 async def get_information():
