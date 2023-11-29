@@ -2,7 +2,6 @@
 # pylint: disable=import-error
 import pytest
 
-from mytoyota.exceptions import ToyotaInvalidToken
 from mytoyota.utils.conversions import (
     convert_to_liter_per_100_miles,
     convert_to_miles,
@@ -10,7 +9,6 @@ from mytoyota.utils.conversions import (
 )
 from mytoyota.utils.formatters import format_odometer
 from mytoyota.utils.locale import is_valid_locale
-from mytoyota.utils.token import is_valid_token
 
 
 class TestUtils:
@@ -42,36 +40,6 @@ class TestUtils:
     def test_not_is_valid_locale(self, invalid_locale: str):
         """Test invalid cases for is_valid_locale"""
         assert not is_valid_locale(invalid_locale)
-
-    @pytest.mark.parametrize(
-        "token",
-        [
-            "T" * 111 + "..*",
-            "0" * 111 + "..*",
-            "." * 111 + "..*",
-        ],
-    )
-    def test_is_valid_token(self, token: str):
-        """Test valid cases for is_valid_token"""
-        assert is_valid_token(token)
-
-    @pytest.mark.parametrize(
-        "invalid_token",
-        [
-            "..*",
-            "234234.*",
-            "234234..",
-            "234234",
-            "0" * 110 + "..*",
-            "." * 112 + "..*",
-            None,
-            "",
-        ],
-    )
-    def test_not_is_valid_token(self, invalid_token: str):
-        """Test invalid cases for is_valid_token"""
-        with pytest.raises(ToyotaInvalidToken):
-            is_valid_token(invalid_token)
 
     @pytest.mark.parametrize(
         "distance_km,distance_miles",

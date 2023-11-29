@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import List, Optional
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, SecretStr
 
 from mytoyota.models.endpoints.common import StatusModel
 
@@ -47,7 +47,7 @@ class _CustomerModel(BaseModel):
     forge_rock_id: UUID = Field(alias="forgerockId")
     guid: UUID
     is_cp_migrated: bool = Field(alias="isCpMigrated")
-    lastname: str = Field(alias="lastName")
+    lastname: SecretStr = Field(alias="lastName")
     last_update_date: datetime = Field("lastUpdateDate")
     last_update_source: str = Field("lastUpdateSource")
     phone_numbers: List[_PhoneNumberModel] = Field(alias="phoneNumbers")

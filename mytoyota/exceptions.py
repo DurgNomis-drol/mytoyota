@@ -9,10 +9,6 @@ class ToyotaLoginError(Exception):
     """Raise if a login error happens."""
 
 
-class ToyotaInvalidToken(Exception):
-    """Raise if token is invalid"""
-
-
 class ToyotaInvalidUsername(Exception):
     """Raise if username is invalid"""
 

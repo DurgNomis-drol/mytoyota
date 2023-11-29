@@ -14,15 +14,10 @@ import logging
 from typing import Optional
 
 from mytoyota.api import Api
-from mytoyota.const import SUPPORTED_REGIONS
 from mytoyota.models.vehicle import Vehicle
 
 from .controller import Controller
-from .exceptions import (
-    ToyotaInvalidUsername,
-    ToyotaLocaleNotValid,
-    ToyotaRegionNotSupported,
-)
+from .exceptions import ToyotaInvalidUsername, ToyotaLocaleNotValid
 from .utils.locale import is_valid_locale
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -40,9 +35,6 @@ class MyT:
         username: str,
         password: str,
         locale: str = "en-gb",
-        region: str = "europe",
-        brand: str = "T",
-        uuid: Optional[str] = None,
         controller_class=Controller,
         disable_locale_check: bool = False,
     ) -> None:
@@ -50,9 +42,6 @@ class MyT:
 
         if username is None or "@" not in username:
             raise ToyotaInvalidUsername
-
-        if region not in SUPPORTED_REGIONS:
-            raise ToyotaRegionNotSupported(region)
 
         if not disable_locale_check:
             if not is_valid_locale(locale):
@@ -64,23 +53,8 @@ class MyT:
             controller_class(
                 username=username,
                 password=password,
-                locale=locale,
-                region=region,
-                brand=brand,
-                uuid=uuid,
             )
         )
-
-    @staticmethod
-    def get_supported_regions() -> list:
-        """Get supported regions.
-
-        Retrieves a list of supported regions.
-
-        Returns:
-            A list of supported regions. For example: ["europe"]
-        """
-        return list(SUPPORTED_REGIONS.keys())
 
     async def login(self) -> None:
         """Performs first login.
@@ -91,7 +65,7 @@ class MyT:
 
         """
         _LOGGER.debug("Performing first login")
-        await self._api.controller.first_login()
+        await self._api.controller.login()
 
     async def get_vehicles(self) -> list[Vehicle]:
         """Returns a list of vehicles."""
@@ -163,7 +137,7 @@ class MyT:
     #         ToyotaApiError: Toyota's API returned an error.
     #     """
     #
-    #     _LOGGER.debug(f"Getting statistics for {censor_vin(vin)}...")
+    #     _LOGGER.debug(f"Getting statistics for {censor_string(vin)}...")
     #     _LOGGER.debug(f"Interval: {interval} - from_date: {from_date} - unit: {unit}")
     #
     #     if interval not in INTERVAL_SUPPORTED:
@@ -308,7 +282,7 @@ class MyT:
     #         ToyotaInternalError: An error occurred when making a request.
     #         ToyotaApiError: Toyota's API returned an error.
     #     """
-    #     _LOGGER.debug(f"Getting trips for {censor_vin(vin)}...")
+    #     _LOGGER.debug(f"Getting trips for {censor_string(vin)}...")
     #
     #     raw_trips = await self.api.get_trips_endpoint(vin)
     #     _LOGGER.debug(f"received {len(raw_trips.get('recentTrips', []))} trips")
@@ -334,7 +308,7 @@ class MyT:
     #         ToyotaApiError: Toyota's API returned an error.
     #     """
     #     trip_id = trip_id.upper()
-    #     _LOGGER.debug(f"Getting trip {trip_id} for {censor_vin(vin)}...")
+    #     _LOGGER.debug(f"Getting trip {trip_id} for {censor_string(vin)}...")
     #
     #     raw_trip = await self.api.get_trip_endpoint(vin, trip_id)
     #     _LOGGER.debug(f"received trip {trip_id}")
@@ -387,9 +361,9 @@ class MyT:
     #         ToyotaInternalError: An error occurred when making a request.
     #         ToyotaApiError: Toyota's API returned an error.
     #     """
-    #     _LOGGER.debug(f"Locking {censor_vin(vin)}...")
+    #     _LOGGER.debug(f"Locking {censor_string(vin)}...")
     #     raw_response = await self.api.set_lock_unlock_vehicle_endpoint(vin, "lock")
-    #     _LOGGER.debug(f"Locking {censor_vin(vin)}... {raw_response}")
+    #     _LOGGER.debug(f"Locking {censor_string(vin)}... {raw_response}")
     #     response = VehicleLockUnlockActionResponse(raw_response)
     #     return response
     #
@@ -405,9 +379,9 @@ class MyT:
     #         ToyotaInternalError: An error occurred when making a request.
     #         ToyotaApiError: Toyota's API returned an error.
     #     """
-    #     _LOGGER.debug(f"Unlocking {censor_vin(vin)}...")
+    #     _LOGGER.debug(f"Unlocking {censor_string(vin)}...")
     #     raw_response = await self.api.set_lock_unlock_vehicle_endpoint(vin, "unlock")
-    #     _LOGGER.debug(f"Unlocking {censor_vin(vin)}... {raw_response}")
+    #     _LOGGER.debug(f"Unlocking {censor_string(vin)}... {raw_response}")
     #     response = VehicleLockUnlockActionResponse(raw_response)
     #     return response
     #
@@ -426,10 +400,10 @@ class MyT:
     #         ToyotaInternalError: An error occurred when making a request.
     #         ToyotaApiError: Toyota's API returned an error.
     #     """
-    #     _LOGGER.debug(f"Getting lock request status for {censor_vin(vin)}...")
+    #     _LOGGER.debug(f"Getting lock request status for {censor_string(vin)}...")
     #     raw_response = await self.api.get_lock_unlock_request_status(vin, req_id)
     #     _LOGGER.debug(
-    #         f"Getting lock request status for {censor_vin(vin)}... {raw_response}"
+    #         f"Getting lock request status for {censor_string(vin)}... {raw_response}"
     #     )
     #     response = VehicleLockUnlockStatusResponse(raw_response)
     #     return response
