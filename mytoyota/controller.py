@@ -35,6 +35,7 @@ class Controller:
         self._token: Optional[str] = None
         self._token_expiration: Optional[datetime] = None
         self._refresh_token: Optional[str] = None
+        self._uuid: Optional[str] = None
         self._timeout = timeout
 
     async def login(self) -> None:
@@ -128,7 +129,7 @@ class Controller:
 
     def _is_token_valid(self, retry: bool = True) -> bool:
         """Checks if token is valid"""
-        if self._token is None:
+        if self._token or self._token_expiration is None:
             return False
 
         return self._token_expiration > datetime.now()
