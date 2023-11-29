@@ -1,6 +1,6 @@
 """pytest tests for mytoyota.utils.logs"""
 
-from mytoyota.utils.logs import censor_all, censor_string, censor_vin
+from mytoyota.utils.logs import censor_all, censor_string
 
 
 class TestLogUtilities:
@@ -18,15 +18,15 @@ class TestLogUtilities:
 
         assert string == ""
 
-    def test_censor_vin(self):
-        """Test censor_vin"""
-        vin = censor_vin("JTDKGNEC00N999999")
+    def test_censor_string(self):
+        """Test censor_string"""
+        vin = censor_string("JTDKGNEC00N999999")
 
         assert vin == "JTDKGNEC0********"
 
-    def test_censor_vin_no_data(self):
-        """Test censor_vin"""
-        vin = censor_vin("")
+    def test_censor_string_no_data(self):
+        """Test censor_string"""
+        vin = censor_string("")
 
         assert vin == ""
 

@@ -73,12 +73,3 @@ def censor_all(
 
 def censor_string(string: str) -> str:
     return string[:2] + (len(string) - 2) * "*" if string else string
-
-
-def censor_cookie(cookie: str) -> str:
-    string = cookie.split("=")
-    return f"{string[0]}={censor_string(string[1])}"
-
-
-def censor_vin(vin: str) -> str:
-    return f"{vin[:-8]}********" if vin else vin

@@ -139,7 +139,7 @@ class MyT:
     #         ToyotaApiError: Toyota's API returned an error.
     #     """
     #
-    #     _LOGGER.debug(f"Getting statistics for {censor_vin(vin)}...")
+    #     _LOGGER.debug(f"Getting statistics for {censor_string(vin)}...")
     #     _LOGGER.debug(f"Interval: {interval} - from_date: {from_date} - unit: {unit}")
     #
     #     if interval not in INTERVAL_SUPPORTED:
@@ -284,7 +284,7 @@ class MyT:
     #         ToyotaInternalError: An error occurred when making a request.
     #         ToyotaApiError: Toyota's API returned an error.
     #     """
-    #     _LOGGER.debug(f"Getting trips for {censor_vin(vin)}...")
+    #     _LOGGER.debug(f"Getting trips for {censor_string(vin)}...")
     #
     #     raw_trips = await self.api.get_trips_endpoint(vin)
     #     _LOGGER.debug(f"received {len(raw_trips.get('recentTrips', []))} trips")
@@ -310,7 +310,7 @@ class MyT:
     #         ToyotaApiError: Toyota's API returned an error.
     #     """
     #     trip_id = trip_id.upper()
-    #     _LOGGER.debug(f"Getting trip {trip_id} for {censor_vin(vin)}...")
+    #     _LOGGER.debug(f"Getting trip {trip_id} for {censor_string(vin)}...")
     #
     #     raw_trip = await self.api.get_trip_endpoint(vin, trip_id)
     #     _LOGGER.debug(f"received trip {trip_id}")
@@ -363,9 +363,9 @@ class MyT:
     #         ToyotaInternalError: An error occurred when making a request.
     #         ToyotaApiError: Toyota's API returned an error.
     #     """
-    #     _LOGGER.debug(f"Locking {censor_vin(vin)}...")
+    #     _LOGGER.debug(f"Locking {censor_string(vin)}...")
     #     raw_response = await self.api.set_lock_unlock_vehicle_endpoint(vin, "lock")
-    #     _LOGGER.debug(f"Locking {censor_vin(vin)}... {raw_response}")
+    #     _LOGGER.debug(f"Locking {censor_string(vin)}... {raw_response}")
     #     response = VehicleLockUnlockActionResponse(raw_response)
     #     return response
     #
@@ -381,9 +381,9 @@ class MyT:
     #         ToyotaInternalError: An error occurred when making a request.
     #         ToyotaApiError: Toyota's API returned an error.
     #     """
-    #     _LOGGER.debug(f"Unlocking {censor_vin(vin)}...")
+    #     _LOGGER.debug(f"Unlocking {censor_string(vin)}...")
     #     raw_response = await self.api.set_lock_unlock_vehicle_endpoint(vin, "unlock")
-    #     _LOGGER.debug(f"Unlocking {censor_vin(vin)}... {raw_response}")
+    #     _LOGGER.debug(f"Unlocking {censor_string(vin)}... {raw_response}")
     #     response = VehicleLockUnlockActionResponse(raw_response)
     #     return response
     #
@@ -402,10 +402,10 @@ class MyT:
     #         ToyotaInternalError: An error occurred when making a request.
     #         ToyotaApiError: Toyota's API returned an error.
     #     """
-    #     _LOGGER.debug(f"Getting lock request status for {censor_vin(vin)}...")
+    #     _LOGGER.debug(f"Getting lock request status for {censor_string(vin)}...")
     #     raw_response = await self.api.get_lock_unlock_request_status(vin, req_id)
     #     _LOGGER.debug(
-    #         f"Getting lock request status for {censor_vin(vin)}... {raw_response}"
+    #         f"Getting lock request status for {censor_string(vin)}... {raw_response}"
     #     )
     #     response = VehicleLockUnlockStatusResponse(raw_response)
     #     return response
