@@ -131,8 +131,6 @@ class _MetadataModel(BaseModel):
     sorted_by: List[_SortedByItemModel] = Field(alias="sortedBy")
 
 
-
-
 class TripsModel(BaseModel):
     from_date: date = Field(..., alias="from")
     to_date: date = Field(..., alias="to")

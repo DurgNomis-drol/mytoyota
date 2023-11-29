@@ -185,7 +185,9 @@ class Vehicle:
         import json
 
         """Helper function for collecting data for further work"""
-        dump: [str, Any] = {"vehicle_info": json.loads(self._vehicle_info.model_dump_json())}
+        dump: [str, Any] = {
+            "vehicle_info": json.loads(self._vehicle_info.model_dump_json())
+        }
         for name, data in self._endpoint_data.items():
             dump[name] = json.loads(data.model_dump_json())
 
