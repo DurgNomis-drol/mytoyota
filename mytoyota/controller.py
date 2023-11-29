@@ -1,7 +1,7 @@
 """Toyota Connected Services Controller """
+import logging
 from datetime import datetime, timedelta
 from http import HTTPStatus
-import logging
 from typing import Any, Dict, Optional
 from urllib import parse
 
@@ -18,13 +18,13 @@ class Controller:
     """Controller class."""
 
     ACCESS_TOKEN_URL = httpx.URL(
-        "HTTPS://b2c-login.toyota-europe.com/oauth2/realms/root/realms/tme/access_token"  # pylint: disable=C0301
+        "HTTPS://b2c-login.toyota-europe.com/oauth2/realms/root/realms/tme/access_token"  # pylint: disable=C0301 # noqa: E501
     )
     AUTHENTICATE_URL = httpx.URL(
-        "HTTPS://b2c-login.toyota-europe.com/json/realms/root/realms/tme/authenticate?authIndexType=service&authIndexValue=oneapp"  # pylint: disable=C0301
+        "HTTPS://b2c-login.toyota-europe.com/json/realms/root/realms/tme/authenticate?authIndexType=service&authIndexValue=oneapp"  # pylint: disable=C0301 # noqa: E501
     )
     AUTHORIZE_URL = httpx.URL(
-        "HTTPS://b2c-login.toyota-europe.com/oauth2/realms/root/realms/tme/authorize?client_id=oneapp&scope=openid profile write&response_type=code&redirect_uri=com.toyota.oneapp:/oauth2Callback&code_challenge=plain&code_challenge_method=plain"  # pylint: disable=C0301
+        "HTTPS://b2c-login.toyota-europe.com/oauth2/realms/root/realms/tme/authorize?client_id=oneapp&scope=openid profile write&response_type=code&redirect_uri=com.toyota.oneapp:/oauth2Callback&code_challenge=plain&code_challenge_method=plain"  # pylint: disable=C0301 # noqa: E501
     )
     API_URL = httpx.URL("HTTPS://ctpa-oneapi.tceu-ctp-prd.toyotaconnectedeurope.io")
     BASE_URL = httpx.URL("HTTPS://ctpa-oneapi.tceu-ctp-prd.toyotaconnectedeurope.io")

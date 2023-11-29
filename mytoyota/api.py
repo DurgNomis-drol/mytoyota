@@ -113,7 +113,7 @@ class Api:
     ) -> TripsResponseModel:
         """Get trip
         The page parameter works a bit strange but setting to 1 gets last few trips"""
-        endpoint = f"/v1/trips?from={from_date}&to={to_date}&route={route}&summary={summary}&limit={limit}&offset={offset}"  # pylint: disable=C0301
+        endpoint = f"/v1/trips?from={from_date}&to={to_date}&route={route}&summary={summary}&limit={limit}&offset={offset}"  # pylint: disable=C0301 # noqa: E501
         return await self._request_and_parse(
             TripsResponseModel, "GET", endpoint, vin=vin
         )
