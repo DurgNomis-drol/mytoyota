@@ -70,10 +70,7 @@ class Api:
         endpoint = "/v1/location"
         return await self._request_and_parse(LocationResponseModel, "GET", endpoint, vin=vin)
 
-
-    async def get_vehicle_health_status_endpoint(
-        self, vin: str
-    ) -> VehicleHealthResponseModel:
+    async def get_vehicle_health_status_endpoint(self, vin: str) -> VehicleHealthResponseModel:
         """
         Get the latest health status.
 
@@ -90,9 +87,7 @@ class Api:
         endpoint = "/v1/global/remote/status"
         return await self._request_and_parse(RemoteStatusResponseModel, "GET", endpoint, vin=vin)
 
-    async def get_vehicle_electric_status_endpoint(
-        self, vin: str
-    ) -> ElectricResponseModel:
+    async def get_vehicle_electric_status_endpoint(self, vin: str) -> ElectricResponseModel:
         """
         Get the latest electric status.
 
