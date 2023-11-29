@@ -24,6 +24,4 @@ class Notification(VehicleData):
 
     @property
     def date(self) -> datetime:
-        return datetime.fromisoformat(
-            self._data["notificationDate"].replace("Z", "+00:00")
-        )
+        return datetime.fromisoformat(self._data["notificationDate"].replace("Z", "+00:00"))

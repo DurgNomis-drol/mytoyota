@@ -1,7 +1,7 @@
 """Toyota Connected Services Controller """
+import logging
 from datetime import datetime, timedelta
 from http import HTTPStatus
-import logging
 from typing import Any, Dict, Optional
 from urllib import parse
 
@@ -18,13 +18,13 @@ class Controller:
     """Controller class."""
 
     ACCESS_TOKEN_URL = httpx.URL(
-        "HTTPS://b2c-login.toyota-europe.com/oauth2/realms/root/realms/tme/access_token"  # pylint: disable=C0301
+        "HTTPS://b2c-login.toyota-europe.com/oauth2/realms/root/realms/tme/access_token"  # pylint: disable=C0301 # noqa: E501
     )
     AUTHENTICATE_URL = httpx.URL(
-        "HTTPS://b2c-login.toyota-europe.com/json/realms/root/realms/tme/authenticate?authIndexType=service&authIndexValue=oneapp"  # pylint: disable=C0301
+        "HTTPS://b2c-login.toyota-europe.com/json/realms/root/realms/tme/authenticate?authIndexType=service&authIndexValue=oneapp"  # pylint: disable=C0301 # noqa: E501
     )
     AUTHORIZE_URL = httpx.URL(
-        "HTTPS://b2c-login.toyota-europe.com/oauth2/realms/root/realms/tme/authorize?client_id=oneapp&scope=openid profile write&response_type=code&redirect_uri=com.toyota.oneapp:/oauth2Callback&code_challenge=plain&code_challenge_method=plain"  # pylint: disable=C0301
+        "HTTPS://b2c-login.toyota-europe.com/oauth2/realms/root/realms/tme/authorize?client_id=oneapp&scope=openid profile write&response_type=code&redirect_uri=com.toyota.oneapp:/oauth2Callback&code_challenge=plain&code_challenge_method=plain"  # pylint: disable=C0301 # noqa: E501
     )
     API_URL = httpx.URL("HTTPS://ctpa-oneapi.tceu-ctp-prd.toyotaconnectedeurope.io")
     BASE_URL = httpx.URL("HTTPS://ctpa-oneapi.tceu-ctp-prd.toyotaconnectedeurope.io")
@@ -42,7 +42,7 @@ class Controller:
         """Perform first login."""
         await self._update_token()
 
-    async def _update_token(self, retry: bool = True) -> None:
+    async def _update_token(self) -> None:
         """Performs login to toyota servers and retrieves token and uuid for the account."""
 
         # Does this help with "Access Denied" issues?
@@ -88,9 +88,7 @@ class Controller:
             )
             _LOGGER.debug(format_httpx_response(resp))
             if resp.status_code != HTTPStatus.FOUND:
-                raise ToyotaLoginError(
-                    f"Authorization failed. {resp.status_code}, {resp.text}."
-                )
+                raise ToyotaLoginError(f"Authorization failed. {resp.status_code}, {resp.text}.")
             authentication_code = parse.parse_qs(
                 httpx.URL(resp.headers.get("location")).query.decode()
             )["code"]
@@ -109,9 +107,7 @@ class Controller:
             )
             _LOGGER.debug(format_httpx_response(resp))
             if resp.status_code != HTTPStatus.OK:
-                raise ToyotaLoginError(
-                    f"Token retrieval failed. {resp.status_code}, {resp.text}."
-                )
+                raise ToyotaLoginError(f"Token retrieval failed. {resp.status_code}, {resp.text}.")
 
             access_tokens: Dict[str, Any] = resp.json()
             if (
@@ -136,7 +132,7 @@ class Controller:
                 seconds=access_tokens["expires_in"]
             )
 
-    def _is_token_valid(self, retry: bool = True) -> bool:
+    def _is_token_valid(self) -> bool:
         """Checks if token is valid"""
         if self._token or self._token_expiration is None:
             return False
@@ -192,9 +188,7 @@ class Controller:
             ]:
                 return response
 
-        raise ToyotaApiError(
-            f"Request Failed.  {response.status_code}, {response.text}."
-        )
+        raise ToyotaApiError(f"Request Failed.  {response.status_code}, {response.text}.")
 
     async def request_json(
         self,

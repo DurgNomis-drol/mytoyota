@@ -131,7 +131,7 @@ class TripsModel(BaseModel):
     from_date: date = Field(..., alias="from")
     to_date: date = Field(..., alias="to")
     trips: List[_TripModel]
-    summary: List[_SummaryItemModel]
+    summary: Optional[List[_SummaryItemModel]] = None
     metadata: _MetadataModel = Field(..., alias="_metadata")
     route: Optional[_RouteModel] = None
 

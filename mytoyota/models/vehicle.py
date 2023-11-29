@@ -1,9 +1,10 @@
 """Vehicle model."""
 import asyncio
 import copy
+import json
+import logging
 from datetime import date, timedelta
 from functools import partial
-import logging
 from typing import Any, Dict, List, Optional, Tuple
 
 from mytoyota.api import Api
@@ -30,69 +31,68 @@ class Vehicle:
         self._endpoint_data: Dict[str, Any] = {}
 
         # Endpoint Name, Function to check if car supports the endpoint, endpoint to call to update
-        endpoints = [
-            [
-                "location",
-                vehicle_info.extended_capabilities.last_parked_capable
+        api_endpoints = [
+            {
+                "name": "location",
+                "capable": vehicle_info.extended_capabilities.last_parked_capable
                 or vehicle_info.features.last_parked,
-                partial(self._api.get_location_endpoint, vin=vehicle_info.vin),
-            ],
-            [
-                "health_status",
-                True,  # TODO Unsure of the required capability
-                partial(
+                "function": partial(self._api.get_location_endpoint, vin=vehicle_info.vin),
+            },
+            {
+                "name": "health_status",
+                "capable": True,  # TODO Unsure of the required capability
+                "function": partial(
                     self._api.get_vehicle_health_status_endpoint,
                     vin=vehicle_info.vin,
                 ),
-            ],
-            [
-                "electric_status",
-                vehicle_info.extended_capabilities.econnect_vehicle_status_capable,
-                partial(
+            },
+            {
+                "name": "electric_status",
+                "capable": vehicle_info.extended_capabilities.econnect_vehicle_status_capable,
+                "function": partial(
                     self._api.get_vehicle_electric_status_endpoint,
                     vin=vehicle_info.vin,
                 ),
-            ],
-            [
-                "telemetry",
-                vehicle_info.extended_capabilities.telemetry_capable,
-                partial(self._api.get_telemetry_endpoint, vin=vehicle_info.vin),
-            ],
-            [
-                "notifications",
-                True,  # TODO Unsure of the required capability
-                partial(self._api.get_notification_endpoint, vin=vehicle_info.vin),
-            ],
-            [
-                "status",
-                vehicle_info.extended_capabilities.vehicle_status,
-                partial(self._api.get_remote_status_endpoint, vin=vehicle_info.vin),
-            ],
-            [
-                "trips",
-                True,  # TODO Unsure of the required capability
-                partial(
+            },
+            {
+                "name": "telemetry",
+                "capable": vehicle_info.extended_capabilities.telemetry_capable,
+                "function": partial(self._api.get_telemetry_endpoint, vin=vehicle_info.vin),
+            },
+            {
+                "name": "notifications",
+                "capable": True,  # TODO Unsure of the required capability
+                "function": partial(self._api.get_notification_endpoint, vin=vehicle_info.vin),
+            },
+            {
+                "name": "status",
+                "capable": vehicle_info.extended_capabilities.vehicle_status,
+                "function": partial(self._api.get_remote_status_endpoint, vin=vehicle_info.vin),
+            },
+            {
+                "name": "trips",
+                "capable": True,  # TODO Unsure of the required capability
+                "function": partial(
                     self._api.get_trips_endpoint,
                     vin=vehicle_info.vin,
                     from_date=date.today() - timedelta(days=1),
                     to_date=date.today(),
                 ),
-            ],
+            },
         ]
-        self._endpoint_collect: List[Tuple[str, partial]] = []
-        self._endpoint_collect.extend(
-            (endpoint[0], endpoint[2]) for endpoint in endpoints if endpoint[1]
-        )
+        self._endpoint_collect = [
+            (endpoint["name"], endpoint["function"])
+            for endpoint in api_endpoints
+            if endpoint["capable"]
+        ]
 
     async def update(self):
-        async def parallel_wrapper(
-            name: str, fn: partial
-        ) -> Tuple[str, Dict[str, Any]]:
-            r = await fn()
+        async def parallel_wrapper(name: str, function: partial) -> Tuple[str, Dict[str, Any]]:
+            r = await function()
             return name, r
 
         responses = asyncio.gather(
-            *[parallel_wrapper(ep[0], ep[1]) for ep in self._endpoint_collect]
+            *[parallel_wrapper(name, function) for name, function in self._endpoint_collect]
         )
         for name, data in await responses:
             self._endpoint_data[name] = data
@@ -182,12 +182,8 @@ class Vehicle:
         return Dashboard(status)
 
     def _dump_all(self) -> Dict[str, Any]:
-        import json
-
         """Helper function for collecting data for further work"""
-        dump: [str, Any] = {
-            "vehicle_info": json.loads(self._vehicle_info.model_dump_json())
-        }
+        dump: [str, Any] = {"vehicle_info": json.loads(self._vehicle_info.model_dump_json())}
         for name, data in self._endpoint_data.items():
             dump[name] = json.loads(data.model_dump_json())
 

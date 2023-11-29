@@ -29,9 +29,7 @@ def format_httpx_response(response: Response) -> str:
     )
 
 
-def censor_all(
-    dictionary: Dict[str, Any], to_censor: Optional[set] = None
-) -> Dict[str, Any]:
+def censor_all(dictionary: Dict[str, Any], to_censor: Optional[set] = None) -> Dict[str, Any]:
     if to_censor is None:
         to_censor = {
             "vin",
