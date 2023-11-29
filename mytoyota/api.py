@@ -2,6 +2,7 @@
 
 from datetime import date, datetime, timezone
 from uuid import uuid4
+
 from mytoyota.models.endpoints.electric import ElectricResponseModel
 from mytoyota.models.endpoints.location import LocationResponseModel
 from mytoyota.models.endpoints.notifications import NotificationResponseModel
@@ -15,15 +16,27 @@ from .controller import Controller
 
 
 class Api:
-    """Controller class."""
+    """API Class. Allows access to available endpoints to retrieve the raw data"""
 
     def __init__(self, controller: Controller) -> None:
-        """Toyota Controller"""
+        """
+        Initialise the API
+
+        Parameters:
+            controller: Controller: A controller class to managing communication
+        """
         self.controller = controller
 
-    async def set_vehicle_alias_endpoint(self, alias: str, guid: str, vin: str):
-        """Set the alias for a vehicle."""
-        return await self.controller.request(
+    async def set_vehicle_alias_endpoint(self, alias: str, guid: str, vin: str) -> None:
+        """
+        Set the alias for a vehicle.
+
+        Parameters:
+            alias: str: Alias name
+            guid: str:  The account guid TODO: Remove the need for this
+            vin: str:   The vehicles VIN
+        """
+        await self.controller.request_raw(
             method="PUT",
             endpoint="/v1/vehicle-association/vehicle",
             vin=vin,
@@ -52,7 +65,14 @@ class Api:
         return VehiclesResponseModel(**response)
 
     async def get_location_endpoint(self, vin: str) -> LocationResponseModel:
-        """Get where you have parked your car."""
+        """
+        Get the last known location of your car. Only updates when car is parked.
+
+        Response includes Lat, Lon position. * If supported.
+
+        Parameters:
+            vin: str:   The vehicles VIN
+        """
         response = await self.controller.request_json(
             method="GET", endpoint="/v1/location", vin=vin
         )
@@ -62,7 +82,14 @@ class Api:
     async def get_vehicle_health_status_endpoint(
         self, vin: str
     ) -> VehicleHealthResponseModel:
-        """Get information about the vehicle."""
+        """
+        Get the latest health status.
+
+        Response includes the quantity of engine oil and any dashboard warning lights. * If supported.
+
+        Parameters:
+            vin: str:   The vehicles VIN
+        """
         response = await self.controller.request_json(
             method="GET", endpoint="/v1/vehiclehealth/status", vin=vin
         )
@@ -80,7 +107,15 @@ class Api:
     async def get_vehicle_electric_status_endpoint(
         self, vin: str
     ) -> ElectricResponseModel:
-        """Get information about the vehicle."""
+        """
+        Get the latest electric status.
+
+        Response includes current battery level, EV Range, EV Range with AC, fuel level, fuel range and
+        current charging status
+
+        Parameters:
+            vin: str:   The vehicles VIN
+        """
         response = await self.controller.request_json(
             method="GET", endpoint="/v1/global/remote/electric/status", vin=vin
         )
@@ -88,7 +123,14 @@ class Api:
         return ElectricResponseModel(**response)
 
     async def get_telemetry_endpoint(self, vin: str) -> TelemetryResponseModel:
-        """Get information about the vehicle."""
+        """
+        Get the latest telemetry status.
+
+        Response includes current fuel level, distance to empty and odometer
+
+        Parameters:
+            vin: str:   The vehicles VIN
+        """
         response = await self.controller.request_json(
             method="GET", endpoint="/v3/telemetry", vin=vin
         )
@@ -96,7 +138,16 @@ class Api:
         return TelemetryResponseModel(**response)
 
     async def get_notification_endpoint(self, vin: str) -> NotificationResponseModel:
-        """Get information about the vehicle."""
+        """
+        Get all available notifications for the vehicle
+
+        A notification includes a message, notification date, read flag, date read.
+
+        NOTE: Currently no way to mark notification as read or limit the response.
+
+        Parameters:
+            vin: str:   The vehicles VIN
+        """
         response = await self.controller.request_json(
             method="GET", endpoint="/v2/notification/history", vin=vin
         )
@@ -109,12 +160,26 @@ class Api:
         from_date: date,
         to_date: date,
         route: bool = False,
-        summary: bool = True,
+        summary: bool = False,
         limit: int = 5,
         offset: int = 0,
     ) -> TripsResponseModel:
-        """Get trip
-        The page parameter works a bit strange but setting to 1 gets last few trips"""
+        """
+        Get list of trips
+
+        Retrieves a list of all trips between the given dates. The default data(route, summary = False) provides a
+        basic summary of each trip and includes Coaching message and electrical use.
+
+        Parameters:
+            vin: str:        The vehicles VIN
+            from_date: date: From date to include trips, inclusive. Cant be in the future.
+            to_date: date:   To date to include trips, inclusive. Cant be in the future.
+            route: bool:     If true returns the route of each trip as a list of coordinates.
+                             Suitable for drawing on a map.
+            summary: bool:   If true returns a summary of each month and day in the date range
+            limit: int:      Limit of number of trips to return in one request. Max 50.
+            offset: int:     Offset into trips to start the request.
+        """
         response = await self.controller.request_json(
             method="GET",
             endpoint=f"/v1/trips?from={from_date}&to={to_date}&route={route}&summary={summary}&limit={limit}&offset={offset}",  # pylint: disable=C0301

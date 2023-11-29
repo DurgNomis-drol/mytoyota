@@ -8,6 +8,7 @@ from mytoyota.models.endpoints.common import StatusModel, UnitValueModel
 
 # pylint: disable=locally-disabled, missing-class-docstring, fixme
 
+
 class TelemetryModel(BaseModel):
     fuelType: str
     odometer: UnitValueModel
