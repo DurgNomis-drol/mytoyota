@@ -42,7 +42,7 @@ class Controller:
         """Perform first login."""
         await self._update_token()
 
-    async def _update_token(self, retry: bool = True) -> None:
+    async def _update_token(self) -> None:
         """Performs login to toyota servers and retrieves token and uuid for the account."""
 
         # Does this help with "Access Denied" issues?
@@ -136,7 +136,7 @@ class Controller:
                 seconds=access_tokens["expires_in"]
             )
 
-    def _is_token_valid(self, retry: bool = True) -> bool:
+    def _is_token_valid(self) -> bool:
         """Checks if token is valid"""
         if self._token or self._token_expiration is None:
             return False
