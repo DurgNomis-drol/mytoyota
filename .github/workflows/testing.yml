@@ -1,5 +1,8 @@
 name: "Test code"
 
+env:
+  COLUMNS: 120
+
 on:
   push:
     branches: ["master", "main"]
