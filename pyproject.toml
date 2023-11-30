@@ -53,6 +53,7 @@ disable = [
     "too-many-instance-attributes",
     "duplicate-code",
     "logging-fstring-interpolation",
+    "fixme",
 ]
 
 [tool.pylint.format]
