@@ -36,7 +36,7 @@ class NotificationModel(BaseModel):
     read_timestamp: datetime = Field(alias="readTimestamp")
     icon_url: str = Field(alias="iconUrl")
     message: str
-    status: Union[int, str]
+    status: Optional[Union[int, str]] = None
     type: str
     category: str
     display_category: str = Field(alias="displayCategory")
