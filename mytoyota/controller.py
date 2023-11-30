@@ -186,6 +186,27 @@ class Controller:
         params: Optional[Dict[str, Any]] = None,
         headers: Optional[Dict[str, Any]] = None,
     ):
+        """
+        Sends a JSON request to the specified endpoint.
+
+        Args:
+            method (str): The HTTP method to use for the request.
+            endpoint (str): The endpoint to send the request to.
+            vin (Optional[str], optional): The VIN (Vehicle Identification Number) to include in the request.
+                Defaults to None.
+            body (Optional[Dict[str, Any]], optional): The JSON body to include in the request.
+                Defaults to None.
+            params (Optional[Dict[str, Any]], optional): The query parameters to include in the request.
+                Defaults to None.
+            headers (Optional[Dict[str, Any]], optional): The headers to include in the request.
+                Defaults to None.
+
+        Returns:
+            The JSON response from the request.
+
+        Examples:
+            response = await request_json("GET", "/cars", vin="1234567890")
+        """
         response = await self.request_raw(method, endpoint, vin, body, params, headers)
 
         return response.json()
