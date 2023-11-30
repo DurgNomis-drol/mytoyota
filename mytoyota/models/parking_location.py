@@ -25,4 +25,5 @@ class ParkingLocation(VehicleData):
 
     @property
     def state(self) -> str:
+        """State."""
         return self._data.payload.vehicle_location.display_name

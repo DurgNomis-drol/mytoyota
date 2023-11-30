@@ -1,4 +1,4 @@
-""" Toyota Connected Services API - V2 Vehicle Models """
+""" Toyota Connected Services API - Vehicle Models """
 from datetime import date
 from typing import Any, Dict, List, Optional, Union
 from uuid import UUID
@@ -6,8 +6,6 @@ from uuid import UUID
 from pydantic import BaseModel, Field
 
 from mytoyota.models.endpoints.common import StatusModel
-
-# pylint: disable=locally-disabled, missing-class-docstring, fixme
 
 
 class _TranslationModel(BaseModel):
@@ -270,6 +268,81 @@ class _FeaturesModel(BaseModel):
 
 
 class VehicleGuidModel(BaseModel):
+    """
+    Model representing a vehicle with its associated information.
+
+    Attributes:
+        alerts (List[Any]): The alerts associated with the vehicle.
+        asiCode (str): The ASI code of the vehicle.
+        brand (str): The brand of the vehicle.
+        capabilities (List[_CapabilitiesModel]): The capabilities of the vehicle.
+        car_line_name (str): The name of the car line.
+        color (str): The color of the vehicle.
+        commercial_rental (bool): Indicates if the vehicle is used for commercial rental.
+        contract_id (str): The contract ID of the vehicle.
+        cts_links (_LinksModel): The CTS (Connected Technologies Services) links of the vehicle.
+        data_consent (_DataConsentModel): The data consent information of the vehicle.
+        date_of_first_use (Optional[date]): The date of first use of the vehicle.
+        dcm (_DcmModel): The DCM (Data Communication Module) information of the vehicle.
+        dcm_active (bool): Indicates if the DCM is active for the vehicle.
+        dcms (Optional[Any]): The DCMS (Data Communication Module Status) information of the vehicle.
+        display_model_description (str): The description of the displayed model.
+        display_subscriptions (List[Dict[str, str]]): The displayed subscriptions of the vehicle.
+        electrical_platform_code (str): The electrical platform code of the vehicle.
+        emergency_contact (Optional[Any]): The emergency contact information of the vehicle.
+        ev_vehicle (bool): Indicates if the vehicle is an electric vehicle.
+        extended_capabilities (_ExtendedCapabilitiesModel): The extended capabilities of the vehicle.
+        external_subscriptions (Optional[Any]): The external subscriptions of the vehicle.
+        family_sharing (bool): Indicates if the vehicle is part of a family sharing plan.
+        faq_url (str): The URL of the FAQ (Frequently Asked Questions) for the vehicle.
+        features (_FeaturesModel): The features of the vehicle.
+        fleet_ind (Optional[Any]): The fleet indicator of the vehicle.
+        generation (str): The generation of the vehicle.
+        head_unit (_HeadUnitModel): The head unit information of the vehicle.
+        hw_type (Optional[Any]): The hardware type of the vehicle.
+        image (str): The image URL of the vehicle.
+        imei (str): The IMEI (International Mobile Equipment Identity) of the vehicle.
+        katashiki_code (str): The katashiki code of the vehicle.
+        manufactured_date (date): The manufactured date of the vehicle.
+        manufactured_code (str): The manufacturer code of the vehicle.
+        car_model_code (str): The model code of the vehicle.
+        car_model_description (str): The description of the model of the vehicle.
+        car_model_name (str): The name of the model of the vehicle.
+        car_model_year (str): The model year of the vehicle.
+        nickname (Optional[str]): The nickname of the vehicle.
+        non_cvt_vehicle (bool): Indicates if the vehicle is a non-CVT (Continuously Variable Transmission) vehicle.
+        old_imei (Optional[Any]): The old IMEI of the vehicle.
+        owner (bool): Indicates if the user is the owner of the vehicle.
+        personalized_settings (_LinksModel): The personalized settings of the vehicle.
+        preferred (bool): Indicates if the vehicle is the preferred vehicle.
+        primary_subscriber (bool): Indicates if the user is the primary subscriber of the vehicle.
+        region (str): The region of the vehicle.
+        registration_number (Optional[str]): The registration number of the vehicle.
+        remote_display (Optional[Any]): The remote display information of the vehicle.
+        remote_service_capabilities (_RemoteServiceCapabilitiesModel): The remote service capabilities of the vehicle.
+        remote_service_exceptions (List[Any]): The remote service exceptions of the vehicle.
+        remote_subscription_exists (bool): Indicates if a remote subscription exists for the vehicle.
+        remote_subscription_status (str): The remote subscription status of the vehicle.
+        remote_user (bool): Indicates if the user is a remote user of the vehicle.
+        remote_user_guid (Optional[Union[UUID, str]]): The remote user GUID (Globally Unique Identifier) of the vehicle.
+        service_connect_status (Optional[Any]): The service connect status of the vehicle.
+        services (List[Any]): The services associated with the vehicle.
+        shop_genuine_parts_url (str): The URL for shopping genuine parts for the vehicle.
+        status (str): The status of the vehicle.
+        stock_pic_reference (str): The stock picture reference of the vehicle.
+        subscriber_guid (UUID): The subscriber GUID of the vehicle.
+        subscription_expiration_status (bool): Indicates if the subscription is expired for the vehicle.
+        subscription_status (str): The subscription status of the vehicle.
+        subscriptions (List[_SubscriptionsModel]): The subscriptions associated with the vehicle.
+        suffix_code (Optional[Any]): The suffix code of the vehicle.
+        svl_satus (bool): Indicates the SVL (Smart Vehicle Link) status of the vehicle.
+        tff_links (_LinksModel): The TFF (Toyota Friend Finder) links of the vehicle.
+        transmission_type (str): The transmission type of the vehicle.
+        vehicle_capabilities (List[Any]): The capabilities of the vehicle.
+        vehicle_data_consents (Optional[Any]): The vehicle data consents of the vehicle.
+        vin (str): The VIN (Vehicle Identification Number) of the vehicle.
+    """
+
     alerts: List[Any]  # TODO unsure what this returns
     asiCode: str
     brand: str
@@ -342,4 +415,14 @@ class VehicleGuidModel(BaseModel):
 
 
 class VehiclesResponseModel(StatusModel):
+    """
+    Model representing a vehicles response.
+
+    Inherits from StatusModel.
+
+    Attributes:
+        payload (Optional[List[VehicleGuidModel]], optional): The vehicles payload. Defaults to None.
+
+    """
+
     payload: Optional[List[VehicleGuidModel]] = None

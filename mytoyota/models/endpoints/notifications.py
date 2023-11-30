@@ -5,14 +5,30 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
-# pylint: disable=locally-disabled, missing-class-docstring, fixme
-
 
 class _HeadersModel(BaseModel):
     content_type: str = Field(..., alias="Content-Type")
 
 
 class NotificationModel(BaseModel):
+    """
+    Model representing a notification.
+
+    Attributes:
+        message_id (str): The ID of the notification message.
+        vin (str): The VIN (Vehicle Identification Number) associated with the notification.
+        notification_date (datetime): The datetime of the notification.
+        is_read (bool): Indicates whether the notification has been read.
+        read_timestamp (datetime): The timestamp when the notification was read.
+        icon_url (str): The URL of the notification icon.
+        message (str): The content of the notification message.
+        status (Union[int, str]): The status of the notification.
+        type (str): The type of the notification.
+        category (str): The category of the notification.
+        display_category (str): The display category of the notification.
+
+    """
+
     message_id: str = Field(alias="messageId")
     vin: str
     notification_date: datetime = Field(alias="notificationDate")
@@ -32,8 +48,20 @@ class _PayloadItemModel(BaseModel):
 
 
 class NotificationResponseModel(BaseModel):
+    """
+    Model representing a notification response.
+
+    Attributes:
+        guid (UUID): The GUID (Globally Unique Identifier) of the response.
+        status_code (int): The status code of the response.
+        headers (_HeadersModel): The headers of the response.
+        body (str): The body of the response.
+        payload (Optional[List[_PayloadItemModel]], optional): The payload of the response. Defaults to None.
+
+    """
+
     guid: UUID
-    statusCode: int
+    status_code: int = Field(alias="statusCode")
     headers: _HeadersModel
     body: str
     payload: Optional[List[_PayloadItemModel]] = None

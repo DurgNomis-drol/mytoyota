@@ -1,4 +1,4 @@
-""" Toyota Connected Services API - V4 Account Models """
+""" Toyota Connected Services API - Account Models """
 from datetime import datetime
 from typing import List, Optional
 from uuid import UUID
@@ -6,8 +6,6 @@ from uuid import UUID
 from pydantic import BaseModel, Field, SecretStr
 
 from mytoyota.models.endpoints.common import StatusModel
-
-# pylint: disable=locally-disabled, missing-class-docstring, fixme
 
 
 class _TermsActivityModel(BaseModel):
@@ -55,8 +53,26 @@ class _CustomerModel(BaseModel):
 
 
 class AccountModel(BaseModel):
+    """
+    Model representing an account.
+
+    Attributes:
+        customer (_CustomerModel): The customer associated with the account.
+
+    """
+
     customer: _CustomerModel
 
 
 class AccountResponseModel(StatusModel):
+    """
+    Model representing an account response.
+
+    Inherits from StatusModel.
+
+    Attributes:
+        payload (Optional[AccountModel], optional): The account payload. Defaults to None.
+
+    """
+
     payload: Optional[AccountModel] = None

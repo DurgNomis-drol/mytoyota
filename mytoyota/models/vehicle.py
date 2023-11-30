@@ -83,7 +83,17 @@ class Vehicle:
             (endpoint["name"], endpoint["function"]) for endpoint in api_endpoints if endpoint["capable"]
         ]
 
-    async def update(self):
+    async def update(self) -> None:
+        """
+        Updates the data for the vehicle.
+
+        This method asynchronously updates the data for the vehicle by calling the endpoint functions in parallel.
+
+        Returns:
+            None
+
+        """
+
         async def parallel_wrapper(name: str, function: partial) -> Tuple[str, Dict[str, Any]]:
             r = await function()
             return name, r
@@ -103,6 +113,16 @@ class Vehicle:
         return self._vehicle_info.nickname
 
     async def set_alias(self, value) -> None:
+        """
+        Sets the alias for the vehicle.
+
+        Args:
+            value: The alias value to set for the vehicle.
+
+        Returns:
+            None
+
+        """
         await self._api.set_vehicle_alias_endpoint(value, self._vehicle_info.subscriber_guid, self.vin)
 
     @property
@@ -143,6 +163,16 @@ class Vehicle:
         return None
 
     def notifications(self, include_read: bool = False) -> Optional[List[Notification]]:
+        """
+        Returns a list of notifications for the vehicle.
+
+        Args:
+            include_read (bool, optional): Indicates whether to include read notifications. Defaults to False.
+
+        Returns:
+            Optional[List[Notification]]: A list of notifications for the vehicle, or None if not supported.
+
+        """
         if "notifications" in self._endpoint_data:
             ret = []
             for notification in self._endpoint_data["notifications"]:

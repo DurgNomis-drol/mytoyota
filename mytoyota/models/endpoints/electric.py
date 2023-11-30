@@ -6,10 +6,23 @@ from pydantic import BaseModel, Field
 
 from mytoyota.models.endpoints.common import StatusModel, UnitValueModel
 
-# pylint: disable=locally-disabled, missing-class-docstring, fixme
-
 
 class ElectricStatusModel(BaseModel):
+    """
+    Model representing the status of an electric vehicle.
+
+    Attributes:
+        battery_level (int): The battery level of the electric vehicle.
+        can_set_next_charging_event (bool): Indicates whether the next charging event can be set.
+        charging_status (str): The charging status of the electric vehicle.
+        ev_range (UnitValueModel): The electric vehicle range.
+        ev_range_with_ac (UnitValueModel): The electric vehicle range with AC.
+        fuel_level (int): The fuel level of the electric vehicle.
+        fuel_range (UnitValueModel): The fuel range of the electric vehicle.
+        last_update_timestamp (datetime): The timestamp of the last update.
+
+    """
+
     battery_level: int = Field(alias="batteryLevel")
     can_set_next_charging_event: bool = Field(alias="canSetNextChargingEvent")
     charging_status: str = Field(alias="chargingStatus")
@@ -21,4 +34,14 @@ class ElectricStatusModel(BaseModel):
 
 
 class ElectricResponseModel(StatusModel):
+    """
+    Model representing an electric vehicle response.
+
+    Inherits from StatusModel.
+
+    Attributes:
+        payload (Optional[ElectricStatusModel], optional): The electric vehicle status payload. Defaults to None.
+
+    """
+
     payload: Optional[ElectricStatusModel] = None

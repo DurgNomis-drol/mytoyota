@@ -1,4 +1,4 @@
-""" Toyota Connected Services API - V1 Trips Models """
+""" Toyota Connected Services API - Trips Models """
 from datetime import date, datetime
 from typing import Any, List, Optional
 from uuid import UUID
@@ -6,8 +6,6 @@ from uuid import UUID
 from pydantic import BaseModel, Field
 
 from mytoyota.models.endpoints.common import StatusModel
-
-# pylint: disable=missing-class-docstring
 
 
 class _SummaryBaseModel(BaseModel):
@@ -124,6 +122,19 @@ class _MetadataModel(BaseModel):
 
 
 class TripsModel(BaseModel):
+    """
+    Model representing trips data.
+
+    Attributes:
+        from_date (date): The start date of the trips.
+        to_date (date): The end date of the trips.
+        trips (List[_TripModel]): The list of trips.
+        summary (Optional[List[_SummaryItemModel]], optional): The summary of the trips. Defaults to None.
+        metadata (_MetadataModel): The metadata of the trips.
+        route (Optional[_RouteModel], optional): The route of the trips. Defaults to None.
+
+    """
+
     from_date: date = Field(..., alias="from")
     to_date: date = Field(..., alias="to")
     trips: List[_TripModel]
@@ -133,4 +144,14 @@ class TripsModel(BaseModel):
 
 
 class TripsResponseModel(StatusModel):
+    """
+    Model representing a trips response.
+
+    Inherits from StatusModel.
+
+    Attributes:
+        payload (Optional[TripsModel], optional): The trips payload. Defaults to None.
+
+    """
+
     payload: Optional[TripsModel] = None

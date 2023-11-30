@@ -1,12 +1,10 @@
-""" Toyota Connected Services API - V1 Location Models """
+""" Toyota Connected Services API - Location Models """
 from datetime import datetime
 from typing import Optional
 
 from pydantic import BaseModel, Field
 
 from mytoyota.models.endpoints.common import StatusModel
-
-# pylint: disable=locally-disabled, missing-class-docstring, fixme
 
 
 class _VehicleLocationModel(BaseModel):
@@ -17,10 +15,30 @@ class _VehicleLocationModel(BaseModel):
 
 
 class LocationModel(BaseModel):
+    """
+    Model representing the location of a vehicle.
+
+    Attributes:
+        last_timestamp (Optional[datetime], optional): The last timestamp of the location. Defaults to None.
+        vehicle_location (Optional[_VehicleLocationModel], optional): The location of the vehicle. Defaults to None.
+        vin (Optional[str], optional): The VIN (Vehicle Identification Number) of the vehicle. Defaults to None.
+
+    """
+
     last_timestamp: Optional[datetime] = Field(alias="lastTimestamp", default=None)
     vehicle_location: Optional[_VehicleLocationModel] = Field(alias="vehicleLocation", default=None)
     vin: Optional[str] = None
 
 
 class LocationResponseModel(StatusModel):
+    """
+    Model representing a location response.
+
+    Inherits from StatusModel.
+
+    Attributes:
+        payload (Optional[LocationModel], optional): The location payload. Defaults to None.
+
+    """
+
     payload: Optional[LocationModel] = None
