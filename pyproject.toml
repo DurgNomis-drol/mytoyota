@@ -37,44 +37,28 @@ pydantic = "^2.5.1"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^3.0.0"
-black = ">=23.9.1"
 ruff = "^0.1.5"
-pylint = "^3.0.0"
 codespell = "^2.0.0"
 pytest = "^7.2.0"
 pytest-asyncio = "^0.21.1"
 
-[tool.pylint.messages_control]
-# Reasons disabled:
-# too-many-* - not enforced for the sake of readability
-# too-few-* - same as too-many-*
-disable = [
-    "too-few-public-methods",
-    "too-many-arguments",
-    "too-many-instance-attributes",
-    "duplicate-code",
-    "logging-fstring-interpolation",
-    "fixme",
-]
-
-[tool.pylint.format]
-max-line-length = 120
-
-[tool.black]
-line-length = 120
-
 [tool.ruff]
 select = [
+    # Pylint
+    "PL",
     # Pyflakes
     "F",
     # Pycodestyle
     "E",
     "W",
+    # flake8-2020
     "YTT",
+    # flake8-async
+    "ASYNC",
     # Isort
-    "I001",
-    "I002"
+    "I"
 ]
+extend-ignore = ["PLR2004"]
 line-length = 120
 fix = true
 
