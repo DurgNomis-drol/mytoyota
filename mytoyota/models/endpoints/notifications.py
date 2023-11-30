@@ -33,7 +33,7 @@ class NotificationModel(BaseModel):
     vin: str
     notification_date: datetime = Field(alias="notificationDate")
     is_read: bool = Field(alias="isRead")
-    read_timestamp: datetime = Field(alias="readTimestamp")
+    read_timestamp: Optional[datetime] = Field(alias="readTimestamp", default=None)
     icon_url: str = Field(alias="iconUrl")
     message: str
     status: Optional[Union[int, str]] = None

@@ -1,10 +1,6 @@
 """Toyota Connected Services API exceptions."""
 
 
-class ToyotaLocaleNotValid(Exception):
-    """Raise if locale string is not valid."""
-
-
 class ToyotaLoginError(Exception):
     """Raise if a login error happens."""
 

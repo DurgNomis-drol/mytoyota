@@ -8,7 +8,6 @@ from mytoyota.utils.conversions import (
     convert_to_mpg,
 )
 from mytoyota.utils.formatters import format_odometer
-from mytoyota.utils.locale import is_valid_locale
 
 
 class TestUtils:

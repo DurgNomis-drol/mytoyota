@@ -18,34 +18,30 @@ from mytoyota.exceptions import ToyotaApiError
 from mytoyota.models.vehicle import Vehicle
 
 from .controller import Controller
-from .exceptions import ToyotaInvalidUsername, ToyotaLocaleNotValid
-from .utils.locale import is_valid_locale
+from .exceptions import ToyotaInvalidUsername
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 
 class MyT:
-    """Toyota Connected Services client.
+    """
+    Connected Services client.
 
-    Toyota connected services client class. This is the class that you
-    should interact with when using this library.
+    Connected services client class.
+
+    NOTE: Only tested with Toyota endpoints to this point. Do you have a Lexus/Subaru and are willing to help?
     """
 
     def __init__(
         self,
         username: str,
         password: str,
-        locale: str = "de-de",
         controller_class=Controller,
-        disable_locale_check: bool = False,
     ) -> None:
         """Toyota API"""
 
         if username is None or "@" not in username:
             raise ToyotaInvalidUsername
-
-        if not disable_locale_check and not is_valid_locale(locale):
-            raise ToyotaLocaleNotValid("Please provide a valid locale string! Valid format is: en-gb.")
 
         self._api = Api(
             controller_class(
@@ -71,7 +67,8 @@ class MyT:
         vehicles = await self._api.get_vehicles_endpoint()
         if vehicles.payload is not None:
             return [Vehicle(self._api, v) for v in vehicles.payload]
-        raise ToyotaApiError("No vehicle information received.")
+
+        return []
 
     # async def get_driving_statistics(  # pylint: disable=too-many-branches
     #     self,
