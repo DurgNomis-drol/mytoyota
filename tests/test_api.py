@@ -95,7 +95,7 @@ async def test_api_request_and_parse_endpoints(method, endpoint, model, response
     """
     # Arrange
 
-    with open(f"tests/data/endpoints/{response_data_json_path}.json", "r", encoding="utf-8") as f:
+    with open(f"tests/data/endpoints/{response_data_json_path}.json", "r", encoding="utf-8") as f:  # noqa: ASYNC101
         response_data = json.load(f)
 
     controller = AsyncMock()
