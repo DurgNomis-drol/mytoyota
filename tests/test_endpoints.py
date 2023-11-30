@@ -32,7 +32,18 @@ from mytoyota.models.endpoints.vehicle_health import VehicleHealthResponseModel
         (TelemetryResponseModel, "v3_telemetry"),
     ],
 )
-def test_models(model, json_file):
+def test_models(model, json_file) -> None:
+    """
+    Test the models for various endpoints.
+
+    Args:
+        model: The model class to test.
+        json_file: The name of the JSON file containing the test data.
+
+    Returns:
+        None
+
+    """
     with open(f"tests/data/endpoints/{json_file}.json", "r", encoding="utf-8") as f:
         json_data = json.load(f)
         model(**json_data)
