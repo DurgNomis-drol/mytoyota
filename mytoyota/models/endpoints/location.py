@@ -18,9 +18,7 @@ class _VehicleLocationModel(BaseModel):
 
 class LocationModel(BaseModel):
     last_timestamp: Optional[datetime] = Field(alias="lastTimestamp", default=None)
-    vehicle_location: Optional[_VehicleLocationModel] = Field(
-        alias="vehicleLocation", default=None
-    )
+    vehicle_location: Optional[_VehicleLocationModel] = Field(alias="vehicleLocation", default=None)
     vin: Optional[str] = None
 
 

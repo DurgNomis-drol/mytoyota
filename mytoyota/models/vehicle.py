@@ -34,8 +34,7 @@ class Vehicle:
         api_endpoints = [
             {
                 "name": "location",
-                "capable": vehicle_info.extended_capabilities.last_parked_capable
-                or vehicle_info.features.last_parked,
+                "capable": vehicle_info.extended_capabilities.last_parked_capable or vehicle_info.features.last_parked,
                 "function": partial(self._api.get_location_endpoint, vin=vehicle_info.vin),
             },
             {
@@ -81,9 +80,7 @@ class Vehicle:
             },
         ]
         self._endpoint_collect = [
-            (endpoint["name"], endpoint["function"])
-            for endpoint in api_endpoints
-            if endpoint["capable"]
+            (endpoint["name"], endpoint["function"]) for endpoint in api_endpoints if endpoint["capable"]
         ]
 
     async def update(self):
@@ -91,9 +88,7 @@ class Vehicle:
             r = await function()
             return name, r
 
-        responses = asyncio.gather(
-            *[parallel_wrapper(name, function) for name, function in self._endpoint_collect]
-        )
+        responses = asyncio.gather(*[parallel_wrapper(name, function) for name, function in self._endpoint_collect])
         for name, data in await responses:
             self._endpoint_data[name] = data
 
@@ -108,9 +103,7 @@ class Vehicle:
         return self._vehicle_info.nickname
 
     async def set_alias(self, value) -> None:
-        await self._api.set_vehicle_alias_endpoint(
-            value, self._vehicle_info.subscriber_guid, self.vin
-        )
+        await self._api.set_vehicle_alias_endpoint(value, self._vehicle_info.subscriber_guid, self.vin)
 
     @property
     def hybrid(self) -> bool:

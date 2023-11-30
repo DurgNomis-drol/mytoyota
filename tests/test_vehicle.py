@@ -128,12 +128,8 @@ class TestVehicle:
         data_files = os.path.join(os.path.curdir, "tests", "data")
 
         vehicle_fixtures = self._load_from_file(os.path.join(data_files, "vehicles.json"))
-        odometer_fixture = self._load_from_file(
-            os.path.join(data_files, "vehicle_JTMW1234565432109_odometer.json")
-        )
-        status_fixture = self._load_from_file(
-            os.path.join(data_files, "vehicle_JTMW1234565432109_status.json")
-        )
+        odometer_fixture = self._load_from_file(os.path.join(data_files, "vehicle_JTMW1234565432109_odometer.json"))
+        status_fixture = self._load_from_file(os.path.join(data_files, "vehicle_JTMW1234565432109_status.json"))
 
         vehicle = Vehicle(
             vehicle_info=vehicle_fixtures[0],
@@ -177,9 +173,7 @@ class TestVehicle:
         odometer_fixture = self._load_from_file(
             os.path.join(data_files, "vehicle_JTMW1234565432109_odometer_legacy.json")
         )
-        status_fixture = self._load_from_file(
-            os.path.join(data_files, "vehicle_JTMW1234565432109_status_legacy.json")
-        )
+        status_fixture = self._load_from_file(os.path.join(data_files, "vehicle_JTMW1234565432109_status_legacy.json"))
 
         vehicle = Vehicle(
             vehicle_info=vehicle_fixtures[0],
@@ -207,26 +201,14 @@ class TestVehicle:
         assert vehicle.dashboard.fuel_level == odometer_fixture[1]["value"]
         assert vehicle.dashboard.is_metric is True
         assert vehicle.dashboard.odometer == odometer_fixture[0]["value"]
-        assert (
-            vehicle.dashboard.fuel_range
-            == status_fixture["VehicleInfo"]["ChargeInfo"]["GasolineTravelableDistance"]
-        )
-        assert (
-            vehicle.dashboard.battery_level
-            == status_fixture["VehicleInfo"]["ChargeInfo"]["ChargeRemainingAmount"]
-        )
-        assert (
-            vehicle.dashboard.battery_range
-            == status_fixture["VehicleInfo"]["ChargeInfo"]["EvDistanceInKm"]
-        )
+        assert vehicle.dashboard.fuel_range == status_fixture["VehicleInfo"]["ChargeInfo"]["GasolineTravelableDistance"]
+        assert vehicle.dashboard.battery_level == status_fixture["VehicleInfo"]["ChargeInfo"]["ChargeRemainingAmount"]
+        assert vehicle.dashboard.battery_range == status_fixture["VehicleInfo"]["ChargeInfo"]["EvDistanceInKm"]
         assert (
             vehicle.dashboard.battery_range_with_aircon
             == status_fixture["VehicleInfo"]["ChargeInfo"]["EvDistanceWithAirCoInKm"]
         )
-        assert (
-            vehicle.dashboard.charging_status
-            == status_fixture["VehicleInfo"]["ChargeInfo"]["ChargingStatus"]
-        )
+        assert vehicle.dashboard.charging_status == status_fixture["VehicleInfo"]["ChargeInfo"]["ChargingStatus"]
         assert (
             vehicle.dashboard.remaining_charge_time
             == status_fixture["VehicleInfo"]["ChargeInfo"]["RemainingChargeTime"]

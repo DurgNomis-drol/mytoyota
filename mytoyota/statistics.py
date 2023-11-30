@@ -113,9 +113,7 @@ class Statistics:
                         UNIT: METRIC,
                         # As we use 1 january of the year as the initial date
                         # we only have to shift it with 1 day less
-                        DATE: arrow.Arrow(year, 1, 1)
-                        .shift(days=dayofyear - 1)
-                        .format(DATE_FORMAT),
+                        DATE: arrow.Arrow(year, 1, 1).shift(days=dayofyear - 1).format(DATE_FORMAT),
                     }
                 )
             return data[HISTOGRAM]
@@ -137,9 +135,7 @@ class Statistics:
                 month[BUCKET].update(
                     {
                         UNIT: METRIC,
-                        PERIODE_START: self._now.replace(
-                            year=month[BUCKET][YEAR], month=month[BUCKET][MONTH], day=1
-                        )
+                        PERIODE_START: self._now.replace(year=month[BUCKET][YEAR], month=month[BUCKET][MONTH], day=1)
                         .floor(MONTH)
                         .format(DATE_FORMAT),
                     }

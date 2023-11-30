@@ -21,9 +21,7 @@ class _SummaryBaseModel(BaseModel):
     duration_overspeed: int = Field(alias="durationOverspeed")
     length_highway: int = Field(alias="lengthHighway")
     duration_highway: int = Field(alias="durationHighway")
-    fuel_consumption: Optional[float] = Field(
-        alias="fuelConsumption", default=None
-    )  # Electric cars might not use fuel
+    fuel_consumption: Optional[float] = Field(alias="fuelConsumption", default=None)  # Electric cars might not use fuel
 
 
 class _SummaryModel(_SummaryBaseModel):
@@ -45,9 +43,7 @@ class _CoachingMsgParamModel(BaseModel):
 class _BehaviourModel(BaseModel):
     ts: datetime
     type: Optional[str] = None
-    coaching_msg_params: Optional[List[_CoachingMsgParamModel]] = Field(
-        alias="coachingMsgParams", default=None
-    )
+    coaching_msg_params: Optional[List[_CoachingMsgParamModel]] = Field(alias="coachingMsgParams", default=None)
 
 
 class _ScoresModel(BaseModel):

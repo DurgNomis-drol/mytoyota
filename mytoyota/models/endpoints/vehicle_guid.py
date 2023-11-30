@@ -127,9 +127,7 @@ class _HeadUnitModel(BaseModel):
     description: Optional[Any] = Field(alias="huDescription")  # TODO unsure what this returns
     generation: Optional[Any] = Field(alias="huGeneration")  # TODO unsure what this returns
     version: Optional[Any] = Field(alias="huVersion")  # TODO unsure what this returns
-    mobile_platform_code: Optional[Any] = Field(
-        alias="mobilePlatformCode"
-    )  # TODO unsure what this returns
+    mobile_platform_code: Optional[Any] = Field(alias="mobilePlatformCode")  # TODO unsure what this returns
     multimedia_type: Optional[Any] = Field(alias="multimediaType")  # TODO unsure what this returns
 
 
@@ -137,18 +135,12 @@ class _SubscriptionsModel(BaseModel):
     auto_renew: bool = Field(alias="autoRenew")
     category: str
     components: Optional[Any]  # TODO unsure what this returns
-    consolidated_goodwill_ids: List[Any] = Field(
-        alias="consolidatedGoodwillIds"
-    )  # TODO unsure what this returns
-    consolidated_product_ids: List[Any] = Field(
-        alias="consolidatedProductIds"
-    )  # TODO unsure what this returns
+    consolidated_goodwill_ids: List[Any] = Field(alias="consolidatedGoodwillIds")  # TODO unsure what this returns
+    consolidated_product_ids: List[Any] = Field(alias="consolidatedProductIds")  # TODO unsure what this returns
     display_procuct_name: str = Field(alias="displayProductName")
     display_term: str = Field(alias="displayTerm")
     future_cancel: bool = Field(alias="futureCancel")
-    good_will_issued_for: Optional[Any] = Field(
-        alias="goodwillIssuedFor"
-    )  # TODO unsure what this returns
+    good_will_issued_for: Optional[Any] = Field(alias="goodwillIssuedFor")  # TODO unsure what this returns
     product_code: str = Field(alias="productCode")
     product_description: str = Field(alias="productDescription")
     product_line: str = Field(alias="productLine")
@@ -295,9 +287,7 @@ class VehicleGuidModel(BaseModel):
     display_model_description: str = Field(alias="displayModelDescription")
     display_subscriptions: List[Dict[str, str]] = Field(alias="displaySubscriptions")
     electrical_platform_code: str = Field(alias="electricalPlatformCode")
-    emergency_contact: Optional[Any] = Field(
-        alias="emergencyContact"
-    )  # TODO unsure what this returns
+    emergency_contact: Optional[Any] = Field(alias="emergencyContact")  # TODO unsure what this returns
     ev_vehicle: bool = Field(alias="evVehicle")
     extended_capabilities: _ExtendedCapabilitiesModel = Field(alias="extendedCapabilities")
     external_subscriptions: Optional[Any] = Field(alias="externalSubscriptions")
@@ -321,27 +311,19 @@ class VehicleGuidModel(BaseModel):
     non_cvt_vehicle: bool = Field(alias="nonCvtVehicle")
     old_imei: Optional[Any] = Field(alias="oldImei")  # TODO unsure what this returns
     owner: bool
-    personalized_settings: _LinksModel = Field(
-        alias="personalizedSettings"
-    )  # TODO unsure what this returns
+    personalized_settings: _LinksModel = Field(alias="personalizedSettings")  # TODO unsure what this returns
     preferred: bool
     primary_subscriber: bool = Field(alias="primarySubscriber")
     region: str
     registration_number: Optional[str] = Field(alias="registrationNumber")
     remote_display: Optional[Any] = Field(alias="remoteDisplay")  # TODO unsure what this returns
-    remote_service_capabilities: _RemoteServiceCapabilitiesModel = Field(
-        alias="remoteServiceCapabilities"
-    )
-    remote_service_exceptions: List[Any] = Field(
-        alias="remoteServicesExceptions"
-    )  # TODO unsure what this returns
+    remote_service_capabilities: _RemoteServiceCapabilitiesModel = Field(alias="remoteServiceCapabilities")
+    remote_service_exceptions: List[Any] = Field(alias="remoteServicesExceptions")  # TODO unsure what this returns
     remote_subscription_exists: bool = Field(alias="remoteSubscriptionExists")
     remote_subscription_status: str = Field(alias="remoteSubscriptionStatus")
     remote_user: bool = Field(alias="remoteUser")
     remote_user_guid: Optional[Union[UUID, str]] = Field(alias="remoteUserGuid", default=None)
-    service_connect_status: Optional[Any] = Field(
-        alias="serviceConnectStatus"
-    )  # TODO unsure what this returns
+    service_connect_status: Optional[Any] = Field(alias="serviceConnectStatus")  # TODO unsure what this returns
     services: List[Any]  # TODO unsure what this returns
     shop_genuine_parts_url: str = Field(alias="shopGenuinePartsUrl")
     status: str

@@ -35,7 +35,7 @@ class MyT:
         self,
         username: str,
         password: str,
-        locale: str = "en-gb",
+        locale: str = "de-de",
         controller_class=Controller,
         disable_locale_check: bool = False,
     ) -> None:
@@ -45,9 +45,7 @@ class MyT:
             raise ToyotaInvalidUsername
 
         if not disable_locale_check and not is_valid_locale(locale):
-            raise ToyotaLocaleNotValid(
-                "Please provide a valid locale string! Valid format is: en-gb."
-            )
+            raise ToyotaLocaleNotValid("Please provide a valid locale string! Valid format is: en-gb.")
 
         self._api = Api(
             controller_class(

@@ -10,9 +10,7 @@ from mytoyota.models.endpoints.common import StatusModel
 
 
 class VehicleHealthModel(BaseModel):
-    quantityOfEngOilIcon: Optional[List[Any]] = Field(
-        alias="quantityOfEngOilIcon"
-    )  # TODO unsure what this returns
+    quantityOfEngOilIcon: Optional[List[Any]] = Field(alias="quantityOfEngOilIcon")  # TODO unsure what this returns
     vin: str
     warning: Optional[List[Any]]  # TODO unsure what this returns
     wng_last_upd_time: datetime = Field(alias="wnglastUpdTime")

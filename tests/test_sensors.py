@@ -201,9 +201,7 @@ class TestSensors:  # pylint: disable=too-many-public-methods
     def test_sensors(self):
         """Test sensors"""
         data_files = os.path.join(os.path.curdir, "tests", "data")
-        fixture = self._load_from_file(
-            os.path.join(data_files, "vehicle_JTMW1234565432109_status.json")
-        )
+        fixture = self._load_from_file(os.path.join(data_files, "vehicle_JTMW1234565432109_status.json"))
         sensors = Sensors(fixture.get("protectionState"))
 
         assert sensors.overallstatus == "OK"

@@ -58,21 +58,14 @@ class Controller:
             for _ in range(10):
                 if "callbacks" in data:
                     for cb in data["callbacks"]:
-                        if (
-                            cb["type"] == "NameCallback"
-                            and cb["output"][0]["value"] == "User Name"
-                        ):
+                        if cb["type"] == "NameCallback" and cb["output"][0]["value"] == "User Name":
                             cb["input"][0]["value"] = self._username
                         elif cb["type"] == "PasswordCallback":
                             cb["input"][0]["value"] = self._password
-                resp = await client.post(
-                    self.AUTHENTICATE_URL, json=data, headers=standard_headers
-                )
+                resp = await client.post(self.AUTHENTICATE_URL, json=data, headers=standard_headers)
                 _LOGGER.debug(format_httpx_response(resp))
                 if resp.status_code != HTTPStatus.OK:
-                    raise ToyotaLoginError(
-                        f"Authentication Failed. {resp.status_code}, {resp.text}."
-                    )
+                    raise ToyotaLoginError(f"Authentication Failed. {resp.status_code}, {resp.text}.")
                 data = resp.json()
                 # Wait for tokenId to be returned in response
                 if "tokenId" in data:
@@ -89,9 +82,7 @@ class Controller:
             _LOGGER.debug(format_httpx_response(resp))
             if resp.status_code != HTTPStatus.FOUND:
                 raise ToyotaLoginError(f"Authorization failed. {resp.status_code}, {resp.text}.")
-            authentication_code = parse.parse_qs(
-                httpx.URL(resp.headers.get("location")).query.decode()
-            )["code"]
+            authentication_code = parse.parse_qs(httpx.URL(resp.headers.get("location")).query.decode())["code"]
 
             # Retrieve tokens
             resp = await client.post(
@@ -116,9 +107,7 @@ class Controller:
                 or "refresh_token" not in access_tokens
                 or "expires_in" not in access_tokens
             ):
-                raise ToyotaLoginError(
-                    f"Token retrieval failed. Missing Tokens. {resp.status_code}, {resp.text}."
-                )
+                raise ToyotaLoginError(f"Token retrieval failed. Missing Tokens. {resp.status_code}, {resp.text}.")
 
             self._token = access_tokens["access_token"]
             self._refresh_token = access_tokens["refresh_token"]
@@ -128,9 +117,7 @@ class Controller:
                 options={"verify_signature": False},
                 audience="oneappsdkclient",
             )["uuid"]
-            self._token_expiration = datetime.now() + timedelta(
-                seconds=access_tokens["expires_in"]
-            )
+            self._token_expiration = datetime.now() + timedelta(seconds=access_tokens["expires_in"])
 
     def _is_token_valid(self) -> bool:
         """Checks if token is valid"""
