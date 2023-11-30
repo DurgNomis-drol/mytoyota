@@ -162,6 +162,6 @@ class Api:
             offset: int:     Offset into trips to start the request.
         """
         endpoint = VEHICLE_TRIPS_ENDPOINT.format(
-            from_date, to_date, route, summary, limit, offset
-        )  # pylint: disable=C0301 # noqa: E501
+            from_date=from_date, to_date=to_date, route=route, summary=summary, limit=limit, offset=offset
+        )
         return await self._request_and_parse(TripsResponseModel, "GET", endpoint, vin=vin)

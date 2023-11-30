@@ -8,6 +8,7 @@ from urllib import parse
 import httpx
 import jwt
 
+from mytoyota.const import ACCESS_TOKEN_URL, API_BASE_URL, AUTHENTICATE_URL, AUTHORIZE_URL
 from mytoyota.exceptions import ToyotaApiError, ToyotaInternalError, ToyotaLoginError
 from mytoyota.utils.logs import format_httpx_response
 
@@ -17,18 +18,6 @@ _LOGGER: logging.Logger = logging.getLogger(__package__)
 class Controller:
     """Controller class."""
 
-    ACCESS_TOKEN_URL = httpx.URL(
-        "HTTPS://b2c-login.toyota-europe.com/oauth2/realms/root/realms/tme/access_token"  # pylint: disable=C0301 # noqa: E501
-    )
-    AUTHENTICATE_URL = httpx.URL(
-        "HTTPS://b2c-login.toyota-europe.com/json/realms/root/realms/tme/authenticate?authIndexType=service&authIndexValue=oneapp"  # pylint: disable=C0301 # noqa: E501
-    )
-    AUTHORIZE_URL = httpx.URL(
-        "HTTPS://b2c-login.toyota-europe.com/oauth2/realms/root/realms/tme/authorize?client_id=oneapp&scope=openid profile write&response_type=code&redirect_uri=com.toyota.oneapp:/oauth2Callback&code_challenge=plain&code_challenge_method=plain"  # pylint: disable=C0301 # noqa: E501
-    )
-    API_URL = httpx.URL("HTTPS://ctpa-oneapi.tceu-ctp-prd.toyotaconnectedeurope.io")
-    BASE_URL = httpx.URL("HTTPS://ctpa-oneapi.tceu-ctp-prd.toyotaconnectedeurope.io")
-
     def __init__(self, username: str, password: str, timeout: int = 30) -> None:
         self._username: str = username
         self._password: str = password
@@ -37,6 +26,10 @@ class Controller:
         self._refresh_token: Optional[str] = None
         self._uuid: Optional[str] = None
         self._timeout = timeout
+        self._api_base_url = httpx.URL(API_BASE_URL)
+        self._access_token_url = httpx.URL(ACCESS_TOKEN_URL)
+        self._authenticate_url = httpx.URL(AUTHENTICATE_URL)
+        self._authorize_url = httpx.URL(AUTHORIZE_URL)
 
     async def login(self) -> None:
         """Perform first login."""
@@ -62,7 +55,7 @@ class Controller:
                             cb["input"][0]["value"] = self._username
                         elif cb["type"] == "PasswordCallback":
                             cb["input"][0]["value"] = self._password
-                resp = await client.post(self.AUTHENTICATE_URL, json=data, headers=standard_headers)
+                resp = await client.post(self._authenticate_url, json=data, headers=standard_headers)
                 _LOGGER.debug(format_httpx_response(resp))
                 if resp.status_code != HTTPStatus.OK:
                     raise ToyotaLoginError(f"Authentication Failed. {resp.status_code}, {resp.text}.")
@@ -76,7 +69,7 @@ class Controller:
 
             # Authorise
             resp = await client.get(
-                self.AUTHORIZE_URL,
+                self._authorize_url,
                 headers={"cookie": f"iPlanetDirectoryPro={data['tokenId']}"},
             )
             _LOGGER.debug(format_httpx_response(resp))
@@ -86,7 +79,7 @@ class Controller:
 
             # Retrieve tokens
             resp = await client.post(
-                self.ACCESS_TOKEN_URL,
+                self._access_token_url,
                 headers={"authorization": "basic b25lYXBwOm9uZWFwcA=="},
                 data={
                     "client_id": "oneapp",
@@ -162,7 +155,7 @@ class Controller:
         async with httpx.AsyncClient(timeout=self._timeout) as client:
             response = await client.request(
                 method,
-                f"{self.BASE_URL}{endpoint}",
+                f"{self._api_base_url}{endpoint}",
                 headers=headers,
                 json=body,
                 params=params,
