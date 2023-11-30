@@ -45,7 +45,7 @@ def censor_all(dictionary: Dict[str, Any], to_censor: Optional[set] = None) -> D
             "subscriberguid",
             "contractid",
             "imei",
-            "katashikicode",
+            "katashiki_code",
             "subscriptionid",
             "cookie",
             "x-tme-token",
