@@ -6,6 +6,16 @@ from unittest.mock import AsyncMock
 import pytest
 
 from mytoyota.api import Api
+from mytoyota.const import (
+    VEHICLE_GLOBAL_REMOTE_ELECTRIC_STATUS_ENDPOINT,
+    VEHICLE_GLOBAL_REMOTE_STATUS_ENDPOINT,
+    VEHICLE_GUID_ENDPOINT,
+    VEHICLE_HEALTH_STATUS_ENDPOINT,
+    VEHICLE_LOCATION_ENDPOINT,
+    VEHICLE_NOTIFICATION_HISTORY_ENDPOINT,
+    VEHICLE_TELEMETRY_ENDPOINT,
+    VEHICLE_TRIPS_ENDPOINT,
+)
 from mytoyota.models.endpoints.electric import ElectricResponseModel
 from mytoyota.models.endpoints.location import LocationResponseModel
 from mytoyota.models.endpoints.notifications import NotificationResponseModel
@@ -30,28 +40,36 @@ YESTERDAY = TODAY - timedelta(days=1)
     "method, endpoint, model, response_data_json_path, test_id",
     [
         # Happy path tests
-        ("GET", "/v2/vehicle/guid", VehiclesResponseModel, "v2_vehicleguid", "vehicles-happy"),
-        ("GET", "/v1/location", LocationResponseModel, "v1_location_ok", "location-happy"),
-        ("GET", "/v1/vehiclehealth/status", VehicleHealthResponseModel, "v1_vehicle_health_ok", "health-happy"),
+        ("GET", VEHICLE_GUID_ENDPOINT, VehiclesResponseModel, "v2_vehicleguid", "vehicles-happy"),
+        ("GET", VEHICLE_LOCATION_ENDPOINT, LocationResponseModel, "v1_location_ok", "location-happy"),
+        ("GET", VEHICLE_HEALTH_STATUS_ENDPOINT, VehicleHealthResponseModel, "v1_vehicle_health_ok", "health-happy"),
         (
             "GET",
-            "/v1/global/remote/status",
+            VEHICLE_GLOBAL_REMOTE_STATUS_ENDPOINT,
             RemoteStatusResponseModel,
             "v1_global_remote_status",
             "remote-status-happy",
         ),
         (
             "GET",
-            "/v1/global/remote/electric/status",
+            VEHICLE_GLOBAL_REMOTE_ELECTRIC_STATUS_ENDPOINT,
             ElectricResponseModel,
             "v1_global_remote_electric_status",
             "electric-status-happy",
         ),
-        ("GET", "/v3/telemetry", TelemetryResponseModel, "v3_telemetry", "telemetry-happy"),
-        ("GET", "/v2/notification/history", NotificationResponseModel, "v2_notification", "notification-happy"),
+        ("GET", VEHICLE_TELEMETRY_ENDPOINT, TelemetryResponseModel, "v3_telemetry", "telemetry-happy"),
         (
             "GET",
-            f"/v1/trips?from={YESTERDAY}&to={TODAY}&route=False&summary=False&limit=5&offset=0",
+            VEHICLE_NOTIFICATION_HISTORY_ENDPOINT,
+            NotificationResponseModel,
+            "v2_notification",
+            "notification-happy",
+        ),
+        (
+            "GET",
+            VEHICLE_TRIPS_ENDPOINT.format(
+                from_date=YESTERDAY, to_date=TODAY, route=False, summary=False, limit=5, offset=0
+            ),
             TripsResponseModel,
             "v1_trips",
             "trips-happy",
@@ -59,8 +77,8 @@ YESTERDAY = TODAY - timedelta(days=1)
         # Edge cases
         # Add edge cases here
         # Error cases
-        ("GET", "/v1/location", LocationResponseModel, "v1_location_error", "location-error"),
-        ("GET", "/v1/vehiclehealth/status", VehicleHealthResponseModel, "v1_vehicle_health_error", "health-error"),
+        ("GET", VEHICLE_LOCATION_ENDPOINT, LocationResponseModel, "v1_location_error", "location-error"),
+        ("GET", VEHICLE_HEALTH_STATUS_ENDPOINT, VehicleHealthResponseModel, "v1_vehicle_health_error", "health-error"),
     ],
 )
 async def test_api_request_and_parse_endpoints(method, endpoint, model, response_data_json_path, test_id):

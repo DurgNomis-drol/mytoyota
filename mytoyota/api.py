@@ -3,6 +3,18 @@
 from datetime import date, datetime, timezone
 from uuid import uuid4
 
+from mytoyota.const import (
+    VEHICLE_ASSOCIATION_ENDPOINT,
+    VEHICLE_GLOBAL_REMOTE_ELECTRIC_STATUS_ENDPOINT,
+    VEHICLE_GLOBAL_REMOTE_STATUS_ENDPOINT,
+    VEHICLE_GUID_ENDPOINT,
+    VEHICLE_HEALTH_STATUS_ENDPOINT,
+    VEHICLE_LOCATION_ENDPOINT,
+    VEHICLE_NOTIFICATION_HISTORY_ENDPOINT,
+    VEHICLE_TELEMETRY_ENDPOINT,
+    VEHICLE_TRIPS_ENDPOINT,
+)
+from mytoyota.controller import Controller
 from mytoyota.models.endpoints.electric import ElectricResponseModel
 from mytoyota.models.endpoints.location import LocationResponseModel
 from mytoyota.models.endpoints.notifications import NotificationResponseModel
@@ -11,8 +23,6 @@ from mytoyota.models.endpoints.telemetry import TelemetryResponseModel
 from mytoyota.models.endpoints.trips import TripsResponseModel
 from mytoyota.models.endpoints.vehicle_guid import VehiclesResponseModel
 from mytoyota.models.endpoints.vehicle_health import VehicleHealthResponseModel
-
-from .controller import Controller
 
 
 class Api:
@@ -36,7 +46,7 @@ class Api:
         """Set the alias for a vehicle."""
         return await self.controller.request_raw(
             method="PUT",
-            endpoint="/v1/vehicle-association/vehicle",
+            endpoint=VEHICLE_ASSOCIATION_ENDPOINT,
             vin=vin,
             headers={
                 "datetime": str(int(datetime.now(timezone.utc).timestamp() * 1000)),
@@ -55,8 +65,7 @@ class Api:
 
     async def get_vehicles_endpoint(self) -> VehiclesResponseModel:
         """Retrieves list of vehicles registered with provider"""
-        endpoint = "/v2/vehicle/guid"
-        return await self._request_and_parse(VehiclesResponseModel, "GET", endpoint)
+        return await self._request_and_parse(VehiclesResponseModel, "GET", VEHICLE_GUID_ENDPOINT)
 
     async def get_location_endpoint(self, vin: str) -> LocationResponseModel:
         """
@@ -67,8 +76,7 @@ class Api:
         Parameters:
             vin: str:   The vehicles VIN
         """
-        endpoint = "/v1/location"
-        return await self._request_and_parse(LocationResponseModel, "GET", endpoint, vin=vin)
+        return await self._request_and_parse(LocationResponseModel, "GET", VEHICLE_LOCATION_ENDPOINT, vin=vin)
 
     async def get_vehicle_health_status_endpoint(self, vin: str) -> VehicleHealthResponseModel:
         """
@@ -79,13 +87,13 @@ class Api:
         Parameters:
             vin: str:   The vehicles VIN
         """
-        endpoint = "/v1/vehiclehealth/status"
-        return await self._request_and_parse(VehicleHealthResponseModel, "GET", endpoint, vin=vin)
+        return await self._request_and_parse(VehicleHealthResponseModel, "GET", VEHICLE_HEALTH_STATUS_ENDPOINT, vin=vin)
 
     async def get_remote_status_endpoint(self, vin: str) -> RemoteStatusResponseModel:
         """Get information about the vehicle."""
-        endpoint = "/v1/global/remote/status"
-        return await self._request_and_parse(RemoteStatusResponseModel, "GET", endpoint, vin=vin)
+        return await self._request_and_parse(
+            RemoteStatusResponseModel, "GET", VEHICLE_GLOBAL_REMOTE_STATUS_ENDPOINT, vin=vin
+        )
 
     async def get_vehicle_electric_status_endpoint(self, vin: str) -> ElectricResponseModel:
         """
@@ -97,8 +105,9 @@ class Api:
         Parameters:
             vin: str:   The vehicles VIN
         """
-        endpoint = "/v1/global/remote/electric/status"
-        return await self._request_and_parse(ElectricResponseModel, "GET", endpoint, vin=vin)
+        return await self._request_and_parse(
+            ElectricResponseModel, "GET", VEHICLE_GLOBAL_REMOTE_ELECTRIC_STATUS_ENDPOINT, vin=vin
+        )
 
     async def get_telemetry_endpoint(self, vin: str) -> TelemetryResponseModel:
         """
@@ -109,8 +118,7 @@ class Api:
         Parameters:
             vin: str:   The vehicles VIN
         """
-        endpoint = "/v3/telemetry"
-        return await self._request_and_parse(TelemetryResponseModel, "GET", endpoint, vin=vin)
+        return await self._request_and_parse(TelemetryResponseModel, "GET", VEHICLE_TELEMETRY_ENDPOINT, vin=vin)
 
     async def get_notification_endpoint(self, vin: str) -> NotificationResponseModel:
         """
@@ -123,8 +131,9 @@ class Api:
         Parameters:
             vin: str:   The vehicles VIN
         """
-        endpoint = "/v2/notification/history"
-        return await self._request_and_parse(NotificationResponseModel, "GET", endpoint, vin=vin)
+        return await self._request_and_parse(
+            NotificationResponseModel, "GET", VEHICLE_NOTIFICATION_HISTORY_ENDPOINT, vin=vin
+        )
 
     async def get_trips_endpoint(
         self,
@@ -152,5 +161,7 @@ class Api:
             limit: int:      Limit of number of trips to return in one request. Max 50.
             offset: int:     Offset into trips to start the request.
         """
-        endpoint = f"/v1/trips?from={from_date}&to={to_date}&route={route}&summary={summary}&limit={limit}&offset={offset}"  # pylint: disable=C0301 # noqa: E501
+        endpoint = VEHICLE_TRIPS_ENDPOINT.format(
+            from_date, to_date, route, summary, limit, offset
+        )  # pylint: disable=C0301 # noqa: E501
         return await self._request_and_parse(TripsResponseModel, "GET", endpoint, vin=vin)
