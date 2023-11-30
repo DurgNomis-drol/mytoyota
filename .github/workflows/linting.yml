@@ -9,13 +9,10 @@ jobs:
   pre-commit:
     name: "Pre-commit"
     runs-on: "ubuntu-latest"
-    env:
-      OS: "ubuntu-latest"
-      PYTHON: "${{ matrix.python-version }}"
     steps:
       - name: "⤵️ Check out code from GitHub"
         uses: "actions/checkout@v4"
-      - name: "🐍 Set up Python ${{ matrix.python-version }}"
+      - name: "🐍 Set up Python"
         uses: "actions/setup-python@v4"
       - name: "⚙️ Install Poetry"
         uses: "abatilo/actions-poetry@v2.3.0"
