@@ -170,7 +170,7 @@ class Vehicle:
         return Location(self._endpoint_data["location"]) if "location" in self._endpoint_data else None
 
     @property  # TODO: Cant have a property with parameters! Split into two methods?
-    def notifications(self, include_read: bool = False) -> Optional[List[Notification]]:  # noqa: PLR0206
+    def notifications(self, include_read: bool = False) -> Optional[List[Notification]]:  # noqa: PLR0206, ARG002
         """Returns a list of notifications for the vehicle.
 
         Args:
@@ -204,7 +204,7 @@ class Vehicle:
         """
         return None
 
-    async def get_summary(self, from_date: date, to_date: date, summary_type) -> Optional[List[Any]]:
+    async def get_summary(self, from_date: date, to_date: date, summary_type) -> Optional[List[Any]]:  # noqa: ARG002
         """Return a Daily, Monthly or Yearly summary between the provided dates.
 
         Args:
@@ -219,7 +219,7 @@ class Vehicle:
         """
         return None
 
-    async def get_trips(self, from_date: date, to_date: date, full_route: bool = False) -> Optional[List[Any]]:
+    async def get_trips(self, from_date: date, to_date: date, full_route: bool = False) -> Optional[List[Any]]:  # noqa: ARG002
         """Return information on all trips made between the provided dates.
 
         Args:

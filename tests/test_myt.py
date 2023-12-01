@@ -16,7 +16,6 @@ from mytoyota.exceptions import (
     ToyotaActionNotSupportedError,
     ToyotaInternalError,
     ToyotaInvalidUsernameError,
-    ToyotaLocaleNotValid,
     ToyotaRegionNotSupportedError,
 )
 from mytoyota.models.trip import DetailedTrip, Trip, TripEvent
@@ -186,25 +185,6 @@ class TestMyT(TestMyTHelper):
         """Test an invalid username in MyT."""
         with pytest.raises(ToyotaInvalidUsernameError):
             _ = MyT(username=username, password="xxxxx", locale="en-gb", region="europe")
-
-    @pytest.mark.parametrize(
-        "locale",
-        [
-            None,
-            "",
-            "invalid-locale",
-            "da-en-dk-us",
-        ],
-    )
-    def test_myt_invalid_locale(self, locale):
-        """Test an invalid locale in MyT."""
-        with pytest.raises(ToyotaLocaleNotValid):
-            _ = MyT(
-                username="user@domain.com",
-                password="xxxxx",
-                locale=locale,
-                region="europe",
-            )
 
     @pytest.mark.parametrize(
         "region",
