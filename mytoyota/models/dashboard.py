@@ -65,10 +65,7 @@ class Dashboard:
         -------
             A value as percentage
         """
-        if self._electric:
-            return self._electric.battery_level if self._electric else None
-
-        return None
+        return self._electric.battery_level if self._electric else None
 
     @property
     def fuel_range(self) -> Optional[float]:
@@ -79,7 +76,7 @@ class Dashboard:
             The range in the currently selected unit.
 
             If vehicle is electric returns 0
-            If vehicle doesn't support fuel range returns 0
+            If vehicle doesn't support fuel range returns None
         """
         if self._electric:
             return convert_distance(self._metric, self._electric.fuel_range.unit, self._electric.fuel_range.value)
@@ -100,8 +97,8 @@ class Dashboard:
         -------
             The range in the currently selected unit.
 
-            If vehicle is fuel only returns 0
-            If vehicle doesn't support battery range returns 0
+            If vehicle is fuel only returns None
+            If vehicle doesn't support battery range returns None
         """
         if self._electric:
             return convert_distance(self._metric, self._electric.ev_range.unit, self._electric.ev_range.value)
