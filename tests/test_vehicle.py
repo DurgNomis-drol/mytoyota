@@ -91,9 +91,9 @@ class TestVehicle:
                                 "brand": "TOYOTA",
                                 "state": "ACTIVE",
                                 "vin": veh.get("vin"),
-                            }
-                        ]
-                    }
+                            },
+                        ],
+                    },
                 },
             )
 
@@ -136,9 +136,9 @@ class TestVehicle:
                             "brand": "TOYOTA",
                             "state": "ACTIVE",
                             "vin": vehicle_fixtures[0].get("vin"),
-                        }
-                    ]
-                }
+                        },
+                    ],
+                },
             },
             odometer=odometer_fixture,
             status=status_fixture,
@@ -166,7 +166,7 @@ class TestVehicle:
 
         vehicle_fixtures = self._load_from_file(os.path.join(data_files, "vehicles.json"))
         odometer_fixture = self._load_from_file(
-            os.path.join(data_files, "vehicle_JTMW1234565432109_odometer_legacy.json")
+            os.path.join(data_files, "vehicle_JTMW1234565432109_odometer_legacy.json"),
         )
         status_fixture = self._load_from_file(os.path.join(data_files, "vehicle_JTMW1234565432109_status_legacy.json"))
 
@@ -179,9 +179,9 @@ class TestVehicle:
                             "brand": "TOYOTA",
                             "state": "ACTIVE",
                             "vin": vehicle_fixtures[0].get("vin"),
-                        }
-                    ]
-                }
+                        },
+                    ],
+                },
             },
             odometer=odometer_fixture,
             status_legacy=status_fixture,

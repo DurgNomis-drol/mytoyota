@@ -31,7 +31,7 @@ class OfflineController:
         username: str,
         password: str,
         brand: str,
-        uuid: str = None,
+        uuid: Optional[str] = None,
     ) -> None:
         """Initialise offline controller class."""
         self._locale = locale
@@ -138,7 +138,7 @@ class OfflineController:
             vin = match.group(1)
             request_id = match.group(2)
             response = self._load_from_file(
-                os.path.join(data_files, f"vehicle_{vin}_lock_request_status_{request_id}.json")
+                os.path.join(data_files, f"vehicle_{vin}_lock_request_status_{request_id}.json"),
             )
         return response
 
@@ -346,7 +346,7 @@ class TestMyTStatistics(TestMyTHelper):
         tomorrow = arrow.now().shift(days=1).format("YYYY-MM-DD")
         # Retrieve the actual status of the vehicle
         stat = asyncio.get_event_loop().run_until_complete(
-            myt.get_driving_statistics(vehicle["vin"], "year", from_date=tomorrow)
+            myt.get_driving_statistics(vehicle["vin"], "year", from_date=tomorrow),
         )
         assert stat is not None
         assert "error_mesg" in stat[0]
@@ -358,7 +358,7 @@ class TestMyTStatistics(TestMyTHelper):
         assert vehicle is not None
         # Retrieve the actual status of the vehicle
         stat = asyncio.get_event_loop().run_until_complete(
-            myt.get_driving_statistics(vehicle["vin"], "isoweek", from_date="2010-01-01")
+            myt.get_driving_statistics(vehicle["vin"], "isoweek", from_date="2010-01-01"),
         )
         assert stat is not None
         assert "error_mesg" in stat[0]
@@ -371,7 +371,7 @@ class TestMyTStatistics(TestMyTHelper):
         previous_year = arrow.now().shift(years=-1).format("YYYY-MM-DD")
         # Retrieve the actual status of the vehicle
         stat = asyncio.get_event_loop().run_until_complete(
-            myt.get_driving_statistics(vehicle["vin"], "year", from_date=previous_year)
+            myt.get_driving_statistics(vehicle["vin"], "year", from_date=previous_year),
         )
         assert stat is not None
         assert "error_mesg" in stat[0]
@@ -403,7 +403,7 @@ class TestMyTStatistics(TestMyTHelper):
         today = arrow.now().format("YYYY-MM-DD")
         # Retrieve the actual status of the vehicle
         stat = asyncio.get_event_loop().run_until_complete(
-            myt.get_driving_statistics(vehicle["vin"], interval, unit=unit, from_date=today)
+            myt.get_driving_statistics(vehicle["vin"], interval, unit=unit, from_date=today),
         )
         assert stat is not None
         assert "error_mesg" in stat[0]
@@ -435,7 +435,7 @@ class TestMyTStatistics(TestMyTHelper):
         assert vehicle is not None
         # Retrieve the actual status of the vehicle
         statistics = asyncio.get_event_loop().run_until_complete(
-            myt.get_driving_statistics(vehicle["vin"], interval, unit=unit)
+            myt.get_driving_statistics(vehicle["vin"], interval, unit=unit),
         )
         assert statistics is not None
         for data in statistics:
@@ -461,7 +461,7 @@ class TestMyTStatistics(TestMyTHelper):
         assert vehicle is not None
         # Retrieve the driving statistics of the vehicle
         statistics = asyncio.get_event_loop().run_until_complete(
-            myt.get_driving_statistics(vehicle["vin"], "day", unit=unit)
+            myt.get_driving_statistics(vehicle["vin"], "day", unit=unit),
         )
         assert statistics is not None
         for day_data in statistics:
@@ -498,7 +498,7 @@ class TestMyTStatistics(TestMyTHelper):
         assert vehicle is not None
         # Retrieve the driving statistics of the vehicle
         statistics = asyncio.get_event_loop().run_until_complete(
-            myt.get_driving_statistics(vehicle["vin"], interval, unit=unit)
+            myt.get_driving_statistics(vehicle["vin"], interval, unit=unit),
         )
         assert statistics is not None
         for day_data in statistics:
@@ -522,6 +522,6 @@ class TestMyTStatistics(TestMyTHelper):
         assert vehicle is not None
         # Retrieve the actual status of the vehicle
         statistics_json = asyncio.get_event_loop().run_until_complete(
-            myt.get_driving_statistics_json(vehicle["vin"], interval)
+            myt.get_driving_statistics_json(vehicle["vin"], interval),
         )
         assert json.loads(statistics_json) is not None

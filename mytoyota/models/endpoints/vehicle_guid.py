@@ -149,11 +149,11 @@ class _SubscriptionsModel(BaseModel):
     subscription_end_date: date = Field(alias="subscriptionEndDate")
     subscription_id: str = Field(alias="subscriptionID")
     subscription_next_billing_date: Optional[Any] = Field(
-        alias="subscriptionNextBillingDate"
+        alias="subscriptionNextBillingDate",
     )  # TODO unsure what this returns
     subscription_remaining_days: int = Field(alias="subscriptionRemainingDays")
     subscription_remaining_term: Optional[Any] = Field(
-        alias="subscriptionRemainingTerm"
+        alias="subscriptionRemainingTerm",
     )  # TODO unsure what this returns
     subscription_start_date: date = Field(alias="subscriptionStartDate")
     subscription_term: str = Field(alias="subscriptionTerm")

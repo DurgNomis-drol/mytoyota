@@ -68,7 +68,12 @@ YESTERDAY = TODAY - timedelta(days=1)
         (
             "GET",
             VEHICLE_TRIPS_ENDPOINT.format(
-                from_date=YESTERDAY, to_date=TODAY, route=False, summary=False, limit=5, offset=0
+                from_date=YESTERDAY,
+                to_date=TODAY,
+                route=False,
+                summary=False,
+                limit=5,
+                offset=0,
             ),
             TripsResponseModel,
             "v1_trips",

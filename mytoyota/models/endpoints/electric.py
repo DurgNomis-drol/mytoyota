@@ -32,7 +32,8 @@ class ElectricStatusModel(BaseModel):
     fuel_range: UnitValueModel = Field(alias="fuelRange")
     last_update_timestamp: datetime = Field(alias="lastUpdateTimestamp")
     remaining_charge_time: Optional[int] = Field(
-        alias="remainingChargeTime", default=None
+        alias="remainingChargeTime",
+        default=None,
     )  # TODO: Use field serializer to create timedelta
 
 

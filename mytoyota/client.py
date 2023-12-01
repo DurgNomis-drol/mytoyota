@@ -42,7 +42,7 @@ class MyT:
             controller_class(
                 username=username,
                 password=password,
-            )
+            ),
         )
 
     async def login(self) -> None:

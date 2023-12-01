@@ -34,7 +34,7 @@ class Dashboard:
     def __repr__(self):
         """Representation of the Dashboard model."""
         return " ".join(
-            [f"{k}={str(getattr(self, k))}" for k, v in type(self).__dict__.items() if isinstance(v, property)]
+            [f"{k}={getattr(self, k)!s}" for k, v in type(self).__dict__.items() if isinstance(v, property)],
         )
 
     @property
@@ -121,7 +121,9 @@ class Dashboard:
         """
         if self._electric:
             return convert_distance(
-                self._metric, self._electric.ev_range_with_ac.unit, self._electric.ev_range_with_ac.value
+                self._metric,
+                self._electric.ev_range_with_ac.unit,
+                self._electric.ev_range_with_ac.value,
             )
 
         return None
@@ -141,7 +143,9 @@ class Dashboard:
         """
         if self._telemetry.distance_to_empty:
             return convert_distance(
-                self._metric, self._telemetry.distance_to_empty.unit, self._telemetry.distance_to_empty.value
+                self._metric,
+                self._telemetry.distance_to_empty.unit,
+                self._telemetry.distance_to_empty.value,
             )
 
         return None

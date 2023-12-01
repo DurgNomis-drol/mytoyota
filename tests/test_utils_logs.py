@@ -41,7 +41,7 @@ class TestLogUtilities:
                 "id": 2199911,
                 "Cookie": "iPlanetDirectoryPro=5957a713-f80f-483f-998c-97f956367048",
                 "Today": "Tomorrow Toyota",
-            }
+            },
         )
 
         assert isinstance(dictionary, dict)

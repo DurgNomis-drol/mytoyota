@@ -36,7 +36,7 @@ class TestHvac:
                     "steeringHeater": "",
                 },
                 "commandId": "",
-            }
+            },
         )
 
     @staticmethod

@@ -146,7 +146,7 @@ class Controller:
                 "x-channel": "ONEAPP",
                 "x-brand": "T",
                 "user-agent": "okhttp/4.10.0",
-            }
+            },
         )
         # Add vin if passed
         if vin is not None:

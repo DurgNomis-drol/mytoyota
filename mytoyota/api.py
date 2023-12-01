@@ -91,10 +91,13 @@ class Api:
         """
         return await self._request_and_parse(VehicleHealthResponseModel, "GET", VEHICLE_HEALTH_STATUS_ENDPOINT, vin=vin)
 
-    async def get_remote_status_endpoint(self, vin: str) -> RemoteStatusResponseModel:  # noqa: D417
+    async def get_remote_status_endpoint(self, vin: str) -> RemoteStatusResponseModel:
         """Get information about the vehicle."""
         return await self._request_and_parse(
-            RemoteStatusResponseModel, "GET", VEHICLE_GLOBAL_REMOTE_STATUS_ENDPOINT, vin=vin
+            RemoteStatusResponseModel,
+            "GET",
+            VEHICLE_GLOBAL_REMOTE_STATUS_ENDPOINT,
+            vin=vin,
         )
 
     async def get_vehicle_electric_status_endpoint(self, vin: str) -> ElectricResponseModel:  # noqa: D417
@@ -108,7 +111,10 @@ class Api:
             vin: str:   The vehicles VIN
         """
         return await self._request_and_parse(
-            ElectricResponseModel, "GET", VEHICLE_GLOBAL_REMOTE_ELECTRIC_STATUS_ENDPOINT, vin=vin
+            ElectricResponseModel,
+            "GET",
+            VEHICLE_GLOBAL_REMOTE_ELECTRIC_STATUS_ENDPOINT,
+            vin=vin,
         )
 
     async def get_telemetry_endpoint(self, vin: str) -> TelemetryResponseModel:  # noqa: D417
@@ -134,7 +140,10 @@ class Api:
             vin: str:   The vehicles VIN
         """
         return await self._request_and_parse(
-            NotificationResponseModel, "GET", VEHICLE_NOTIFICATION_HISTORY_ENDPOINT, vin=vin
+            NotificationResponseModel,
+            "GET",
+            VEHICLE_NOTIFICATION_HISTORY_ENDPOINT,
+            vin=vin,
         )
 
     async def get_trips_endpoint(  # noqa: PLR0913, D417
@@ -164,6 +173,11 @@ class Api:
             offset: int:     Offset into trips to start the request.
         """
         endpoint = VEHICLE_TRIPS_ENDPOINT.format(
-            from_date=from_date, to_date=to_date, route=route, summary=summary, limit=limit, offset=offset
+            from_date=from_date,
+            to_date=to_date,
+            route=route,
+            summary=summary,
+            limit=limit,
+            offset=offset,
         )
         return await self._request_and_parse(TripsResponseModel, "GET", endpoint, vin=vin)

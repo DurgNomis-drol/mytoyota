@@ -81,7 +81,7 @@ class Statistics:
             periode[BUCKET].update(
                 {
                     UNIT: IMPERIAL_LITERS if use_liters else IMPERIAL,
-                }
+                },
             )
             for attribute in attributes_to_convert:
                 if attribute in periode[DATA]:
@@ -113,7 +113,7 @@ class Statistics:
                         # As we use 1 january of the year as the initial date
                         # we only have to shift it with 1 day less
                         DATE: arrow.Arrow(year, 1, 1).shift(days=dayofyear - 1).format(DATE_FORMAT),
-                    }
+                    },
                 )
             return data[HISTOGRAM]
 
@@ -137,7 +137,7 @@ class Statistics:
                         PERIODE_START: self._now.replace(year=month[BUCKET][YEAR], month=month[BUCKET][MONTH], day=1)
                         .floor(MONTH)
                         .format(DATE_FORMAT),
-                    }
+                    },
                 )
             return data[HISTOGRAM]
 
@@ -156,7 +156,7 @@ class Statistics:
             periode[BUCKET].update(
                 {
                     UNIT: METRIC,
-                }
+                },
             )
 
         return data[HISTOGRAM]
