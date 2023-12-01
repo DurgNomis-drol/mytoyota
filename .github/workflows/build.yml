@@ -29,6 +29,6 @@ jobs:
         with:
           poetry-version: 1.5.1
       - name: "⚙️ Install dependencies"
-        run: "poetry install"
+        run: "poetry install --without dev"
       - name: "🚀 Test package building"
         run: "poetry build"
