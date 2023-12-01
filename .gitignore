@@ -133,6 +133,9 @@ dmypy.json
 TestResults/
 .vscode/
 
+# Ruff
+.ruff_cache/
+
 .myt_app/
 /blahblah.py
 .idea/
