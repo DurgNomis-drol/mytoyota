@@ -135,7 +135,7 @@ class Api:
             NotificationResponseModel, "GET", VEHICLE_NOTIFICATION_HISTORY_ENDPOINT, vin=vin
         )
 
-    async def get_trips_endpoint(
+    async def get_trips_endpoint(  # noqa: PLR0913
         self,
         vin: str,
         from_date: date,

@@ -368,6 +368,7 @@ class VehicleGuidModel(BaseModel):
     faq_url: str = Field(alias="faqUrl")
     features: _FeaturesModel
     fleet_ind: Optional[Any] = Field(alias="fleetInd")  # TODO unsure what this returns
+    fuel_type: Optional[str] = Field(alias="fuelType", default=None)
     generation: str
     head_unit: _HeadUnitModel = Field(alias="headUnit")
     hw_type: Optional[Any] = Field(alias="hwType")  # TODO unsure what this returns
@@ -380,7 +381,7 @@ class VehicleGuidModel(BaseModel):
     car_model_description: str = Field(alias="modelDescription")
     car_model_name: str = Field(alias="modelName")
     car_model_year: str = Field(alias="modelYear")
-    nickname: Optional[str] = Field(alias="nickName")
+    nickname: Optional[str] = Field(alias="nickName", default=None)
     non_cvt_vehicle: bool = Field(alias="nonCvtVehicle")
     old_imei: Optional[Any] = Field(alias="oldImei")  # TODO unsure what this returns
     owner: bool

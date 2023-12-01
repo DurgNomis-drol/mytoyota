@@ -18,7 +18,7 @@ _LOGGER: logging.Logger = logging.getLogger(__package__)
 class Controller:
     """Controller class."""
 
-    def __init__(self, username: str, password: str, timeout: int = 30) -> None:
+    def __init__(self, username: str, password: str, timeout: int = 60) -> None:
         self._username: str = username
         self._password: str = password
         self._token: Optional[str] = None
@@ -119,7 +119,7 @@ class Controller:
 
         return self._token_expiration > datetime.now()
 
-    async def request_raw(
+    async def request_raw(  # noqa: PLR0913
         self,  # pylint: disable=too-many-branches
         method: str,
         endpoint: str,
@@ -170,7 +170,7 @@ class Controller:
 
         raise ToyotaApiError(f"Request Failed.  {response.status_code}, {response.text}.")
 
-    async def request_json(
+    async def request_json(  # noqa: PLR0913
         self,
         method: str,
         endpoint: str,

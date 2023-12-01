@@ -11,8 +11,8 @@ from mytoyota.api import Api
 from mytoyota.models.dashboard import Dashboard
 from mytoyota.models.endpoints.vehicle_guid import VehicleGuidModel
 from mytoyota.models.hvac import Hvac
+from mytoyota.models.location import Location
 from mytoyota.models.nofication import Notification
-from mytoyota.models.parking_location import ParkingLocation
 from mytoyota.utils.logs import censor_all
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -21,14 +21,11 @@ _LOGGER: logging.Logger = logging.getLogger(__package__)
 class Vehicle:
     """Vehicle data representation."""
 
-    def __init__(
-        self,
-        api: Api,
-        vehicle_info: VehicleGuidModel,
-    ) -> None:
+    def __init__(self, api: Api, vehicle_info: VehicleGuidModel, metric: bool = True) -> None:
         self._vehicle_info = vehicle_info
         self._api = api
         self._endpoint_data: Dict[str, Any] = {}
+        self._metric = metric
 
         # Endpoint Name, Function to check if car supports the endpoint, endpoint to call to update
         api_endpoints = [
@@ -104,64 +101,79 @@ class Vehicle:
 
     @property
     def vin(self) -> Optional[str]:
-        """Vehicle's vinnumber."""
+        """
+        Returns the vehicles VIN number
+
+        Returns:
+            The vehicles VIN number
+
+        """
         return self._vehicle_info.vin
 
     @property
     def alias(self) -> Optional[str]:
-        """Vehicle's alias."""
-        return self._vehicle_info.nickname
-
-    async def set_alias(self, value) -> None:
         """
-        Sets the alias for the vehicle.
-
-        Args:
-            value: The alias value to set for the vehicle.
+        Vehicle's alias.
 
         Returns:
-            None
+            Nickname of vehicle
 
         """
-        await self._api.set_vehicle_alias_endpoint(value, self._vehicle_info.subscriber_guid, self.vin)
+        return self._vehicle_info.nickname
 
     @property
-    def hybrid(self) -> bool:
-        """If the vehicle is a hybrid."""
-        # TODO need more details to check of electric cars return different capabilities
-        return self._vehicle_info.ev_vehicle
+    def type(self) -> Optional[str]:
+        """
+        Returns the "type" of vehicle
 
-    # @property
-    # def fueltype(self) -> str:
-    #    """Fuel type of the vehicle."""
-    #    fuel_type = self._vehicle_info.get("fuelType", "Unknown")
-    #    if fuel_type != "Unknown":
-    #        # Need to know further types. Only seen "I" or petrol cars.
-    #        fuel_types = {"I": "Petrol"}
-    #        if fuel_type in fuel_types:
-    #            return fuel_types["fuelType"]
-    #        else:
-    #            logging.warning(f"Unknown fuel type: {fuel_type}")
-    #    return "Unknown"
+        Returns:
+            "fuel" if only fuel based
+            "mildhybrid" if hybrid
+            "phev" if plugin hybrid
+            "ev" if full electric vehicle
+        """
+        # TODO enum
+        # TODO currently guessing until we see a mild hybrid and full EV
+        # TODO should probably use electricalPlatformCode but values currently unknown
+        # TODO list of fuel types. ?: G=Petrol Only, I=Hybrid
+        if self._vehicle_info.ev_vehicle and self._vehicle_info.fuel_type:
+            return "phev"
+        else:
+            return "ev"
 
-    @property
-    def details(self) -> Optional[Dict[str, Any]]:
-        """Formats vehicle info into a dict."""
-        det: Dict[str, Any] = {}
-        for i in sorted(self._vehicle_info):
-            if i in ("vin", "alias", "imei", "evVehicle"):
-                continue
-            det[i] = self._vehicle_info[i]
-        return det if det else None
+        return "fuel"
 
     @property
-    def location(self) -> Optional[ParkingLocation]:
-        """Last parking location."""
-        if "location" in self._endpoint_data:
-            return ParkingLocation(self._endpoint_data["location"])
+    def dashboard(self) -> Optional[Dashboard]:
+        """
+        Returns the Vehicle dashboard
 
-        return None
+        The dashboard consists of items of information you would expect to find on the dashboard. i.e. Fuel Levels
 
+        returns
+            A dashboard
+        """
+        # Always returns a Dashboard object as we can always get the odometer value
+        return Dashboard(
+            self._endpoint_data["telemetry"] if "telemetry" in self._endpoint_data else None,
+            self._endpoint_data["electric_status"] if "electric_status" in self._endpoint_data else None,
+            self._endpoint_data["health_status"] if "health_status" in self._endpoint_data else None,
+            self._metric,
+        )
+
+    @property
+    def location(self) -> Optional[Location]:
+        """
+        Return the vehicles latest reported Location
+
+        Returns
+          The latest location or None. If None vehicle car does not support providing location information.
+          _Note_ an empty location object can be returned when the Vehicle supports location but none is currently
+          available.
+        """
+        return Location(self._endpoint_data["location"]) if "location" in self._endpoint_data else None
+
+    @property  # TODO: Cant have a property with parameters! Split into two methods?
     def notifications(self, include_read: bool = False) -> Optional[List[Notification]]:
         """
         Returns a list of notifications for the vehicle.
@@ -173,17 +185,6 @@ class Vehicle:
             Optional[List[Notification]]: A list of notifications for the vehicle, or None if not supported.
 
         """
-        if "notifications" in self._endpoint_data:
-            ret = []
-            for notification in self._endpoint_data["notifications"]:
-                if include_read or (notification["isRead"] is False):
-                    ret.append(Notification(notification))
-
-            return ret
-
-        # TODO return an empty list or None? None because we dont support it?
-        # TODO maybe add an API call to check what is supported
-        # TODO throw a not supported exception? DataNotSupportedOnVehicle
         return None
 
     @property
@@ -193,16 +194,65 @@ class Vehicle:
         return None
 
     @property
-    def dashboard(self) -> Optional[Dashboard]:
-        """Vehicle dashboard."""
-        # Depending on car the required information is split across multiple endpoints
-        # All cars seen have the status endpoint. This contains total milage.
-        status = self._endpoint_data["telemetry"].copy()
-        if "electric_status" in self._endpoint_data:
-            status.update(self._endpoint_data["electric_status"])
-            return Dashboard(status)
+    def locks_status(self) -> Optional[Any]:
+        """
+        Returns the latest status of Doors & Windows
 
-        return Dashboard(status)
+        Args:
+            include_read (bool, optional): Indicates whether to include read notifications. Defaults to False.
+
+        Returns:
+            Optional[List[Notification]]: A list of notifications for the vehicle, or None if not supported.
+        """
+        return None
+
+    async def get_summary(self, from_date: date, to_date: date, summary_type) -> Optional[List[Any]]:
+        """
+        Returns a Daily, Monthly or Yearly summary between the provided dates
+
+        Args:
+            from_date (date, required): The inclusive from date to report summaries.
+            to_date (date, required): The inclusive to date to report summaries.
+            summary_type (???, optional): Daily, Monthly or Yearly summary. Monthly by default.
+
+        Returns:
+            Optional[List[Something]]: A list of summaries or None if not supported.
+        """
+        return None
+
+    async def get_trips(self, from_date: date, to_date: date, full_route: bool = False) -> Optional[List[Any]]:
+        """
+        Returns information on all trips made between the provided dates
+
+        Args:
+            from_date (date, required): The inclusive from date
+            to_date (date, required): The inclusive to date
+            full_route (bool, optional): Provide the full route information for each trip
+
+        Returns:
+            Optional[List[Something]]: A list of all trips or None if not supported.
+        """
+        return None
+
+    #
+    # More get functionality depending on what we find
+    #
+
+    async def set_alias(self, value) -> bool:
+        """
+        Sets the alias for the vehicle.
+
+        Args:
+            value: The alias value to set for the vehicle.
+
+        Returns:
+            None
+        """
+        pass
+
+    #
+    # More set functionality depending on what we find
+    #
 
     def _dump_all(self) -> Dict[str, Any]:
         """Helper function for collecting data for further work"""

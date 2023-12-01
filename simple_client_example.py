@@ -39,16 +39,20 @@ async def get_information():
     await client.login()
 
     print("Retrieving cars...")
-    cars = await client.get_vehicles()
+    cars = await client.get_vehicles(metric=False)
 
     for car in cars:
         await car.update()
 
-        # Dump all the information collected so far
-        pp.pprint(car._dump_all())  # pylint: disable=W0212
+        # Dashboard Information
+        print(f"Dashboard: {car.dashboard}")
+        # Location Information
+        print(f"Dashboard: {car.location}")
 
-        # Alias
-        print(f"Alias: {car.alias}")
+        # Dump all the information collected so far
+
+
+#        pp.pprint(car._dump_all())  # pylint: disable=W0212
 
 
 loop = asyncio.get_event_loop()

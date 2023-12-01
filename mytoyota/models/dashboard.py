@@ -1,85 +1,182 @@
 """Models for vehicle sensors."""
-from typing import Optional
+from datetime import timedelta
+from typing import Any, List, Optional
 
-from mytoyota.models.data import VehicleData
-from mytoyota.utils.conversions import convert_to_miles
+from mytoyota.models.endpoints.electric import ElectricResponseModel
+from mytoyota.models.endpoints.telemetry import TelemetryResponseModel
+from mytoyota.models.endpoints.vehicle_health import VehicleHealthResponseModel
+from mytoyota.utils.conversions import convert_distance
 
 
-class Dashboard(VehicleData):
-    """Instrumentation data model."""
+class Dashboard:
+    """
+    Information that may be found on a vehicles dashboard
+    """
+
+    # TODO do we want to supply last update times?
+
+    def __init__(
+        self,
+        telemetry: Optional[TelemetryResponseModel] = None,
+        electric: Optional[ElectricResponseModel] = None,
+        health: Optional[VehicleHealthResponseModel] = None,
+        metric: bool = True,  # TODO: Or on each call, so user can decide at call time
+    ):
+        """
+        Initialise Dashboard
+
+        Parameters:
+            metric: bool:   Report distances in metric(or imperial)
+        """
+        self._electric = electric.payload if electric else None
+        self._telemetry = telemetry.payload if telemetry else None
+        self._health = health.payload if health else None
+        self._metric = "km" if metric else "mi"
+
+    def __repr__(self):
+        return " ".join(
+            [f"{k}={str(getattr(self, k))}" for k, v in type(self).__dict__.items() if isinstance(v, property)]
+        )
 
     @property
-    def is_metric(self) -> bool:
-        """If the car is reporting data in metric."""
-        # Annoyingly the data is both in imperial & metric.
-        # Lets pick imperial
-        return False
+    def odometer(self) -> float:
+        """
+        Odometer distance
+
+        Returns:
+            The latest odometer reading in the current selected units
+        """
+        return convert_distance(self._metric, self._telemetry.odometer.unit, self._telemetry.odometer.value)
 
     @property
-    def odometer(self) -> Optional[int]:
-        """Shows the odometer distance."""
+    def fuel_level(self) -> int:
+        """
+        Fuel level
 
-        if self._data["odometer"]["unit"] == "mi":
-            return self._data["odometer"]["value"]
-
-        return convert_to_miles(self._data["odometer"]["value"])
-
-    @property
-    def fuel_level(self) -> Optional[float]:
-        """Shows the fuellevel of the vehicle."""
-        return self._data["fuelLevel"]
-
-    @property
-    def fuel_range(self) -> Optional[float]:
-        """Shows the range if available."""
-        if self._data["fuelRange"]["unit"] == "mi":
-            return self._data["odometer"]["value"]
-
-        return convert_to_miles(self._data["fuelRange"]["value"])
+        Returns:
+            A value as percentage
+        """
+        return self._telemetry.fuel_level
 
     @property
     def battery_level(self) -> Optional[float]:
-        """Shows the battery level if a hybrid."""
-        if "batteryLevel" in self._data:
-            return self._data["batteryLevel"]
+        """
+        Shows the battery level if available
+
+        Returns:
+            A value as percentage
+        """
+        if self._electric:
+            return self._electric.battery_level if self._electric else None
+
+        return None
+
+    @property
+    def fuel_range(self) -> Optional[float]:
+        """
+        The range using _only_ fuel
+
+        Returns:
+            The range in the currently selected unit.
+
+            If vehicle is electric returns 0
+            If vehicle doesn't support fuel range returns 0
+        """
+        if self._electric:
+            return convert_distance(self._metric, self._electric.fuel_range.unit, self._electric.fuel_range.value)
+        elif self._telemetry.distance_to_empty:
+            return convert_distance(
+                self._metric,
+                self._telemetry.distance_to_empty.unit,
+                self._telemetry.distance_to_empty.value,
+            )
 
         return None
 
     @property
     def battery_range(self) -> Optional[float]:
-        """Shows the battery range if a hybrid."""
-        if "evRange" in self._data:
-            if self._data["evRange"]["unit"] == "mi":
-                return self._data["evRange"]["value"]
+        """
+        The range using _only_ EV
 
-            return convert_to_miles(self._data["evRange"]["value"])
+        Returns:
+            The range in the currently selected unit.
+
+            If vehicle is fuel only returns 0
+            If vehicle doesn't support battery range returns 0
+        """
+        if self._electric:
+            return convert_distance(self._metric, self._electric.ev_range.unit, self._electric.ev_range.value)
 
         return None
 
     @property
-    def battery_range_with_aircon(self) -> Optional[float]:
-        """Shows the battery range with aircon on, if a hybrid."""
-        if "evRangeWithAc" in self._data:
-            if self._data["evRangeWithAc"]["unit"] == "mi":
-                return self._data["evRangeWithAc"]["value"]
+    def battery_range_with_ac(self) -> Optional[float]:
+        """
+        The range using _only_ EV when using AC
 
-            return convert_to_miles(self._data["evRangeWithAc"]["value"])
+        Returns:
+            The range in the currently selected unit.
+
+            If vehicle is fuel only returns 0
+            If vehicle doesn't support battery range returns 0
+        """
+        if self._electric:
+            return convert_distance(
+                self._metric, self._electric.ev_range_with_ac.unit, self._electric.ev_range_with_ac.value
+            )
+
+        return None
+
+    @property
+    def range(self) -> Optional[float]:
+        """
+        The range using all available fuel & EV
+
+        Returns:
+            The range in the currently selected unit.
+
+            fuel only == fuel_range
+            ev only == battery_range_with_ac
+            hybrid == fuel_range + battery_range_with_ac
+            None if not supported
+        """
+        if self._telemetry.distance_to_empty:
+            return convert_distance(
+                self._metric, self._telemetry.distance_to_empty.unit, self._telemetry.distance_to_empty.value
+            )
 
         return None
 
     @property
     def charging_status(self) -> Optional[str]:
-        """Shows the charging status if a hybrid."""
-        if "chargingStatus" in self._data:
-            return self._data["chargingStatus"]
+        """
+        Current charging status
 
-        return None
+        returns
+            A string containing the charging status as reported by the vehicle
+            None if vehicle doesn't support charging
+        """
+        return self._electric.charging_status if self._electric else None
 
     @property
-    def remaining_charge_time(self) -> Optional[int]:
-        """Shows the remaining time to a full charge, if a hybrid."""
-        # TODO: What units?
-        if "remainingChargeTime" in self._data:
-            return self._data["remainingChargeTime"]
+    def remaining_charge_time(self) -> Optional[timedelta]:
+        """
+        Time left until charge is complete
 
-        return None
+        returns
+            The amount of time left
+            None if vehicle is not currently charging.
+            None if vehicle doesn't support charging
+        """
+        return self._electric.remaining_charge_time if self._electric else None
+
+    @property
+    def warning_lights(self) -> Optional[List[Any]]:
+        """
+        Dashboard Warning Lights
+
+        returns
+            List of latest dashboard warning lights
+            _Note_ Not fully understood
+        """
+        return self._health.warning if self._health else None

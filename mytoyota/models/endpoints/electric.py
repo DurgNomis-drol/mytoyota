@@ -20,7 +20,7 @@ class ElectricStatusModel(BaseModel):
         fuel_level (int): The fuel level of the electric vehicle.
         fuel_range (UnitValueModel): The fuel range of the electric vehicle.
         last_update_timestamp (datetime): The timestamp of the last update.
-
+        remaining_charge_time (int): The time till full in minutes.
     """
 
     battery_level: int = Field(alias="batteryLevel")
@@ -31,6 +31,9 @@ class ElectricStatusModel(BaseModel):
     fuel_level: int = Field(alias="fuelLevel")
     fuel_range: UnitValueModel = Field(alias="fuelRange")
     last_update_timestamp: datetime = Field(alias="lastUpdateTimestamp")
+    remaining_charge_time: Optional[int] = Field(
+        alias="remainingChargeTime", default=None
+    )  # TODO: Use field serializer to create timedelta
 
 
 class ElectricResponseModel(StatusModel):
