@@ -1,4 +1,4 @@
-""" models for vehicle lock/unlock requests and responses """
+"""models for vehicle lock/unlock requests and responses."""
 from datetime import datetime
 
 from mytoyota.const import UNLOCK_TIMESTAMP_FORMAT
@@ -25,8 +25,7 @@ class VehicleLockUnlockActionResponse(VehicleData):
 
 
 class VehicleLockUnlockStatusResponse(VehicleData):
-    """Model of the response to a the request of the status of
-    a Vehicle Lock/Unlock action."""
+    """Responsemodel for a Vehicle Lock/Unlock action request."""
 
     @property
     def status(self) -> str:
@@ -51,7 +50,7 @@ class VehicleLockUnlockStatusResponse(VehicleData):
 
     @property
     def error_code(self) -> str:
-        """Request Error code"""
+        """Request Error code."""
         if self.status != "error":
             return None
         return self._data.get("errorCode", "")

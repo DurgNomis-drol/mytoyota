@@ -1,4 +1,4 @@
-""" Toyota Connected Services API - Account Models """
+"""Toyota Connected Services API - Account Models."""
 from datetime import datetime
 from typing import List, Optional
 from uuid import UUID
@@ -14,13 +14,13 @@ class _TermsActivityModel(BaseModel):
 
 
 class _AdditionalAttributesModel(BaseModel):
-    is_terms_Accepted: bool = Field(alias="isTermsAccepted")
+    is_terms_accepted: bool = Field(alias="isTermsAccepted")
     terms_activity: List[_TermsActivityModel] = Field("termsActivity")
 
 
 class _EmailModel(BaseModel):
     email_address: str = Field(alias="emailAddress")
-    email_Type: str = Field(alias="emailType")
+    email_type: str = Field(alias="emailType")
     email_verified: bool = Field(alias="emailVerified")
     verification_date: datetime = Field(alias="verificationDate")
 
@@ -53,10 +53,10 @@ class _CustomerModel(BaseModel):
 
 
 class AccountModel(BaseModel):
-    """
-    Model representing an account.
+    """Model representing an account.
 
-    Attributes:
+    Attributes
+    ----------
         customer (_CustomerModel): The customer associated with the account.
 
     """
@@ -65,12 +65,12 @@ class AccountModel(BaseModel):
 
 
 class AccountResponseModel(StatusModel):
-    """
-    Model representing an account response.
+    """Model representing an account response.
 
     Inherits from StatusModel.
 
-    Attributes:
+    Attributes
+    ----------
         payload (Optional[AccountModel], optional): The account payload. Defaults to None.
 
     """

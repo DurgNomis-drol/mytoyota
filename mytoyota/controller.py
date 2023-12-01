@@ -1,4 +1,4 @@
-"""Toyota Connected Services Controller """
+"""Toyota Connected Services Controller."""
 import logging
 from datetime import datetime, timedelta
 from http import HTTPStatus
@@ -19,6 +19,7 @@ class Controller:
     """Controller class."""
 
     def __init__(self, username: str, password: str, timeout: int = 60) -> None:
+        """Initialise Controller class."""
         self._username: str = username
         self._password: str = password
         self._token: Optional[str] = None
@@ -36,8 +37,7 @@ class Controller:
         await self._update_token()
 
     async def _update_token(self) -> None:
-        """Performs login to toyota servers and retrieves token and uuid for the account."""
-
+        """Login to toyota servers and retriev token and uuid for the account."""
         # Does this help with "Access Denied" issues?
         standard_headers: dict = {
             "accept-api-version": "resource=2.1, protocol=1.0",
@@ -113,7 +113,7 @@ class Controller:
             self._token_expiration = datetime.now() + timedelta(seconds=access_tokens["expires_in"])
 
     def _is_token_valid(self) -> bool:
-        """Checks if token is valid"""
+        """Check if token is valid."""
         if self._token or self._token_expiration is None:
             return False
 
@@ -128,7 +128,7 @@ class Controller:
         params: Optional[Dict[str, Any]] = None,
         headers: Optional[Dict[str, Any]] = None,
     ) -> httpx.Response:
-        """Shared request method"""
+        """Shared request method."""
         if method not in ("GET", "POST", "PUT", "DELETE"):
             raise ToyotaInternalError("Invalid request method provided")
 
@@ -179,10 +179,10 @@ class Controller:
         params: Optional[Dict[str, Any]] = None,
         headers: Optional[Dict[str, Any]] = None,
     ):
-        """
-        Sends a JSON request to the specified endpoint.
+        """Send a JSON request to the specified endpoint.
 
         Args:
+        ----
             method (str): The HTTP method to use for the request.
             endpoint (str): The endpoint to send the request to.
             vin (Optional[str], optional): The VIN (Vehicle Identification Number) to include in the request.
@@ -195,9 +195,11 @@ class Controller:
                 Defaults to None.
 
         Returns:
+        -------
             The JSON response from the request.
 
         Examples:
+        --------
             response = await request_json("GET", "/cars", vin="1234567890")
         """
         response = await self.request_raw(method, endpoint, vin, body, params, headers)

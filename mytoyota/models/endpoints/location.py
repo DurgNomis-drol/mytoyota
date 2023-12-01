@@ -1,4 +1,4 @@
-""" Toyota Connected Services API - Location Models """
+"""Toyota Connected Services API - Location Models."""
 from datetime import datetime
 from typing import Optional
 
@@ -15,10 +15,10 @@ class _VehicleLocationModel(BaseModel):
 
 
 class LocationModel(BaseModel):
-    """
-    Model representing the location of a vehicle.
+    """Model representing the location of a vehicle.
 
-    Attributes:
+    Attributes
+    ----------
         last_timestamp (Optional[datetime], optional): The last timestamp of the location. Defaults to None.
         vehicle_location (Optional[_VehicleLocationModel], optional): The location of the vehicle. Defaults to None.
         vin (Optional[str], optional): The VIN (Vehicle Identification Number) of the vehicle. Defaults to None.
@@ -31,12 +31,12 @@ class LocationModel(BaseModel):
 
 
 class LocationResponseModel(StatusModel):
-    """
-    Model representing a location response.
+    """Model representing a location response.
 
     Inherits from StatusModel.
 
-    Attributes:
+    Attributes
+    ----------
         payload (Optional[LocationModel], optional): The location payload. Defaults to None.
 
     """

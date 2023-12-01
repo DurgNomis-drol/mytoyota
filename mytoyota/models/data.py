@@ -6,6 +6,7 @@ class VehicleData:
     """Vehicle data base model."""
 
     def __init__(self, data: dict) -> None:
+        """Initialise the Vehicle data base model."""
         self._data = data or {}
 
     @property

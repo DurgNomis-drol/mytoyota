@@ -1,4 +1,4 @@
-"""pytest tests for mytoyota.api"""
+"""pytest tests for mytoyota.api."""
 import json
 from datetime import date, timedelta
 from unittest.mock import AsyncMock
@@ -82,14 +82,18 @@ YESTERDAY = TODAY - timedelta(days=1)
     ],
 )
 async def test_api_request_and_parse_endpoints(method, endpoint, model, response_data_json_path, test_id):
-    """
-    Test the API for various endpoints.
+    """Test the API for various endpoints.
 
     Args:
-        model: The model class to test.
+    ----
+        method: The method with which the API endpoint is to be addressed.
+        endpoint: The API endpoint to be tested.
+        model: The pydantic model class to test.
         response_data_json_path: Path to the JSON file containing the test data.
+        test_id: The ID under which the test is displayed in pytest.
 
     Returns:
+    -------
         None
 
     """

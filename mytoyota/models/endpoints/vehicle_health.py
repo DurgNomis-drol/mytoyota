@@ -1,4 +1,4 @@
-""" Toyota Connected Services API - Endpoint Model """
+"""Toyota Connected Services API - Endpoint Model."""
 from datetime import datetime
 from typing import Any, List, Optional
 
@@ -8,10 +8,10 @@ from mytoyota.models.endpoints.common import StatusModel
 
 
 class VehicleHealthModel(BaseModel):
-    """
-    Model representing the health status of a vehicle.
+    """Model representing the health status of a vehicle.
 
-    Attributes:
+    Attributes
+    ----------
         quantity_of_eng_oil_icon (Optional[List[Any]], optional): The quantity of engine oil icon. Defaults to None.
         vin (str): The VIN (Vehicle Identification Number) of the vehicle.
         warning (Optional[List[Any]]): The warning information. Defaults to None.
@@ -26,12 +26,12 @@ class VehicleHealthModel(BaseModel):
 
 
 class VehicleHealthResponseModel(StatusModel):
-    """
-    Model representing a vehicle health response.
+    """Model representing a vehicle health response.
 
     Inherits from StatusModel.
 
-    Attributes:
+    Attributes
+    ----------
         payload (Optional[VehicleHealthModel], optional): The vehicle health payload. Defaults to None.
 
     """

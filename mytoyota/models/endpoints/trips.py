@@ -1,4 +1,4 @@
-""" Toyota Connected Services API - Trips Models """
+"""Toyota Connected Services API - Trips Models."""
 from datetime import date, datetime
 from typing import Any, List, Optional
 from uuid import UUID
@@ -49,7 +49,7 @@ class _ScoresModel(BaseModel):
     acceleration: int
     braking: int
     advice: Optional[int] = None
-    constantSpeed: Optional[int] = None
+    constant_speed: Optional[int] = Field(alias="constantSpeed", default=None)
 
 
 class _HDCModel(BaseModel):
@@ -122,10 +122,10 @@ class _MetadataModel(BaseModel):
 
 
 class TripsModel(BaseModel):
-    """
-    Model representing trips data.
+    """Model representing trips data.
 
-    Attributes:
+    Attributes
+    ----------
         from_date (date): The start date of the trips.
         to_date (date): The end date of the trips.
         trips (List[_TripModel]): The list of trips.
@@ -144,12 +144,12 @@ class TripsModel(BaseModel):
 
 
 class TripsResponseModel(StatusModel):
-    """
-    Model representing a trips response.
+    """Model representing a trips response.
 
     Inherits from StatusModel.
 
-    Attributes:
+    Attributes
+    ----------
         payload (Optional[TripsModel], optional): The trips payload. Defaults to None.
 
     """

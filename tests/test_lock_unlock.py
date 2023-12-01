@@ -1,10 +1,10 @@
-"""pytest tests for mytoyota.client.MyT sending lock/unlock requests"""
+"""pytest tests for mytoyota.client.MyT sending lock/unlock requests."""
 import asyncio
 from datetime import datetime
 
 import pytest
 
-from mytoyota.exceptions import ToyotaActionNotSupported
+from mytoyota.exceptions import ToyotaActionNotSupportedError
 from mytoyota.models.lock_unlock import (
     VehicleLockUnlockActionResponse,
     VehicleLockUnlockStatusResponse,
@@ -13,14 +13,14 @@ from tests.test_myt import TestMyTHelper
 
 
 class TestLockUnlock(TestMyTHelper):
-    """Pytest functions to test locking and unlocking"""
+    """Pytest functions to test locking and unlocking."""
 
     successful_lock_request_id = "d4f873d2-5da2-494f-a6d9-6e56d18d2ce9"
     failed_lock_request_id = "14f873d2-5da2-494f-a6d9-6e56d18d2ce9"
     pending_lock_request_id = "24f873d2-5da2-494f-a6d9-6e56d18d2ce9"
 
     def test_send_lock_request(self):
-        """Test sending the lock request"""
+        """Test sending the lock request."""
         myt = self._create_offline_myt()
         vehicle = self._lookup_vehicle(myt, 4444444)
         result = asyncio.get_event_loop().run_until_complete(myt.set_lock_vehicle(vehicle["vin"]))
@@ -35,7 +35,7 @@ class TestLockUnlock(TestMyTHelper):
         assert result.type == "controlLock"
 
     def test_send_unlock_request(self):
-        """Test sending the unlock request"""
+        """Test sending the unlock request."""
         myt = self._create_offline_myt()
         vehicle = self._lookup_vehicle(myt, 4444444)
         result = asyncio.get_event_loop().run_until_complete(myt.set_unlock_vehicle(vehicle["vin"]))
@@ -47,7 +47,7 @@ class TestLockUnlock(TestMyTHelper):
         }
 
     def test_get_successful_lock_status(self):
-        """Test getting the lock status"""
+        """Test getting the lock status."""
         myt = self._create_offline_myt()
         vehicle = self._lookup_vehicle(myt, 4444444)
         result = asyncio.get_event_loop().run_until_complete(
@@ -69,7 +69,7 @@ class TestLockUnlock(TestMyTHelper):
         assert result.is_success
 
     def test_get_failed_lock_status(self):
-        """Test getting the lock status"""
+        """Test getting the lock status."""
         myt = self._create_offline_myt()
         vehicle = self._lookup_vehicle(myt, 4444444)
         result = asyncio.get_event_loop().run_until_complete(
@@ -93,15 +93,15 @@ class TestLockUnlock(TestMyTHelper):
         assert not result.is_success
 
     def test_set_lock_vehicle_unsupported(self):
-        """Test sending the lock request to a vehicle for which it is not supported"""
+        """Test sending the lock request to a vehicle for which it is not supported."""
         myt = self._create_offline_myt()
         vehicle = self._lookup_vehicle(myt, 1111111)
-        with pytest.raises(ToyotaActionNotSupported):
+        with pytest.raises(ToyotaActionNotSupportedError):
             asyncio.get_event_loop().run_until_complete(myt.set_lock_vehicle(vehicle["vin"]))
 
     def test_set_unlock_vehicle_unsupported(self):
-        """Test sending the lock request to a vehicle for which it is not supported"""
+        """Test sending the lock request to a vehicle for which it is not supported."""
         myt = self._create_offline_myt()
         vehicle = self._lookup_vehicle(myt, 1111111)
-        with pytest.raises(ToyotaActionNotSupported):
+        with pytest.raises(ToyotaActionNotSupportedError):
             asyncio.get_event_loop().run_until_complete(myt.set_unlock_vehicle(vehicle["vin"]))

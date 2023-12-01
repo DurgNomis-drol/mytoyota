@@ -1,38 +1,37 @@
-"""pytest tests for mytoyota.utils.logs"""
+"""pytest tests for mytoyota.utils.logs."""
 
 from mytoyota.utils.logs import censor_all, censor_string
 
 
 class TestLogUtilities:
-    """pytest functions for testing logs"""
+    """pytest functions for testing logs."""
 
     def test_censor(self):
-        """Testing sensitive info censoring"""
+        """Testing sensitive info censoring."""
         string = censor_string("5957a713-f80f-483f-998c-97f956367048")
 
         assert string == "5***********************************"
 
     def test_censor_no_data(self):
-        """Testing sensitive info censoring"""
+        """Testing sensitive info censoring."""
         string = censor_string("")
 
         assert string == ""
 
     def test_censor_string(self):
-        """Test censor_string"""
+        """Test censor_string."""
         vin = censor_string("JTDKGNEC00N999999")
 
         assert vin == "JTDKGNEC0********"
 
     def test_censor_string_no_data(self):
-        """Test censor_string"""
+        """Test censor_string."""
         vin = censor_string("")
 
         assert vin == ""
 
     def test_censor_all(self):
-        """Test censor_all"""
-
+        """Test censor_all."""
         dictionary = censor_all(
             {
                 "vin": "JTDKGNEC00N999999",
@@ -57,8 +56,7 @@ class TestLogUtilities:
         }
 
     def test_censor_all_no_data(self):
-        """Test censor_all with no data"""
-
+        """Test censor_all with no data."""
         dictionary = censor_all({})
 
         assert isinstance(dictionary, dict)

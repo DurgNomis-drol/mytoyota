@@ -1,35 +1,35 @@
-""" models for vehicle notifications """
+"""models for vehicle notifications."""
 from datetime import datetime
 
 from mytoyota.models.data import VehicleData
 
 
 class Notification(VehicleData):
-    """Notification"""
+    """Notification."""
 
     # TODO Convert category into enum?
 
     @property
     def category(self) -> str:
-        """Category"""
+        """Category."""
         return self._data.get("category", "Unknown")
 
     @property
     def is_read(self) -> bool:
-        """Is read"""
+        """Is read."""
         return self._data["isRead"] is True
 
     @property
     def message(self) -> str:
-        """Message"""
+        """Message."""
         return self._data["message"]
 
     @property
     def type(self) -> str:
-        """Type"""
+        """Type."""
         return self._data["type"]
 
     @property
     def date(self) -> datetime:
-        """Date"""
+        """Date."""
         return datetime.fromisoformat(self._data["notificationDate"].replace("Z", "+00:00"))

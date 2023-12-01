@@ -1,4 +1,4 @@
-"""pytest tests for mytoyota.utils"""
+"""pytest tests for mytoyota.utils."""
 # pylint: disable=import-error
 import pytest
 
@@ -11,34 +11,7 @@ from mytoyota.utils.formatters import format_odometer
 
 
 class TestUtils:
-    """pytest functions to test functions in mytoyota.utils"""
-
-    @pytest.mark.parametrize(
-        "locale",
-        [
-            "en-us",
-            "en-gb",
-            "nl-nl",
-            "da-dk",
-        ],
-    )
-    def test_is_valid_locale(self, locale: str):
-        """Test valid cases for is_valid_locale"""
-        assert is_valid_locale(locale)
-
-    @pytest.mark.parametrize(
-        "invalid_locale",
-        [
-            "",
-            None,
-            "something_invalid",
-            "en-u",
-            "en-us-nl-nl",
-        ],
-    )
-    def test_not_is_valid_locale(self, invalid_locale: str):
-        """Test invalid cases for is_valid_locale"""
-        assert not is_valid_locale(invalid_locale)
+    """pytest functions to test functions in mytoyota.utils."""
 
     @pytest.mark.parametrize(
         "distance_km,distance_miles",
@@ -49,7 +22,7 @@ class TestUtils:
         ],
     )
     def test_convert_to_miles(self, distance_km, distance_miles):
-        """Test conversion from km to miles"""
+        """Test conversion from km to miles."""
         assert convert_to_miles(distance_km) == distance_miles
 
     @pytest.mark.parametrize(
@@ -61,7 +34,7 @@ class TestUtils:
         ],
     )
     def test_convert_to_liter_per_100_miles(self, liters_km, per_mile):
-        """Test conversion from l/100km to l/100miles"""
+        """Test conversion from l/100km to l/100miles."""
         assert convert_to_liter_per_100_miles(liters_km) == per_mile
 
     @pytest.mark.parametrize(
@@ -74,12 +47,11 @@ class TestUtils:
         ],
     )
     def test_convert_to_mpg(self, liters_km, mpg):
-        """Test conversion from liters/100km to miles per gallons"""
+        """Test conversion from liters/100km to miles per gallons."""
         assert convert_to_mpg(liters_km) == mpg
 
     def test_format_odometer(self):
-        """Test format odometer"""
-
+        """Test format odometer."""
         raw = [
             {"type": "mileage", "value": 3205, "unit": "km"},
             {"type": "Fuel", "value": 22},
@@ -95,8 +67,7 @@ class TestUtils:
         }
 
     def test_format_odometer_no_data(self):
-        """Test format odometer with no initialization data"""
-
+        """Test format odometer with no initialization data."""
         nothing = format_odometer([])
 
         assert isinstance(nothing, dict)

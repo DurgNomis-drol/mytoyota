@@ -1,4 +1,4 @@
-"""pytest tests for mytoyota.statistics.Statistics"""
+"""pytest tests for mytoyota.statistics.Statistics."""
 
 # A lot of the code in the mytoyota.statistics.Statistics class is already
 # tested by the unittests of the MyT.get_driving_statistics function.
@@ -10,10 +10,10 @@ from mytoyota.statistics import Statistics
 
 
 class TestStatistics:
-    """pytest functions to test Statistics"""
+    """pytest functions to test Statistics."""
 
     def test_none_raw_statistics(self):
-        """Test the initialization when None raw_statistics is provided"""
+        """Test the initialization when None raw_statistics is provided."""
         stat = Statistics(None, "day")
         assert stat is not None
         with pytest.raises(AttributeError):

@@ -1,4 +1,4 @@
-"""pytest tests for mytoyota.models.vehicle.Vehicle"""
+"""pytest tests for mytoyota.models.vehicle.Vehicle."""
 import json
 import os
 import os.path
@@ -13,17 +13,16 @@ from mytoyota.models.vehicle import Vehicle
 
 
 class TestVehicle:
-    """pytest functions for Vehicle object"""
+    """pytest functions for Vehicle object."""
 
     @staticmethod
     def _load_from_file(filename: str):
-        """Load a data structure from the specified JSON filename, and
-        return it."""
+        """Load and return data structure from specified JSON filename."""
         with open(filename, encoding="UTF-8") as json_file:
             return json.load(json_file)
 
     def test_vehicle_no_data(self):
-        """Test vehicle with no initialization data"""
+        """Test vehicle with no initialization data."""
         vehicle = Vehicle({}, {})
 
         assert vehicle.vehicle_id is None
@@ -39,8 +38,7 @@ class TestVehicle:
         assert vehicle.parkinglocation is None
 
     def test_vehicle_init_no_status(self):
-        """Test vehicle initialization with no status"""
-
+        """Test vehicle initialization with no status."""
         data_files = os.path.join(os.path.curdir, "tests", "data")
 
         vehicle_fixtures = self._load_from_file(os.path.join(data_files, "vehicles.json"))
@@ -72,14 +70,13 @@ class TestVehicle:
         ],
     )
     def test_vehicle_disabled_connected_services(self, vin, connected_services):
-        """Test the check if the connected services is disabled"""
+        """Test the check if the connected services is disabled."""
         car = {"vin": vin}
         vehicle = Vehicle(vehicle_info=car, connected_services=connected_services)
         assert vehicle.is_connected_services_enabled is False
 
     def test_vehicle_init(self):
-        """Test vehicle initialization with connected services"""
-
+        """Test vehicle initialization with connected services."""
         data_files = os.path.join(os.path.curdir, "tests", "data")
 
         vehicle_fixtures = self._load_from_file(os.path.join(data_files, "vehicles.json"))
@@ -123,8 +120,7 @@ class TestVehicle:
                 assert vehicle.parkinglocation is None
 
     def test_vehicle_init_status(self):
-        """Test vehicle initialization with connected services with status"""
-
+        """Test vehicle initialization with connected services with status."""
         data_files = os.path.join(os.path.curdir, "tests", "data")
 
         vehicle_fixtures = self._load_from_file(os.path.join(data_files, "vehicles.json"))
@@ -165,8 +161,7 @@ class TestVehicle:
         assert vehicle.dashboard.remaining_charge_time is None
 
     def test_vehicle_init_status_legacy(self):
-        """Test vehicle initialization with connected services with legacy status"""
-
+        """Test vehicle initialization with connected services with legacy status."""
         data_files = os.path.join(os.path.curdir, "tests", "data")
 
         vehicle_fixtures = self._load_from_file(os.path.join(data_files, "vehicles.json"))

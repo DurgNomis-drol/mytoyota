@@ -1,4 +1,4 @@
-""" Toyota Connected Services API - Electric Models """
+"""Toyota Connected Services API - Electric Models."""
 from datetime import datetime
 from typing import Optional
 
@@ -8,10 +8,10 @@ from mytoyota.models.endpoints.common import StatusModel, UnitValueModel
 
 
 class ElectricStatusModel(BaseModel):
-    """
-    Model representing the status of an electric vehicle.
+    """Model representing the status of an electric vehicle.
 
-    Attributes:
+    Attributes
+    ----------
         battery_level (int): The battery level of the electric vehicle.
         can_set_next_charging_event (bool): Indicates whether the next charging event can be set.
         charging_status (str): The charging status of the electric vehicle.
@@ -37,12 +37,12 @@ class ElectricStatusModel(BaseModel):
 
 
 class ElectricResponseModel(StatusModel):
-    """
-    Model representing an electric vehicle response.
+    """Model representing an electric vehicle response.
 
     Inherits from StatusModel.
 
-    Attributes:
+    Attributes
+    ----------
         payload (Optional[ElectricStatusModel], optional): The electric vehicle status payload. Defaults to None.
 
     """

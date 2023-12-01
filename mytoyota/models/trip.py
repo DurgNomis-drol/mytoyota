@@ -22,7 +22,7 @@ class TripEvent(VehicleData):
 
     @property
     def overspeed(self) -> bool:
-        """Overspeed notice"""
+        """Overspeed notice."""
         return bool(self._data.get("overspeed", False))
 
     @property
@@ -32,12 +32,12 @@ class TripEvent(VehicleData):
 
     @property
     def is_ev(self) -> bool:
-        """Running in ev mode"""
+        """Running in ev mode."""
         return bool(self._data.get("isEv", False))
 
     @property
     def mode(self) -> int:
-        """Mode"""
+        """Mode."""
         return int(self._data.get("mode", 0))
 
 
@@ -63,7 +63,7 @@ class DetailedTrip(VehicleData):
 
 
 class Trip(VehicleData):
-    """Trip model. returned by get-trips()"""
+    """Trip model. returned by get-trips()."""
 
     @property
     def trip_id(self) -> str:

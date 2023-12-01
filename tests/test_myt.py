@@ -1,4 +1,4 @@
-"""pytest tests for mytoyota.client.MyT"""
+"""pytest tests for mytoyota.client.MyT."""
 
 import asyncio
 import datetime
@@ -13,11 +13,11 @@ import pytest  # pylint: disable=import-error
 
 from mytoyota.client import MyT
 from mytoyota.exceptions import (
-    ToyotaActionNotSupported,
+    ToyotaActionNotSupportedError,
     ToyotaInternalError,
-    ToyotaInvalidUsername,
+    ToyotaInvalidUsernameError,
     ToyotaLocaleNotValid,
-    ToyotaRegionNotSupported,
+    ToyotaRegionNotSupportedError,
 )
 from mytoyota.models.trip import DetailedTrip, Trip, TripEvent
 
@@ -25,7 +25,7 @@ from mytoyota.models.trip import DetailedTrip, Trip, TripEvent
 class OfflineController:
     """Provides a Controller class that can be used for testing."""
 
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         locale: str,
         region: str,
@@ -34,6 +34,7 @@ class OfflineController:
         brand: str,
         uuid: str = None,
     ) -> None:
+        """Initialise offline controller class."""
         self._locale = locale
         self._region = region
         self._username = username
@@ -43,21 +44,20 @@ class OfflineController:
 
     @property
     def uuid(self) -> str:
-        """Returns uuid"""
+        """Returns uuid."""
         return "_OfflineController_"
 
     async def first_login(self) -> None:
-        """Perform first login"""
+        """Perform first login."""
         # This is no-operation
 
     def _load_from_file(self, filename: str):
-        """Load a data structure from the specified JSON filename, and
-        return it."""
+        """Load and return data structure from specified JSON filename."""
         with open(filename, encoding="UTF-8") as json_file:
             return json.load(json_file)
 
     # Disables pylint warning about too many statements and branches when matching API paths
-    async def request(  # pylint: disable=too-many-statements, too-many-branches, too-many-locals
+    async def request(  # noqa: PLR0912, PLR0913, PLR0915
         self,
         method: str,
         endpoint: str,
@@ -66,8 +66,7 @@ class OfflineController:
         params: Optional[dict] = None,
         headers: Optional[dict] = None,
     ) -> Union[dict, list, None]:
-        """Shared request method"""
-
+        """Shared request method."""
         if method not in ("GET", "POST", "PUT", "DELETE"):
             raise ToyotaInternalError("Invalid request method provided")  # pragma: no cover
 
@@ -133,7 +132,7 @@ class OfflineController:
             try:
                 response = self._load_from_file(os.path.join(data_files, f"vehicle_{vin}_lock_request.json"))
             except FileNotFoundError as exc:
-                raise ToyotaActionNotSupported("Action is not supported") from exc
+                raise ToyotaActionNotSupportedError("Action is not supported") from exc
 
         match = re.match(r".*/vehicles/([^?]+)/lock/([^?]+)", endpoint)
         if match:
@@ -146,10 +145,10 @@ class OfflineController:
 
 
 class TestMyTHelper:
-    """Helper class for the actual TestMyT pytest classes"""
+    """Helper class for the actual TestMyT pytest classes."""
 
     def _create_offline_myt(self) -> MyT:
-        """Create a MyT instance that is using the OfflineController"""
+        """Create a MyT instance that is using the OfflineController."""
         return MyT(
             username="user@domain.com",
             password="xxxxx",
@@ -159,17 +158,17 @@ class TestMyTHelper:
         )
 
     def _lookup_vehicle(self, myt: MyT, vehicle_id: int):
-        """Retrieve all the vehicles, and find the vehicle with the specified 'id'"""
+        """Retrieve all the vehicles, and find the vehicle with the specified 'id'."""
         vehicles = asyncio.get_event_loop().run_until_complete(myt.get_vehicles())
         vehicle = [veh for veh in vehicles if veh["id"] == vehicle_id]
         return vehicle[0]
 
 
 class TestMyT(TestMyTHelper):
-    """pytest functions to test MyT"""
+    """pytest functions to test MyT."""
 
     def test_myt(self):
-        """Test an error free initialisation of MyT"""
+        """Test an error free initialisation of MyT."""
         myt = MyT(
             username="user@domain.com",
             password="xxxxx",
@@ -184,8 +183,8 @@ class TestMyT(TestMyTHelper):
         [None, "", "_invalid_"],
     )
     def test_myt_invalid_username(self, username):
-        """Test an invalid username in MyT"""
-        with pytest.raises(ToyotaInvalidUsername):
+        """Test an invalid username in MyT."""
+        with pytest.raises(ToyotaInvalidUsernameError):
             _ = MyT(username=username, password="xxxxx", locale="en-gb", region="europe")
 
     @pytest.mark.parametrize(
@@ -198,7 +197,7 @@ class TestMyT(TestMyTHelper):
         ],
     )
     def test_myt_invalid_locale(self, locale):
-        """Test an invalid locale in MyT"""
+        """Test an invalid locale in MyT."""
         with pytest.raises(ToyotaLocaleNotValid):
             _ = MyT(
                 username="user@domain.com",
@@ -217,8 +216,8 @@ class TestMyT(TestMyTHelper):
         ],
     )
     def test_myt_unsupported_region(self, region):
-        """Test an invalid region in MyT"""
-        with pytest.raises(ToyotaRegionNotSupported):
+        """Test an invalid region in MyT."""
+        with pytest.raises(ToyotaRegionNotSupportedError):
             _ = MyT(
                 username="user@domain.com",
                 password="xxxxx",
@@ -227,33 +226,33 @@ class TestMyT(TestMyTHelper):
             )
 
     def test_get_supported_regions(self):
-        """Test the supported regions"""
+        """Test the supported regions."""
         regions = MyT.get_supported_regions()
         assert regions is not None
         assert len(regions) > 0
         assert "europe" in regions
 
     def test_login(self):
-        """Test the login"""
+        """Test the login."""
         myt = self._create_offline_myt()
         asyncio.get_event_loop().run_until_complete(myt.login())
 
     def test_get_uuid(self):
-        """Test the retrieval of an uuid"""
+        """Test the retrieval of an uuid."""
         myt = self._create_offline_myt()
         uuid = myt.uuid
         assert uuid
         assert len(uuid) > 0
 
     def test_set_alias(self):
-        """Test the set_alias"""
+        """Test the set_alias."""
         myt = self._create_offline_myt()
         result = asyncio.get_event_loop().run_until_complete(myt.set_alias(4444444, "pytest_vehicle"))
         assert isinstance(result, (dict))
         assert result == {"id": "4444444", "alias": "pytest_vehicle"}
 
     def test_get_vehicles(self):
-        """Test the retrieval of the available vehicles"""
+        """Test the retrieval of the available vehicles."""
         myt = self._create_offline_myt()
         vehicles = asyncio.get_event_loop().run_until_complete(myt.get_vehicles())
         assert vehicles
@@ -263,13 +262,13 @@ class TestMyT(TestMyTHelper):
             assert len(veh.keys()) > 0
 
     def test_get_vehicles_json(self):
-        """Test the retrieval of the available vehicles in json format"""
+        """Test the retrieval of the available vehicles in json format."""
         myt = self._create_offline_myt()
         vehicles_json = asyncio.get_event_loop().run_until_complete(myt.get_vehicles_json())
         assert json.loads(vehicles_json) is not None
 
     def test_get_vehicle_status(self):
-        """Test the retrieval of the status of a vehicle"""
+        """Test the retrieval of the status of a vehicle."""
         myt = self._create_offline_myt()
         vehicle = self._lookup_vehicle(myt, 4444444)
         assert vehicle is not None
@@ -278,7 +277,7 @@ class TestMyT(TestMyTHelper):
         assert status is not None
 
     def test_get_trips_json(self):
-        """Test the retrieval of the trips of a vehicle"""
+        """Test the retrieval of the trips of a vehicle."""
         myt = self._create_offline_myt()
         vehicle = self._lookup_vehicle(myt, 4444444)
         assert vehicle is not None
@@ -287,7 +286,7 @@ class TestMyT(TestMyTHelper):
         assert trips is not None
 
     def test_get_trip_json(self):
-        """Test the retrieval of a trip of a vehicle"""
+        """Test the retrieval of a trip of a vehicle."""
         trip_id = "971B8221-299E-4899-BC73-AE2EFF604D28"
         myt = self._create_offline_myt()
         vehicle = self._lookup_vehicle(myt, 4444444)
@@ -296,7 +295,7 @@ class TestMyT(TestMyTHelper):
         assert trip_json is not None
 
     def test_get_trips(self):
-        """Test the retrieval of the trips of a vehicle"""
+        """Test the retrieval of the trips of a vehicle."""
         myt = self._create_offline_myt()
         vehicle = self._lookup_vehicle(myt, 4444444)
         assert vehicle is not None
@@ -318,7 +317,7 @@ class TestMyT(TestMyTHelper):
             assert isinstance(trip.classification_type, int)
 
     def test_get_trip(self):
-        """Test the retrieval of a trip of a vehicle"""
+        """Test the retrieval of a trip of a vehicle."""
         trip_id = "971B8221-299E-4899-BC73-AE2EFF604D28"
         myt = self._create_offline_myt()
         vehicle = self._lookup_vehicle(myt, 4444444)
@@ -347,10 +346,10 @@ class TestMyT(TestMyTHelper):
 
 
 class TestMyTStatistics(TestMyTHelper):
-    """pytest functions to test get_vehicle_statistics of MyT"""
+    """pytest functions to test get_vehicle_statistics of MyT."""
 
     def test_get_vehicle_statistics_invalid_interval_error(self):
-        """Test that retrieving the statistics of an unknown interval is not possible"""
+        """Test that retrieving the statistics of an unknown interval is not possible."""
         myt = self._create_offline_myt()
         vehicle = self._lookup_vehicle(myt, 4444444)
         assert vehicle is not None
@@ -360,7 +359,7 @@ class TestMyTStatistics(TestMyTHelper):
         assert "error_mesg" in stat[0]
 
     def test_get_vehicle_statistics_tomorrow_error(self):
-        """Test that retrieving the statistics of tomorrow is not possible"""
+        """Test that retrieving the statistics of tomorrow is not possible."""
         myt = self._create_offline_myt()
         vehicle = self._lookup_vehicle(myt, 4444444)
         assert vehicle is not None
@@ -373,7 +372,7 @@ class TestMyTStatistics(TestMyTHelper):
         assert "error_mesg" in stat[0]
 
     def test_get_vehicle_statistics_isoweek_error(self):
-        """Test that retrieving statistics of long ago of an isoweek is not possible"""
+        """Test that retrieving statistics of long ago of an isoweek is not possible."""
         myt = self._create_offline_myt()
         vehicle = self._lookup_vehicle(myt, 4444444)
         assert vehicle is not None
@@ -385,7 +384,7 @@ class TestMyTStatistics(TestMyTHelper):
         assert "error_mesg" in stat[0]
 
     def test_get_vehicle_statistics_year_error(self):
-        """Test that retrieving the previous year is not possible"""
+        """Test that retrieving the previous year is not possible."""
         myt = self._create_offline_myt()
         vehicle = self._lookup_vehicle(myt, 4444444)
         assert vehicle is not None
@@ -417,7 +416,7 @@ class TestMyTStatistics(TestMyTHelper):
         ],
     )
     def test_get_vehicle_statistics_today_error(self, interval, unit):
-        """Test that retrieving the statistics of today is not possible"""
+        """Test that retrieving the statistics of today is not possible."""
         myt = self._create_offline_myt()
         vehicle = self._lookup_vehicle(myt, 4444444)
         assert vehicle is not None
@@ -450,7 +449,7 @@ class TestMyTStatistics(TestMyTHelper):
         ],
     )
     def test_get_driving_statistics(self, interval, unit):
-        """Test the retrieval of the status of a vehicle"""
+        """Test the retrieval of the status of a vehicle."""
         myt = self._create_offline_myt()
         vehicle = self._lookup_vehicle(myt, 4444444)
         assert vehicle is not None
@@ -476,7 +475,7 @@ class TestMyTStatistics(TestMyTHelper):
         ],
     )
     def test_get_driving_statistics_has_correct_day_of_year(self, unit):
-        """Test that the day-statistics contains the correct date for the day of the year"""
+        """Test that the day-statistics contains the correct date for the day of the year."""
         myt = self._create_offline_myt()
         vehicle = self._lookup_vehicle(myt, 4444444)
         assert vehicle is not None
@@ -513,7 +512,7 @@ class TestMyTStatistics(TestMyTHelper):
         ],
     )
     def test_get_driving_statistics_contains_year_as_int(self, interval, unit):
-        """Test that the statistics contains the year as an integer"""
+        """Test that the statistics contains the year as an integer."""
         myt = self._create_offline_myt()
         vehicle = self._lookup_vehicle(myt, 4444444)
         assert vehicle is not None
@@ -537,7 +536,7 @@ class TestMyTStatistics(TestMyTHelper):
         ],
     )
     def test_get_driving_statistics_json(self, interval):
-        """Test the retrieval of the statistics (in JSON format) of a vehicle"""
+        """Test the retrieval of the statistics (in JSON format) of a vehicle."""
         myt = self._create_offline_myt()
         vehicle = self._lookup_vehicle(myt, 4444444)
         assert vehicle is not None

@@ -1,4 +1,4 @@
-""" Toyota Connected Services API - Telemetry Models """
+"""Toyota Connected Services API - Telemetry Models."""
 from datetime import datetime
 from typing import Optional
 
@@ -8,10 +8,10 @@ from mytoyota.models.endpoints.common import StatusModel, UnitValueModel
 
 
 class TelemetryModel(BaseModel):
-    """
-    Model representing telemetry data.
+    """Model representing telemetry data.
 
-    Attributes:
+    Attributes
+    ----------
         fuel_type (str): The type of fuel.
         odometer (UnitValueModel): The odometer reading.
         fuel_level (int): The fuel level.
@@ -28,12 +28,12 @@ class TelemetryModel(BaseModel):
 
 
 class TelemetryResponseModel(StatusModel):
-    """
-    Model representing a telemetry response.
+    """Model representing a telemetry response.
 
     Inherits from StatusModel.
 
-    Attributes:
+    Attributes
+    ----------
         payload (Optional[TelemetryModel], optional): The telemetry payload. Defaults to None.
 
     """

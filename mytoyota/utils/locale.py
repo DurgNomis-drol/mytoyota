@@ -1,4 +1,4 @@
-"""Locale validation utilities"""
+"""Locale validation utilities."""
 from langcodes import Language
 from langcodes.tag_parser import LanguageTagError
 

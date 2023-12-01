@@ -9,23 +9,21 @@ from mytoyota.utils.conversions import convert_distance
 
 
 class Dashboard:
-    """
-    Information that may be found on a vehicles dashboard
-    """
+    """Information that may be found on a vehicles dashboard."""
 
     # TODO do we want to supply last update times?
 
-    def __init__(
+    def __init__(  # noqa: D417
         self,
         telemetry: Optional[TelemetryResponseModel] = None,
         electric: Optional[ElectricResponseModel] = None,
         health: Optional[VehicleHealthResponseModel] = None,
         metric: bool = True,  # TODO: Or on each call, so user can decide at call time
     ):
-        """
-        Initialise Dashboard
+        """Initialise Dashboard.
 
-        Parameters:
+        Parameters
+        ----------
             metric: bool:   Report distances in metric(or imperial)
         """
         self._electric = electric.payload if electric else None
@@ -34,36 +32,37 @@ class Dashboard:
         self._metric = "km" if metric else "mi"
 
     def __repr__(self):
+        """Representation of the Dashboard model."""
         return " ".join(
             [f"{k}={str(getattr(self, k))}" for k, v in type(self).__dict__.items() if isinstance(v, property)]
         )
 
     @property
     def odometer(self) -> float:
-        """
-        Odometer distance
+        """Odometer distance.
 
-        Returns:
+        Returns
+        -------
             The latest odometer reading in the current selected units
         """
         return convert_distance(self._metric, self._telemetry.odometer.unit, self._telemetry.odometer.value)
 
     @property
     def fuel_level(self) -> int:
-        """
-        Fuel level
+        """Fuel level.
 
-        Returns:
+        Returns
+        -------
             A value as percentage
         """
         return self._telemetry.fuel_level
 
     @property
     def battery_level(self) -> Optional[float]:
-        """
-        Shows the battery level if available
+        """Shows the battery level if available.
 
-        Returns:
+        Returns
+        -------
             A value as percentage
         """
         if self._electric:
@@ -73,10 +72,10 @@ class Dashboard:
 
     @property
     def fuel_range(self) -> Optional[float]:
-        """
-        The range using _only_ fuel
+        """The range using _only_ fuel.
 
-        Returns:
+        Returns
+        -------
             The range in the currently selected unit.
 
             If vehicle is electric returns 0
@@ -95,10 +94,10 @@ class Dashboard:
 
     @property
     def battery_range(self) -> Optional[float]:
-        """
-        The range using _only_ EV
+        """The range using _only_ EV.
 
-        Returns:
+        Returns
+        -------
             The range in the currently selected unit.
 
             If vehicle is fuel only returns 0
@@ -111,10 +110,10 @@ class Dashboard:
 
     @property
     def battery_range_with_ac(self) -> Optional[float]:
-        """
-        The range using _only_ EV when using AC
+        """The range using _only_ EV when using AC.
 
-        Returns:
+        Returns
+        -------
             The range in the currently selected unit.
 
             If vehicle is fuel only returns 0
@@ -129,10 +128,10 @@ class Dashboard:
 
     @property
     def range(self) -> Optional[float]:
-        """
-        The range using all available fuel & EV
+        """The range using all available fuel & EV.
 
-        Returns:
+        Returns
+        -------
             The range in the currently selected unit.
 
             fuel only == fuel_range
@@ -149,10 +148,10 @@ class Dashboard:
 
     @property
     def charging_status(self) -> Optional[str]:
-        """
-        Current charging status
+        """Current charging status.
 
-        returns
+        Returns
+        -------
             A string containing the charging status as reported by the vehicle
             None if vehicle doesn't support charging
         """
@@ -160,10 +159,10 @@ class Dashboard:
 
     @property
     def remaining_charge_time(self) -> Optional[timedelta]:
-        """
-        Time left until charge is complete
+        """Time left until charge is complete.
 
-        returns
+        Returns
+        -------
             The amount of time left
             None if vehicle is not currently charging.
             None if vehicle doesn't support charging
@@ -172,10 +171,10 @@ class Dashboard:
 
     @property
     def warning_lights(self) -> Optional[List[Any]]:
-        """
-        Dashboard Warning Lights
+        """Dashboard Warning Lights.
 
-        returns
+        Returns
+        -------
             List of latest dashboard warning lights
             _Note_ Not fully understood
         """

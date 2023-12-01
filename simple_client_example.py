@@ -1,4 +1,4 @@
-"""Simple test of new API Changes"""
+"""Simple test of new API Changes."""
 import asyncio
 import json
 import pprint
@@ -15,7 +15,7 @@ pp = pprint.PrettyPrinter(indent=4)
 
 
 def load_credentials():
-    "Load credentials from 'credentials.json'"
+    """Load credentials from 'credentials.json'."""
     try:
         with open("credentials.json", encoding="utf-8") as f:
             return json.load(f)
@@ -34,7 +34,7 @@ client = MyT(username=USERNAME, password=PASSWORD)
 
 
 async def get_information():
-    "Test login and output from endpoints"
+    """Test login and output from endpoints."""
     print("Logging in...")
     await client.login()
 

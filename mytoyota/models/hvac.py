@@ -7,7 +7,7 @@ from mytoyota.models.data import VehicleData
 
 
 def get_attr_in_dict(data: dict[str, float], attr: str) -> Optional[float]:
-    """Get a specific attribute from a dict"""
+    """Get a specific attribute from a dict."""
     return data.get(attr)
 
 
@@ -15,6 +15,7 @@ class Hvac(VehicleData):
     """HVAC data model."""
 
     def __init__(self, data: dict[str, Any], legacy: bool = False) -> None:
+        """Init HVAC data model."""
         # Support legacy method. Toyota seems to be changing their api for newer
         # cars, though not a lot seems to use the method yet.
         # This option enables support for older cars.

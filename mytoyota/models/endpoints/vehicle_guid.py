@@ -1,4 +1,4 @@
-""" Toyota Connected Services API - Vehicle Models """
+"""Toyota Connected Services API - Vehicle Models."""
 from datetime import date
 from typing import Any, Dict, List, Optional, Union
 from uuid import UUID
@@ -17,7 +17,7 @@ class _TranslationModel(BaseModel):
 class _CapabilitiesModel(BaseModel):
     description: Optional[str]
     display: bool
-    displayName: Optional[Any]  # TODO unsure what this returns
+    display_name: Optional[Any] = Field(alias="displayName")  # TODO unsure what this returns
     name: str
     translation: _TranslationModel
 
@@ -268,10 +268,10 @@ class _FeaturesModel(BaseModel):
 
 
 class VehicleGuidModel(BaseModel):
-    """
-    Model representing a vehicle with its associated information.
+    """Model representing a vehicle with its associated information.
 
-    Attributes:
+    Attributes
+    ----------
         alerts (List[Any]): The alerts associated with the vehicle.
         asiCode (str): The ASI code of the vehicle.
         brand (str): The brand of the vehicle.
@@ -344,7 +344,7 @@ class VehicleGuidModel(BaseModel):
     """
 
     alerts: List[Any]  # TODO unsure what this returns
-    asiCode: str
+    asi_code: str = Field(alias="asiCode")
     brand: str
     capabilities: List[_CapabilitiesModel]
     car_line_name: str = Field(alias="carlineName")
@@ -416,12 +416,12 @@ class VehicleGuidModel(BaseModel):
 
 
 class VehiclesResponseModel(StatusModel):
-    """
-    Model representing a vehicles response.
+    """Model representing a vehicles response.
 
     Inherits from StatusModel.
 
-    Attributes:
+    Attributes
+    ----------
         payload (Optional[List[VehicleGuidModel]], optional): The vehicles payload. Defaults to None.
 
     """

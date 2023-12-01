@@ -1,4 +1,4 @@
-""" Toyota Connected Services API - Status Models """
+"""Toyota Connected Services API - Status Models."""
 from datetime import datetime
 from typing import List, Optional
 
@@ -30,10 +30,10 @@ class _TelemetryModel(BaseModel):
 
 
 class RemoteStatusModel(BaseModel):
-    """
-    Model representing the remote status of a vehicle.
+    """Model representing the remote status of a vehicle.
 
-    Attributes:
+    Attributes
+    ----------
         vehicle_status (List[_VehicleStatusModel]): The status of the vehicle.
         telemetry (_TelemetryModel): The telemetry data of the vehicle.
         occurrence_date (datetime): The date of the occurrence.
@@ -54,12 +54,12 @@ class RemoteStatusModel(BaseModel):
 
 
 class RemoteStatusResponseModel(StatusModel):
-    """
-    Model representing a remote status response.
+    """Model representing a remote status response.
 
     Inherits from StatusModel.
 
-    Attributes:
+    Attributes
+    ----------
         payload (Optional[RemoteStatusModel], optional): The remote status payload. Defaults to None.
 
     """

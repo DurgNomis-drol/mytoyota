@@ -49,17 +49,22 @@ select = [
     "PL",
     # Pyflakes
     "F",
+    # pep8-naming
+    "N",
     # Pycodestyle
     "E",
     "W",
+    "D",
     # flake8-2020
     "YTT",
     # flake8-async
     "ASYNC",
+    # flake8-bugbear
+    "B",
     # Isort
     "I"
 ]
-extend-ignore = ["PLR2004"]
+extend-ignore = ["PLR2004", "D203", "D213"]
 line-length = 120
 fix = true
 

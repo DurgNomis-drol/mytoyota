@@ -1,4 +1,4 @@
-""" Toyota Connected Services API - Notification Models """
+"""Toyota Connected Services API - Notification Models."""
 from datetime import datetime
 from typing import List, Optional, Union
 from uuid import UUID
@@ -11,10 +11,10 @@ class _HeadersModel(BaseModel):
 
 
 class NotificationModel(BaseModel):
-    """
-    Model representing a notification.
+    """Model representing a notification.
 
-    Attributes:
+    Attributes
+    ----------
         message_id (str): The ID of the notification message.
         vin (str): The VIN (Vehicle Identification Number) associated with the notification.
         notification_date (datetime): The datetime of the notification.
@@ -48,10 +48,10 @@ class _PayloadItemModel(BaseModel):
 
 
 class NotificationResponseModel(BaseModel):
-    """
-    Model representing a notification response.
+    """Model representing a notification response.
 
-    Attributes:
+    Attributes
+    ----------
         guid (UUID): The GUID (Globally Unique Identifier) of the response.
         status_code (int): The status code of the response.
         headers (_HeadersModel): The headers of the response.

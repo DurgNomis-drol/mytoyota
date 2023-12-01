@@ -1,14 +1,14 @@
-"""pytest tests for mytoyota.models.hvac.Hvac"""
+"""pytest tests for mytoyota.models.hvac.Hvac."""
 
 from mytoyota.models.hvac import Hvac
 
 
 class TestHvac:
-    """pytest functions to test Hvac"""
+    """pytest functions to test Hvac."""
 
     @staticmethod
     def _create_example_data():
-        """Create hvac with predefined data"""
+        """Create hvac with predefined data."""
         return Hvac(
             {
                 "currentTemperatureIndication": {
@@ -41,7 +41,7 @@ class TestHvac:
 
     @staticmethod
     def _create_example_legacy_data():
-        """Create legacy hvac with predefined data"""
+        """Create legacy hvac with predefined data."""
         return Hvac(
             {
                 "BlowerStatus": 0,
@@ -59,7 +59,7 @@ class TestHvac:
         )
 
     def test_hvac(self):
-        """Test Hvac"""
+        """Test Hvac."""
         hvac = self._create_example_data()
 
         assert hvac.legacy is False
@@ -90,7 +90,7 @@ class TestHvac:
         assert hvac.blower_on is None
 
     def test_hvac_legacy(self):
-        """Test legacy Hvac"""
+        """Test legacy Hvac."""
         hvac = self._create_example_legacy_data()
 
         assert hvac.legacy is True
@@ -110,7 +110,7 @@ class TestHvac:
         assert hvac.command_id is None
 
     def test_hvac_no_data(self):
-        """Test Hvac with no initialization data"""
+        """Test Hvac with no initialization data."""
         hvac = Hvac({})
 
         assert hvac.legacy is False

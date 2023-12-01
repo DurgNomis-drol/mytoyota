@@ -15,14 +15,13 @@ from mytoyota.api import Api
 from mytoyota.models.vehicle import Vehicle
 
 from .controller import Controller
-from .exceptions import ToyotaInvalidUsername
+from .exceptions import ToyotaInvalidUsernameError
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
 
 class MyT:
-    """
-    Connected Services client.
+    """Connected Services client.
 
     Connected services client class.
 
@@ -35,8 +34,9 @@ class MyT:
         password: str,
         controller_class=Controller,
     ) -> None:
+        """Initialise Connected Services client."""
         if username is None or "@" not in username:
-            raise ToyotaInvalidUsername
+            raise ToyotaInvalidUsernameError
 
         self._api = Api(
             controller_class(
@@ -46,7 +46,7 @@ class MyT:
         )
 
     async def login(self) -> None:
-        """Performs first login.
+        """Perform first login.
 
         Performs first login to Toyota's servers. Should be ideally be used
         the very first time you login in. Fetches a token and stores it in
@@ -57,9 +57,7 @@ class MyT:
         await self._api.controller.login()
 
     async def get_vehicles(self, metric: bool = True) -> Optional[List[Vehicle]]:
-        """
-        Returns a list of vehicles.
-        """
+        """Return a list of vehicles."""
         _LOGGER.debug("Getting list of vehicles associated with the account")
         vehicles = await self._api.get_vehicles_endpoint()
         if vehicles.payload is not None:
