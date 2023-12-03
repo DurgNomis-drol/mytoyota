@@ -182,6 +182,14 @@ class Vehicle:
             Optional[List[Notification]]: A list of notifications for the vehicle, or None if not supported.
 
         """
+        if "notifications" in self._endpoint_data:
+            ret = []
+            for p in self._endpoint_data["notifications"].payload:
+                for n in p.notifications:
+                    ret.append(Notification(n))
+
+            return ret
+
         return None
 
     @property

@@ -47,7 +47,9 @@ async def get_information():
         # Dashboard Information
         print(f"Dashboard: {car.dashboard}")
         # Location Information
-        print(f"Dashboard: {car.location}")
+        print(f"Location: {car.location}")
+        # Notifications
+        print(f"Notifications: {[x for x in car.notifications]}")
 
         # Dump all the information collected so far
 

@@ -9,7 +9,7 @@ class Location:
     """Latest Location of car."""
 
     def __init__(self, location: Optional[LocationResponseModel] = None):
-        """Initit the location model."""
+        """Init the location model."""
         self._location = None
         if location and location.payload:
             self._location = location.payload.vehicle_location
