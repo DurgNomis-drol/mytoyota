@@ -32,12 +32,11 @@ def _get_section(data: Optional[VehicleStatusModel], section: str) -> Optional[S
 
 def _get_status(data: Optional[SectionModel], status: str) -> Optional[bool]:
     if data is not None:
-        return not bool(
-            next(
-                (item.status for item in data.values if item.value == status),
-                None,
-            )
+        item_status = next(
+            (item.status for item in data.values if item.value == status),
+            None,
         )
+        return item_status if item_status is None else not bool(item_status)
     return None
 
 
