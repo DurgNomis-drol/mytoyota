@@ -45,11 +45,11 @@ async def get_information():
         await car.update()
 
         # Dashboard Information
-        print(f"Dashboard: {car.dashboard}")
+        pp.pprint(f"Dashboard: {car.dashboard}")
         # Location Information
-        print(f"Location: {car.location}")
+        pp.pprint(f"Location: {car.location}")
         # Notifications
-        print(f"Notifications: {[x for x in car.notifications]}")
+        pp.pprint(f"Notifications: {[[x] for x in car.notifications]}")
 
         # Dump all the information collected so far
 
