@@ -137,7 +137,7 @@ def test_format_httpx_response(  # noqa : PLR0913
     expected_output,
 ):
     # Arrange
-    request = Request(method=method, url=url, headers=request_headers, data=request_body)
+    request = Request(method=method, url=url, headers=request_headers, content=request_body.encode("utf-8"))
     response = Response(
         status_code=status_code,
         request=request,
