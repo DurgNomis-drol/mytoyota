@@ -48,13 +48,13 @@ async def get_information():
         pp.pprint(f"Dashboard: {car.dashboard}")
         # Location Information
         pp.pprint(f"Location: {car.location}")
+        # Lock Status
+        pp.pprint(f"Lock Status: {car.lock_status}")
         # Notifications
         pp.pprint(f"Notifications: {[[x] for x in car.notifications]}")
 
-        # Dump all the information collected so far
-
-
-#        pp.pprint(car._dump_all())  # pylint: disable=W0212
+        # Dump all the information collected so far:
+        # pp.pprint(car._dump_all())  # pylint: disable=W0212
 
 
 loop = asyncio.get_event_loop()

@@ -12,6 +12,7 @@ from mytoyota.models.dashboard import Dashboard
 from mytoyota.models.endpoints.vehicle_guid import VehicleGuidModel
 from mytoyota.models.hvac import Hvac
 from mytoyota.models.location import Location
+from mytoyota.models.lock_status import LockStatus
 from mytoyota.models.nofication import Notification
 from mytoyota.utils.logs import censor_all
 
@@ -199,18 +200,14 @@ class Vehicle:
         return None
 
     @property
-    def locks_status(self) -> Optional[Any]:
-        """Returns the latest status of Doors & Windows.
+    def lock_status(self) -> Optional[LockStatus]:
+        """Returns the latest lock status of Doors & Windows.
 
-        Args:
-        ----
-            include_read (bool, optional): Indicates whether to include read notifications. Defaults to False.
-
-        Returns:
+        Returns
         -------
-            Optional[List[Notification]]: A list of notifications for the vehicle, or None if not supported.
+            Optional[LockStatus]: The latest lock status of Doors & Windows, or None if not supported.
         """
-        return None
+        return LockStatus(self._endpoint_data["status"] if "status" in self._endpoint_data else None)
 
     async def get_summary(self, from_date: date, to_date: date, summary_type) -> Optional[List[Any]]:  # noqa: ARG002
         """Return a Daily, Monthly or Yearly summary between the provided dates.

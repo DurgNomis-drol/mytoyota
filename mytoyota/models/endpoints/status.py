@@ -12,15 +12,34 @@ class _ValueStatusModel(BaseModel):
     status: int
 
 
-class _SectionModel(BaseModel):
+class SectionModel(BaseModel):
+    """Model representing the status category of a vehicle.
+
+    Attributes
+    ----------
+        section (str): The section of a vehicle status category.
+        values (List[_ValueStatusModel]): A list of values corresponding status informations.
+
+    """
+
     section: str
     values: List[_ValueStatusModel]
 
 
-class _VehicleStatusModel(BaseModel):
+class VehicleStatusModel(BaseModel):
+    """Model representing the status category of a vehicle.
+
+    Attributes
+    ----------
+        category (str): The status category of the vehicle.
+        display_order (int): The order in which the status category is displayed inside the MyToyota App.
+        sections (List[SectionModel]): The different sections belonging to the category.
+
+    """
+
     category: str
     display_order: int = Field(alias="displayOrder")
-    sections: List[_SectionModel]
+    sections: List[SectionModel]
 
 
 class _TelemetryModel(BaseModel):
@@ -44,7 +63,7 @@ class RemoteStatusModel(BaseModel):
 
     """
 
-    vehicle_status: List[_VehicleStatusModel] = Field(alias="vehicleStatus")
+    vehicle_status: List[VehicleStatusModel] = Field(alias="vehicleStatus")
     telemetry: _TelemetryModel
     occurrence_date: datetime = Field(alias="occurrenceDate")
     caution_overall_count: int = Field(alias="cautionOverallCount")
