@@ -41,10 +41,11 @@ class Controller:
         if CACHE_FILENAME and exists(CACHE_FILENAME):
             with open(CACHE_FILENAME, "r") as f:
                 cache_data = json.load(f)
-                self._token = cache_data["access_token"]
-                self._refresh_token = cache_data["refresh_token"]
-                self._uuid = cache_data["uuid"]
-                self._token_expiration = datetime.fromisoformat(cache_data["expiration"])
+                if self._username is cache_data["username"]:
+                    self._token = cache_data["access_token"]
+                    self._refresh_token = cache_data["refresh_token"]
+                    self._uuid = cache_data["uuid"]
+                    self._token_expiration = datetime.fromisoformat(cache_data["expiration"])
 
     async def login(self) -> None:
         """Perform first login."""
@@ -170,6 +171,7 @@ class Controller:
                             "refresh_token": self._refresh_token,
                             "uuid": self._uuid,
                             "expiration": self._token_expiration,
+                            "username": self._username,
                         },
                         default=str,
                     )
