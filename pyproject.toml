@@ -34,6 +34,7 @@ arrow = "^1.1"
 importlib-metadata = {version = "^1.0", python = "<3.8"}
 pyjwt = "^2.8.0"
 pydantic = "^2.5.1"
+hishel = "^0.0.19"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^3.0.0"
