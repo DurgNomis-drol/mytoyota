@@ -1,7 +1,9 @@
 """Toyota Connected Services Controller."""
+import json
 import logging
 from datetime import datetime, timedelta
 from http import HTTPStatus
+from os.path import exists, expanduser
 from typing import Any, Dict, Optional
 from urllib import parse
 
@@ -14,6 +16,8 @@ from mytoyota.exceptions import ToyotaApiError, ToyotaInternalError, ToyotaLogin
 from mytoyota.utils.logs import format_httpx_response
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
+
+CACHE_FILENAME: Optional[str] = expanduser("~/.cache/toyota_credentials_cache_contains_secrets")
 
 
 class Controller:
@@ -33,19 +37,34 @@ class Controller:
         self._authenticate_url = httpx.URL(AUTHENTICATE_URL)
         self._authorize_url = httpx.URL(AUTHORIZE_URL)
 
+        # Do we have a cache file?
+        if CACHE_FILENAME and exists(CACHE_FILENAME):
+            with open(CACHE_FILENAME, "r") as f:
+                cache_data = json.load(f)
+                self._token = cache_data["access_token"]
+                self._refresh_token = cache_data["refresh_token"]
+                self._uuid = cache_data["uuid"]
+                self._token_expiration = datetime.fromisoformat(cache_data["expiration"])
+
     async def login(self) -> None:
         """Perform first login."""
-        await self._update_token()
+        if not self._is_token_valid():
+            await self._update_token()
 
     async def _update_token(self) -> None:
-        """Login to toyota servers and retriev token and uuid for the account."""
-        # Does this help with "Access Denied" issues?
-        standard_headers: dict = {
-            "accept-api-version": "resource=2.1, protocol=1.0",
-            "x-brand": "T",
-            "user-agent": "okhttp/4.10.0",
-        }
+        """Login to toyota servers and retrieve token and uuid for the account."""
+        if not self._is_token_valid():
+            if self._refresh_token:
+                try:
+                    await self._refresh_tokens()
+                    return
+                except ToyotaLoginError:
+                    pass
 
+            await self._authenticate()
+
+    async def _authenticate(self):
+        """Authenticate with username and password."""
         _LOGGER.debug("Authenticating")
         async with hishel.AsyncCacheClient() as client:
             data: Dict[str, Any] = {}
@@ -56,7 +75,7 @@ class Controller:
                             cb["input"][0]["value"] = self._username
                         elif cb["type"] == "PasswordCallback":
                             cb["input"][0]["value"] = self._password
-                resp = await client.post(self._authenticate_url, json=data, headers=standard_headers)
+                resp = await client.post(self._authenticate_url, json=data)  # , headers=standard_headers)
                 _LOGGER.debug(format_httpx_response(resp))
                 if resp.status_code != HTTPStatus.OK:
                     raise ToyotaLoginError(f"Authentication Failed. {resp.status_code}, {resp.text}.")
@@ -94,31 +113,67 @@ class Controller:
             if resp.status_code != HTTPStatus.OK:
                 raise ToyotaLoginError(f"Token retrieval failed. {resp.status_code}, {resp.text}.")
 
-            access_tokens: Dict[str, Any] = resp.json()
-            if (
-                "access_token" not in access_tokens
-                or "id_token" not in access_tokens
-                or "refresh_token" not in access_tokens
-                or "expires_in" not in access_tokens
-            ):
-                raise ToyotaLoginError(f"Token retrieval failed. Missing Tokens. {resp.status_code}, {resp.text}.")
-
-            self._token = access_tokens["access_token"]
-            self._refresh_token = access_tokens["refresh_token"]
-            self._uuid = jwt.decode(
-                access_tokens["id_token"],
-                algorithms=["RS256"],
-                options={"verify_signature": False},
-                audience="oneappsdkclient",
-            )["uuid"]
-            self._token_expiration = datetime.now() + timedelta(seconds=access_tokens["expires_in"])
+            self._update_tokens(resp.json())
 
     def _is_token_valid(self) -> bool:
         """Check if token is valid."""
-        if self._token or self._token_expiration is None:
+        if self._token is None or self._token_expiration is None:
             return False
 
         return self._token_expiration > datetime.now()
+
+    async def _refresh_tokens(self) -> None:
+        async with hishel.AsyncCacheClient() as client:
+            resp = await client.post(
+                self._access_token_url,
+                headers={"authorization": "basic b25lYXBwOm9uZWFwcA=="},
+                data={
+                    "client_id": "oneapp",
+                    "redirect_uri": "com.toyota.oneapp:/oauth2Callback",
+                    "grant_type": "refresh_token",
+                    "code_verifier": "plain",
+                    "refresh_token": self._refresh_token,
+                },
+            )
+            _LOGGER.debug(format_httpx_response(resp))
+            if resp.status_code != HTTPStatus.OK:
+                raise ToyotaLoginError(f"Token refresh failed. {resp.status_code}, {resp.text}.")
+
+            self._update_tokens(resp.json())
+
+    def _update_tokens(self, resp: json):
+        access_tokens: Dict[str, Any] = resp
+        if (
+            "access_token" not in access_tokens
+            or "id_token" not in access_tokens
+            or "refresh_token" not in access_tokens
+            or "expires_in" not in access_tokens
+        ):
+            raise ToyotaLoginError(f"Token retrieval failed. Missing Tokens. {resp.status_code}, {resp.text}.")
+
+        self._token = access_tokens["access_token"]
+        self._refresh_token = access_tokens["refresh_token"]
+        self._uuid = jwt.decode(
+            access_tokens["id_token"],
+            algorithms=["RS256"],
+            options={"verify_signature": False},
+            audience="oneappsdkclient",
+        )["uuid"]
+        self._token_expiration = datetime.now() + timedelta(seconds=access_tokens["expires_in"])
+
+        if CACHE_FILENAME:
+            with open(CACHE_FILENAME, "w") as f:
+                f.write(
+                    json.dumps(
+                        {
+                            "access_token": self._token,
+                            "refresh_token": self._refresh_token,
+                            "uuid": self._uuid,
+                            "expiration": self._token_expiration,
+                        },
+                        default=str,
+                    )
+                )
 
     async def request_raw(  # noqa: PLR0913
         self,  # pylint: disable=too-many-branches
