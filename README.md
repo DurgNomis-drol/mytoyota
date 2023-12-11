@@ -1,10 +1,13 @@
 [![GitHub Workflow Status][workflow-shield]][workflow]
-[![GitHub Release][releases-shield]][releases]
+![Codecov](https://img.shields.io/codecov/c/github/DurgNomis-drol/mytoyota)
 [![GitHub Activity][commits-shield]][commits]
+[![GitHub Release][releases-shield]][releases]
+![PyPI - Downloads](https://img.shields.io/pypi/dm/mytoyota)
 
 # Toyota Connected Services Europe Python module
 
- <p align=center> 🚨 **Breaking changes ahead** 🚨 </p>
+<b><p align=center> 🚨 Breaking changes ahead 🚨 </p></b>
+
  <p align=center> Version 1.0.0 only supports the new ctpa-oneapi API endpoints that were introduced with the new MyToyota app. Some functions are not yet implemented and must first be determined due to the lack of API documentation. </p>
  <p align=center> Users of the old MyT app should use a mytoyota python module version < 1.0.0. </p>
 
