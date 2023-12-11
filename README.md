@@ -113,9 +113,9 @@ As I [@DurgNomis-drol](https://github.com/DurgNomis-drol) am not a professional 
 
 A huge thanks go to [@calmjm](https://github.com/calmjm) for making [tojota](https://github.com/calmjm/tojota).
 
-[releases-shield]: https://img.shields.io/github/release/DurgNomis-drol/mytoyota.svg?style=for-the-badge
+[releases-shield]: https://img.shields.io/github/release/DurgNomis-drol/mytoyota.svg?style=flat
 [releases]: https://github.com/DurgNomis-drol/mytoyota/releases
-[workflow-shield]: https://img.shields.io/github/actions/workflow/status/DurgNomis-drol/mytoyota/build.yml?branch=master&style=for-the-badge
+[workflow-shield]: https://img.shields.io/github/actions/workflow/status/DurgNomis-drol/mytoyota/build.yml?branch=master&style=flat
 [workflow]: https://github.com/DurgNomis-drol/mytoyota/actions
-[commits-shield]: https://img.shields.io/github/commit-activity/y/DurgNomis-drol/mytoyota.svg?style=for-the-badge
+[commits-shield]: https://img.shields.io/github/commit-activity/y/DurgNomis-drol/mytoyota.svg?style=flat
 [commits]: https://github.com/DurgNomis-drol/mytoyota/commits/master
