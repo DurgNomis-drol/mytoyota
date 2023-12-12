@@ -90,7 +90,7 @@ class _HistogramModel(BaseModel):
     month: int
     day: int
     summary: _SummaryBaseModel
-    scores: _ScoresModel
+    scores: Optional[_ScoresModel] = None
     hdc: Optional[_HDCModel] = None
 
 
