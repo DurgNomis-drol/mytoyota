@@ -152,14 +152,14 @@ class Api:
         from_date: date,
         to_date: date,
         route: bool = False,
-        summary: bool = False,
+        summary: bool = True,
         limit: int = 5,
         offset: int = 0,
     ) -> TripsResponseModel:
         """Get list of trips.
 
-        Retrieves a list of all trips between the given dates. The default data(route, summary = False) provides a
-        basic summary of each trip and includes Coaching message and electrical use.
+        Retrieves a list of all trips between the given dates. The default data(route = False, summary = False) provides
+        a basic summary of each trip and includes Coaching message and electrical use.
 
         Parameters
         ----------

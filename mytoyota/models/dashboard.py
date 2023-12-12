@@ -18,7 +18,7 @@ class Dashboard:
         telemetry: Optional[TelemetryResponseModel] = None,
         electric: Optional[ElectricResponseModel] = None,
         health: Optional[VehicleHealthResponseModel] = None,
-        metric: bool = True,  # TODO: Or on each call, so user can decide at call time
+        metric: bool = True,
     ):
         """Initialise Dashboard.
 

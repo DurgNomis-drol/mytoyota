@@ -2,8 +2,10 @@
 import asyncio
 import json
 import pprint
+from datetime import date
 
 from mytoyota.client import MyT
+from mytoyota.models.summary import SummaryType
 
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -52,6 +54,10 @@ async def get_information():
         pp.pprint(f"Lock Status: {car.lock_status}")
         # Notifications
         pp.pprint(f"Notifications: {[[x] for x in car.notifications]}")
+        # Summary
+        pp.pprint(
+            f"Summary: {[[x] for x in await car.get_summary(date(day=1, month=1, year=2023),date(day=1, month=10, year=2023),summary_type=SummaryType.MONTHLY)]}"  # noqa: E501
+        )
 
         # Dump all the information collected so far:
         # pp.pprint(car._dump_all())  # pylint: disable=W0212

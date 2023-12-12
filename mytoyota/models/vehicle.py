@@ -1,5 +1,6 @@
 """Vehicle model."""
 import asyncio
+import calendar
 import copy
 import json
 import logging
@@ -10,10 +11,10 @@ from typing import Any, Dict, List, Optional, Tuple
 from mytoyota.api import Api
 from mytoyota.models.dashboard import Dashboard
 from mytoyota.models.endpoints.vehicle_guid import VehicleGuidModel
-from mytoyota.models.hvac import Hvac
 from mytoyota.models.location import Location
 from mytoyota.models.lock_status import LockStatus
 from mytoyota.models.nofication import Notification
+from mytoyota.models.summary import Summary, SummaryType
 from mytoyota.utils.logs import censor_all
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -194,12 +195,6 @@ class Vehicle:
         return None
 
     @property
-    def hvac(self) -> Optional[Hvac]:
-        """Vehicle hvac."""
-        # This info is available need to find the endpoint.
-        return None
-
-    @property
     def lock_status(self) -> Optional[LockStatus]:
         """Returns the latest lock status of Doors & Windows.
 
@@ -209,7 +204,9 @@ class Vehicle:
         """
         return LockStatus(self._endpoint_data["status"] if "status" in self._endpoint_data else None)
 
-    async def get_summary(self, from_date: date, to_date: date, summary_type) -> Optional[List[Any]]:  # noqa: ARG002
+    async def get_summary(
+        self, from_date: date, to_date: date, summary_type: SummaryType = SummaryType.MONTHLY
+    ) -> Optional[List[Summary]]:
         """Return a Daily, Monthly or Yearly summary between the provided dates.
 
         Args:
@@ -220,9 +217,45 @@ class Vehicle:
 
         Returns:
         -------
-            Optional[List[Something]]: A list of summaries or None if not supported.
+            Optional[List[Summary]]: A list of summaries or None if not supported.
         """
-        return None
+        if to_date > date.today():  # Future dates not allowed
+            to_date = date.today()
+
+        # Summary information is always returned in the first response. No need to check all the following pages
+        resp = await self._api.get_trips_endpoint(self.vin, from_date, to_date, summary=True, limit=1, offset=0)
+        if resp.payload is None:
+            return None
+
+        # Convert to response
+        ret: List[Summary] = []
+        if summary_type == SummaryType.DAILY:
+            for summary in resp.payload.summary:
+                for histogram in summary.histograms:
+                    summary_date = date(day=histogram.day, month=histogram.month, year=histogram.year)
+                    ret.append(Summary(histogram.summary, self._metric, summary_date, summary_date, summary.hdc))
+        elif summary_type == SummaryType.WEEKLY:
+            raise NotImplementedError
+        elif summary_type == SummaryType.MONTHLY:
+            for summary in resp.payload.summary:
+                summary_from_date = date(day=1, month=summary.month, year=summary.year)
+                summary_to_date = date(
+                    day=calendar.monthrange(summary.year, summary.month)[1], month=summary.month, year=summary.year
+                )
+
+                ret.append(
+                    Summary(
+                        summary.summary,
+                        self._metric,
+                        summary_from_date if summary_from_date > from_date else from_date,
+                        summary_to_date if summary_to_date < to_date else to_date,
+                        summary.hdc,
+                    )
+                )
+        elif summary_type == SummaryType.YEARLY:
+            raise NotImplementedError
+
+        return ret
 
     async def get_trips(self, from_date: date, to_date: date, full_route: bool = False) -> Optional[List[Any]]:  # noqa: ARG002
         """Return information on all trips made between the provided dates.
@@ -237,6 +270,37 @@ class Vehicle:
         -------
             Optional[List[Something]]: A list of all trips or None if not supported.
         """
+        # ret: List[Union[DaySummary, MonthSummary]] = []
+        # offset = 0
+        # while True:
+        #     resp = await self._api.get_trips_endpoint(self.vin, from_date, to_date, summary=True,
+        #                                               limit=5, offset=offset)
+        #     if resp.payload is None:
+        #         break
+        #
+        #     print(resp.payload.metadata.pagination)
+        #     print(resp.payload.summary[0].histograms)
+        #
+        #     # Convert to response
+        #     if summary_type == SummaryType.DAILY:
+        #         for summary in resp.payload.summary:
+        #             for histogram in summary.histograms:
+        #                 ret.append(DaySummary(histogram, self._metric))
+        #                 pass
+        #     elif summary_type == SummaryType.WEEKLY:
+        #         raise NotImplementedError
+        #     elif summary_type == SummaryType.MONTHLY:
+        #         print(resp.payload.summary)
+        #         for summary in resp.payload.summary:
+        #             print(f"  {len(summary.histograms)}")
+        #             ret.append(MonthSummary(summary, from_date, to_date, self._metric))
+        #     elif summary_type == SummaryType.YEARLY:
+        #         raise NotImplementedError
+        #
+        #     offset = resp.payload.metadata.pagination.next_offset
+        #     if offset is None:
+        #         break
+
         return None
 
     #

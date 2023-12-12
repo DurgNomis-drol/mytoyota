@@ -20,6 +20,10 @@ _LOGGER: logging.Logger = logging.getLogger(__package__)
 CACHE_FILENAME: Optional[str] = expanduser("~/.cache/toyota_credentials_cache_contains_secrets")
 
 
+# TODO There is an issue if you login with the application on a phone as all the tokens change.
+#      This seems to work sometimes but no others. Needs investigation.
+
+
 class Controller:
     """Controller class."""
 
@@ -41,7 +45,7 @@ class Controller:
         if CACHE_FILENAME and exists(CACHE_FILENAME):
             with open(CACHE_FILENAME, "r") as f:
                 cache_data = json.load(f)
-                if self._username is cache_data["username"]:
+                if self._username == cache_data["username"]:
                     self._token = cache_data["access_token"]
                     self._refresh_token = cache_data["refresh_token"]
                     self._uuid = cache_data["uuid"]

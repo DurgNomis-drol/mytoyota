@@ -19,7 +19,9 @@ class _SummaryBaseModel(BaseModel):
     duration_overspeed: int = Field(alias="durationOverspeed")
     length_highway: int = Field(alias="lengthHighway")
     duration_highway: int = Field(alias="durationHighway")
-    fuel_consumption: Optional[float] = Field(alias="fuelConsumption", default=None)  # Electric cars might not use fuel
+    fuel_consumption: Optional[float] = Field(
+        alias="fuelConsumption", default=None
+    )  # Electric cars might not use fuel. Milliliters.
 
 
 class _SummaryModel(_SummaryBaseModel):
@@ -46,8 +48,8 @@ class _BehaviourModel(BaseModel):
 
 class _ScoresModel(BaseModel):
     global_: int = Field(..., alias="global")
-    acceleration: int
-    braking: int
+    acceleration: Optional[int] = None
+    braking: Optional[int] = None
     advice: Optional[int] = None
     constant_speed: Optional[int] = Field(alias="constantSpeed", default=None)
 
