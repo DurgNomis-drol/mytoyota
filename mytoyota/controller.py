@@ -214,7 +214,7 @@ class Controller:
         if vin is not None:
             headers.update({"vin": vin})
 
-        async with hishel.AsyncCacheClient(timeout=self._timeout) as client:
+        async with httpx.AsyncClient(timeout=self._timeout) as client:
             response = await client.request(
                 method,
                 f"{self._api_base_url}{endpoint}",

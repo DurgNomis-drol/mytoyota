@@ -1,12 +1,19 @@
 [![GitHub Workflow Status][workflow-shield]][workflow]
-[![GitHub Release][releases-shield]][releases]
+![Codecov](https://img.shields.io/codecov/c/github/DurgNomis-drol/mytoyota)
 [![GitHub Activity][commits-shield]][commits]
+[![GitHub Release][releases-shield]][releases]
+![PyPI - Downloads](https://img.shields.io/pypi/dm/mytoyota)
 
 # Toyota Connected Services Europe Python module
 
-### [!] **This is still in beta**
+<b><p align=center> 🚨 Breaking changes ahead 🚨 </p></b>
 
-### [!] **Only EU is supported, other regions are not possible so far. See [this](https://github.com/widewing/toyota-na) for North America**
+ <p align=center> Version 1.0.0 only supports the new ctpa-oneapi API endpoints that were introduced with the new MyToyota app. Some functions are not yet implemented and must first be determined due to the lack of API documentation. </p>
+ <p align=center> Users of the old MyT app should use a mytoyota python module version < 1.0.0. </p>
+
+⚠️ _This is still in beta_
+
+⚠️ _Only EU is supported, other regions are not possible so far. See [this](https://github.com/widewing/toyota-na) for North America_
 
 ## Description
 
@@ -24,73 +31,72 @@ pip install mytoyota
 ## Usage
 
 ```python
-import json
 import asyncio
+import json
+import pprint
+
 from mytoyota.client import MyT
 
-username = "jane@doe.com"
-password = "MyPassword"
-brand = "toyota"  # or lexus
+pp = pprint.PrettyPrinter(indent=4)
 
-# Get supported regions, can be passed to the optional 'region' argument of MyT
-# At this moment, only the 'europe' region is supported
-print(MyT.get_supported_regions())
+# Set your username and password in a file on top level called "credentials.json" in the format:
+#   {
+#       "username": "<username>",
+#       "password": "<password>"
+#   }
 
-client = MyT(username=username, password=password, brand=brand)
+
+def load_credentials():
+    """Load credentials from 'credentials.json'."""
+    try:
+        with open("credentials.json", encoding="utf-8") as f:
+            return json.load(f)
+    except (FileNotFoundError, json.decoder.JSONDecodeError):
+        return None
+
+
+credentials = load_credentials()
+if not credentials:
+    raise ValueError("Did you forget to set your username and password? Or supply the credentials file")
+
+USERNAME = credentials["username"]
+PASSWORD = credentials["password"]
+
+client = MyT(username=USERNAME, password=PASSWORD)
+
 
 async def get_information():
+    """Test login and output from endpoints."""
     print("Logging in...")
     await client.login()
 
     print("Retrieving cars...")
-    # Returns cars registered to your account + information about each car.
-    cars = await client.get_vehicles()
+    cars = await client.get_vehicles(metric=False)
 
     for car in cars:
+        await car.update()
 
-        # Returns live data from car/last time you used it as an object.
-        vehicle = await client.get_vehicle_status(car)
+        # Dashboard Information
+        pp.pprint(f"Dashboard: {car.dashboard}")
+        # Location Information
+        pp.pprint(f"Location: {car.location}")
+        # Lock Status
+        pp.pprint(f"Lock Status: {car.lock_status}")
+        # Notifications
+        pp.pprint(f"Notifications: {[[x] for x in car.notifications]}")
 
-        # You can either get them all async (Recommended) or sync (Look further down).
-        data = await asyncio.gather(
-            *[
-                client.get_driving_statistics(vehicle.vin, interval="day"),
-                client.get_driving_statistics(vehicle.vin, interval="isoweek"),
-                client.get_driving_statistics(vehicle.vin),
-                client.get_driving_statistics(vehicle.vin, interval="year"),
-            ]
-        )
-
-        # You can access odometer data like this:
-        mileage = vehicle.dashboard.odometer
-        # Or retrieve the energy level (electric or gasoline)
-        fuel = vehicle.dashboard.fuel_level
-        battery = vehicle.dashboard.battery_level
-        # Or Parking information:
-        latitude = vehicle.parkinglocation.latitude
-
-        # Daily stats
-        daily_stats = await client.get_driving_statistics(vehicle.vin, interval="day")
-
-        # ISO 8601 week stats
-        iso_weekly_stats = await client.get_driving_statistics(vehicle.vin, interval="isoweek")
-
-        # Monthly stats is returned by default
-        monthly_stats = await client.get_driving_statistics(vehicle.vin)
-
-        # Get year to date stats.
-        yearly_stats = await client.get_driving_statistics(vehicle.vin, interval="year")
+        # Dump all the information collected so far:
+        # pp.pprint(car._dump_all())  # pylint: disable=W0212
 
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(get_information())
 loop.close()
-
 ```
 
 ## Known issues
 
-- Statistical endpoint will return `None` if no trip have been performed in the requested timeframe. This problem will often happen at the start of each week, month or year. Also daily stats will of course also be unavailable if no trip have been performed.
+- tbd
 
 ## Docs
 
@@ -98,7 +104,7 @@ Coming soon...
 
 ## Contributing
 
-This python module uses poetry (>= 1.2.2) and pre-commit.
+This python module uses poetry (>= 1.5.1) and pre-commit.
 
 To start contributing, fork this repository and run `poetry install`. Then create a new branch. Before making a PR, please run pre-commit `poetry run pre-commit run --all-files` and make sure that all tests passes locally first.
 
@@ -110,9 +116,9 @@ As I [@DurgNomis-drol](https://github.com/DurgNomis-drol) am not a professional 
 
 A huge thanks go to [@calmjm](https://github.com/calmjm) for making [tojota](https://github.com/calmjm/tojota).
 
-[releases-shield]: https://img.shields.io/github/release/DurgNomis-drol/mytoyota.svg?style=for-the-badge
+[releases-shield]: https://img.shields.io/github/release/DurgNomis-drol/mytoyota.svg?style=flat
 [releases]: https://github.com/DurgNomis-drol/mytoyota/releases
-[workflow-shield]: https://img.shields.io/github/actions/workflow/status/DurgNomis-drol/mytoyota/build.yml?branch=master&style=for-the-badge
+[workflow-shield]: https://img.shields.io/github/actions/workflow/status/DurgNomis-drol/mytoyota/build.yml?branch=master&style=flat
 [workflow]: https://github.com/DurgNomis-drol/mytoyota/actions
-[commits-shield]: https://img.shields.io/github/commit-activity/y/DurgNomis-drol/mytoyota.svg?style=for-the-badge
+[commits-shield]: https://img.shields.io/github/commit-activity/y/DurgNomis-drol/mytoyota.svg?style=flat
 [commits]: https://github.com/DurgNomis-drol/mytoyota/commits/master
