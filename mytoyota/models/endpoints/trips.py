@@ -71,7 +71,7 @@ class _RouteModel(BaseModel):
     overspeed: bool
     highway: bool
     index_in_points: int = Field(alias="indexInPoints")
-    mode: int
+    mode: Optional[int] = None
     is_ev: bool = Field(alias="isEv")
 
 

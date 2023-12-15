@@ -15,6 +15,7 @@ from mytoyota.models.location import Location
 from mytoyota.models.lock_status import LockStatus
 from mytoyota.models.nofication import Notification
 from mytoyota.models.summary import Summary, SummaryType
+from mytoyota.models.trips import Trip
 from mytoyota.utils.logs import censor_all
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -257,7 +258,7 @@ class Vehicle:
 
         return ret
 
-    async def get_trips(self, from_date: date, to_date: date, full_route: bool = False) -> Optional[List[Any]]:  # noqa: ARG002
+    async def get_trips(self, from_date: date, to_date: date, full_route: bool = False) -> Optional[List[Trip]]:
         """Return information on all trips made between the provided dates.
 
         Args:
@@ -270,38 +271,24 @@ class Vehicle:
         -------
             Optional[List[Something]]: A list of all trips or None if not supported.
         """
-        # ret: List[Union[DaySummary, MonthSummary]] = []
-        # offset = 0
-        # while True:
-        #     resp = await self._api.get_trips_endpoint(self.vin, from_date, to_date, summary=True,
-        #                                               limit=5, offset=offset)
-        #     if resp.payload is None:
-        #         break
-        #
-        #     print(resp.payload.metadata.pagination)
-        #     print(resp.payload.summary[0].histograms)
-        #
-        #     # Convert to response
-        #     if summary_type == SummaryType.DAILY:
-        #         for summary in resp.payload.summary:
-        #             for histogram in summary.histograms:
-        #                 ret.append(DaySummary(histogram, self._metric))
-        #                 pass
-        #     elif summary_type == SummaryType.WEEKLY:
-        #         raise NotImplementedError
-        #     elif summary_type == SummaryType.MONTHLY:
-        #         print(resp.payload.summary)
-        #         for summary in resp.payload.summary:
-        #             print(f"  {len(summary.histograms)}")
-        #             ret.append(MonthSummary(summary, from_date, to_date, self._metric))
-        #     elif summary_type == SummaryType.YEARLY:
-        #         raise NotImplementedError
-        #
-        #     offset = resp.payload.metadata.pagination.next_offset
-        #     if offset is None:
-        #         break
+        ret: List[Trip] = []
+        offset = 0
+        while True:
+            resp = await self._api.get_trips_endpoint(
+                self.vin, from_date, to_date, summary=False, limit=5, offset=offset, route=full_route
+            )
+            if resp.payload is None:
+                break
 
-        return None
+            # Convert to response
+            for t in resp.payload.trips:
+                ret.append(Trip(t, self._metric))
+
+            offset = resp.payload.metadata.pagination.next_offset
+            if offset is None:
+                break
+
+        return ret
 
     #
     # More get functionality depending on what we find
