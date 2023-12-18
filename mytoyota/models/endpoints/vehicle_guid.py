@@ -314,7 +314,7 @@ class VehicleGuidModel(BaseModel):
         old_imei (Optional[Any]): The old IMEI of the vehicle.
         owner (bool): Indicates if the user is the owner of the vehicle.
         personalized_settings (_LinksModel): The personalized settings of the vehicle.
-        preferred (bool): Indicates if the vehicle is the preferred vehicle. Defaults to false.
+        preferred (Optional[bool]): Indicates if the vehicle is the preferred vehicle.
         primary_subscriber (bool): Indicates if the user is the primary subscriber of the vehicle.
         region (str): The region of the vehicle.
         registration_number (Optional[str]): The registration number of the vehicle.
@@ -386,7 +386,7 @@ class VehicleGuidModel(BaseModel):
     old_imei: Optional[Any] = Field(alias="oldImei")  # TODO unsure what this returns
     owner: bool
     personalized_settings: _LinksModel = Field(alias="personalizedSettings")  # TODO unsure what this returns
-    preferred: bool = False
+    preferred: Optional[bool]
     primary_subscriber: bool = Field(alias="primarySubscriber")
     region: str
     registration_number: Optional[str] = Field(alias="registrationNumber")
