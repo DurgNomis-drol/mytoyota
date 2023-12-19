@@ -13,18 +13,18 @@ class ElectricStatusModel(BaseModel):
     Attributes
     ----------
         battery_level (int): The battery level of the electric vehicle.
-        can_set_next_charging_event (bool): Indicates whether the next charging event can be set.
+        can_set_next_charging_event Optional[bool]: Indicates whether the next charging event can be set.
         charging_status (str): The charging status of the electric vehicle.
         ev_range (UnitValueModel): The electric vehicle range.
         ev_range_with_ac (UnitValueModel): The electric vehicle range with AC.
         fuel_level (int): The fuel level of the electric vehicle.
         fuel_range (UnitValueModel): The fuel range of the electric vehicle.
         last_update_timestamp (datetime): The timestamp of the last update.
-        remaining_charge_time (int): The time till full in minutes.
+        remaining_charge_time Optional[int]: The time till full in minutes.
     """
 
     battery_level: int = Field(alias="batteryLevel")
-    can_set_next_charging_event: bool = Field(alias="canSetNextChargingEvent")
+    can_set_next_charging_event: Optional[bool] = Field(alias="canSetNextChargingEvent", default=None)
     charging_status: str = Field(alias="chargingStatus")
     ev_range: UnitValueModel = Field(alias="evRange")
     ev_range_with_ac: UnitValueModel = Field(alias="evRangeWithAc")

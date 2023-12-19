@@ -386,7 +386,7 @@ class VehicleGuidModel(BaseModel):
     old_imei: Optional[Any] = Field(alias="oldImei")  # TODO unsure what this returns
     owner: bool
     personalized_settings: _LinksModel = Field(alias="personalizedSettings")  # TODO unsure what this returns
-    preferred: Optional[bool]
+    preferred: Optional[bool] = None
     primary_subscriber: bool = Field(alias="primarySubscriber")
     region: str
     registration_number: Optional[str] = Field(alias="registrationNumber")
