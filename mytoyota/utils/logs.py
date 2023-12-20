@@ -54,14 +54,16 @@ def format_httpx_response(response: Response) -> str:
     )
 
 
-def censor_all(dictionary: Dict[str, Any], to_censor: Optional[set] = None) -> Dict[str, Any]:
+def censor_all(
+    dictionary: Dict[str, Any], to_censor: Optional[set] = None
+) -> Dict[str, Any]:
     """Censor sensitive values in a dictionary.
 
     Args:
     ----
         dictionary (Dict[str, Any]): The dictionary to be censored.
-        to_censor (Optional[set], optional): A set of keys to identify values that need to be censored.
-            Defaults to None.
+        to_censor (Optional[set], optional): A set of keys to identify values \n
+            that need to be censored. Defaults to None.
 
     Returns:
     -------

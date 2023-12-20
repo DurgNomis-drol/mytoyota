@@ -1,6 +1,6 @@
 """pytest tests for mytoyota.api."""
-import json
 from datetime import date, timedelta
+import json
 from unittest.mock import AsyncMock
 
 import pytest
@@ -40,9 +40,27 @@ YESTERDAY = TODAY - timedelta(days=1)
     "method, endpoint, model, response_data_json_path, test_id",
     [
         # Happy path tests
-        ("GET", VEHICLE_GUID_ENDPOINT, VehiclesResponseModel, "v2_vehicleguid", "vehicles-happy"),
-        ("GET", VEHICLE_LOCATION_ENDPOINT, LocationResponseModel, "v1_location_ok", "location-happy"),
-        ("GET", VEHICLE_HEALTH_STATUS_ENDPOINT, VehicleHealthResponseModel, "v1_vehicle_health_ok", "health-happy"),
+        (
+            "GET",
+            VEHICLE_GUID_ENDPOINT,
+            VehiclesResponseModel,
+            "v2_vehicleguid",
+            "vehicles-happy",
+        ),
+        (
+            "GET",
+            VEHICLE_LOCATION_ENDPOINT,
+            LocationResponseModel,
+            "v1_location_ok",
+            "location-happy",
+        ),
+        (
+            "GET",
+            VEHICLE_HEALTH_STATUS_ENDPOINT,
+            VehicleHealthResponseModel,
+            "v1_vehicle_health_ok",
+            "health-happy",
+        ),
         (
             "GET",
             VEHICLE_GLOBAL_REMOTE_STATUS_ENDPOINT,
@@ -57,7 +75,13 @@ YESTERDAY = TODAY - timedelta(days=1)
             "v1_global_remote_electric_status",
             "electric-status-happy",
         ),
-        ("GET", VEHICLE_TELEMETRY_ENDPOINT, TelemetryResponseModel, "v3_telemetry", "telemetry-happy"),
+        (
+            "GET",
+            VEHICLE_TELEMETRY_ENDPOINT,
+            TelemetryResponseModel,
+            "v3_telemetry",
+            "telemetry-happy",
+        ),
         (
             "GET",
             VEHICLE_NOTIFICATION_HISTORY_ENDPOINT,
@@ -82,11 +106,25 @@ YESTERDAY = TODAY - timedelta(days=1)
         # Edge cases
         # Add edge cases here
         # Error cases
-        ("GET", VEHICLE_LOCATION_ENDPOINT, LocationResponseModel, "v1_location_error", "location-error"),
-        ("GET", VEHICLE_HEALTH_STATUS_ENDPOINT, VehicleHealthResponseModel, "v1_vehicle_health_error", "health-error"),
+        (
+            "GET",
+            VEHICLE_LOCATION_ENDPOINT,
+            LocationResponseModel,
+            "v1_location_error",
+            "location-error",
+        ),
+        (
+            "GET",
+            VEHICLE_HEALTH_STATUS_ENDPOINT,
+            VehicleHealthResponseModel,
+            "v1_vehicle_health_error",
+            "health-error",
+        ),
     ],
 )
-async def test_api_request_and_parse_endpoints(method, endpoint, model, response_data_json_path, test_id):
+async def test_api_request_and_parse_endpoints(
+    method, endpoint, model, response_data_json_path, test_id
+):
     """Test the API for various endpoints.
 
     Args:
@@ -104,7 +142,9 @@ async def test_api_request_and_parse_endpoints(method, endpoint, model, response
     """
     # Arrange
 
-    with open(f"tests/data/endpoints/{response_data_json_path}.json", "r", encoding="utf-8") as f:  # noqa: ASYNC101
+    with open(
+        f"tests/data/endpoints/{response_data_json_path}.json", "r", encoding="utf-8"
+    ) as f:  # noqa: ASYNC101
         response_data = json.load(f)
 
     controller = AsyncMock()
@@ -112,8 +152,12 @@ async def test_api_request_and_parse_endpoints(method, endpoint, model, response
     api = Api(controller)
 
     # Act
-    response = await api._request_and_parse(model, method, endpoint, vin=VIN)  # pylint: disable=W0212
+    response = await api._request_and_parse(  # pylint: disable=W0212
+        model, method, endpoint, vin=VIN
+    )  # pylint: disable=W0212
 
     # Assert
-    controller.request_json.assert_called_once_with(method=method, endpoint=endpoint, vin=VIN)
+    controller.request_json.assert_called_once_with(
+        method=method, endpoint=endpoint, vin=VIN
+    )
     assert response == model(**response_data), f"Test ID: {test_id}"

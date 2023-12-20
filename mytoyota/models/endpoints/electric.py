@@ -13,7 +13,8 @@ class ElectricStatusModel(BaseModel):
     Attributes
     ----------
         battery_level (int): The battery level of the electric vehicle.
-        can_set_next_charging_event Optional[bool]: Indicates whether the next charging event can be set.
+        can_set_next_charging_event Optional[bool]: Indicates whether the next \n
+            charging event can be set.
         charging_status (str): The charging status of the electric vehicle.
         ev_range (UnitValueModel): The electric vehicle range.
         ev_range_with_ac (UnitValueModel): The electric vehicle range with AC.
@@ -24,7 +25,9 @@ class ElectricStatusModel(BaseModel):
     """
 
     battery_level: int = Field(alias="batteryLevel")
-    can_set_next_charging_event: Optional[bool] = Field(alias="canSetNextChargingEvent", default=None)
+    can_set_next_charging_event: Optional[bool] = Field(
+        alias="canSetNextChargingEvent", default=None
+    )
     charging_status: str = Field(alias="chargingStatus")
     ev_range: UnitValueModel = Field(alias="evRange")
     ev_range_with_ac: UnitValueModel = Field(alias="evRangeWithAc")
@@ -34,7 +37,7 @@ class ElectricStatusModel(BaseModel):
     remaining_charge_time: Optional[int] = Field(
         alias="remainingChargeTime",
         default=None,
-    )  # TODO: Use field serializer to create timedelta
+    )  # TODO: Use field serializer to create timedelta # pylint: disable=W0511
 
 
 class ElectricResponseModel(StatusModel):
@@ -44,7 +47,8 @@ class ElectricResponseModel(StatusModel):
 
     Attributes
     ----------
-        payload (Optional[ElectricStatusModel], optional): The electric vehicle status payload. Defaults to None.
+        payload (Optional[ElectricStatusModel], optional): The electric vehicle status payload. \n
+            Defaults to None.
 
     """
 

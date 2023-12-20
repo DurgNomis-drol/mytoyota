@@ -56,7 +56,8 @@ class NotificationResponseModel(BaseModel):
         status_code (int): The status code of the response.
         headers (_HeadersModel): The headers of the response.
         body (str): The body of the response.
-        payload (Optional[List[_PayloadItemModel]], optional): The payload of the response. Defaults to None.
+        payload (Optional[List[_PayloadItemModel]], optional): The payload of the response. \n
+            Defaults to None.
 
     """
 

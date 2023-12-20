@@ -16,13 +16,17 @@ from mytoyota.models.lock_status import Door, Doors, LockStatus, Window, Windows
 
 # Mock data for testing
 mock_section_closed = SectionModel(
-    section="carstatus_item_driver_door", values=[_ValueStatusModel(value="carstatus_closed", status=0)]
+    section="carstatus_item_driver_door",
+    values=[_ValueStatusModel(value="carstatus_closed", status=0)],
 )
 mock_section_locked = SectionModel(
-    section="carstatus_item_driver_door", values=[_ValueStatusModel(value="carstatus_locked", status=0)]
+    section="carstatus_item_driver_door",
+    values=[_ValueStatusModel(value="carstatus_locked", status=0)],
 )
 mock_vehicle_status = VehicleStatusModel(
-    category="carstatus_category_driver", sections=[mock_section_closed, mock_section_locked], displayOrder=1
+    category="carstatus_category_driver",
+    sections=[mock_section_closed, mock_section_locked],
+    displayOrder=1,
 )
 mock_remote_status = RemoteStatusModel(
     vehicleStatus=[mock_vehicle_status],
@@ -52,7 +56,7 @@ mock_remote_status_response = RemoteStatusResponseModel(
     ],
     ids=["no-section", "door-closed", "unrelated-status"],
 )
-def test_door_closed(section, expected):  # noqa: D103
+def test_door_closed(section, expected):  # noqa: D103 # pylint: disable=C0116
     # Arrange
     door = Door(status=section)
 
@@ -73,7 +77,7 @@ def test_door_closed(section, expected):  # noqa: D103
     ],
     ids=["no-section", "door-locked", "unrelated-status"],
 )
-def test_door_locked(section, expected):  # noqa: D103
+def test_door_locked(section, expected):  # noqa: D103 # pylint: disable=C0116
     # Arrange
     door = Door(status=section)
 
@@ -88,20 +92,35 @@ def test_door_locked(section, expected):  # noqa: D103
 @pytest.mark.parametrize(
     "category, section_name, property_name, expected_class",
     [
-        ("carstatus_category_driver", "carstatus_item_driver_door", "driver_seat", Door),
-        ("carstatus_category_passenger", "carstatus_item_passenger_door", "passenger_seat", Door),
+        (
+            "carstatus_category_driver",
+            "carstatus_item_driver_door",
+            "driver_seat",
+            Door,
+        ),
+        (
+            "carstatus_category_passenger",
+            "carstatus_item_passenger_door",
+            "passenger_seat",
+            Door,
+        ),
         ("carstatus_category_other", "carstatus_item_rear_hatch", "trunk", Door),
     ],
     ids=["driver-seat", "passenger-seat", "trunk"],
 )
-def test_doors_properties(category, section_name, property_name, expected_class):  # noqa: D103
+def test_doors_properties(  # pylint: disable=C0116
+    category, section_name, property_name, expected_class
+):  # noqa: D103
     # Arrange
     status = RemoteStatusModel(
         vehicleStatus=[
             VehicleStatusModel(
                 category=category,
                 sections=[
-                    SectionModel(section=section_name, values=[_ValueStatusModel(value="carstatus_locked", status=0)])
+                    SectionModel(
+                        section=section_name,
+                        values=[_ValueStatusModel(value="carstatus_locked", status=0)],
+                    )
                 ],
                 displayOrder=1,
             )
@@ -135,7 +154,7 @@ def test_doors_properties(category, section_name, property_name, expected_class)
     ],
     ids=["no-section", "window-closed"],
 )
-def test_window_closed(section, expected):  # noqa: D103
+def test_window_closed(section, expected):  # noqa: D103 # pylint: disable=C0116
     # Arrange
     window = Window(status=section)
 
@@ -150,19 +169,34 @@ def test_window_closed(section, expected):  # noqa: D103
 @pytest.mark.parametrize(
     "category, section_name, property_name, expected_class",
     [
-        ("carstatus_category_driver", "carstatus_item_driver_window", "driver_seat", Window),
-        ("carstatus_category_passenger", "carstatus_item_passenger_window", "passenger_seat", Window),
+        (
+            "carstatus_category_driver",
+            "carstatus_item_driver_window",
+            "driver_seat",
+            Window,
+        ),
+        (
+            "carstatus_category_passenger",
+            "carstatus_item_passenger_window",
+            "passenger_seat",
+            Window,
+        ),
     ],
     ids=["driver-seat-window", "passenger-seat-window"],
 )
-def test_windows_properties(category, section_name, property_name, expected_class):  # noqa: D103
+def test_windows_properties(  # pylint: disable=C0116
+    category, section_name, property_name, expected_class
+):  # noqa: D103
     # Arrange
     status = RemoteStatusModel(
         vehicleStatus=[
             VehicleStatusModel(
                 category=category,
                 sections=[
-                    SectionModel(section=section_name, values=[_ValueStatusModel(value="carstatus_locked", status=0)])
+                    SectionModel(
+                        section=section_name,
+                        values=[_ValueStatusModel(value="carstatus_locked", status=0)],
+                    )
                 ],
                 displayOrder=1,
             )
@@ -192,17 +226,28 @@ def test_windows_properties(category, section_name, property_name, expected_clas
     "status, expected_last_updated, expected_doors_class, expected_windows_class",
     [
         (None, None, None, None),  # No status provided
-        (mock_remote_status_response, datetime.now().replace(second=0, microsecond=0), Doors, Windows),  # Valid status
+        (
+            mock_remote_status_response,
+            datetime.now().replace(second=0, microsecond=0),
+            Doors,
+            Windows,
+        ),  # Valid status
     ],
     ids=["no-status", "valid-status"],
 )
-def test_lock_status_properties(status, expected_last_updated, expected_doors_class, expected_windows_class):  # noqa: D103
+def test_lock_status_properties(  # pylint: disable=C0116
+    status, expected_last_updated, expected_doors_class, expected_windows_class
+):  # noqa: D103
     # Arrange
     lock_status = LockStatus(status=status)
 
     # Act & Assert
     assert lock_status.last_updated == expected_last_updated
-    assert isinstance(lock_status.doors, expected_doors_class) if expected_doors_class else lock_status.doors is None
+    assert (
+        isinstance(lock_status.doors, expected_doors_class)
+        if expected_doors_class
+        else lock_status.doors is None
+    )
     assert (
         isinstance(lock_status.windows, expected_windows_class)
         if expected_windows_class

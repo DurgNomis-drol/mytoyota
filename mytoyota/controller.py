@@ -1,8 +1,8 @@
 """Toyota Connected Services Controller."""
-import json
-import logging
 from datetime import datetime, timedelta
 from http import HTTPStatus
+import json
+import logging
 from os.path import exists, expanduser
 from typing import Any, Dict, Optional
 from urllib import parse
@@ -11,16 +11,23 @@ import hishel
 import httpx
 import jwt
 
-from mytoyota.const import ACCESS_TOKEN_URL, API_BASE_URL, AUTHENTICATE_URL, AUTHORIZE_URL
+from mytoyota.const import (
+    ACCESS_TOKEN_URL,
+    API_BASE_URL,
+    AUTHENTICATE_URL,
+    AUTHORIZE_URL,
+)
 from mytoyota.exceptions import ToyotaApiError, ToyotaInternalError, ToyotaLoginError
 from mytoyota.utils.logs import format_httpx_response
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
-CACHE_FILENAME: Optional[str] = expanduser("~/.cache/toyota_credentials_cache_contains_secrets")
+CACHE_FILENAME: Optional[str] = expanduser(
+    "~/.cache/toyota_credentials_cache_contains_secrets"
+)
 
 
-# TODO There is an issue if you login with the application on a phone as all the tokens change.
+# TODO There is an issue if you login with the application on a phone as all the tokens change. # pylint: disable=W0511
 #      This seems to work sometimes but no others. Needs investigation.
 
 
@@ -43,13 +50,15 @@ class Controller:
 
         # Do we have a cache file?
         if CACHE_FILENAME and exists(CACHE_FILENAME):
-            with open(CACHE_FILENAME, "r") as f:
+            with open(CACHE_FILENAME, "r", encoding="utf-8") as f:
                 cache_data = json.load(f)
                 if self._username == cache_data["username"]:
                     self._token = cache_data["access_token"]
                     self._refresh_token = cache_data["refresh_token"]
                     self._uuid = cache_data["uuid"]
-                    self._token_expiration = datetime.fromisoformat(cache_data["expiration"])
+                    self._token_expiration = datetime.fromisoformat(
+                        cache_data["expiration"]
+                    )
 
     async def login(self) -> None:
         """Perform first login."""
@@ -76,14 +85,21 @@ class Controller:
             for _ in range(10):
                 if "callbacks" in data:
                     for cb in data["callbacks"]:
-                        if cb["type"] == "NameCallback" and cb["output"][0]["value"] == "User Name":
+                        if (
+                            cb["type"] == "NameCallback"
+                            and cb["output"][0]["value"] == "User Name"
+                        ):
                             cb["input"][0]["value"] = self._username
                         elif cb["type"] == "PasswordCallback":
                             cb["input"][0]["value"] = self._password
-                resp = await client.post(self._authenticate_url, json=data)  # , headers=standard_headers)
+                resp = await client.post(
+                    self._authenticate_url, json=data
+                )  # , headers=standard_headers)
                 _LOGGER.debug(format_httpx_response(resp))
                 if resp.status_code != HTTPStatus.OK:
-                    raise ToyotaLoginError(f"Authentication Failed. {resp.status_code}, {resp.text}.")
+                    raise ToyotaLoginError(
+                        f"Authentication Failed. {resp.status_code}, {resp.text}."
+                    )
                 data = resp.json()
                 # Wait for tokenId to be returned in response
                 if "tokenId" in data:
@@ -99,8 +115,12 @@ class Controller:
             )
             _LOGGER.debug(format_httpx_response(resp))
             if resp.status_code != HTTPStatus.FOUND:
-                raise ToyotaLoginError(f"Authorization failed. {resp.status_code}, {resp.text}.")
-            authentication_code = parse.parse_qs(httpx.URL(resp.headers.get("location")).query.decode())["code"]
+                raise ToyotaLoginError(
+                    f"Authorization failed. {resp.status_code}, {resp.text}."
+                )
+            authentication_code = parse.parse_qs(
+                httpx.URL(resp.headers.get("location")).query.decode()
+            )["code"]
 
             # Retrieve tokens
             resp = await client.post(
@@ -116,7 +136,9 @@ class Controller:
             )
             _LOGGER.debug(format_httpx_response(resp))
             if resp.status_code != HTTPStatus.OK:
-                raise ToyotaLoginError(f"Token retrieval failed. {resp.status_code}, {resp.text}.")
+                raise ToyotaLoginError(
+                    f"Token retrieval failed. {resp.status_code}, {resp.text}."
+                )
 
             self._update_tokens(resp.json())
 
@@ -142,7 +164,9 @@ class Controller:
             )
             _LOGGER.debug(format_httpx_response(resp))
             if resp.status_code != HTTPStatus.OK:
-                raise ToyotaLoginError(f"Token refresh failed. {resp.status_code}, {resp.text}.")
+                raise ToyotaLoginError(
+                    f"Token refresh failed. {resp.status_code}, {resp.text}."
+                )
 
             self._update_tokens(resp.json())
 
@@ -154,7 +178,9 @@ class Controller:
             or "refresh_token" not in access_tokens
             or "expires_in" not in access_tokens
         ):
-            raise ToyotaLoginError(f"Token retrieval failed. Missing Tokens. {resp.status_code}, {resp.text}.")
+            raise ToyotaLoginError(
+                f"Token retrieval failed. Missing Tokens. {resp.status_code}, {resp.text}."
+            )
 
         self._token = access_tokens["access_token"]
         self._refresh_token = access_tokens["refresh_token"]
@@ -164,10 +190,12 @@ class Controller:
             options={"verify_signature": False},
             audience="oneappsdkclient",
         )["uuid"]
-        self._token_expiration = datetime.now() + timedelta(seconds=access_tokens["expires_in"])
+        self._token_expiration = datetime.now() + timedelta(
+            seconds=access_tokens["expires_in"]
+        )
 
         if CACHE_FILENAME:
-            with open(CACHE_FILENAME, "w") as f:
+            with open(CACHE_FILENAME, "w", encoding="utf-8") as f:
                 f.write(
                     json.dumps(
                         {
@@ -230,7 +258,9 @@ class Controller:
             ]:
                 return response
 
-        raise ToyotaApiError(f"Request Failed.  {response.status_code}, {response.text}.")
+        raise ToyotaApiError(
+            f"Request Failed.  {response.status_code}, {response.text}."
+        )
 
     async def request_json(  # noqa: PLR0913
         self,
@@ -247,12 +277,12 @@ class Controller:
         ----
             method (str): The HTTP method to use for the request.
             endpoint (str): The endpoint to send the request to.
-            vin (Optional[str], optional): The VIN (Vehicle Identification Number) to include in the request.
-                Defaults to None.
+            vin (Optional[str], optional): The VIN (Vehicle Identification Number) to include
+                in the request. Defaults to None.
             body (Optional[Dict[str, Any]], optional): The JSON body to include in the request.
                 Defaults to None.
-            params (Optional[Dict[str, Any]], optional): The query parameters to include in the request.
-                Defaults to None.
+            params (Optional[Dict[str, Any]], optional): The query parameters to
+                include in the request. Defaults to None.
             headers (Optional[Dict[str, Any]], optional): The headers to include in the request.
                 Defaults to None.
 

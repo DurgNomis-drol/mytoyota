@@ -46,7 +46,11 @@ class Summary:
     def __repr__(self):
         """Representation of MonthSummary."""
         return " ".join(
-            [f"{k}={getattr(self, k)!s}" for k, v in type(self).__dict__.items() if isinstance(v, property)],
+            [
+                f"{k}={getattr(self, k)!s}"
+                for k, v in type(self).__dict__.items()
+                if isinstance(v, property)
+            ],
         )
 
     @property
@@ -56,8 +60,7 @@ class Summary:
         Returns
         -------
             float: Average speed in selected metric
-        """
-        """Return information on all trips made between the provided dates.
+                Return information on all trips made between the provided dates.
 
         Args:
         ----
@@ -74,7 +77,8 @@ class Summary:
 
         Returns
         -------
-            List[str]: List of countries visited in 'ISO 3166-1 alpha-2' or two-letter country codes format
+            List[str]: List of countries visited in 'ISO 3166-1 alpha-2' or
+                two-letter country codes format.
         """
         return self._summary.countries
 
@@ -116,7 +120,11 @@ class Summary:
         -------
             timedelta: The distance driven using EV in selected metric or None if not supported
         """
-        return convert_distance(self._metric, "km", self._hdc.ev_distance / 1000.0) if self._hdc else None
+        return (
+            convert_distance(self._metric, "km", self._hdc.ev_distance / 1000.0)
+            if self._hdc
+            else None
+        )
 
     @property
     def from_date(self) -> date:

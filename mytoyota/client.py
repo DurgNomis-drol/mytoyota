@@ -25,7 +25,8 @@ class MyT:
 
     Connected services client class.
 
-    NOTE: Only tested with Toyota endpoints to this point. Do you have a Lexus/Subaru and are willing to help?
+    NOTE: Only tested with Toyota endpoints to this point.
+        Do you have a Lexus/Subaru and are willing to help?
     """
 
     def __init__(

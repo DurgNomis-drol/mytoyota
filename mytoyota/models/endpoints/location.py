@@ -19,14 +19,19 @@ class LocationModel(BaseModel):
 
     Attributes
     ----------
-        last_timestamp (Optional[datetime], optional): The last timestamp of the location. Defaults to None.
-        vehicle_location (Optional[_VehicleLocationModel], optional): The location of the vehicle. Defaults to None.
-        vin (Optional[str], optional): The VIN (Vehicle Identification Number) of the vehicle. Defaults to None.
+        last_timestamp (Optional[datetime], optional): The last timestamp of the location. \n
+            Defaults to None.
+        vehicle_location (Optional[_VehicleLocationModel], optional): The location of
+            the vehicle. \n Defaults to None.
+        vin (Optional[str], optional): The VIN (Vehicle Identification Number) of the vehicle. \n
+            Defaults to None.
 
     """
 
     last_timestamp: Optional[datetime] = Field(alias="lastTimestamp", default=None)
-    vehicle_location: Optional[_VehicleLocationModel] = Field(alias="vehicleLocation", default=None)
+    vehicle_location: Optional[_VehicleLocationModel] = Field(
+        alias="vehicleLocation", default=None
+    )
     vin: Optional[str] = None
 
 

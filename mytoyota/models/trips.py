@@ -27,7 +27,11 @@ class Trip:
     def __repr__(self):
         """Representation of MonthSummary."""
         return " ".join(
-            [f"{k}={getattr(self, k)!s}" for k, v in type(self).__dict__.items() if isinstance(v, property)],
+            [
+                f"{k}={getattr(self, k)!s}"
+                for k, v in type(self).__dict__.items()
+                if isinstance(v, property)
+            ],
         )
 
     @property
@@ -108,7 +112,11 @@ class Trip:
         -------
             timedelta: The distance driven using EV in selected metric or None if not supported
         """
-        return convert_distance(self._metric, "km", self._trip.hdc.ev_distance / 1000.0) if self._trip.hdc else None
+        return (
+            convert_distance(self._metric, "km", self._trip.hdc.ev_distance / 1000.0)
+            if self._trip.hdc
+            else None
+        )
 
     @property
     def fuel_consumed(self) -> float:
@@ -133,7 +141,8 @@ class Trip:
 
         Returns
         -------
-            Optional[List[Tuple[float, float]]]: List of Lat, Lon of the route taken. None if no route provided.
+            Optional[List[Tuple[float, float]]]: List of Lat, Lon of the route taken.
+                None if no route provided.
         """
         if self._trip.route:
             return [(rm.lat, rm.lon) for rm in self._trip.route]

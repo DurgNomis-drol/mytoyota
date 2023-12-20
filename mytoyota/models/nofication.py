@@ -15,7 +15,11 @@ class Notification:
     def __repr__(self):
         """Representation of the model."""
         return " ".join(
-            [f"{k}={getattr(self, k)!s}" for k, v in type(self).__dict__.items() if isinstance(v, property)],
+            [
+                f"{k}={getattr(self, k)!s}"
+                for k, v in type(self).__dict__.items()
+                if isinstance(v, property)
+            ],
         )
 
     @property

@@ -9,15 +9,17 @@ from mytoyota.models.endpoints.common import StatusModel
 
 
 class _TranslationModel(BaseModel):
-    english: Optional[Any]  # TODO unsure what this returns
-    french: Optional[Any]  # TODO unsure what this returns
-    spanish: Optional[Any]  # TODO unsure what this returns
+    english: Optional[Any]  # TODO unsure what this returns # pylint: disable=W0511
+    french: Optional[Any]  # TODO unsure what this returns # pylint: disable=W0511
+    spanish: Optional[Any]  # TODO unsure what this returns # pylint: disable=W0511
 
 
 class _CapabilitiesModel(BaseModel):
     description: Optional[str]
     display: bool
-    display_name: Optional[Any] = Field(alias="displayName")  # TODO unsure what this returns
+    display_name: Optional[Any] = Field(
+        alias="displayName"
+    )  # TODO unsure what this returns # pylint: disable=W0511
     name: str
     translation: _TranslationModel
 
@@ -30,8 +32,12 @@ class _ExtendedCapabilitiesModel(BaseModel):
     buzzer_capable: bool = Field(alias="buzzerCapable")
     charge_management: bool = Field(alias="chargeManagement")
     climate_capable: bool = Field(alias="climateCapable")
-    climate_temperature_control_full: bool = Field(alias="climateTemperatureControlFull")
-    climate_temperature_control_limited: bool = Field(alias="climateTemperatureControlLimited")
+    climate_temperature_control_full: bool = Field(
+        alias="climateTemperatureControlFull"
+    )
+    climate_temperature_control_limited: bool = Field(
+        alias="climateTemperatureControlLimited"
+    )
     dashboard_warning_lights: bool = Field(alias="dashboardWarningLights")
     door_lock_unlock_capable: bool = Field(alias="doorLockUnlockCapable")
     drive_pulse: bool = Field(alias="drivePulse")
@@ -40,7 +46,9 @@ class _ExtendedCapabilitiesModel(BaseModel):
     econnect_vehicle_status_capable: bool = Field(alias="econnectVehicleStatusCapable")
     electric_pulse: bool = Field(alias="electricPulse")
     emergency_assist: bool = Field(alias="emergencyAssist")
-    enhanced_security_system_capable: bool = Field(alias="enhancedSecuritySystemCapable")
+    enhanced_security_system_capable: bool = Field(
+        alias="enhancedSecuritySystemCapable"
+    )
     equipped_with_alarm: bool = Field(alias="equippedWithAlarm")
     ev_battery: bool = Field(alias="evBattery")
     ev_charge_stations_capable: bool = Field(alias="evChargeStationsCapable")
@@ -53,9 +61,13 @@ class _ExtendedCapabilitiesModel(BaseModel):
     front_driver_seat_ventilation: bool = Field(alias="frontDriverSeatVentilation")
     front_passenger_door_lock_status: bool = Field(alias="frontPassengerDoorLockStatus")
     front_passenger_door_open_status: bool = Field(alias="frontPassengerDoorOpenStatus")
-    front_passenger_door_window_status: bool = Field(alias="frontPassengerDoorWindowStatus")
+    front_passenger_door_window_status: bool = Field(
+        alias="frontPassengerDoorWindowStatus"
+    )
     front_passenger_seat_heater: bool = Field(alias="frontPassengerSeatHeater")
-    front_passenger_seat_ventilation: bool = Field(alias="frontPassengerSeatVentilation")
+    front_passenger_seat_ventilation: bool = Field(
+        alias="frontPassengerSeatVentilation"
+    )
     fuel_level_available: bool = Field(alias="fuelLevelAvailable")
     fuel_range_available: bool = Field(alias="fuelRangeAvailable")
     guest_driver: bool = Field(alias="guestDriver")
@@ -81,7 +93,9 @@ class _ExtendedCapabilitiesModel(BaseModel):
     rear_hatch_rear_window: bool = Field(alias="rearHatchRearWindow")
     rear_passenger_door_lock_status: bool = Field(alias="rearPassengerDoorLockStatus")
     rear_passenger_door_open_status: bool = Field(alias="rearPassengerDoorOpenStatus")
-    rear_passenger_door_window_status: bool = Field(alias="rearPassengerDoorWindowStatus")
+    rear_passenger_door_window_status: bool = Field(
+        alias="rearPassengerDoorWindowStatus"
+    )
     rear_passenger_seat_heater: bool = Field(alias="rearPassengerSeatHeater")
     rear_passenger_seat_ventilation: bool = Field(alias="rearPassengerSeatVentilation")
     remote_econnect_capable: bool = Field(alias="remoteEConnectCapable")
@@ -89,7 +103,9 @@ class _ExtendedCapabilitiesModel(BaseModel):
     smart_key_status: bool = Field(alias="smartKeyStatus")
     steering_heater: bool = Field(alias="steeringHeater")
     stellantis_climate_capable: bool = Field(alias="stellantisClimateCapable")
-    stellantis_vehicle_status_capable: bool = Field(alias="stellantisVehicleStatusCapable")
+    stellantis_vehicle_status_capable: bool = Field(
+        alias="stellantisVehicleStatusCapable"
+    )
     sunroof: bool = Field(alias="sunroof")
     telemetry_capable: bool = Field(alias="telemetryCapable")
     trunk_lock_unlock_capable: bool = Field(alias="trunkLockUnlockCapable")
@@ -102,7 +118,7 @@ class _ExtendedCapabilitiesModel(BaseModel):
 
 
 class _LinksModel(BaseModel):
-    body: Optional[str]  # TODO unsure what this returns
+    body: Optional[str]  # TODO unsure what this returns # pylint: disable=W0511
     button_text: Optional[str] = Field(alias="buttonText")
     image_url: Optional[str] = Field(alias="imageUrl", default=None)
     link: Optional[str]
@@ -118,27 +134,45 @@ class _DcmModel(BaseModel):  # Data connection model
     supplier_name: str = Field(alias="dcmSupplierName")
     euicc_id: str = Field(alias="euiccid")
     hardware_type: Optional[str] = Field(alias="hardwareType")
-    vehicle_unit_terminal_number: Optional[str] = Field(alias="vehicleUnitTerminalNumber")
+    vehicle_unit_terminal_number: Optional[str] = Field(
+        alias="vehicleUnitTerminalNumber"
+    )
 
 
 class _HeadUnitModel(BaseModel):
-    description: Optional[Any] = Field(alias="huDescription")  # TODO unsure what this returns
-    generation: Optional[Any] = Field(alias="huGeneration")  # TODO unsure what this returns
-    version: Optional[Any] = Field(alias="huVersion")  # TODO unsure what this returns
-    mobile_platform_code: Optional[Any] = Field(alias="mobilePlatformCode")  # TODO unsure what this returns
-    multimedia_type: Optional[Any] = Field(alias="multimediaType")  # TODO unsure what this returns
+    description: Optional[Any] = Field(
+        alias="huDescription"
+    )  # TODO unsure what this returns # pylint: disable=W0511
+    generation: Optional[Any] = Field(
+        alias="huGeneration"
+    )  # TODO unsure what this returns # pylint: disable=W0511
+    version: Optional[Any] = Field(
+        alias="huVersion"
+    )  # TODO unsure what this returns # pylint: disable=W0511
+    mobile_platform_code: Optional[Any] = Field(
+        alias="mobilePlatformCode"
+    )  # TODO unsure what this returns # pylint: disable=W0511
+    multimedia_type: Optional[Any] = Field(
+        alias="multimediaType"
+    )  # TODO unsure what this returns # pylint: disable=W0511
 
 
 class _SubscriptionsModel(BaseModel):
     auto_renew: bool = Field(alias="autoRenew")
     category: str
-    components: Optional[Any]  # TODO unsure what this returns
-    consolidated_goodwill_ids: List[Any] = Field(alias="consolidatedGoodwillIds")  # TODO unsure what this returns
-    consolidated_product_ids: List[Any] = Field(alias="consolidatedProductIds")  # TODO unsure what this returns
+    components: Optional[Any]  # TODO unsure what this returns # pylint: disable=W0511
+    consolidated_goodwill_ids: List[Any] = Field(
+        alias="consolidatedGoodwillIds"
+    )  # TODO unsure what this returns # pylint: disable=W0511
+    consolidated_product_ids: List[Any] = Field(
+        alias="consolidatedProductIds"
+    )  # TODO unsure what this returns # pylint: disable=W0511
     display_procuct_name: str = Field(alias="displayProductName")
     display_term: str = Field(alias="displayTerm")
     future_cancel: bool = Field(alias="futureCancel")
-    good_will_issued_for: Optional[Any] = Field(alias="goodwillIssuedFor")  # TODO unsure what this returns
+    good_will_issued_for: Optional[Any] = Field(
+        alias="goodwillIssuedFor"
+    )  # TODO unsure what this returns # pylint: disable=W0511
     product_code: str = Field(alias="productCode")
     product_description: str = Field(alias="productDescription")
     product_line: str = Field(alias="productLine")
@@ -150,11 +184,11 @@ class _SubscriptionsModel(BaseModel):
     subscription_id: str = Field(alias="subscriptionID")
     subscription_next_billing_date: Optional[Any] = Field(
         alias="subscriptionNextBillingDate",
-    )  # TODO unsure what this returns
+    )  # TODO unsure what this returns # pylint: disable=W0511
     subscription_remaining_days: int = Field(alias="subscriptionRemainingDays")
     subscription_remaining_term: Optional[Any] = Field(
         alias="subscriptionRemainingTerm",
-    )  # TODO unsure what this returns
+    )  # TODO unsure what this returns # pylint: disable=W0511
     subscription_start_date: date = Field(alias="subscriptionStartDate")
     subscription_term: str = Field(alias="subscriptionTerm")
     term: int
@@ -285,13 +319,15 @@ class VehicleGuidModel(BaseModel):
         date_of_first_use (Optional[date]): The date of first use of the vehicle.
         dcm (_DcmModel): The DCM (Data Communication Module) information of the vehicle.
         dcm_active (bool): Indicates if the DCM is active for the vehicle.
-        dcms (Optional[Any]): The DCMS (Data Communication Module Status) information of the vehicle.
+        dcms (Optional[Any]): The DCMS (Data Communication Module Status) information
+            of the vehicle.
         display_model_description (str): The description of the displayed model.
         display_subscriptions (List[Dict[str, str]]): The displayed subscriptions of the vehicle.
         electrical_platform_code (str): The electrical platform code of the vehicle.
         emergency_contact (Optional[Any]): The emergency contact information of the vehicle.
         ev_vehicle (bool): Indicates if the vehicle is an electric vehicle.
-        extended_capabilities (_ExtendedCapabilitiesModel): The extended capabilities of the vehicle.
+        extended_capabilities (_ExtendedCapabilitiesModel): The extended capabilities
+            of the vehicle.
         external_subscriptions (Optional[Any]): The external subscriptions of the vehicle.
         family_sharing (bool): Indicates if the vehicle is part of a family sharing plan.
         faq_url (str): The URL of the FAQ (Frequently Asked Questions) for the vehicle.
@@ -310,7 +346,8 @@ class VehicleGuidModel(BaseModel):
         car_model_name (str): The name of the model of the vehicle.
         car_model_year (str): The model year of the vehicle.
         nickname (Optional[str]): The nickname of the vehicle.
-        non_cvt_vehicle (bool): Indicates if the vehicle is a non-CVT (Continuously Variable Transmission) vehicle.
+        non_cvt_vehicle (bool): Indicates if the vehicle is a non-CVT
+            (Continuously Variable Transmission) vehicle.
         old_imei (Optional[Any]): The old IMEI of the vehicle.
         owner (bool): Indicates if the user is the owner of the vehicle.
         personalized_settings (_LinksModel): The personalized settings of the vehicle.
@@ -319,19 +356,23 @@ class VehicleGuidModel(BaseModel):
         region (str): The region of the vehicle.
         registration_number (Optional[str]): The registration number of the vehicle.
         remote_display (Optional[Any]): The remote display information of the vehicle.
-        remote_service_capabilities (_RemoteServiceCapabilitiesModel): The remote service capabilities of the vehicle.
+        remote_service_capabilities (_RemoteServiceCapabilitiesModel): The remote
+            service capabilities of the vehicle.
         remote_service_exceptions (List[Any]): The remote service exceptions of the vehicle.
-        remote_subscription_exists (bool): Indicates if a remote subscription exists for the vehicle.
+        remote_subscription_exists (bool): Indicates if a remote subscription
+            exists for the vehicle.
         remote_subscription_status (str): The remote subscription status of the vehicle.
         remote_user (bool): Indicates if the user is a remote user of the vehicle.
-        remote_user_guid (Optional[Union[UUID, str]]): The remote user GUID (Globally Unique Identifier) of the vehicle.
+        remote_user_guid (Optional[Union[UUID, str]]): The remote user GUID
+            (Globally Unique Identifier) of the vehicle.
         service_connect_status (Optional[Any]): The service connect status of the vehicle.
         services (List[Any]): The services associated with the vehicle.
         shop_genuine_parts_url (str): The URL for shopping genuine parts for the vehicle.
         status (str): The status of the vehicle.
         stock_pic_reference (str): The stock picture reference of the vehicle.
         subscriber_guid (UUID): The subscriber GUID of the vehicle.
-        subscription_expiration_status (bool): Indicates if the subscription is expired for the vehicle.
+        subscription_expiration_status (bool): Indicates if the subscription
+            is expired for the vehicle.
         subscription_status (str): The subscription status of the vehicle.
         subscriptions (List[_SubscriptionsModel]): The subscriptions associated with the vehicle.
         suffix_code (Optional[Any]): The suffix code of the vehicle.
@@ -343,7 +384,7 @@ class VehicleGuidModel(BaseModel):
         vin (str): The VIN (Vehicle Identification Number) of the vehicle.
     """
 
-    alerts: List[Any]  # TODO unsure what this returns
+    alerts: List[Any]  # TODO unsure what this returns # pylint: disable=W0511
     asi_code: str = Field(alias="asiCode")
     brand: str
     capabilities: List[_CapabilitiesModel]
@@ -356,22 +397,30 @@ class VehicleGuidModel(BaseModel):
     date_of_first_use: Optional[date] = Field(alias="dateOfFirstUse")
     dcm: _DcmModel
     dcm_active: bool = Field(alias="dcmActive")
-    dcms: Optional[Any]  # TODO unsure what this returns
+    dcms: Optional[Any]  # TODO unsure what this returns # pylint: disable=W0511
     display_model_description: str = Field(alias="displayModelDescription")
     display_subscriptions: List[Dict[str, str]] = Field(alias="displaySubscriptions")
     electrical_platform_code: str = Field(alias="electricalPlatformCode")
-    emergency_contact: Optional[Any] = Field(alias="emergencyContact")  # TODO unsure what this returns
+    emergency_contact: Optional[Any] = Field(
+        alias="emergencyContact"
+    )  # TODO unsure what this returns # pylint: disable=W0511
     ev_vehicle: bool = Field(alias="evVehicle")
-    extended_capabilities: _ExtendedCapabilitiesModel = Field(alias="extendedCapabilities")
+    extended_capabilities: _ExtendedCapabilitiesModel = Field(
+        alias="extendedCapabilities"
+    )
     external_subscriptions: Optional[Any] = Field(alias="externalSubscriptions")
     family_sharing: bool = Field(alias="familySharing")
     faq_url: str = Field(alias="faqUrl")
     features: _FeaturesModel
-    fleet_ind: Optional[Any] = Field(alias="fleetInd")  # TODO unsure what this returns
+    fleet_ind: Optional[Any] = Field(
+        alias="fleetInd"
+    )  # TODO unsure what this returns # pylint: disable=W0511
     fuel_type: Optional[str] = Field(alias="fuelType", default=None)
     generation: str
     head_unit: _HeadUnitModel = Field(alias="headUnit")
-    hw_type: Optional[Any] = Field(alias="hwType")  # TODO unsure what this returns
+    hw_type: Optional[Any] = Field(
+        alias="hwType"
+    )  # TODO unsure what this returns # pylint: disable=W0511
     image: str
     imei: str
     katashiki_code: str = Field(alias="katashikiCode")
@@ -383,22 +432,36 @@ class VehicleGuidModel(BaseModel):
     car_model_year: str = Field(alias="modelYear")
     nickname: Optional[str] = Field(alias="nickName", default=None)
     non_cvt_vehicle: bool = Field(alias="nonCvtVehicle")
-    old_imei: Optional[Any] = Field(alias="oldImei")  # TODO unsure what this returns
+    old_imei: Optional[Any] = Field(
+        alias="oldImei"
+    )  # TODO unsure what this returns # pylint: disable=W0511
     owner: bool
-    personalized_settings: _LinksModel = Field(alias="personalizedSettings")  # TODO unsure what this returns
+    personalized_settings: _LinksModel = Field(
+        alias="personalizedSettings"
+    )  # TODO unsure what this returns # pylint: disable=W0511
     preferred: Optional[bool] = None
     primary_subscriber: bool = Field(alias="primarySubscriber")
     region: str
     registration_number: Optional[str] = Field(alias="registrationNumber")
-    remote_display: Optional[Any] = Field(alias="remoteDisplay")  # TODO unsure what this returns
-    remote_service_capabilities: _RemoteServiceCapabilitiesModel = Field(alias="remoteServiceCapabilities")
-    remote_service_exceptions: List[Any] = Field(alias="remoteServicesExceptions")  # TODO unsure what this returns
+    remote_display: Optional[Any] = Field(
+        alias="remoteDisplay"
+    )  # TODO unsure what this returns # pylint: disable=W0511
+    remote_service_capabilities: _RemoteServiceCapabilitiesModel = Field(
+        alias="remoteServiceCapabilities"
+    )
+    remote_service_exceptions: List[Any] = Field(
+        alias="remoteServicesExceptions"
+    )  # TODO unsure what this returns # pylint: disable=W0511
     remote_subscription_exists: bool = Field(alias="remoteSubscriptionExists")
     remote_subscription_status: str = Field(alias="remoteSubscriptionStatus")
     remote_user: bool = Field(alias="remoteUser")
-    remote_user_guid: Optional[Union[UUID, str]] = Field(alias="remoteUserGuid", default=None)
-    service_connect_status: Optional[Any] = Field(alias="serviceConnectStatus")  # TODO unsure what this returns
-    services: List[Any]  # TODO unsure what this returns
+    remote_user_guid: Optional[Union[UUID, str]] = Field(
+        alias="remoteUserGuid", default=None
+    )
+    service_connect_status: Optional[Any] = Field(
+        alias="serviceConnectStatus"
+    )  # TODO unsure what this returns # pylint: disable=W0511
+    services: List[Any]  # TODO unsure what this returns # pylint: disable=W0511
     shop_genuine_parts_url: str = Field(alias="shopGenuinePartsUrl")
     status: str
     stock_pic_reference: str = Field(alias="stockPicReference")
@@ -422,7 +485,8 @@ class VehiclesResponseModel(StatusModel):
 
     Attributes
     ----------
-        payload (Optional[List[VehicleGuidModel]], optional): The vehicles payload. Defaults to None.
+        payload (Optional[List[VehicleGuidModel]], optional): The vehicles payload. \n
+            Defaults to None.
 
     """
 

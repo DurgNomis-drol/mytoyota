@@ -12,7 +12,9 @@ from mytoyota.models.endpoints.status import (
 )
 
 
-def _get_category(data: Optional[RemoteStatusModel], category: str) -> Optional[VehicleStatusModel]:
+def _get_category(
+    data: Optional[RemoteStatusModel], category: str
+) -> Optional[VehicleStatusModel]:
     if data is not None:
         return next(
             (item for item in data.vehicle_status if item.category == category),
@@ -21,7 +23,9 @@ def _get_category(data: Optional[RemoteStatusModel], category: str) -> Optional[
     return None
 
 
-def _get_section(data: Optional[VehicleStatusModel], section: str) -> Optional[SectionModel]:
+def _get_section(
+    data: Optional[VehicleStatusModel], section: str
+) -> Optional[SectionModel]:
     if data is not None:
         return next(
             (item for item in data.sections if item.section == section),
@@ -53,7 +57,11 @@ class Door:
     def __repr__(self):
         """Representation of the model."""
         return " ".join(
-            [f"{k}={getattr(self, k)!s}" for k, v in type(self).__dict__.items() if isinstance(v, property)],
+            [
+                f"{k}={getattr(self, k)!s}"
+                for k, v in type(self).__dict__.items()
+                if isinstance(v, property)
+            ],
         )
 
     @property
@@ -80,7 +88,11 @@ class Doors:
     def __repr__(self):
         """Representation of the model."""
         return " ".join(
-            [f"{k}={getattr(self, k)!s}" for k, v in type(self).__dict__.items() if isinstance(v, property)],
+            [
+                f"{k}={getattr(self, k)!s}"
+                for k, v in type(self).__dict__.items()
+                if isinstance(v, property)
+            ],
         )
 
     @property
@@ -132,7 +144,11 @@ class Window(List[VehicleStatusModel]):
     def __repr__(self):
         """Representation of the model."""
         return " ".join(
-            [f"{k}={getattr(self, k)!s}" for k, v in type(self).__dict__.items() if isinstance(v, property)],
+            [
+                f"{k}={getattr(self, k)!s}"
+                for k, v in type(self).__dict__.items()
+                if isinstance(v, property)
+            ],
         )
 
     @property
@@ -154,7 +170,11 @@ class Windows:
     def __repr__(self):
         """Representation of the model."""
         return " ".join(
-            [f"{k}={getattr(self, k)!s}" for k, v in type(self).__dict__.items() if isinstance(v, property)],
+            [
+                f"{k}={getattr(self, k)!s}"
+                for k, v in type(self).__dict__.items()
+                if isinstance(v, property)
+            ],
         )
 
     @property
@@ -199,7 +219,11 @@ class LockStatus:
     def __repr__(self):
         """Representation of the model."""
         return " ".join(
-            [f"{k}={getattr(self, k)!s}" for k, v in type(self).__dict__.items() if isinstance(v, property)],
+            [
+                f"{k}={getattr(self, k)!s}"
+                for k, v in type(self).__dict__.items()
+                if isinstance(v, property)
+            ],
         )
 
     @property
@@ -227,7 +251,7 @@ class LockStatus:
         return Door(section)
 
     # Seems to be not available for now
-    # TODO: Calculate it from all other sensor values?
+    # TODO: Calculate it from all other sensor values? # pylint: disable=W0511
     # @property
     # def overallstatus(self) -> Optional[str]:
     #     """If a warning exists for any of the sensors."""

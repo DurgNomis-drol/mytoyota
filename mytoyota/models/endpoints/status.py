@@ -32,7 +32,8 @@ class VehicleStatusModel(BaseModel):
     Attributes
     ----------
         category (str): The status category of the vehicle.
-        display_order (int): The order in which the status category is displayed inside the MyToyota App.
+        display_order (int): The order in which the status category is displayed
+            inside the MyToyota App.
         sections (List[SectionModel]): The different sections belonging to the category.
 
     """
@@ -79,7 +80,8 @@ class RemoteStatusResponseModel(StatusModel):
 
     Attributes
     ----------
-        payload (Optional[RemoteStatusModel], optional): The remote status payload. Defaults to None.
+        payload (Optional[RemoteStatusModel], optional): The remote status payload. \n
+            Defaults to None.
 
     """
 

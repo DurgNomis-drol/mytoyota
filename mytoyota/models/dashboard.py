@@ -11,7 +11,7 @@ from mytoyota.utils.conversions import convert_distance
 class Dashboard:
     """Information that may be found on a vehicles dashboard."""
 
-    # TODO do we want to supply last update times?
+    # TODO do we want to supply last update times?  # pylint: disable=W0511
 
     def __init__(  # noqa: D417
         self,
@@ -34,7 +34,11 @@ class Dashboard:
     def __repr__(self):
         """Representation of the Dashboard model."""
         return " ".join(
-            [f"{k}={getattr(self, k)!s}" for k, v in type(self).__dict__.items() if isinstance(v, property)],
+            [
+                f"{k}={getattr(self, k)!s}"
+                for k, v in type(self).__dict__.items()
+                if isinstance(v, property)
+            ],
         )
 
     @property
@@ -45,7 +49,9 @@ class Dashboard:
         -------
             The latest odometer reading in the current selected units
         """
-        return convert_distance(self._metric, self._telemetry.odometer.unit, self._telemetry.odometer.value)
+        return convert_distance(
+            self._metric, self._telemetry.odometer.unit, self._telemetry.odometer.value
+        )
 
     @property
     def fuel_level(self) -> int:
@@ -79,8 +85,12 @@ class Dashboard:
             If vehicle doesn't support fuel range returns None
         """
         if self._electric:
-            return convert_distance(self._metric, self._electric.fuel_range.unit, self._electric.fuel_range.value)
-        elif self._telemetry.distance_to_empty:
+            return convert_distance(
+                self._metric,
+                self._electric.fuel_range.unit,
+                self._electric.fuel_range.value,
+            )
+        if self._telemetry.distance_to_empty:
             return convert_distance(
                 self._metric,
                 self._telemetry.distance_to_empty.unit,
@@ -101,7 +111,11 @@ class Dashboard:
             If vehicle doesn't support battery range returns None
         """
         if self._electric:
-            return convert_distance(self._metric, self._electric.ev_range.unit, self._electric.ev_range.value)
+            return convert_distance(
+                self._metric,
+                self._electric.ev_range.unit,
+                self._electric.ev_range.value,
+            )
 
         return None
 

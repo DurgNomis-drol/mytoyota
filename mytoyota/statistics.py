@@ -95,7 +95,9 @@ class Statistics:
                         continue
 
                     _LOGGER.debug(f"Converting attribute {attribute} to miles...")
-                    periode[DATA][attribute] = convert_to_miles(periode[DATA][attribute])
+                    periode[DATA][attribute] = convert_to_miles(
+                        periode[DATA][attribute]
+                    )
         return data
 
     def _add_bucket(self, data: dict, interval: str) -> list:
@@ -112,7 +114,9 @@ class Statistics:
                         UNIT: METRIC,
                         # As we use 1 january of the year as the initial date
                         # we only have to shift it with 1 day less
-                        DATE: arrow.Arrow(year, 1, 1).shift(days=dayofyear - 1).format(DATE_FORMAT),
+                        DATE: arrow.Arrow(year, 1, 1)
+                        .shift(days=dayofyear - 1)
+                        .format(DATE_FORMAT),
                     },
                 )
             return data[HISTOGRAM]
@@ -134,7 +138,9 @@ class Statistics:
                 month[BUCKET].update(
                     {
                         UNIT: METRIC,
-                        PERIODE_START: self._now.replace(year=month[BUCKET][YEAR], month=month[BUCKET][MONTH], day=1)
+                        PERIODE_START: self._now.replace(
+                            year=month[BUCKET][YEAR], month=month[BUCKET][MONTH], day=1
+                        )
                         .floor(MONTH)
                         .format(DATE_FORMAT),
                     },

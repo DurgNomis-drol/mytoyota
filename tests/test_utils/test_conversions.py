@@ -14,7 +14,9 @@ from mytoyota.utils import conversions
         pytest.param(-1, -0.621, id="negative_km_to_miles"),
     ],
 )
-def test_convert_to_miles(kilometers, expected_miles):  # noqa: D103
+def test_convert_to_miles(
+    kilometers, expected_miles
+):  # noqa: D103 # pylint: disable=C0116
     # Act
     miles = conversions.convert_to_miles(kilometers)
 
@@ -32,7 +34,7 @@ def test_convert_to_miles(kilometers, expected_miles):  # noqa: D103
         pytest.param(-1, -1.609, id="negative_mile_to_km"),
     ],
 )
-def test_convert_to_km(miles, expected_km):  # noqa: D103
+def test_convert_to_km(miles, expected_km):  # noqa: D103 # pylint: disable=C0116
     # Act
     km = conversions.convert_to_km(miles)
 
@@ -56,9 +58,13 @@ def test_convert_to_km(miles, expected_km):  # noqa: D103
         pytest.param("miles", "km", -1, 3, -0.621, id="negative_km_to_miles"),
     ],
 )
-def test_convert_distance(convert_to, convert_from, value, decimal_places, expected):  # noqa: D103
+def test_convert_distance(
+    convert_to, convert_from, value, decimal_places, expected
+):  # noqa: D103 # pylint: disable=C0116
     # Act
-    result = conversions.convert_distance(convert_to, convert_from, value, decimal_places)
+    result = conversions.convert_distance(
+        convert_to, convert_from, value, decimal_places
+    )
 
     # Assert
     assert result == expected
@@ -74,7 +80,9 @@ def test_convert_distance(convert_to, convert_from, value, decimal_places, expec
         pytest.param(-1, -1.6093, id="negative_liter_to_100miles"),
     ],
 )
-def test_convert_to_liter_per_100_miles(liters, expected):  # noqa: D103
+def test_convert_to_liter_per_100_miles(
+    liters, expected
+):  # noqa: D103 # pylint: disable=C0116
     # Act
     result = conversions.convert_to_liter_per_100_miles(liters)
 
@@ -93,7 +101,9 @@ def test_convert_to_liter_per_100_miles(liters, expected):  # noqa: D103
         pytest.param(-1, 0.0, id="negative_liter_to_mpg"),
     ],
 )
-def test_convert_to_mpg(liters_per_100_km, expected_mpg):  # noqa: D103
+def test_convert_to_mpg(
+    liters_per_100_km, expected_mpg
+):  # noqa: D103 # pylint: disable=C0116
     # Act
     mpg = conversions.convert_to_mpg(liters_per_100_km)
 
