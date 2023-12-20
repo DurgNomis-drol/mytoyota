@@ -58,7 +58,7 @@ async def get_information():
         pp.pprint(f"Notifications: {[[x] for x in car.notifications]}")
         # Summary
         pp.pprint(
-            f"Summary: {[[x] for x in await car.get_summary(date.today() - timedelta(days=6 * 30),date.today(),summary_type=SummaryType.MONTHLY)]}"  # noqa: E501 # pylint: disable=C0301
+            f"Summary: {[[x] for x in await car.get_summary(date.today() - timedelta(days=6 * 30), date.today(), summary_type=SummaryType.MONTHLY)]}"  # noqa: E501 # pylint: disable=C0301
         )
         # Trips
         pp.pprint(
