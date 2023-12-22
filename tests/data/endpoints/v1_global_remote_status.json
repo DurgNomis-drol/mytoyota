@@ -1,0 +1,162 @@
+{
+  "status": {
+    "messages": [
+      {
+        "responseCode": "ONE-GLOBAL-RS-10000",
+        "description": "Request Completed Successfully",
+        "detailedDescription": "Request Completed Successfully"
+      }
+    ]
+  },
+  "payload": {
+    "vehicleStatus": [
+      {
+        "category": "carstatus_category_driver",
+        "displayOrder": 1,
+        "sections": [
+          {
+            "section": "carstatus_item_driver_door",
+            "values": [
+              {
+                "value": "carstatus_closed",
+                "status": 0
+              },
+              {
+                "value": "carstatus_locked",
+                "status": 0
+              }
+            ]
+          },
+          {
+            "section": "carstatus_item_driver_rear_door",
+            "values": [
+              {
+                "value": "carstatus_closed",
+                "status": 0
+              },
+              {
+                "value": "carstatus_locked",
+                "status": 0
+              }
+            ]
+          },
+          {
+            "section": "carstatus_item_driver_rear_window",
+            "values": [
+              {
+                "value": "carstatus_closed",
+                "status": 0
+              }
+            ]
+          },
+          {
+            "section": "carstatus_item_driver_window",
+            "values": [
+              {
+                "value": "carstatus_closed",
+                "status": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "category": "carstatus_category_passenger",
+        "displayOrder": 2,
+        "sections": [
+          {
+            "section": "carstatus_item_passenger_door",
+            "values": [
+              {
+                "value": "carstatus_closed",
+                "status": 0
+              },
+              {
+                "value": "carstatus_locked",
+                "status": 0
+              }
+            ]
+          },
+          {
+            "section": "carstatus_item_passenger_rear_door",
+            "values": [
+              {
+                "value": "carstatus_closed",
+                "status": 0
+              },
+              {
+                "value": "carstatus_locked",
+                "status": 0
+              }
+            ]
+          },
+          {
+            "section": "carstatus_item_passenger_rear_window",
+            "values": [
+              {
+                "value": "carstatus_closed",
+                "status": 0
+              }
+            ]
+          },
+          {
+            "section": "carstatus_item_passenger_window",
+            "values": [
+              {
+                "value": "carstatus_closed",
+                "status": 0
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "category": "carstatus_category_other",
+        "displayOrder": 3,
+        "sections": [
+          {
+            "section": "carstatus_item_hood",
+            "values": [
+              {
+                "value": "carstatus_closed",
+                "status": 0
+              }
+            ]
+          },
+          {
+            "section": "carstatus_item_rear_hatch",
+            "values": [
+              {
+                "value": "carstatus_closed",
+                "status": 0
+              },
+              {
+                "value": "carstatus_locked",
+                "status": 0
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "telemetry": {
+      "fugage": {
+        "value": 92.0,
+        "unit": "%"
+      },
+      "rage": {
+        "value": 588.0,
+        "unit": "Km"
+      },
+      "odo": {
+        "value": 30444.0,
+        "unit": "Km"
+      }
+    },
+    "occurrenceDate": "2023-11-30T10:18:21Z",
+    "cautionOverallCount": 0,
+    "latitude": 49.0,
+    "longitude": 8.0,
+    "locationAcquisitionDatetime": "2023-11-30T10:18:21Z"
+  }
+}

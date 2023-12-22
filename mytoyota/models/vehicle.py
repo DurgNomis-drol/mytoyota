@@ -1,15 +1,22 @@
 """Vehicle model."""
-from __future__ import annotations
-
+import asyncio
+import calendar
+import copy
+from datetime import date, timedelta
+from functools import partial
+import json
 import logging
-from typing import Any
+from typing import Any, Dict, List, Optional, Tuple
 
+from mytoyota.api import Api
 from mytoyota.models.dashboard import Dashboard
-from mytoyota.models.hvac import Hvac
-from mytoyota.models.location import ParkingLocation
-from mytoyota.models.sensors import Sensors
-from mytoyota.utils.formatters import format_odometer
-from mytoyota.utils.logs import censor_vin
+from mytoyota.models.endpoints.vehicle_guid import VehicleGuidModel
+from mytoyota.models.location import Location
+from mytoyota.models.lock_status import LockStatus
+from mytoyota.models.nofication import Notification
+from mytoyota.models.summary import Summary, SummaryType
+from mytoyota.models.trips import Trip
+from mytoyota.utils.logs import censor_all
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -18,124 +25,368 @@ class Vehicle:
     """Vehicle data representation."""
 
     def __init__(
-        self,
-        vehicle_info: dict[str, Any],
-        connected_services: dict[str, Any],
-        odometer: list[Any] | None = None,
-        status: dict[str, Any] | None = None,
-        status_legacy: dict[str, Any] | None = None,
+        self, api: Api, vehicle_info: VehicleGuidModel, metric: bool = True
     ) -> None:
-        self._connected_services = connected_services
+        """Initialise the Vehicle data representation."""
         self._vehicle_info = vehicle_info
+        self._api = api
+        self._endpoint_data: Dict[str, Any] = {}
+        self._metric = metric
 
-        self.odometer = format_odometer(odometer) if odometer else {}
-        self._status = status if status else {}
-        self._status_legacy = status_legacy if status_legacy else {}
+        # Endpoint Name, Function to check if car supports the endpoint, endpoint to call to update
+        api_endpoints = [
+            {
+                "name": "location",
+                "capable": vehicle_info.extended_capabilities.last_parked_capable
+                or vehicle_info.features.last_parked,
+                "function": partial(
+                    self._api.get_location_endpoint, vin=vehicle_info.vin
+                ),
+            },
+            {
+                "name": "health_status",
+                "capable": True,  # TODO Unsure of the required capability # pylint: disable=W0511
+                "function": partial(
+                    self._api.get_vehicle_health_status_endpoint,
+                    vin=vehicle_info.vin,
+                ),
+            },
+            {
+                "name": "electric_status",
+                "capable": vehicle_info.extended_capabilities.econnect_vehicle_status_capable,
+                "function": partial(
+                    self._api.get_vehicle_electric_status_endpoint,
+                    vin=vehicle_info.vin,
+                ),
+            },
+            {
+                "name": "telemetry",
+                "capable": vehicle_info.extended_capabilities.telemetry_capable,
+                "function": partial(
+                    self._api.get_telemetry_endpoint, vin=vehicle_info.vin
+                ),
+            },
+            {
+                "name": "notifications",
+                "capable": True,  # TODO Unsure of the required capability # pylint: disable=W0511
+                "function": partial(
+                    self._api.get_notification_endpoint, vin=vehicle_info.vin
+                ),
+            },
+            {
+                "name": "status",
+                "capable": vehicle_info.extended_capabilities.vehicle_status,
+                "function": partial(
+                    self._api.get_remote_status_endpoint, vin=vehicle_info.vin
+                ),
+            },
+            {
+                "name": "trips",
+                "capable": True,  # TODO Unsure of the required capability # pylint: disable=W0511
+                "function": partial(
+                    self._api.get_trips_endpoint,
+                    vin=vehicle_info.vin,
+                    from_date=date.today() - timedelta(days=1),
+                    to_date=date.today(),
+                ),
+            },
+        ]
+        self._endpoint_collect = [
+            (endpoint["name"], endpoint["function"])
+            for endpoint in api_endpoints
+            if endpoint["capable"]
+        ]
+
+    async def update(self) -> None:
+        """Update the data for the vehicle.
+
+        This method asynchronously updates the data for the vehicle by
+        calling the endpoint functions in parallel.
+
+        Returns
+        -------
+            None
+
+        """
+
+        async def parallel_wrapper(
+            name: str, function: partial
+        ) -> Tuple[str, Dict[str, Any]]:
+            r = await function()
+            return name, r
+
+        responses = asyncio.gather(
+            *[
+                parallel_wrapper(name, function)
+                for name, function in self._endpoint_collect
+            ]
+        )
+        for name, data in await responses:
+            self._endpoint_data[name] = data
 
     @property
-    def vehicle_id(self) -> int | None:
-        """Vehicle's id."""
-        return self._vehicle_info.get("id")
+    def vin(self) -> Optional[str]:
+        """Return the vehicles VIN number.
+
+        Returns
+        -------
+            The vehicles VIN number
+
+        """
+        return self._vehicle_info.vin
 
     @property
-    def vin(self) -> str | None:
-        """Vehicle's vinnumber."""
-        return self._vehicle_info.get("vin")
+    def alias(self) -> Optional[str]:
+        """Vehicle's alias.
+
+        Returns
+        -------
+            Nickname of vehicle
+
+        """
+        return self._vehicle_info.nickname
 
     @property
-    def alias(self) -> str | None:
-        """Vehicle's alias."""
-        return self._vehicle_info.get("alias", "My vehicle")
+    def type(self) -> Optional[str]:
+        """Returns the "type" of vehicle.
+
+        Returns
+        -------
+            "fuel" if only fuel based
+            "mildhybrid" if hybrid
+            "phev" if plugin hybrid
+            "ev" if full electric vehicle
+        """
+        # TODO enum # pylint: disable=W0511
+        # TODO currently guessing until we see a mild hybrid and full EV # pylint: disable=W0511
+        # TODO should probably use electricalPlatformCode but values currently unknown # pylint: disable=W0511
+        # TODO list of fuel types. ?: G=Petrol Only, I=Hybrid # pylint: disable=W0511
+        return (
+            "phev"
+            if self._vehicle_info.ev_vehicle and self._vehicle_info.fuel_type
+            else "ev"
+        )
 
     @property
-    def hybrid(self) -> bool:
-        """If the vehicle is a hybrid."""
-        return self._vehicle_info.get("hybrid", False)
+    def dashboard(self) -> Optional[Dashboard]:
+        """Returns the Vehicle dashboard.
+
+        The dashboard consists of items of information you would expect to
+        find on the dashboard. i.e. Fuel Levels.
+
+        Returns
+        -------
+            A dashboard
+        """
+        # Always returns a Dashboard object as we can always get the odometer value
+        return Dashboard(
+            self._endpoint_data["telemetry"]
+            if "telemetry" in self._endpoint_data
+            else None,
+            self._endpoint_data["electric_status"]
+            if "electric_status" in self._endpoint_data
+            else None,
+            self._endpoint_data["health_status"]
+            if "health_status" in self._endpoint_data
+            else None,
+            self._metric,
+        )
 
     @property
-    def fueltype(self) -> str:
-        """Fuel type of the vehicle."""
-        if self._status:
-            if "energy" in self._status and self._status["energy"]:
-                return self._status["energy"][0].get("type", "Unknown").capitalize()
+    def location(self) -> Optional[Location]:
+        """Return the vehicles latest reported Location.
 
-        fueltype = self._vehicle_info.get("fuel", "Unknown")
-        return "Petrol" if fueltype == "1.0P" else fueltype
+        Returns
+        -------
+          The latest location or None. If None vehicle car does not support
+          providing location information.
+          _Note_ an empty location object can be returned when the Vehicle
+          supports location but none is currently available.
+        """
+        return (
+            Location(self._endpoint_data["location"])
+            if "location" in self._endpoint_data
+            else None
+        )
+
+    @property  # TODO: Cant have a property with parameters! Split into two methods? # pylint: disable=W0511
+    def notifications(self) -> Optional[List[Notification]]:  # noqa: PLR0206, ARG002
+        """Returns a list of notifications for the vehicle.
+
+        Args:
+        ----
+            include_read (bool, optional): Indicates whether to include read notifications. \n
+            Defaults to False.
+
+        Returns:
+        -------
+            Optional[List[Notification]]: A list of notifications for the vehicle,
+            or None if not supported.
+
+        """
+        if "notifications" in self._endpoint_data:
+            ret = []
+            for p in self._endpoint_data["notifications"].payload:
+                for n in p.notifications:
+                    ret.append(Notification(n))
+
+            return ret
+
+        return None
 
     @property
-    def details(self) -> dict[str, Any] | None:
-        """Formats vehicle info into a dict."""
-        det: dict[str, Any] = {}
-        for i in sorted(self._vehicle_info):
-            if i in ("vin", "alias", "id", "hybrid"):
-                continue
-            det[i] = self._vehicle_info[i]
-        return det if det else None
+    def lock_status(self) -> Optional[LockStatus]:
+        """Returns the latest lock status of Doors & Windows.
 
-    @property
-    def is_connected_services_enabled(self) -> bool:
-        """Checks if the user has enabled connected services."""
-        # Check if vin is not None. Toyota's servers is a bit flacky and can
-        # return garbage from connected_services endpoint, this is just to
-        # make sure that we don't throw a error message.
-        if self.vin and self._connected_services:
-            if (
-                "connectedService" in self._connected_services
-                and "devices" in self._connected_services["connectedService"]
-            ):
-                vin_specific_connected_service = None
-                for device in self._connected_services["connectedService"]["devices"]:
-                    if device.get("vin") == self.vin:
-                        vin_specific_connected_service = device
-                        break
-                if (
-                    vin_specific_connected_service
-                    and vin_specific_connected_service.get("state") == "ACTIVE"
-                ):
-                    return True
+        Returns
+        -------
+            Optional[LockStatus]: The latest lock status of Doors & Windows,
+            or None if not supported.
+        """
+        return LockStatus(
+            self._endpoint_data["status"] if "status" in self._endpoint_data else None
+        )
 
-                _LOGGER.error(
-                    "Please setup Connected Services if you want live data from the car. (%s)",
-                    censor_vin(self.vin),
+    async def get_summary(
+        self,
+        from_date: date,
+        to_date: date,
+        summary_type: SummaryType = SummaryType.MONTHLY,
+    ) -> Optional[List[Summary]]:
+        """Return a Daily, Monthly or Yearly summary between the provided dates.
+
+        Args:
+        ----
+            from_date (date, required): The inclusive from date to report summaries.
+            to_date (date, required): The inclusive to date to report summaries.
+            summary_type (???, optional): Daily, Monthly or Yearly summary. Monthly by default.
+
+        Returns:
+        -------
+            Optional[List[Summary]]: A list of summaries or None if not supported.
+        """
+        if to_date > date.today():  # Future dates not allowed
+            to_date = date.today()
+
+        # Summary information is always returned in the first response.
+        # No need to check all the following pages
+        resp = await self._api.get_trips_endpoint(
+            self.vin, from_date, to_date, summary=True, limit=1, offset=0
+        )
+        if resp.payload is None:
+            return None
+
+        # Convert to response
+        ret: List[Summary] = []
+        if summary_type == SummaryType.DAILY:
+            for summary in resp.payload.summary:
+                for histogram in summary.histograms:
+                    summary_date = date(
+                        day=histogram.day, month=histogram.month, year=histogram.year
+                    )
+                    ret.append(
+                        Summary(
+                            histogram.summary,
+                            self._metric,
+                            summary_date,
+                            summary_date,
+                            summary.hdc,
+                        )
+                    )
+        elif summary_type == SummaryType.WEEKLY:
+            raise NotImplementedError
+        elif summary_type == SummaryType.MONTHLY:
+            for summary in resp.payload.summary:
+                summary_from_date = date(day=1, month=summary.month, year=summary.year)
+                summary_to_date = date(
+                    day=calendar.monthrange(summary.year, summary.month)[1],
+                    month=summary.month,
+                    year=summary.year,
                 )
-                return False
-            _LOGGER.error(
-                "Your vehicle does not support Connected services (%s). You can find out if your "
-                "vehicle is compatible by checking the manual that comes with your car.",
-                censor_vin(self.vin),
+
+                ret.append(
+                    Summary(
+                        summary.summary,
+                        self._metric,
+                        summary_from_date
+                        if summary_from_date > from_date
+                        else from_date,
+                        summary_to_date if summary_to_date < to_date else to_date,
+                        summary.hdc,
+                    )
+                )
+        elif summary_type == SummaryType.YEARLY:
+            raise NotImplementedError
+
+        return ret
+
+    async def get_trips(
+        self, from_date: date, to_date: date, full_route: bool = False
+    ) -> Optional[List[Trip]]:
+        """Return information on all trips made between the provided dates.
+
+        Args:
+        ----
+            from_date (date, required): The inclusive from date
+            to_date (date, required): The inclusive to date
+            full_route (bool, optional): Provide the full route information for each trip
+
+        Returns:
+        -------
+            Optional[List[Something]]: A list of all trips or None if not supported.
+        """
+        ret: List[Trip] = []
+        offset = 0
+        while True:
+            resp = await self._api.get_trips_endpoint(
+                self.vin,
+                from_date,
+                to_date,
+                summary=False,
+                limit=5,
+                offset=offset,
+                route=full_route,
             )
-        return False
+            if resp.payload is None:
+                break
 
-    @property
-    def parkinglocation(self) -> ParkingLocation | None:
-        """Last parking location."""
-        if self.is_connected_services_enabled and "event" in self._status:
-            return ParkingLocation(self._status.get("event"))
-        return None
+            # Convert to response
+            for t in resp.payload.trips:
+                ret.append(Trip(t, self._metric))
 
-    @property
-    def sensors(self) -> Sensors | None:
-        """Vehicle sensors."""
-        if self.is_connected_services_enabled and self._status:
-            if "protectionState" in self._status:
-                return Sensors(self._status.get("protectionState"))
-        return None
+            offset = resp.payload.metadata.pagination.next_offset
+            if offset is None:
+                break
 
-    @property
-    def hvac(self) -> Hvac | None:
-        """Vehicle hvac."""
-        if self.is_connected_services_enabled:
-            if self._status and "climate" in self._status:
-                return Hvac(self._status.get("climate"))
-            if self._status_legacy:
-                rci = self._status_legacy.get("VehicleInfo", {})
-                if "RemoteHvacInfo" in rci:
-                    return Hvac(rci.get("RemoteHvacInfo"), True)
-        return None
+        return ret
 
-    @property
-    def dashboard(self) -> Dashboard | None:
-        """Vehicle dashboard."""
-        if self.is_connected_services_enabled and self.odometer:
-            return Dashboard(self)
-        return None
+    #
+    # More get functionality depending on what we find
+    #
+
+    async def set_alias(self, value) -> bool:
+        """Set the alias for the vehicle.
+
+        Args:
+        ----
+            value: The alias value to set for the vehicle.
+
+        Returns:
+        -------
+            bool
+        """
+        return value
+
+    #
+    # More set functionality depending on what we find
+    #
+
+    def _dump_all(self) -> Dict[str, Any]:
+        """Dump data from all endpoints for debugging and further work."""
+        dump: [str, Any] = {
+            "vehicle_info": json.loads(self._vehicle_info.model_dump_json())
+        }
+        for name, data in self._endpoint_data.items():
+            dump[name] = json.loads(data.model_dump_json())
+
+        return censor_all(copy.deepcopy(dump))

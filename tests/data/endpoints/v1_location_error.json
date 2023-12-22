@@ -1,0 +1,11 @@
+{
+  "status": {
+    "messages": [
+      {
+        "description": "Unauthorized",
+        "detailedDescription": "invalid guid and vin mapping",
+        "responseCode": "APIGW-403"
+      }
+    ]
+  }
+}

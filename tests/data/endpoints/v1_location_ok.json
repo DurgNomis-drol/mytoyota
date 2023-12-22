@@ -1,0 +1,16 @@
+{
+  "code": 200,
+  "errors": [],
+  "message": "Ok",
+  "payload": {
+    "lastTimestamp": "2023-11-27T07:42:41Z",
+    "vehicleLocation": {
+      "displayName": "Last Parked",
+      "latitude": 52.169516,
+      "locationAcquisitionDatetime": "2023-11-27T07:42:41Z",
+      "longitude": 0.135654
+    },
+    "vin": "JTMGBRFV80D109752"
+  },
+  "status": "SUCCESS"
+}

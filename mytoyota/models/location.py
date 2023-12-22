@@ -1,23 +1,65 @@
 """Models for vehicle location."""
-from __future__ import annotations
+from datetime import datetime
+from typing import Optional
 
-from mytoyota.models.data import VehicleData
+from mytoyota.models.endpoints.location import LocationResponseModel
 
 
-class ParkingLocation(VehicleData):
-    """Parking Location data model."""
+class Location:
+    """Latest Location of car."""
+
+    def __init__(self, location: Optional[LocationResponseModel] = None):
+        """Init the location model."""
+        self._location = None
+        if location and location.payload:
+            self._location = location.payload.vehicle_location
+
+    def __repr__(self):
+        """Representation of the location model."""
+        return " ".join(
+            [
+                f"{k}={getattr(self, k)!s}"
+                for k, v in type(self).__dict__.items()
+                if isinstance(v, property)
+            ],
+        )
 
     @property
-    def latitude(self) -> float:
-        """Latitude."""
-        return float(self._data.get("lat", 0.0))
+    def latitude(self) -> Optional[float]:
+        """Latitude.
+
+        Returns
+        -------
+            Latest latitude or None. _Not always available_.
+        """
+        return self._location.latitude if self._location else None
 
     @property
-    def longitude(self) -> float:
-        """Longitude."""
-        return float(self._data.get("lon", 0.0))
+    def longitude(self) -> Optional[float]:
+        """Longitude.
+
+        Returns
+        -------
+            Latest longitude or None. _Not always available_.
+        """
+        return self._location.longitude if self._location else None
 
     @property
-    def timestamp(self) -> int | None:
-        """Timestamp."""
-        return self._data.get("timestamp")
+    def timestamp(self) -> Optional[datetime]:
+        """Timestamp.
+
+        Returns
+        -------
+           Position aquired timestamp or None. _Not always available_.
+        """
+        return self._location.location_acquisition_datetime if self._location else None
+
+    @property
+    def state(self) -> str:
+        """State.
+
+        Returns
+        -------
+          The state of the position or None. _Not always available_.
+        """
+        return self._location.display_name if self._location else None
