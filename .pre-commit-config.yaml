@@ -40,12 +40,6 @@ repos:
         entry: poetry run pylint
         language: system
         types: [python]
-      - id: pytest-check
-        name: pytest-check
-        entry: pytest
-        language: system
-        pass_filenames: false
-        always_run: true
       - id: codespell
         name: codespell
         entry: poetry run codespell --write-changes --skip="./*"
