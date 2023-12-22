@@ -1,27 +1,19 @@
-name: "Linting"
+name: "Lint code"
 
 on:
-  push:
-    branches: ["master", "main"]
   pull_request:
 
 jobs:
   pre-commit:
     name: "Pre-commit"
-    strategy:
-      matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
     runs-on: "ubuntu-latest"
-    env:
-      OS: "ubuntu-latest"
-      PYTHON: "${{ matrix.python-version }}"
     steps:
       - name: "⤵️ Check out code from GitHub"
         uses: "actions/checkout@v4"
-      - name: "🐍 Set up Python ${{ matrix.python-version }}"
+      - name: "🐍 Set up Python"
         uses: "actions/setup-python@v5"
         with:
-          python-version: "${{ matrix.python-version }}"
+          python-version: 3.8
       - name: "⚙️ Install Poetry"
         uses: "abatilo/actions-poetry@v2.3.0"
         with:
@@ -31,16 +23,3 @@ jobs:
       - name: "🚀 Run pre-commit on all files"
         run: |
           poetry run pre-commit run --all-files --show-diff-on-failure --color=always
-      - name: "🚀 Run pytest with coverage"
-        run: |
-          poetry run pip install coverage
-          poetry run coverage run -m pytest
-          poetry run coverage xml
-      - name: "⬆️ Upload Coverage to Codecov"
-        uses: "codecov/codecov-action@v3"
-        with:
-          token: "${{ secrets.CODECOV_TOKEN }}"
-          env_vars: OS,PYTHON
-          fail_ci_if_error: true
-          flags: "unittests"
-          verbose: true
