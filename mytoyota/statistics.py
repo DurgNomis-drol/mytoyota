@@ -1,4 +1,4 @@
-"""Statistics class"""
+"""Statistics class."""
 import logging
 
 import arrow
@@ -42,6 +42,7 @@ class Statistics:
         imperial: bool = False,
         use_liters: bool = False,
     ) -> None:
+        """Initialise the Class to hold statistical information."""
         self._now: Arrow = arrow.now()
 
         if not raw_statistics:
@@ -61,11 +62,10 @@ class Statistics:
 
     @staticmethod
     def _convert_to_imperial(data: list, use_liters: bool) -> list:
-        """
-        Toyota converts some of the data, but not all for some reason. This function
-        corrects these values and adds the possibility to show them in MPG also.
-        """
+        """Toyota converts some of the data, but not all for some reason.
 
+        This function corrects these values and adds the possibility to show them in MPG also.
+        """
         _LOGGER.debug("Converting statistics to imperial...")
 
         attributes_to_convert = [
@@ -81,7 +81,7 @@ class Statistics:
             periode[BUCKET].update(
                 {
                     UNIT: IMPERIAL_LITERS if use_liters else IMPERIAL,
-                }
+                },
             )
             for attribute in attributes_to_convert:
                 if attribute in periode[DATA]:
@@ -102,7 +102,6 @@ class Statistics:
 
     def _add_bucket(self, data: dict, interval: str) -> list:
         """Add bucket and return statistics in a uniform way."""
-
         _LOGGER.debug("Updating bucket for statistics....")
 
         if interval is DAY:
@@ -118,7 +117,7 @@ class Statistics:
                         DATE: arrow.Arrow(year, 1, 1)
                         .shift(days=dayofyear - 1)
                         .format(DATE_FORMAT),
-                    }
+                    },
                 )
             return data[HISTOGRAM]
 
@@ -144,7 +143,7 @@ class Statistics:
                         )
                         .floor(MONTH)
                         .format(DATE_FORMAT),
-                    }
+                    },
                 )
             return data[HISTOGRAM]
 
@@ -163,7 +162,7 @@ class Statistics:
             periode[BUCKET].update(
                 {
                     UNIT: METRIC,
-                }
+                },
             )
 
         return data[HISTOGRAM]

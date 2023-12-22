@@ -1,101 +1,196 @@
 """Models for vehicle sensors."""
-from __future__ import annotations
+from datetime import timedelta
+from typing import Any, List, Optional
 
-from typing import TYPE_CHECKING
-
-from mytoyota.utils.conversions import convert_to_miles
-
-if TYPE_CHECKING:
-    from mytoyota.models.vehicle import Vehicle  # pragma: no cover
+from mytoyota.models.endpoints.electric import ElectricResponseModel
+from mytoyota.models.endpoints.telemetry import TelemetryResponseModel
+from mytoyota.models.endpoints.vehicle_health import VehicleHealthResponseModel
+from mytoyota.utils.conversions import convert_distance
 
 
 class Dashboard:
-    """Instrumentation data model."""
+    """Information that may be found on a vehicles dashboard."""
 
-    def __init__(
+    # TODO do we want to supply last update times?  # pylint: disable=W0511
+
+    def __init__(  # noqa: D417
         self,
-        vehicle: Vehicle,
-    ) -> None:
-        """Dashboard."""
-        self._vehicle = vehicle
+        telemetry: Optional[TelemetryResponseModel] = None,
+        electric: Optional[ElectricResponseModel] = None,
+        health: Optional[VehicleHealthResponseModel] = None,
+        metric: bool = True,
+    ):
+        """Initialise Dashboard.
 
-        vehicle_info = vehicle._status_legacy.get("VehicleInfo", {})
-        self._chargeinfo = vehicle_info.get("ChargeInfo", {})
-        self._energy = (
-            vehicle._status.get("energy", [])[0] if "energy" in vehicle._status else {}
+        Parameters
+        ----------
+            metric: bool:   Report distances in metric(or imperial)
+        """
+        self._electric = electric.payload if electric else None
+        self._telemetry = telemetry.payload if telemetry else None
+        self._health = health.payload if health else None
+        self._metric = "km" if metric else "mi"
+
+    def __repr__(self):
+        """Representation of the Dashboard model."""
+        return " ".join(
+            [
+                f"{k}={getattr(self, k)!s}"
+                for k, v in type(self).__dict__.items()
+                if isinstance(v, property)
+            ],
         )
 
     @property
-    def legacy(self) -> bool:
-        """If the car uses the legacy endpoints."""
-        if "Fuel" in self._vehicle.odometer:
-            return True
-        return False
+    def odometer(self) -> float:
+        """Odometer distance.
 
-    @property
-    def is_metric(self) -> bool:
-        """If the car is reporting data in metric."""
-        return self._vehicle.odometer.get("mileage_unit") == "km"
-
-    @property
-    def odometer(self) -> int | None:
-        """Shows the odometer distance."""
-        return self._vehicle.odometer.get("mileage")
-
-    @property
-    def fuel_level(self) -> float | None:
-        """Shows the fuellevel of the vehicle."""
-        if self.legacy:
-            return self._vehicle.odometer.get("Fuel")
-        return self._energy.get("level")
-
-    @property
-    def fuel_range(self) -> float | None:
-        """Shows the range if available."""
-        fuel_range = (
-            self._chargeinfo.get("GasolineTravelableDistance")
-            if self.legacy
-            else self._energy.get("remainingRange", None)
+        Returns
+        -------
+            The latest odometer reading in the current selected units
+        """
+        return convert_distance(
+            self._metric, self._telemetry.odometer.unit, self._telemetry.odometer.value
         )
-        return convert_to_miles(fuel_range) if not self.is_metric else fuel_range
 
     @property
-    def battery_level(self) -> float | None:
-        """Shows the battery level if a hybrid."""
-        if self.legacy:
-            return self._chargeinfo.get("ChargeRemainingAmount")
-        return None
+    def fuel_level(self) -> int:
+        """Fuel level.
+
+        Returns
+        -------
+            A value as percentage
+        """
+        return self._telemetry.fuel_level
 
     @property
-    def battery_range(self) -> float | None:
-        """Shows the battery range if a hybrid."""
-        if self.legacy:
-            battery_range = self._chargeinfo.get("EvDistanceInKm")
-            return (
-                convert_to_miles(battery_range) if not self.is_metric else battery_range
+    def battery_level(self) -> Optional[float]:
+        """Shows the battery level if available.
+
+        Returns
+        -------
+            A value as percentage
+        """
+        return self._electric.battery_level if self._electric else None
+
+    @property
+    def fuel_range(self) -> Optional[float]:
+        """The range using _only_ fuel.
+
+        Returns
+        -------
+            The range in the currently selected unit.
+
+            If vehicle is electric returns 0
+            If vehicle doesn't support fuel range returns None
+        """
+        if self._electric:
+            return convert_distance(
+                self._metric,
+                self._electric.fuel_range.unit,
+                self._electric.fuel_range.value,
             )
-        return None
-
-    @property
-    def battery_range_with_aircon(self) -> float | None:
-        """Shows the battery range with aircon on, if a hybrid."""
-        if self.legacy:
-            battery_range = self._chargeinfo.get("EvDistanceWithAirCoInKm")
-            return (
-                convert_to_miles(battery_range) if not self.is_metric else battery_range
+        if self._telemetry.distance_to_empty:
+            return convert_distance(
+                self._metric,
+                self._telemetry.distance_to_empty.unit,
+                self._telemetry.distance_to_empty.value,
             )
+
         return None
 
     @property
-    def charging_status(self) -> str | None:
-        """Shows the charging status if a hybrid."""
-        if self.legacy:
-            return self._chargeinfo.get("ChargingStatus")
+    def battery_range(self) -> Optional[float]:
+        """The range using _only_ EV.
+
+        Returns
+        -------
+            The range in the currently selected unit.
+
+            If vehicle is fuel only returns None
+            If vehicle doesn't support battery range returns None
+        """
+        if self._electric:
+            return convert_distance(
+                self._metric,
+                self._electric.ev_range.unit,
+                self._electric.ev_range.value,
+            )
+
         return None
 
     @property
-    def remaining_charge_time(self) -> int | None:
-        """Shows the remaining time to a full charge, if a hybrid."""
-        if self.legacy:
-            return self._chargeinfo.get("RemainingChargeTime")
+    def battery_range_with_ac(self) -> Optional[float]:
+        """The range using _only_ EV when using AC.
+
+        Returns
+        -------
+            The range in the currently selected unit.
+
+            If vehicle is fuel only returns 0
+            If vehicle doesn't support battery range returns 0
+        """
+        if self._electric:
+            return convert_distance(
+                self._metric,
+                self._electric.ev_range_with_ac.unit,
+                self._electric.ev_range_with_ac.value,
+            )
+
         return None
+
+    @property
+    def range(self) -> Optional[float]:
+        """The range using all available fuel & EV.
+
+        Returns
+        -------
+            The range in the currently selected unit.
+
+            fuel only == fuel_range
+            ev only == battery_range_with_ac
+            hybrid == fuel_range + battery_range_with_ac
+            None if not supported
+        """
+        if self._telemetry.distance_to_empty:
+            return convert_distance(
+                self._metric,
+                self._telemetry.distance_to_empty.unit,
+                self._telemetry.distance_to_empty.value,
+            )
+
+        return None
+
+    @property
+    def charging_status(self) -> Optional[str]:
+        """Current charging status.
+
+        Returns
+        -------
+            A string containing the charging status as reported by the vehicle
+            None if vehicle doesn't support charging
+        """
+        return self._electric.charging_status if self._electric else None
+
+    @property
+    def remaining_charge_time(self) -> Optional[timedelta]:
+        """Time left until charge is complete.
+
+        Returns
+        -------
+            The amount of time left
+            None if vehicle is not currently charging.
+            None if vehicle doesn't support charging
+        """
+        return self._electric.remaining_charge_time if self._electric else None
+
+    @property
+    def warning_lights(self) -> Optional[List[Any]]:
+        """Dashboard Warning Lights.
+
+        Returns
+        -------
+            List of latest dashboard warning lights
+            _Note_ Not fully understood
+        """
+        return self._health.warning if self._health else None

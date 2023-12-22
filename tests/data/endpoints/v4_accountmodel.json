@@ -1,0 +1,49 @@
+{
+  "payload": {
+    "customer": {
+      "accountStatus": "active",
+      "additionalAttributes": {
+        "isTermsAccepted": true,
+        "termsActivity": [
+          { "timeStamp": 1695059143310, "version": "TME_CP_GB_V7" },
+          { "timeStamp": 1699214753709, "version": "TME_CP_GB_V8" }
+        ]
+      },
+      "createDate": 1670190933340,
+      "createSource": "TME_FR",
+      "customerType": "PERSON",
+      "emails": [
+        {
+          "emailAddress": "name@address.com",
+          "emailType": "forgerock",
+          "emailVerified": true,
+          "verificationDate": 1670190933340
+        }
+      ],
+      "firstName": "FirstName",
+      "forgerockId": "12345678-1234-1234-1234-123456789012",
+      "guid": "12345678-1234-1234-1234-123456789012",
+      "isCpMigrated": false,
+      "lastName": "LastName",
+      "lastUpdateDate": 1699214742826,
+      "lastUpdateSource": "CT_FR",
+      "phoneNumbers": [
+        {
+          "countryCode": 44,
+          "phoneNumber": 1234567890,
+          "phoneType": "MOBILE",
+          "phoneVerified": true,
+          "verificationDate": 1699214742826
+        }
+      ],
+      "preferredLanguage": "en-GB",
+      "signupType": "regular",
+      "uiLanguage": "en-GB"
+    }
+  },
+  "status": {
+    "messages": [
+      { "description": "Customer Found", "responseCode": "OCPR-0000" }
+    ]
+  }
+}

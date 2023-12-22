@@ -1,1 +1,1 @@
-"""Need for pytest or else it will cause an import error in pytest"""
+"""Need for pytest or else it will cause an import error in pytest."""

@@ -1,0 +1,21 @@
+{
+  "payload": {
+    "batteryLevel": 79,
+    "canSetNextChargingEvent": true,
+    "chargingStatus": "none",
+    "evRange": { "unit": "km", "value": 57.3 },
+    "evRangeWithAc": { "unit": "km", "value": 54.434999999999995 },
+    "fuelLevel": 41,
+    "fuelRange": { "unit": "mi", "value": 188.0 },
+    "lastUpdateTimestamp": "2023-11-27T17:53:59Z"
+  },
+  "status": {
+    "messages": [
+      {
+        "description": "Request Completed Successfully",
+        "detailedDescription": "Request Completed Successfully",
+        "responseCode": "ONE-GLOBAL-RS-10000"
+      }
+    ]
+  }
+}

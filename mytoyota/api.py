@@ -1,140 +1,207 @@
-"""Toyota Connected Services API"""
-from __future__ import annotations
+"""Toyota Connected Services API."""
 
-from typing import Any
+from datetime import date, datetime, timezone
+from uuid import uuid4
 
-from .const import BASE_URL, BASE_URL_CARS
-from .controller import Controller
+from mytoyota.const import (
+    VEHICLE_ASSOCIATION_ENDPOINT,
+    VEHICLE_GLOBAL_REMOTE_ELECTRIC_STATUS_ENDPOINT,
+    VEHICLE_GLOBAL_REMOTE_STATUS_ENDPOINT,
+    VEHICLE_GUID_ENDPOINT,
+    VEHICLE_HEALTH_STATUS_ENDPOINT,
+    VEHICLE_LOCATION_ENDPOINT,
+    VEHICLE_NOTIFICATION_HISTORY_ENDPOINT,
+    VEHICLE_TELEMETRY_ENDPOINT,
+    VEHICLE_TRIPS_ENDPOINT,
+)
+from mytoyota.controller import Controller
+from mytoyota.models.endpoints.electric import ElectricResponseModel
+from mytoyota.models.endpoints.location import LocationResponseModel
+from mytoyota.models.endpoints.notifications import NotificationResponseModel
+from mytoyota.models.endpoints.status import RemoteStatusResponseModel
+from mytoyota.models.endpoints.telemetry import TelemetryResponseModel
+from mytoyota.models.endpoints.trips import TripsResponseModel
+from mytoyota.models.endpoints.vehicle_guid import VehiclesResponseModel
+from mytoyota.models.endpoints.vehicle_health import VehicleHealthResponseModel
 
 
 class Api:
-    """Controller class."""
+    """API Class. Allows access to available endpoints to retrieve the raw data."""
 
-    def __init__(self, controller: Controller) -> None:
-        """Toyota Controller"""
+    def __init__(self, controller: Controller) -> None:  # noqa: D417
+        """Initialise the API.
+
+        Initialise the API and set the Controller
+
+        Parameters
+        ----------
+            controller: Controller: A controller class to managing communication
+        """
         self.controller = controller
 
-    @property
-    def uuid(self) -> str | None:
-        """Returns uuid from controller"""
-        return self.controller.uuid
+    async def _request_and_parse(self, model, method: str, endpoint: str, **kwargs):
+        """Parse requests and responses."""
+        response = await self.controller.request_json(
+            method=method, endpoint=endpoint, **kwargs
+        )
+        return model(**response)
 
-    async def set_vehicle_alias_endpoint(
-        self, new_alias: str, vehicle_id: int
-    ) -> dict[str, Any] | None:
-        """Set vehicle alias."""
-        return await self.controller.request(
+    async def set_vehicle_alias_endpoint(self, alias: str, guid: str, vin: str):
+        """Set the alias for a vehicle."""
+        return await self.controller.request_raw(
             method="PUT",
-            base_url=BASE_URL_CARS,
-            endpoint=f"/api/users/{self.uuid}/vehicles/{vehicle_id}",
-            body={"id": vehicle_id, "alias": new_alias},
+            endpoint=VEHICLE_ASSOCIATION_ENDPOINT,
+            vin=vin,
+            headers={
+                "datetime": str(int(datetime.now(timezone.utc).timestamp() * 1000)),
+                "x-correlationid": str(uuid4()),
+                "Content-Type": "application/json",
+            },
+            body={"guid": guid, "vin": vin, "nickName": alias},
         )
 
-    async def get_vehicles_endpoint(self) -> list[dict[str, Any] | None] | None:
-        """Retrieves list of cars you have registered with MyT"""
-        return await self.controller.request(
-            method="GET",
-            base_url=BASE_URL_CARS,
-            endpoint=f"/vehicle/user/{self.uuid}/vehicles?services=uio&legacy=true",
+    #    TODO: Remove for now as it seems to have no effect. The App is sending it! # pylint: disable=W0511
+    #    async def post_wake_endpoint(self) -> None:
+    #        """Send a wake request to the vehicle."""
+    #        await self.controller.request_raw(
+    #            method="POST", endpoint="/v2/global/remote/wake"
+    #        )
+
+    async def get_vehicles_endpoint(self) -> VehiclesResponseModel:
+        """Return list of vehicles registered with provider."""
+        return await self._request_and_parse(
+            VehiclesResponseModel, "GET", VEHICLE_GUID_ENDPOINT
         )
 
-    async def get_connected_services_endpoint(self, vin: str) -> dict[str, Any] | None:
-        """Get information about connected services for the given car."""
-        return await self.controller.request(
-            method="GET",
-            base_url=BASE_URL_CARS,
-            endpoint=f"/vehicle/user/{self.uuid}/vehicle/{vin}?legacy=true&services=fud,connected",
-        )
-
-    async def get_odometer_endpoint(self, vin: str) -> list[dict[str, Any]] | None:
-        """Get information from odometer."""
-        return await self.controller.request(
-            method="GET",
-            base_url=BASE_URL,
-            endpoint=f"/vehicle/{vin}/addtionalInfo",
-        )
-
-    async def get_parking_endpoint(
+    async def get_location_endpoint(
         self, vin: str
-    ) -> dict[str, Any] | None:  # pragma: no cover
-        """Get where you have parked your car."""
-        return await self.controller.request(
-            method="GET",
-            base_url=BASE_URL,
-            endpoint=f"/users/{self.uuid}/vehicle/location",
-            headers={"VIN": vin},
+    ) -> LocationResponseModel:  # noqa: D417
+        """Get the last known location of your car. Only updates when car is parked.
+
+        Response includes Lat, Lon position. * If supported.
+
+        Parameters
+        ----------
+            vin: str:   The vehicles VIN
+        """
+        return await self._request_and_parse(
+            LocationResponseModel, "GET", VEHICLE_LOCATION_ENDPOINT, vin=vin
         )
 
-    async def get_vehicle_status_endpoint(self, vin: str) -> dict[str, Any] | None:
-        """Get information about the vehicle."""
-        return await self.controller.request(
-            method="GET",
-            base_url=BASE_URL,
-            endpoint=f"/users/{self.uuid}/vehicles/{vin}/vehicleStatus",
-        )
-
-    async def get_vehicle_status_legacy_endpoint(
+    async def get_vehicle_health_status_endpoint(
         self, vin: str
-    ) -> dict[str, Any] | None:
+    ) -> VehicleHealthResponseModel:  # noqa: D417
+        """Get the latest health status.
+
+        Response includes the quantity of engine oil and any dashboard warning lights. \n
+        * If supported.
+
+        Parameters
+        ----------
+            vin: str:   The vehicles VIN
+        """
+        return await self._request_and_parse(
+            VehicleHealthResponseModel, "GET", VEHICLE_HEALTH_STATUS_ENDPOINT, vin=vin
+        )
+
+    async def get_remote_status_endpoint(self, vin: str) -> RemoteStatusResponseModel:
         """Get information about the vehicle."""
-        return await self.controller.request(
-            method="GET",
-            base_url=BASE_URL,
-            endpoint=f"/vehicles/{vin}/remoteControl/status",
+        return await self._request_and_parse(
+            RemoteStatusResponseModel,
+            "GET",
+            VEHICLE_GLOBAL_REMOTE_STATUS_ENDPOINT,
+            vin=vin,
         )
 
-    async def get_driving_statistics_endpoint(
-        self, vin: str, from_date: str, interval: str | None = None
-    ) -> dict[str, Any] | None:
-        """Get driving statistic"""
-        return await self.controller.request(
-            method="GET",
-            base_url=BASE_URL,
-            endpoint="/v2/trips/summarize",
-            headers={"vin": vin},
-            params={"from": from_date, "calendarInterval": interval},
+    async def get_vehicle_electric_status_endpoint(
+        self, vin: str
+    ) -> ElectricResponseModel:  # noqa: D417
+        """Get the latest electric status.
+
+        Response includes current battery level, EV Range, EV Range with AC, \n
+        fuel level, fuel range and current charging status
+
+        Parameters
+        ----------
+            vin: str:   The vehicles VIN
+        """
+        return await self._request_and_parse(
+            ElectricResponseModel,
+            "GET",
+            VEHICLE_GLOBAL_REMOTE_ELECTRIC_STATUS_ENDPOINT,
+            vin=vin,
         )
 
-    async def get_trips_endpoint(
+    async def get_telemetry_endpoint(
+        self, vin: str
+    ) -> TelemetryResponseModel:  # noqa: D417
+        """Get the latest telemetry status.
+
+        Response includes current fuel level, distance to empty and odometer
+
+        Parameters
+        ----------
+            vin: str:   The vehicles VIN
+        """
+        return await self._request_and_parse(
+            TelemetryResponseModel, "GET", VEHICLE_TELEMETRY_ENDPOINT, vin=vin
+        )
+
+    async def get_notification_endpoint(
+        self, vin: str
+    ) -> NotificationResponseModel:  # noqa: D417
+        """Get all available notifications for the vehicle.
+
+        A notification includes a message, notification date, read flag, date read.
+
+        NOTE: Currently no way to mark notification as read or limit the response.
+
+        Parameters
+        ----------
+            vin: str:   The vehicles VIN
+        """
+        return await self._request_and_parse(
+            NotificationResponseModel,
+            "GET",
+            VEHICLE_NOTIFICATION_HISTORY_ENDPOINT,
+            vin=vin,
+        )
+
+    async def get_trips_endpoint(  # noqa: PLR0913, D417
         self,
         vin: str,
-        page: int = 1,
-    ) -> dict[str, Any] | None:
-        """Get trip
-        The page parameter works a bit strange but setting to 1 gets last few trips"""
-        return await self.controller.request(
-            method="GET",
-            base_url=BASE_URL_CARS,
-            endpoint=f"/api/user/{self.uuid}/cms/trips/v2/history/vin/{vin}/{page}",
-            headers={"vin": vin},
-        )
+        from_date: date,
+        to_date: date,
+        route: bool = False,
+        summary: bool = True,
+        limit: int = 5,
+        offset: int = 0,
+    ) -> TripsResponseModel:
+        """Get list of trips.
 
-    async def get_trip_endpoint(self, vin: str, trip_id: str) -> dict[str, Any] | None:
-        """Get data for a single trip"""
-        return await self.controller.request(
-            method="GET",
-            base_url=BASE_URL_CARS,
-            endpoint=f"/api/user/{self.uuid}/cms/trips/v2/{trip_id}/events/vin/{vin}",
-            headers={"vin": vin},
-        )
+        Retrieves a list of all trips between the given dates. \n
+        The default data(route = False, summary = False) provides
+        a basic summary of each trip and includes Coaching message and electrical use.
 
-    async def set_lock_unlock_vehicle_endpoint(
-        self, vin: str, action: str
-    ) -> dict[str, str] | None:
-        """Lock vehicle."""
-        return await self.controller.request(
-            method="POST",
-            base_url=BASE_URL,
-            endpoint=f"/vehicles/{vin}/lock",
-            body={"action": action},
+        Parameters
+        ----------
+            vin: str:        The vehicles VIN
+            from_date: date: From date to include trips, inclusive. Cant be in the future.
+            to_date: date:   To date to include trips, inclusive. Cant be in the future.
+            route: bool:     If true returns the route of each trip as a list of coordinates.
+                             Suitable for drawing on a map.
+            summary: bool:   If true returns a summary of each month and day in the date range
+            limit: int:      Limit of number of trips to return in one request. Max 50.
+            offset: int:     Offset into trips to start the request.
+        """
+        endpoint = VEHICLE_TRIPS_ENDPOINT.format(
+            from_date=from_date,
+            to_date=to_date,
+            route=route,
+            summary=summary,
+            limit=limit,
+            offset=offset,
         )
-
-    async def get_lock_unlock_request_status(
-        self, vin: str, request_id: str
-    ) -> dict[str, Any] | None:
-        """Check lock/unlock status given a request ID"""
-        return await self.controller.request(
-            method="GET",
-            base_url=BASE_URL,
-            endpoint=f"/vehicles/{vin}/lock/{request_id}",
+        return await self._request_and_parse(
+            TripsResponseModel, "GET", endpoint, vin=vin
         )

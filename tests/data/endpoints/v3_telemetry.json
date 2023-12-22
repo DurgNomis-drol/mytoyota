@@ -1,0 +1,19 @@
+{
+  "payload": {
+    "fuelType": "B",
+    "odometer": {
+      "value": 30420,
+      "unit": "km"
+    },
+    "fuelLevel": 99,
+    "distanceToEmpty": {
+      "value": 634,
+      "unit": "km"
+    },
+    "timestamp": "2023-11-28T09:45:40Z"
+  },
+  "status": "SUCCESS",
+  "code": 200,
+  "message": "Ok",
+  "errors": []
+}

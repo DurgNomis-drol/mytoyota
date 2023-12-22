@@ -1,0 +1,11 @@
+{
+  "code": 200,
+  "errors": [],
+  "payload": {
+    "quantityOfEngOilIcon": [],
+    "vin": "JTMGBRFV80D109752",
+    "warning": [],
+    "wnglastUpdTime": "2023-11-27T16:20:10.203Z"
+  },
+  "status": "SUCCESS"
+}

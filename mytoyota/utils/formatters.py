@@ -1,8 +1,8 @@
-"""Formatters used"""
+"""Formatters used."""
 
 
 def format_odometer(raw: list) -> dict:
-    """Formats odometer information from a list to a dict."""
+    """Format odometer information from a list to a dict."""
     instruments: dict = {}
     for instrument in raw:
         instruments[instrument["type"]] = instrument["value"]
