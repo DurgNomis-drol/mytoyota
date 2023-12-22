@@ -14,8 +14,8 @@ categories:
     labels: [":speech_balloon: translation"]
   - title: "📝 Documentation"
     labels: [":memo: documentation"]
-  - title: "🎲 Dopendencies"
-    labels: [":game_die: documentation"]
+  - title: "🎲 Dependencies"
+    labels: [":game_die: dependencies"]
 change-template: "- $TITLE @$AUTHOR (#$NUMBER)"
 change-title-escapes: '\<*_&' # You can add # and @ to disable mentions, and add ` to disable code blocks.
 template: |
