@@ -8,6 +8,15 @@ from pydantic import BaseModel, Field
 from mytoyota.models.endpoints.common import StatusModel
 
 
+def add_with_none(this, that):
+    if this is None:
+        return that
+    if that is None:
+        return this
+
+    return this + that
+
+
 class _SummaryBaseModel(BaseModel):
     length: int
     duration: int
@@ -22,6 +31,31 @@ class _SummaryBaseModel(BaseModel):
     fuel_consumption: Optional[float] = Field(
         alias="fuelConsumption", default=None
     )  # Electric cars might not use fuel. Milliliters.
+
+    def __add__(self, other):
+        """
+        Adds together two SummaryBaseModel's. Handles Min/Max/Average fields correctly
+
+        Parameters
+        ----------
+        other: _SummaryBaseModel: to be added
+        """
+        if other is not None:
+            self.length += other.length
+            self.duration += other.duration
+            self.duration_idle += other.duration_idle
+            self.countries.extend(x for x in other.countries if x not in self.countries)
+            self.max_speed = max(self.max_speed, other.max_speed)
+            self.average_speed = (self.average_speed + other.average_speed) / 2.0
+            self.length_overspeed += other.length_overspeed
+            self.duration_overspeed += other.duration_overspeed
+            self.length_highway += other.length_highway
+            self.duration_highway += other.duration_highway
+            self.fuel_consumption = add_with_none(
+                self.fuel_consumption, other.fuel_consumption
+            )
+
+        return self
 
 
 class _SummaryModel(_SummaryBaseModel):
@@ -65,6 +99,26 @@ class _HDCModel(BaseModel):
     eco_dist: Optional[int] = Field(alias="ecoDist", default=None)
     power_time: Optional[int] = Field(alias="powerTime", default=None)
     power_dist: Optional[int] = Field(alias="powerDist", default=None)
+
+    def __add__(self, other):
+        """
+        Adds together two HDCModel's. Handles Min/Max/Average fields correctly
+
+        Parameters
+        ----------
+        other: _SummaryBaseModel: to be added
+        """
+        if other is not None:
+            self.ev_time = add_with_none(self.ev_time, other.ev_time)
+            self.ev_distance = add_with_none(self.ev_distance, other.ev_distance)
+            self.charge_time = add_with_none(self.charge_time, other.charge_time)
+            self.charge_dist = add_with_none(self.charge_dist, other.charge_dist)
+            self.eco_time = add_with_none(self.eco_time, other.eco_time)
+            self.eco_dist = add_with_none(self.eco_dist, other.eco_dist)
+            self.power_time = add_with_none(self.power_time, other.power_time)
+            self.power_dist = add_with_none(self.power_dist, other.power_dist)
+
+        return self
 
 
 class _RouteModel(BaseModel):

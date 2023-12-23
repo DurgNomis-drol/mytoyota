@@ -294,7 +294,41 @@ class Vehicle:
                         )
                     )
         elif summary_type == SummaryType.WEEKLY:
-            raise NotImplementedError
+            ret: List[Summary] = []
+            build_hdc = None
+            build_summary = None
+            start_date = None
+            for summary in resp.payload.summary:
+                for histogram in summary.histograms:
+                    today = date(
+                        day=histogram.day, month=histogram.month, year=histogram.year
+                    )
+                    if start_date is None:
+                        start_date = today
+                        build_hdc = copy.copy(histogram.hdc)
+                        build_summary = copy.copy(histogram.summary)
+                    else:
+                        if build_hdc is None:
+                            build_hdc = copy.copy(histogram.hdc)
+                        else:
+                            build_hdc += histogram.hdc
+                        build_summary += histogram.summary
+
+                    # Start of the week is Monday so if current histogram is a Sunday add to return
+                    # and clear
+                    if today.weekday() == 0:
+                        ret.append(
+                            Summary(
+                                build_summary,
+                                self._metric,
+                                start_date,
+                                today,
+                                build_hdc,
+                            )
+                        )
+                        start_date = None
+
+            return ret
         elif summary_type == SummaryType.MONTHLY:
             for summary in resp.payload.summary:
                 summary_from_date = date(day=1, month=summary.month, year=summary.year)
