@@ -1,5 +1,5 @@
 """Toyota Connected Services Client."""
-from importlib.metadata import version
+from importlib_metadata import version
 
 from .client import MyT  # pylint: disable=unused-import # NOQA
 
