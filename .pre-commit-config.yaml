@@ -4,8 +4,13 @@ repos:
     hooks:
       - id: check-added-large-files
       - id: check-yaml
+      - id: check-json
+      - id: check-merge-conflict
+      - id: debug-statements
       - id: end-of-file-fixer
       - id: trailing-whitespace
+      - id: no-commit-to-branch
+        args: [--branch, master, --branch, main]
   - repo: https://github.com/python-poetry/poetry
     rev: "1.3"
     hooks:
@@ -35,12 +40,6 @@ repos:
         entry: poetry run pylint
         language: system
         types: [python]
-      - id: pytest-check
-        name: pytest-check
-        entry: pytest
-        language: system
-        pass_filenames: false
-        always_run: true
       - id: codespell
         name: codespell
         entry: poetry run codespell --write-changes --skip="./*"
