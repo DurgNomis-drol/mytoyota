@@ -1,10 +1,6 @@
 """Toyota Connected Services Client."""
-from .client import MyT  # pylint: disable=unused-import # NOQA
+import importlib.metadata as importlib_metadata
 
-try:
-    import importlib.metadata as importlib_metadata
-except ModuleNotFoundError:
-    # 3.7
-    import importlib_metadata
+from .client import MyT  # pylint: disable=unused-import # NOQA
 
 __version__ = importlib_metadata.version(__name__)
