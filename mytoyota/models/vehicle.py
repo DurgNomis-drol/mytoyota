@@ -6,6 +6,7 @@ from datetime import date, timedelta
 from functools import partial
 import json
 import logging
+from operator import attrgetter
 from typing import Any, Dict, List, Optional, Tuple
 
 from mytoyota.api import Api
@@ -247,19 +248,27 @@ class Vehicle:
             self._endpoint_data["status"] if "status" in self._endpoint_data else None
         )
 
-    async def get_summary(
+    async def get_summary(  # pylint: disable=R0914, R0912, R0915
         self,
         from_date: date,
         to_date: date,
         summary_type: SummaryType = SummaryType.MONTHLY,
     ) -> Optional[List[Summary]]:
-        """Return a Daily, Monthly or Yearly summary between the provided dates.
+        """Return a Daily, Weekly, Monthly or Yearly summary between the provided dates.
+
+        All but Daily can return a partial time range. For example if the summary_type is weekly
+        and the date ranges selected include partial weeks these partial weeks will be returned.
+        The dates contained in the summary will indicate the range of dates that made up the
+        partial week.
+
+        Note: Weekly and yearly summaries lose a small amount of accuracy due to rounding issues
 
         Args:
         ----
             from_date (date, required): The inclusive from date to report summaries.
             to_date (date, required): The inclusive to date to report summaries.
-            summary_type (???, optional): Daily, Monthly or Yearly summary. Monthly by default.
+            summary_type (SummaryType, optional): Daily, Monthly or Yearly summary.
+                                                  Monthly by default.
 
         Returns:
         -------
@@ -279,8 +288,10 @@ class Vehicle:
         # Convert to response
         ret: List[Summary] = []
         if summary_type == SummaryType.DAILY:
-            for summary in resp.payload.summary:
-                for histogram in summary.histograms:
+            for summary in sorted(
+                resp.payload.summary, key=attrgetter("year", "month")
+            ):
+                for histogram in sorted(summary.histograms, key=attrgetter("day")):
                     summary_date = date(
                         day=histogram.day, month=histogram.month, year=histogram.year
                     )
@@ -298,7 +309,11 @@ class Vehicle:
             build_hdc = None
             build_summary = None
             start_date = None
+
+            resp.payload.summary.sort(key=attrgetter("year", "month"))
+
             for summary in resp.payload.summary:
+                summary.histograms.sort(key=attrgetter("day"))
                 for histogram in summary.histograms:
                     today = date(
                         day=histogram.day, month=histogram.month, year=histogram.year
@@ -316,7 +331,10 @@ class Vehicle:
 
                     # Start of the week is Monday so if current histogram is a Sunday add to return
                     # and clear
-                    if today.weekday() == 0:
+                    if today.weekday() == 0 or (
+                        summary == resp.payload.summary[-1]
+                        and histogram == summary.histograms[-1]
+                    ):
                         ret.append(
                             Summary(
                                 build_summary,
@@ -330,7 +348,9 @@ class Vehicle:
 
             return ret
         elif summary_type == SummaryType.MONTHLY:
-            for summary in resp.payload.summary:
+            for summary in sorted(
+                resp.payload.summary, key=attrgetter("year", "month")
+            ):
                 summary_from_date = date(day=1, month=summary.month, year=summary.year)
                 summary_to_date = date(
                     day=calendar.monthrange(summary.year, summary.month)[1],
@@ -342,15 +362,41 @@ class Vehicle:
                     Summary(
                         summary.summary,
                         self._metric,
-                        summary_from_date
-                        if summary_from_date > from_date
-                        else from_date,
-                        summary_to_date if summary_to_date < to_date else to_date,
+                        max(summary_from_date, from_date),
+                        min(summary_to_date, to_date),
                         summary.hdc,
                     )
                 )
         elif summary_type == SummaryType.YEARLY:
-            raise NotImplementedError
+            # TODO: Require confirmation that the endpoint can return data older than a year
+            ret: List[Summary] = []
+            build_hdc = None
+            build_summary = None
+            start_date = None
+
+            resp.payload.summary.sort(key=attrgetter("year", "month"))
+
+            for summary in resp.payload.summary:
+                today = date(day=1, month=summary.month, year=summary.year)
+                if start_date is None or today < from_date:
+                    start_date = today
+                    build_hdc = copy.copy(summary.hdc)
+                    build_summary = copy.copy(summary.summary)
+                else:
+                    if build_hdc is None:
+                        build_hdc = summary.hdc
+                    else:
+                        build_hdc += summary.hdc
+                    build_summary += summary.summary
+
+                if today.month == 12 or summary == resp.payload.summary[-1]:
+                    end_date = min(to_date, date(day=31, month=12, year=today.year))
+                    ret.append(
+                        Summary(
+                            build_summary, self._metric, start_date, end_date, build_hdc
+                        )
+                    )
+                    start_date = None
 
         return ret
 

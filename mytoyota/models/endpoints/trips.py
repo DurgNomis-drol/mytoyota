@@ -1,4 +1,6 @@
 """Toyota Connected Services API - Trips Models."""
+from __future__ import annotations
+
 from datetime import date, datetime
 from typing import Any, List, Optional
 from uuid import UUID
@@ -9,6 +11,8 @@ from mytoyota.models.endpoints.common import StatusModel
 
 
 def add_with_none(this, that):
+    """Simple function to add two items first checking if either item is None"""
+
     if this is None:
         return that
     if that is None:
@@ -32,7 +36,7 @@ class _SummaryBaseModel(BaseModel):
         alias="fuelConsumption", default=None
     )  # Electric cars might not use fuel. Milliliters.
 
-    def __add__(self, other):
+    def __add__(self, other: _SummaryBaseModel):
         """
         Adds together two SummaryBaseModel's. Handles Min/Max/Average fields correctly
 
@@ -100,7 +104,7 @@ class _HDCModel(BaseModel):
     power_time: Optional[int] = Field(alias="powerTime", default=None)
     power_dist: Optional[int] = Field(alias="powerDist", default=None)
 
-    def __add__(self, other):
+    def __add__(self, other: _HDCModel):
         """
         Adds together two HDCModel's. Handles Min/Max/Average fields correctly
 

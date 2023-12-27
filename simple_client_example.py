@@ -57,15 +57,24 @@ async def get_information():
         # Notifications
         pp.pprint(f"Notifications: {[[x] for x in car.notifications]}")
         # Summary
+        # pp.pprint(
+        #    f"Summary: {[[x] for x in await car.get_summary(date.today() - timedelta(days=7), date.today(), summary_type=SummaryType.DAILY)]}"  # noqa: E501 # pylint: disable=C0301
+        # )
+        # pp.pprint(
+        #    f"Summary: {[[x] for x in await car.get_summary(date.today() - timedelta(days=7 * 4), date.today(), summary_type=SummaryType.WEEKLY)]}"  # noqa: E501 # pylint: disable=C0301
+        # )
         pp.pprint(
-            f"Summary: {[[x] for x in await car.get_summary(date.today() - timedelta(days=6 * 30), date.today(), summary_type=SummaryType.WEEKLY)]}"  # noqa: E501 # pylint: disable=C0301
+            f"Summary: {[[x] for x in await car.get_summary(date.today() - timedelta(days=2 * 31), date.today(), summary_type=SummaryType.MONTHLY)]}"  # noqa: E501 # pylint: disable=C0301
         )
+        # pp.pprint(
+        #    f"Summary: {[[x] for x in await car.get_summary(date.today() - timedelta(days=365), date.today(), summary_type=SummaryType.YEARLY)]}"  # noqa: E501 # pylint: disable=C0301
+        # )
+
         # Trips
+        pp.pprint(
+            f"Trips: f{await car.get_trips(date.today() - timedelta(days=7), date.today(), full_route=True)}"  # pylint: disable=C0301
+        )
 
-
-#        pp.pprint(
-#            f"Trips: f{await car.get_trips(date.today() - timedelta(days=2), date.today(), full_route=True)}"  # pylint: disable=C0301
-#        )
 
 # Dump all the information collected so far:
 # pp.pprint(car._dump_all())  # pylint: disable=W0212
