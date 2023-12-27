@@ -41,9 +41,7 @@ class Api:
 
     async def _request_and_parse(self, model, method: str, endpoint: str, **kwargs):
         """Parse requests and responses."""
-        response = await self.controller.request_json(
-            method=method, endpoint=endpoint, **kwargs
-        )
+        response = await self.controller.request_json(method=method, endpoint=endpoint, **kwargs)
         return model(**response)
 
     async def set_vehicle_alias_endpoint(self, alias: str, guid: str, vin: str):
@@ -60,7 +58,8 @@ class Api:
             body={"guid": guid, "vin": vin, "nickName": alias},
         )
 
-    #    TODO: Remove for now as it seems to have no effect. The App is sending it! # pylint: disable=W0511
+    #    TODO: Remove for now as it seems to have no effect.
+    #    The App is sending it! # pylint: disable=W0511
     #    async def post_wake_endpoint(self) -> None:
     #        """Send a wake request to the vehicle."""
     #        await self.controller.request_raw(
@@ -69,13 +68,9 @@ class Api:
 
     async def get_vehicles_endpoint(self) -> VehiclesResponseModel:
         """Return list of vehicles registered with provider."""
-        return await self._request_and_parse(
-            VehiclesResponseModel, "GET", VEHICLE_GUID_ENDPOINT
-        )
+        return await self._request_and_parse(VehiclesResponseModel, "GET", VEHICLE_GUID_ENDPOINT)
 
-    async def get_location_endpoint(
-        self, vin: str
-    ) -> LocationResponseModel:  # noqa: D417
+    async def get_location_endpoint(self, vin: str) -> LocationResponseModel:  # noqa: D417
         """Get the last known location of your car. Only updates when car is parked.
 
         Response includes Lat, Lon position. * If supported.
@@ -88,10 +83,8 @@ class Api:
             LocationResponseModel, "GET", VEHICLE_LOCATION_ENDPOINT, vin=vin
         )
 
-    async def get_vehicle_health_status_endpoint(
-        self, vin: str
-    ) -> VehicleHealthResponseModel:  # noqa: D417
-        """Get the latest health status.
+    async def get_vehicle_health_status_endpoint(self, vin: str) -> VehicleHealthResponseModel:  # noqa: D417
+        r"""Get the latest health status.
 
         Response includes the quantity of engine oil and any dashboard warning lights. \n
         * If supported.
@@ -113,10 +106,8 @@ class Api:
             vin=vin,
         )
 
-    async def get_vehicle_electric_status_endpoint(
-        self, vin: str
-    ) -> ElectricResponseModel:  # noqa: D417
-        """Get the latest electric status.
+    async def get_vehicle_electric_status_endpoint(self, vin: str) -> ElectricResponseModel:  # noqa: D417
+        r"""Get the latest electric status.
 
         Response includes current battery level, EV Range, EV Range with AC, \n
         fuel level, fuel range and current charging status
@@ -132,9 +123,7 @@ class Api:
             vin=vin,
         )
 
-    async def get_telemetry_endpoint(
-        self, vin: str
-    ) -> TelemetryResponseModel:  # noqa: D417
+    async def get_telemetry_endpoint(self, vin: str) -> TelemetryResponseModel:  # noqa: D417
         """Get the latest telemetry status.
 
         Response includes current fuel level, distance to empty and odometer
@@ -147,9 +136,7 @@ class Api:
             TelemetryResponseModel, "GET", VEHICLE_TELEMETRY_ENDPOINT, vin=vin
         )
 
-    async def get_notification_endpoint(
-        self, vin: str
-    ) -> NotificationResponseModel:  # noqa: D417
+    async def get_notification_endpoint(self, vin: str) -> NotificationResponseModel:  # noqa: D417
         """Get all available notifications for the vehicle.
 
         A notification includes a message, notification date, read flag, date read.
@@ -177,7 +164,7 @@ class Api:
         limit: int = 5,
         offset: int = 0,
     ) -> TripsResponseModel:
-        """Get list of trips.
+        r"""Get list of trips.
 
         Retrieves a list of all trips between the given dates. \n
         The default data(route = False, summary = False) provides
@@ -202,6 +189,4 @@ class Api:
             limit=limit,
             offset=offset,
         )
-        return await self._request_and_parse(
-            TripsResponseModel, "GET", endpoint, vin=vin
-        )
+        return await self._request_and_parse(TripsResponseModel, "GET", endpoint, vin=vin)

@@ -32,12 +32,8 @@ class _ExtendedCapabilitiesModel(BaseModel):
     buzzer_capable: bool = Field(alias="buzzerCapable")
     charge_management: bool = Field(alias="chargeManagement")
     climate_capable: bool = Field(alias="climateCapable")
-    climate_temperature_control_full: bool = Field(
-        alias="climateTemperatureControlFull"
-    )
-    climate_temperature_control_limited: bool = Field(
-        alias="climateTemperatureControlLimited"
-    )
+    climate_temperature_control_full: bool = Field(alias="climateTemperatureControlFull")
+    climate_temperature_control_limited: bool = Field(alias="climateTemperatureControlLimited")
     dashboard_warning_lights: bool = Field(alias="dashboardWarningLights")
     door_lock_unlock_capable: bool = Field(alias="doorLockUnlockCapable")
     drive_pulse: bool = Field(alias="drivePulse")
@@ -46,9 +42,7 @@ class _ExtendedCapabilitiesModel(BaseModel):
     econnect_vehicle_status_capable: bool = Field(alias="econnectVehicleStatusCapable")
     electric_pulse: bool = Field(alias="electricPulse")
     emergency_assist: bool = Field(alias="emergencyAssist")
-    enhanced_security_system_capable: bool = Field(
-        alias="enhancedSecuritySystemCapable"
-    )
+    enhanced_security_system_capable: bool = Field(alias="enhancedSecuritySystemCapable")
     equipped_with_alarm: bool = Field(alias="equippedWithAlarm")
     ev_battery: bool = Field(alias="evBattery")
     ev_charge_stations_capable: bool = Field(alias="evChargeStationsCapable")
@@ -61,13 +55,9 @@ class _ExtendedCapabilitiesModel(BaseModel):
     front_driver_seat_ventilation: bool = Field(alias="frontDriverSeatVentilation")
     front_passenger_door_lock_status: bool = Field(alias="frontPassengerDoorLockStatus")
     front_passenger_door_open_status: bool = Field(alias="frontPassengerDoorOpenStatus")
-    front_passenger_door_window_status: bool = Field(
-        alias="frontPassengerDoorWindowStatus"
-    )
+    front_passenger_door_window_status: bool = Field(alias="frontPassengerDoorWindowStatus")
     front_passenger_seat_heater: bool = Field(alias="frontPassengerSeatHeater")
-    front_passenger_seat_ventilation: bool = Field(
-        alias="frontPassengerSeatVentilation"
-    )
+    front_passenger_seat_ventilation: bool = Field(alias="frontPassengerSeatVentilation")
     fuel_level_available: bool = Field(alias="fuelLevelAvailable")
     fuel_range_available: bool = Field(alias="fuelRangeAvailable")
     guest_driver: bool = Field(alias="guestDriver")
@@ -93,9 +83,7 @@ class _ExtendedCapabilitiesModel(BaseModel):
     rear_hatch_rear_window: bool = Field(alias="rearHatchRearWindow")
     rear_passenger_door_lock_status: bool = Field(alias="rearPassengerDoorLockStatus")
     rear_passenger_door_open_status: bool = Field(alias="rearPassengerDoorOpenStatus")
-    rear_passenger_door_window_status: bool = Field(
-        alias="rearPassengerDoorWindowStatus"
-    )
+    rear_passenger_door_window_status: bool = Field(alias="rearPassengerDoorWindowStatus")
     rear_passenger_seat_heater: bool = Field(alias="rearPassengerSeatHeater")
     rear_passenger_seat_ventilation: bool = Field(alias="rearPassengerSeatVentilation")
     remote_econnect_capable: bool = Field(alias="remoteEConnectCapable")
@@ -103,9 +91,7 @@ class _ExtendedCapabilitiesModel(BaseModel):
     smart_key_status: bool = Field(alias="smartKeyStatus")
     steering_heater: bool = Field(alias="steeringHeater")
     stellantis_climate_capable: bool = Field(alias="stellantisClimateCapable")
-    stellantis_vehicle_status_capable: bool = Field(
-        alias="stellantisVehicleStatusCapable"
-    )
+    stellantis_vehicle_status_capable: bool = Field(alias="stellantisVehicleStatusCapable")
     sunroof: bool = Field(alias="sunroof")
     telemetry_capable: bool = Field(alias="telemetryCapable")
     trunk_lock_unlock_capable: bool = Field(alias="trunkLockUnlockCapable")
@@ -134,9 +120,7 @@ class _DcmModel(BaseModel):  # Data connection model
     supplier_name: str = Field(alias="dcmSupplierName")
     euicc_id: str = Field(alias="euiccid")
     hardware_type: Optional[str] = Field(alias="hardwareType")
-    vehicle_unit_terminal_number: Optional[str] = Field(
-        alias="vehicleUnitTerminalNumber"
-    )
+    vehicle_unit_terminal_number: Optional[str] = Field(alias="vehicleUnitTerminalNumber")
 
 
 class _HeadUnitModel(BaseModel):
@@ -405,9 +389,7 @@ class VehicleGuidModel(BaseModel):
         alias="emergencyContact"
     )  # TODO unsure what this returns # pylint: disable=W0511
     ev_vehicle: bool = Field(alias="evVehicle")
-    extended_capabilities: _ExtendedCapabilitiesModel = Field(
-        alias="extendedCapabilities"
-    )
+    extended_capabilities: _ExtendedCapabilitiesModel = Field(alias="extendedCapabilities")
     external_subscriptions: Optional[Any] = Field(alias="externalSubscriptions")
     family_sharing: bool = Field(alias="familySharing")
     faq_url: str = Field(alias="faqUrl")
@@ -455,9 +437,7 @@ class VehicleGuidModel(BaseModel):
     remote_subscription_exists: bool = Field(alias="remoteSubscriptionExists")
     remote_subscription_status: str = Field(alias="remoteSubscriptionStatus")
     remote_user: bool = Field(alias="remoteUser")
-    remote_user_guid: Optional[Union[UUID, str]] = Field(
-        alias="remoteUserGuid", default=None
-    )
+    remote_user_guid: Optional[Union[UUID, str]] = Field(alias="remoteUserGuid", default=None)
     service_connect_status: Optional[Any] = Field(
         alias="serviceConnectStatus"
     )  # TODO unsure what this returns # pylint: disable=W0511
@@ -479,7 +459,7 @@ class VehicleGuidModel(BaseModel):
 
 
 class VehiclesResponseModel(StatusModel):
-    """Model representing a vehicles response.
+    r"""Model representing a vehicles response.
 
     Inherits from StatusModel.
 

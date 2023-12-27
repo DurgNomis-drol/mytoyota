@@ -1,6 +1,6 @@
 """pytest tests for mytoyota.api."""
-from datetime import date, timedelta
 import json
+from datetime import date, timedelta
 from unittest.mock import AsyncMock
 
 import pytest
@@ -142,9 +142,7 @@ async def test_api_request_and_parse_endpoints(
     """
     # Arrange
 
-    with open(
-        f"tests/data/endpoints/{response_data_json_path}.json", "r", encoding="utf-8"
-    ) as f:  # noqa: ASYNC101
+    with open(f"tests/data/endpoints/{response_data_json_path}.json", "r", encoding="utf-8") as f:  # noqa: ASYNC101
         response_data = json.load(f)
 
     controller = AsyncMock()
@@ -157,7 +155,5 @@ async def test_api_request_and_parse_endpoints(
     )  # pylint: disable=W0212
 
     # Assert
-    controller.request_json.assert_called_once_with(
-        method=method, endpoint=endpoint, vin=VIN
-    )
+    controller.request_json.assert_called_once_with(method=method, endpoint=endpoint, vin=VIN)
     assert response == model(**response_data), f"Test ID: {test_id}"

@@ -1,8 +1,8 @@
 """Simple test of new API Changes."""
 import asyncio
-from datetime import date, timedelta
 import json
 import pprint
+from datetime import date, timedelta
 
 from mytoyota.client import MyT
 from mytoyota.models.summary import SummaryType
@@ -62,7 +62,7 @@ async def get_information():
         )
         # Trips
         pp.pprint(
-            f"Trips: f{await car.get_trips(date.today() - timedelta(days=2), date.today(), full_route=True)}"  # pylint: disable=C0301
+            f"Trips: f{await car.get_trips(date.today() - timedelta(days=2), date.today(), full_route=True)}"  # noqa: E501 # pylint: disable=C0301
         )
 
         # Dump all the information collected so far:

@@ -23,9 +23,12 @@ INVALID_USERNAME = "userexample.com"
         ),
     ],
 )
-async def test_myt_init(  # pylint: disable=C0116
-    username, password, expected_exception, test_id  # pylint: disable=W0613
-):  # noqa: D103, ARG001
+async def test_myt_init(  # pylint: disable=C0116 # noqa: D103
+    username,
+    password,
+    expected_exception,
+    test_id,  # pylint: disable=W0613 # noqa: ARG001
+):
     # Arrange
     if expected_exception:
         with pytest.raises(expected_exception):
