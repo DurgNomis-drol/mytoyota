@@ -18,34 +18,22 @@ repos:
         args: ["--check"]
   - repo: local
     hooks:
-      - id: black
-        name: black
-        entry: poetry run black
-        language: system
-        types: [python]
-        require_serial: true
-      - id: isort
-        name: isort
-        entry: poetry run isort
-        language: system
-        types: [python]
-        require_serial: true
-      - id: flake8
-        name: flake8
-        entry: poetry run flake8
-        language: system
-        types: [python]
-      - id: pylint
-        name: pylint
-        entry: poetry run pylint
-        language: system
-        types: [python]
       - id: codespell
         name: codespell
         entry: poetry run codespell --write-changes --skip="./*"
         language: system
         pass_filenames: false
         always_run: true
+      - id: ruff format
+        name: ruff format
+        entry: poetry run ruff format
+        language: system
+        types: [python]
+      - id: ruff lint
+        name: ruff lint
+        entry: poetry run ruff
+        language: system
+        types: [python]
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: v2.2.1
     hooks:
