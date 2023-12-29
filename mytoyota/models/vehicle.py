@@ -4,9 +4,9 @@ import calendar
 import copy
 import json
 import logging
-from operator import attrgetter
 from datetime import date, timedelta
 from functools import partial
+from operator import attrgetter
 from typing import Any, Dict, List, Optional, Tuple
 
 from mytoyota.api import Api
@@ -267,9 +267,7 @@ class Vehicle:
         # Convert to response
         ret: List[Summary] = []
         if summary_type == SummaryType.DAILY:
-            for summary in sorted(
-                resp.payload.summary, key=attrgetter("year", "month")
-            ):
+            for summary in sorted(resp.payload.summary, key=attrgetter("year", "month")):
                 for histogram in sorted(summary.histograms, key=attrgetter("day")):
                     summary_date = date(
                         day=histogram.day, month=histogram.month, year=histogram.year
@@ -294,9 +292,7 @@ class Vehicle:
             for summary in resp.payload.summary:
                 summary.histograms.sort(key=attrgetter("day"))
                 for histogram in summary.histograms:
-                    today = date(
-                        day=histogram.day, month=histogram.month, year=histogram.year
-                    )
+                    today = date(day=histogram.day, month=histogram.month, year=histogram.year)
                     if start_date is None:
                         start_date = today
                         build_hdc = copy.copy(histogram.hdc)
@@ -311,8 +307,7 @@ class Vehicle:
                     # Start of the week is Monday so if current histogram is a Sunday add to return
                     # and clear
                     if today.weekday() == 0 or (
-                        summary == resp.payload.summary[-1]
-                        and histogram == summary.histograms[-1]
+                        summary == resp.payload.summary[-1] and histogram == summary.histograms[-1]
                     ):
                         ret.append(
                             Summary(
@@ -327,9 +322,7 @@ class Vehicle:
 
             return ret
         elif summary_type == SummaryType.MONTHLY:
-            for summary in sorted(
-                resp.payload.summary, key=attrgetter("year", "month")
-            ):
+            for summary in sorted(resp.payload.summary, key=attrgetter("year", "month")):
                 summary_from_date = date(day=1, month=summary.month, year=summary.year)
                 summary_to_date = date(
                     day=calendar.monthrange(summary.year, summary.month)[1],
@@ -371,9 +364,7 @@ class Vehicle:
                 if today.month == 12 or summary == resp.payload.summary[-1]:
                     end_date = min(to_date, date(day=31, month=12, year=today.year))
                     ret.append(
-                        Summary(
-                            build_summary, self._metric, start_date, end_date, build_hdc
-                        )
+                        Summary(build_summary, self._metric, start_date, end_date, build_hdc)
                     )
                     start_date = None
 

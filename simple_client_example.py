@@ -75,7 +75,6 @@ async def get_information():
             f"Trips: f{await car.get_trips(date.today() - timedelta(days=7), date.today(), full_route=True)}"  # noqa: E501
         )
 
-
         # Dump all the information collected so far:
         # pp.pprint(car._dump_all())
 

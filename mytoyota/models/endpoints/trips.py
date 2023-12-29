@@ -11,8 +11,10 @@ from mytoyota.models.endpoints.common import StatusModel
 
 
 def add_with_none(this, that):
-    """Simple function to add two items first checking if either item is None"""
+    """Add two items.
 
+    First checking if either item is None.
+    """
     if this is None:
         return that
     if that is None:
@@ -37,11 +39,12 @@ class _SummaryBaseModel(BaseModel):
     )  # Electric cars might not use fuel. Milliliters.
 
     def __add__(self, other: _SummaryBaseModel):
-        """
-        Adds together two SummaryBaseModel's. Handles Min/Max/Average fields correctly
+        """Add together two SummaryBaseModel's.
 
-        Parameters
-        ----------
+        Handles Min/Max/Average fields correctly.
+
+        Args:
+        ----
         other: _SummaryBaseModel: to be added
         """
         if other is not None:
@@ -55,9 +58,7 @@ class _SummaryBaseModel(BaseModel):
             self.duration_overspeed += other.duration_overspeed
             self.length_highway += other.length_highway
             self.duration_highway += other.duration_highway
-            self.fuel_consumption = add_with_none(
-                self.fuel_consumption, other.fuel_consumption
-            )
+            self.fuel_consumption = add_with_none(self.fuel_consumption, other.fuel_consumption)
 
         return self
 
@@ -105,11 +106,12 @@ class _HDCModel(BaseModel):
     power_dist: Optional[int] = Field(alias="powerDist", default=None)
 
     def __add__(self, other: _HDCModel):
-        """
-        Adds together two HDCModel's. Handles Min/Max/Average fields correctly
+        """Add together two HDCModel's.
 
-        Parameters
-        ----------
+        Handles Min/Max/Average fields correctly.
+
+        Args:
+        ----
         other: _SummaryBaseModel: to be added
         """
         if other is not None:
