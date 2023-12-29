@@ -8,7 +8,7 @@ from mytoyota.models.endpoints.common import StatusModel
 
 
 class VehicleHealthModel(BaseModel):
-    """Model representing the health status of a vehicle.
+    r"""Model representing the health status of a vehicle.
 
     Attributes
     ----------
@@ -24,14 +24,12 @@ class VehicleHealthModel(BaseModel):
         alias="quantityOfEngOilIcon"
     )  # TODO unsure what this returns # pylint: disable=W0511
     vin: str
-    warning: Optional[
-        List[Any]
-    ]  # TODO unsure what this returns # pylint: disable=W0511
+    warning: Optional[List[Any]]  # TODO unsure what this returns # pylint: disable=W0511
     wng_last_upd_time: datetime = Field(alias="wnglastUpdTime")
 
 
 class VehicleHealthResponseModel(StatusModel):
-    """Model representing a vehicle health response.
+    r"""Model representing a vehicle health response.
 
     Inherits from StatusModel.
 

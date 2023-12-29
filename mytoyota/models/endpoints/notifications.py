@@ -48,7 +48,7 @@ class _PayloadItemModel(BaseModel):
 
 
 class NotificationResponseModel(BaseModel):
-    """Model representing a notification response.
+    r"""Model representing a notification response.
 
     Attributes
     ----------

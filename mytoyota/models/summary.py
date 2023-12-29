@@ -57,7 +57,7 @@ class Summary:
     def average_speed(self) -> float:
         """Average speed.
 
-        Returns
+        Returns:
         -------
             float: Average speed in selected metric
                 Return information on all trips made between the provided dates.

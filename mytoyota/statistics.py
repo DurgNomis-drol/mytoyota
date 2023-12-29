@@ -95,9 +95,7 @@ class Statistics:
                         continue
 
                     _LOGGER.debug(f"Converting attribute {attribute} to miles...")
-                    periode[DATA][attribute] = convert_to_miles(
-                        periode[DATA][attribute]
-                    )
+                    periode[DATA][attribute] = convert_to_miles(periode[DATA][attribute])
         return data
 
     def _add_bucket(self, data: dict, interval: str) -> list:

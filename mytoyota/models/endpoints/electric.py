@@ -8,7 +8,7 @@ from mytoyota.models.endpoints.common import StatusModel, UnitValueModel
 
 
 class ElectricStatusModel(BaseModel):
-    """Model representing the status of an electric vehicle.
+    r"""Model representing the status of an electric vehicle.
 
     Attributes
     ----------
@@ -41,7 +41,7 @@ class ElectricStatusModel(BaseModel):
 
 
 class ElectricResponseModel(StatusModel):
-    """Model representing an electric vehicle response.
+    r"""Model representing an electric vehicle response.
 
     Inherits from StatusModel.
 

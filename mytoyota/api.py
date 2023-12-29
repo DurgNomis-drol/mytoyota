@@ -28,22 +28,24 @@ from mytoyota.models.endpoints.vehicle_health import VehicleHealthResponseModel
 class Api:
     """API Class. Allows access to available endpoints to retrieve the raw data."""
 
-    def __init__(self, controller: Controller) -> None:  # noqa: D417
+    def __init__(self, controller: Controller) -> None:
         """Initialise the API.
 
         Initialise the API and set the Controller
 
-        Parameters
-        ----------
+        Args:
+        ----
             controller: Controller: A controller class to managing communication
+
+        Returns:
+        -------
+            None
         """
         self.controller = controller
 
     async def _request_and_parse(self, model, method: str, endpoint: str, **kwargs):
         """Parse requests and responses."""
-        response = await self.controller.request_json(
-            method=method, endpoint=endpoint, **kwargs
-        )
+        response = await self.controller.request_json(method=method, endpoint=endpoint, **kwargs)
         return model(**response)
 
     async def set_vehicle_alias_endpoint(self, alias: str, guid: str, vin: str):
@@ -60,7 +62,8 @@ class Api:
             body={"guid": guid, "vin": vin, "nickName": alias},
         )
 
-    #    TODO: Remove for now as it seems to have no effect. The App is sending it! # pylint: disable=W0511
+    #    TODO: Remove for now as it seems to have no effect.
+    #    The App is sending it!
     #    async def post_wake_endpoint(self) -> None:
     #        """Send a wake request to the vehicle."""
     #        await self.controller.request_raw(
@@ -69,36 +72,38 @@ class Api:
 
     async def get_vehicles_endpoint(self) -> VehiclesResponseModel:
         """Return list of vehicles registered with provider."""
-        return await self._request_and_parse(
-            VehiclesResponseModel, "GET", VEHICLE_GUID_ENDPOINT
-        )
+        return await self._request_and_parse(VehiclesResponseModel, "GET", VEHICLE_GUID_ENDPOINT)
 
-    async def get_location_endpoint(
-        self, vin: str
-    ) -> LocationResponseModel:  # noqa: D417
+    async def get_location_endpoint(self, vin: str) -> LocationResponseModel:
         """Get the last known location of your car. Only updates when car is parked.
 
         Response includes Lat, Lon position. * If supported.
 
-        Parameters
-        ----------
+        Args:
+        ----
             vin: str:   The vehicles VIN
+
+        Returns:
+        -------
+            LocationResponseModel: A pydantic model for the location response
         """
         return await self._request_and_parse(
             LocationResponseModel, "GET", VEHICLE_LOCATION_ENDPOINT, vin=vin
         )
 
-    async def get_vehicle_health_status_endpoint(
-        self, vin: str
-    ) -> VehicleHealthResponseModel:  # noqa: D417
-        """Get the latest health status.
+    async def get_vehicle_health_status_endpoint(self, vin: str) -> VehicleHealthResponseModel:
+        r"""Get the latest health status.
 
         Response includes the quantity of engine oil and any dashboard warning lights. \n
         * If supported.
 
-        Parameters
-        ----------
+        Args:
+        ----
             vin: str:   The vehicles VIN
+
+        Returns:
+        -------
+            VehicleHealthResponseModel: A pydantic model for the vehicle health response
         """
         return await self._request_and_parse(
             VehicleHealthResponseModel, "GET", VEHICLE_HEALTH_STATUS_ENDPOINT, vin=vin
@@ -113,17 +118,19 @@ class Api:
             vin=vin,
         )
 
-    async def get_vehicle_electric_status_endpoint(
-        self, vin: str
-    ) -> ElectricResponseModel:  # noqa: D417
-        """Get the latest electric status.
+    async def get_vehicle_electric_status_endpoint(self, vin: str) -> ElectricResponseModel:
+        r"""Get the latest electric status.
 
         Response includes current battery level, EV Range, EV Range with AC, \n
         fuel level, fuel range and current charging status
 
-        Parameters
-        ----------
+        Args:
+        ----
             vin: str:   The vehicles VIN
+
+        Returns:
+        -------
+            ElectricResponseModel: A pydantic model for the electric response
         """
         return await self._request_and_parse(
             ElectricResponseModel,
@@ -132,33 +139,37 @@ class Api:
             vin=vin,
         )
 
-    async def get_telemetry_endpoint(
-        self, vin: str
-    ) -> TelemetryResponseModel:  # noqa: D417
+    async def get_telemetry_endpoint(self, vin: str) -> TelemetryResponseModel:
         """Get the latest telemetry status.
 
         Response includes current fuel level, distance to empty and odometer
 
-        Parameters
-        ----------
+        Args:
+        ----
             vin: str:   The vehicles VIN
+
+        Returns:
+        -------
+            TelemetryResponseModel: A pydantic model for the telemetry response
         """
         return await self._request_and_parse(
             TelemetryResponseModel, "GET", VEHICLE_TELEMETRY_ENDPOINT, vin=vin
         )
 
-    async def get_notification_endpoint(
-        self, vin: str
-    ) -> NotificationResponseModel:  # noqa: D417
+    async def get_notification_endpoint(self, vin: str) -> NotificationResponseModel:
         """Get all available notifications for the vehicle.
 
         A notification includes a message, notification date, read flag, date read.
 
         NOTE: Currently no way to mark notification as read or limit the response.
 
-        Parameters
-        ----------
+        Args:
+        ----
             vin: str:   The vehicles VIN
+
+        Returns:
+        -------
+            NotificationResponseModel: A pydantic model for the notification response
         """
         return await self._request_and_parse(
             NotificationResponseModel,
@@ -167,7 +178,7 @@ class Api:
             vin=vin,
         )
 
-    async def get_trips_endpoint(  # noqa: PLR0913, D417
+    async def get_trips_endpoint(  # noqa: PLR0913
         self,
         vin: str,
         from_date: date,
@@ -177,14 +188,14 @@ class Api:
         limit: int = 5,
         offset: int = 0,
     ) -> TripsResponseModel:
-        """Get list of trips.
+        r"""Get list of trips.
 
         Retrieves a list of all trips between the given dates. \n
         The default data(route = False, summary = False) provides
         a basic summary of each trip and includes Coaching message and electrical use.
 
-        Parameters
-        ----------
+        Args:
+        ----
             vin: str:        The vehicles VIN
             from_date: date: From date to include trips, inclusive. Cant be in the future.
             to_date: date:   To date to include trips, inclusive. Cant be in the future.
@@ -193,6 +204,10 @@ class Api:
             summary: bool:   If true returns a summary of each month and day in the date range
             limit: int:      Limit of number of trips to return in one request. Max 50.
             offset: int:     Offset into trips to start the request.
+
+        Returns:
+        -------
+            TripsResponseModel: A pydantic model for the trips response
         """
         endpoint = VEHICLE_TRIPS_ENDPOINT.format(
             from_date=from_date,
@@ -202,6 +217,4 @@ class Api:
             limit=limit,
             offset=offset,
         )
-        return await self._request_and_parse(
-            TripsResponseModel, "GET", endpoint, vin=vin
-        )
+        return await self._request_and_parse(TripsResponseModel, "GET", endpoint, vin=vin)
