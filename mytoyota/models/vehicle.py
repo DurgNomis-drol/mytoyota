@@ -2,11 +2,11 @@
 import asyncio
 import calendar
 import copy
-from datetime import date, timedelta
-from functools import partial
 import json
 import logging
 from operator import attrgetter
+from datetime import date, timedelta
+from functools import partial
 from typing import Any, Dict, List, Optional, Tuple
 
 from mytoyota.api import Api
@@ -25,9 +25,7 @@ _LOGGER: logging.Logger = logging.getLogger(__package__)
 class Vehicle:
     """Vehicle data representation."""
 
-    def __init__(
-        self, api: Api, vehicle_info: VehicleGuidModel, metric: bool = True
-    ) -> None:
+    def __init__(self, api: Api, vehicle_info: VehicleGuidModel, metric: bool = True) -> None:
         """Initialise the Vehicle data representation."""
         self._vehicle_info = vehicle_info
         self._api = api
@@ -40,13 +38,11 @@ class Vehicle:
                 "name": "location",
                 "capable": vehicle_info.extended_capabilities.last_parked_capable
                 or vehicle_info.features.last_parked,
-                "function": partial(
-                    self._api.get_location_endpoint, vin=vehicle_info.vin
-                ),
+                "function": partial(self._api.get_location_endpoint, vin=vehicle_info.vin),
             },
             {
                 "name": "health_status",
-                "capable": True,  # TODO Unsure of the required capability # pylint: disable=W0511
+                "capable": True,  # TODO Unsure of the required capability
                 "function": partial(
                     self._api.get_vehicle_health_status_endpoint,
                     vin=vehicle_info.vin,
@@ -63,27 +59,21 @@ class Vehicle:
             {
                 "name": "telemetry",
                 "capable": vehicle_info.extended_capabilities.telemetry_capable,
-                "function": partial(
-                    self._api.get_telemetry_endpoint, vin=vehicle_info.vin
-                ),
+                "function": partial(self._api.get_telemetry_endpoint, vin=vehicle_info.vin),
             },
             {
                 "name": "notifications",
-                "capable": True,  # TODO Unsure of the required capability # pylint: disable=W0511
-                "function": partial(
-                    self._api.get_notification_endpoint, vin=vehicle_info.vin
-                ),
+                "capable": True,  # TODO Unsure of the required capability
+                "function": partial(self._api.get_notification_endpoint, vin=vehicle_info.vin),
             },
             {
                 "name": "status",
                 "capable": vehicle_info.extended_capabilities.vehicle_status,
-                "function": partial(
-                    self._api.get_remote_status_endpoint, vin=vehicle_info.vin
-                ),
+                "function": partial(self._api.get_remote_status_endpoint, vin=vehicle_info.vin),
             },
             {
                 "name": "trips",
-                "capable": True,  # TODO Unsure of the required capability # pylint: disable=W0511
+                "capable": True,  # TODO Unsure of the required capability
                 "function": partial(
                     self._api.get_trips_endpoint,
                     vin=vehicle_info.vin,
@@ -110,17 +100,12 @@ class Vehicle:
 
         """
 
-        async def parallel_wrapper(
-            name: str, function: partial
-        ) -> Tuple[str, Dict[str, Any]]:
+        async def parallel_wrapper(name: str, function: partial) -> Tuple[str, Dict[str, Any]]:
             r = await function()
             return name, r
 
         responses = asyncio.gather(
-            *[
-                parallel_wrapper(name, function)
-                for name, function in self._endpoint_collect
-            ]
+            *[parallel_wrapper(name, function) for name, function in self._endpoint_collect]
         )
         for name, data in await responses:
             self._endpoint_data[name] = data
@@ -158,15 +143,11 @@ class Vehicle:
             "phev" if plugin hybrid
             "ev" if full electric vehicle
         """
-        # TODO enum # pylint: disable=W0511
-        # TODO currently guessing until we see a mild hybrid and full EV # pylint: disable=W0511
-        # TODO should probably use electricalPlatformCode but values currently unknown # pylint: disable=W0511
-        # TODO list of fuel types. ?: G=Petrol Only, I=Hybrid # pylint: disable=W0511
-        return (
-            "phev"
-            if self._vehicle_info.ev_vehicle and self._vehicle_info.fuel_type
-            else "ev"
-        )
+        # TODO enum
+        # TODO currently guessing until we see a mild hybrid and full EV
+        # TODO should probably use electricalPlatformCode but values currently unknown
+        # TODO list of fuel types. ?: G=Petrol Only, I=Hybrid
+        return "phev" if self._vehicle_info.ev_vehicle and self._vehicle_info.fuel_type else "ev"
 
     @property
     def dashboard(self) -> Optional[Dashboard]:
@@ -181,9 +162,7 @@ class Vehicle:
         """
         # Always returns a Dashboard object as we can always get the odometer value
         return Dashboard(
-            self._endpoint_data["telemetry"]
-            if "telemetry" in self._endpoint_data
-            else None,
+            self._endpoint_data["telemetry"] if "telemetry" in self._endpoint_data else None,
             self._endpoint_data["electric_status"]
             if "electric_status" in self._endpoint_data
             else None,
@@ -210,9 +189,9 @@ class Vehicle:
             else None
         )
 
-    @property  # TODO: Cant have a property with parameters! Split into two methods? # pylint: disable=W0511
-    def notifications(self) -> Optional[List[Notification]]:  # noqa: PLR0206, ARG002
-        """Returns a list of notifications for the vehicle.
+    @property  # TODO: Cant have a property with parameters! Split into two methods?
+    def notifications(self) -> Optional[List[Notification]]:
+        r"""Returns a list of notifications for the vehicle.
 
         Args:
         ----
@@ -463,9 +442,7 @@ class Vehicle:
 
     def _dump_all(self) -> Dict[str, Any]:
         """Dump data from all endpoints for debugging and further work."""
-        dump: [str, Any] = {
-            "vehicle_info": json.loads(self._vehicle_info.model_dump_json())
-        }
+        dump: [str, Any] = {"vehicle_info": json.loads(self._vehicle_info.model_dump_json())}
         for name, data in self._endpoint_data.items():
             dump[name] = json.loads(data.model_dump_json())
 

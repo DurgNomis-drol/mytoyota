@@ -15,7 +15,7 @@ class _VehicleLocationModel(BaseModel):
 
 
 class LocationModel(BaseModel):
-    """Model representing the location of a vehicle.
+    r"""Model representing the location of a vehicle.
 
     Attributes
     ----------

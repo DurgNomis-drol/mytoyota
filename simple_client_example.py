@@ -1,8 +1,8 @@
 """Simple test of new API Changes."""
 import asyncio
-from datetime import date, timedelta
 import json
 import pprint
+from datetime import date, timedelta
 
 from mytoyota.client import MyT
 from mytoyota.models.summary import SummaryType
@@ -64,7 +64,7 @@ async def get_information():
         #    f"Summary: {[[x] for x in await car.get_summary(date.today() - timedelta(days=7 * 4), date.today(), summary_type=SummaryType.WEEKLY)]}"  # noqa: E501 # pylint: disable=C0301
         # )
         pp.pprint(
-            f"Summary: {[[x] for x in await car.get_summary(date.today() - timedelta(days=2 * 31), date.today(), summary_type=SummaryType.MONTHLY)]}"  # noqa: E501 # pylint: disable=C0301
+            f"Summary: {[[x] for x in await car.get_summary(date.today() - timedelta(days=6 * 30), date.today(), summary_type=SummaryType.MONTHLY)]}"  # noqa: E501
         )
         # pp.pprint(
         #    f"Summary: {[[x] for x in await car.get_summary(date.today() - timedelta(days=365), date.today(), summary_type=SummaryType.YEARLY)]}"  # noqa: E501 # pylint: disable=C0301
@@ -72,12 +72,12 @@ async def get_information():
 
         # Trips
         pp.pprint(
-            f"Trips: f{await car.get_trips(date.today() - timedelta(days=7), date.today(), full_route=True)}"  # pylint: disable=C0301
+            f"Trips: f{await car.get_trips(date.today() - timedelta(days=7), date.today(), full_route=True)}"  # noqa: E501
         )
 
 
-# Dump all the information collected so far:
-# pp.pprint(car._dump_all())  # pylint: disable=W0212
+        # Dump all the information collected so far:
+        # pp.pprint(car._dump_all())
 
 
 loop = asyncio.get_event_loop()

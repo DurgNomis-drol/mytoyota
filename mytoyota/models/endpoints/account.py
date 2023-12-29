@@ -34,9 +34,7 @@ class _PhoneNumberModel(BaseModel):
 
 class _CustomerModel(BaseModel):
     account_status: str = Field(alias="accountStatus")
-    additional_attributes: _AdditionalAttributesModel = Field(
-        alias="additionalAttributes"
-    )
+    additional_attributes: _AdditionalAttributesModel = Field(alias="additionalAttributes")
     create_date: datetime = Field(alias="createDate")
     create_source: str = Field(alias="createSource")
     customer_type: str = Field(alias="customerType")

@@ -11,7 +11,7 @@ from mytoyota.utils.conversions import convert_distance
 class Dashboard:
     """Information that may be found on a vehicles dashboard."""
 
-    # TODO do we want to supply last update times?  # pylint: disable=W0511
+    # TODO do we want to supply last update times?
 
     def __init__(  # noqa: D417
         self,

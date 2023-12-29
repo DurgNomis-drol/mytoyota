@@ -74,7 +74,7 @@ class RemoteStatusModel(BaseModel):
 
 
 class RemoteStatusResponseModel(StatusModel):
-    """Model representing a remote status response.
+    r"""Model representing a remote status response.
 
     Inherits from StatusModel.
 

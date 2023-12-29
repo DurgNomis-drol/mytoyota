@@ -23,9 +23,7 @@ def _get_category(
     return None
 
 
-def _get_section(
-    data: Optional[VehicleStatusModel], section: str
-) -> Optional[SectionModel]:
+def _get_section(data: Optional[VehicleStatusModel], section: str) -> Optional[SectionModel]:
     if data is not None:
         return next(
             (item for item in data.sections if item.section == section),
@@ -251,7 +249,7 @@ class LockStatus:
         return Door(section)
 
     # Seems to be not available for now
-    # TODO: Calculate it from all other sensor values? # pylint: disable=W0511
+    # TODO: Calculate it from all other sensor values?
     # @property
     # def overallstatus(self) -> Optional[str]:
     #     """If a warning exists for any of the sensors."""
