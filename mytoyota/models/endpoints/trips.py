@@ -126,7 +126,7 @@ class _MetadataModel(BaseModel):
 
 
 class TripsModel(BaseModel):
-    """Model representing trips data.
+    r"""Model representing trips data.
 
     Attributes
     ----------
@@ -150,7 +150,7 @@ class TripsModel(BaseModel):
 
 
 class TripsResponseModel(StatusModel):
-    """Model representing a trips response.
+    r"""Model representing a trips response.
 
     Inherits from StatusModel.
 

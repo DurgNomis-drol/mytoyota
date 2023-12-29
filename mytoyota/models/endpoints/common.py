@@ -22,9 +22,7 @@ class UnitValueModel(BaseModel):
 
 class _MessageModel(BaseModel):
     description: str
-    detailed_description: Optional[str] = Field(
-        alias="detailedDescription", default=None
-    )
+    detailed_description: Optional[str] = Field(alias="detailedDescription", default=None)
     response_code: str = Field(alias="responseCode")
 
 

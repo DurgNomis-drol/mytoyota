@@ -1,6 +1,6 @@
 """Test Logs Utils."""
-from httpx import Request, Response
 import pytest
+from httpx import Request, Response
 
 from mytoyota.utils.logs import (
     censor_all,
@@ -40,9 +40,7 @@ from mytoyota.utils.logs import (
         pytest.param(123, "int", {"int"}, 123),
     ],
 )
-def test_censor_value(
-    value, key, to_censor, expected
-):  # noqa: D103 # pylint: disable=C0116
+def test_censor_value(value, key, to_censor, expected):  # noqa : D103
     # Act
     result = censor_value(value, key, to_censor)
 
@@ -76,9 +74,7 @@ def test_censor_value(
         ),
     ],
 )
-def test_censor_all(
-    dictionary, to_censor, expected
-):  # noqa: D103 # pylint: disable=C0116
+def test_censor_all(dictionary, to_censor, expected):  # noqa : D103
     # Act
     result = censor_all(dictionary, to_censor)
 
@@ -96,7 +92,7 @@ def test_censor_all(
         pytest.param("A", "A"),
     ],
 )
-def test_censor_string(string, expected):  # noqa: D103 # pylint: disable=C0116
+def test_censor_string(string, expected):  # noqa: D103
     # Act
     result = censor_string(string)
 
@@ -105,7 +101,7 @@ def test_censor_string(string, expected):  # noqa: D103 # pylint: disable=C0116
 
 
 @pytest.mark.parametrize(
-    "method, url, request_headers, request_body, status_code, response_headers, response_body, expected_output",  # pylint: disable=C0301
+    "method, url, request_headers, request_body, status_code, response_headers, response_body, expected_output",  # noqa : E501
     [
         # Happy path tests
         pytest.param(
@@ -116,11 +112,11 @@ def test_censor_string(string, expected):  # noqa: D103 # pylint: disable=C0116
             404,
             {"Content-Type": "text/html"},
             "<html>Not Found</html>",
-            "Request:\n  Method : GET\n  URL    : https://example.com/notfound\n  Headers: Headers({'host': 'example.com', 'accept': 'application/json'})\n  Body   : \nResponse:\n  Status : (404,Not Found)\n  Headers: Headers({'content-type': 'text/html', 'content-length': '22'})\n  Content: <html>Not Found</html>",  # noqa : E501 # pylint: disable=C0301
+            "Request:\n  Method : GET\n  URL    : https://example.com/notfound\n  Headers: Headers({'host': 'example.com', 'accept': 'application/json'})\n  Body   : \nResponse:\n  Status : (404,Not Found)\n  Headers: Headers({'content-type': 'text/html', 'content-length': '22'})\n  Content: <html>Not Found</html>",  # noqa : E501
         ),
     ],
 )
-def test_format_httpx_response(  # noqa : PLR0913 # pylint: disable=C0116
+def test_format_httpx_response(  # noqa : PLR0913
     method,
     url,
     request_headers,

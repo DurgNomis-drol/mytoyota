@@ -56,7 +56,7 @@ mock_remote_status_response = RemoteStatusResponseModel(
     ],
     ids=["no-section", "door-closed", "unrelated-status"],
 )
-def test_door_closed(section, expected):  # noqa: D103 # pylint: disable=C0116
+def test_door_closed(section, expected):  # noqa: D103
     # Arrange
     door = Door(status=section)
 
@@ -77,7 +77,7 @@ def test_door_closed(section, expected):  # noqa: D103 # pylint: disable=C0116
     ],
     ids=["no-section", "door-locked", "unrelated-status"],
 )
-def test_door_locked(section, expected):  # noqa: D103 # pylint: disable=C0116
+def test_door_locked(section, expected):  # noqa: D103
     # Arrange
     door = Door(status=section)
 
@@ -108,9 +108,9 @@ def test_door_locked(section, expected):  # noqa: D103 # pylint: disable=C0116
     ],
     ids=["driver-seat", "passenger-seat", "trunk"],
 )
-def test_doors_properties(  # pylint: disable=C0116
+def test_doors_properties(  # noqa : D103
     category, section_name, property_name, expected_class
-):  # noqa: D103
+):
     # Arrange
     status = RemoteStatusModel(
         vehicleStatus=[
@@ -154,7 +154,7 @@ def test_doors_properties(  # pylint: disable=C0116
     ],
     ids=["no-section", "window-closed"],
 )
-def test_window_closed(section, expected):  # noqa: D103 # pylint: disable=C0116
+def test_window_closed(section, expected):  # noqa: D103
     # Arrange
     window = Window(status=section)
 
@@ -184,9 +184,9 @@ def test_window_closed(section, expected):  # noqa: D103 # pylint: disable=C0116
     ],
     ids=["driver-seat-window", "passenger-seat-window"],
 )
-def test_windows_properties(  # pylint: disable=C0116
+def test_windows_properties(  # noqa : D103
     category, section_name, property_name, expected_class
-):  # noqa: D103
+):
     # Arrange
     status = RemoteStatusModel(
         vehicleStatus=[
@@ -235,9 +235,9 @@ def test_windows_properties(  # pylint: disable=C0116
     ],
     ids=["no-status", "valid-status"],
 )
-def test_lock_status_properties(  # pylint: disable=C0116
+def test_lock_status_properties(  # noqa : D103
     status, expected_last_updated, expected_doors_class, expected_windows_class
-):  # noqa: D103
+):
     # Arrange
     lock_status = LockStatus(status=status)
 

@@ -8,7 +8,7 @@ from mytoyota.models.endpoints.common import StatusModel, UnitValueModel
 
 
 class ElectricStatusModel(BaseModel):
-    """Model representing the status of an electric vehicle.
+    r"""Model representing the status of an electric vehicle.
 
     Attributes
     ----------
@@ -37,11 +37,11 @@ class ElectricStatusModel(BaseModel):
     remaining_charge_time: Optional[int] = Field(
         alias="remainingChargeTime",
         default=None,
-    )  # TODO: Use field serializer to create timedelta # pylint: disable=W0511
+    )  # TODO: Use field serializer to create timedelta
 
 
 class ElectricResponseModel(StatusModel):
-    """Model representing an electric vehicle response.
+    r"""Model representing an electric vehicle response.
 
     Inherits from StatusModel.
 
