@@ -198,7 +198,7 @@ class Controller:
                 )
 
     async def request_raw(  # noqa: PLR0913
-        self,  # pylint: disable=too-many-branches
+        self,
         method: str,
         endpoint: str,
         vin: Optional[str] = None,

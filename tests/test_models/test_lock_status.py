@@ -77,7 +77,7 @@ def test_door_closed(section, expected):  # noqa: D103
     ],
     ids=["no-section", "door-locked", "unrelated-status"],
 )
-def test_door_locked(section, expected):  # noqa: D103 # pylint: disable=C0116
+def test_door_locked(section, expected):  # noqa: D103
     # Arrange
     door = Door(status=section)
 
@@ -154,7 +154,7 @@ def test_doors_properties(  # noqa : D103
     ],
     ids=["no-section", "window-closed"],
 )
-def test_window_closed(section, expected):  # noqa: D103 # pylint: disable=C0116
+def test_window_closed(section, expected):  # noqa: D103
     # Arrange
     window = Window(status=section)
 

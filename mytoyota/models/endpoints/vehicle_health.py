@@ -22,9 +22,9 @@ class VehicleHealthModel(BaseModel):
 
     quantity_of_eng_oil_icon: Optional[List[Any]] = Field(
         alias="quantityOfEngOilIcon"
-    )  # TODO unsure what this returns # pylint: disable=W0511
+    )  # TODO unsure what this returns
     vin: str
-    warning: Optional[List[Any]]  # TODO unsure what this returns # pylint: disable=W0511
+    warning: Optional[List[Any]]  # TODO unsure what this returns
     wng_last_upd_time: datetime = Field(alias="wnglastUpdTime")
 
 

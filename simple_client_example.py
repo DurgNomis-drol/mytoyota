@@ -66,7 +66,7 @@ async def get_information():
         )
 
         # Dump all the information collected so far:
-        # pp.pprint(car._dump_all())  # pylint: disable=W0212
+        # pp.pprint(car._dump_all())
 
 
 loop = asyncio.get_event_loop()

@@ -9,17 +9,15 @@ from mytoyota.models.endpoints.common import StatusModel
 
 
 class _TranslationModel(BaseModel):
-    english: Optional[Any]  # TODO unsure what this returns # pylint: disable=W0511
-    french: Optional[Any]  # TODO unsure what this returns # pylint: disable=W0511
-    spanish: Optional[Any]  # TODO unsure what this returns # pylint: disable=W0511
+    english: Optional[Any]  # TODO unsure what this returns
+    french: Optional[Any]  # TODO unsure what this returns
+    spanish: Optional[Any]  # TODO unsure what this returns
 
 
 class _CapabilitiesModel(BaseModel):
     description: Optional[str]
     display: bool
-    display_name: Optional[Any] = Field(
-        alias="displayName"
-    )  # TODO unsure what this returns # pylint: disable=W0511
+    display_name: Optional[Any] = Field(alias="displayName")  # TODO unsure what this returns
     name: str
     translation: _TranslationModel
 
@@ -104,7 +102,7 @@ class _ExtendedCapabilitiesModel(BaseModel):
 
 
 class _LinksModel(BaseModel):
-    body: Optional[str]  # TODO unsure what this returns # pylint: disable=W0511
+    body: Optional[str]  # TODO unsure what this returns
     button_text: Optional[str] = Field(alias="buttonText")
     image_url: Optional[str] = Field(alias="imageUrl", default=None)
     link: Optional[str]
@@ -124,39 +122,31 @@ class _DcmModel(BaseModel):  # Data connection model
 
 
 class _HeadUnitModel(BaseModel):
-    description: Optional[Any] = Field(
-        alias="huDescription"
-    )  # TODO unsure what this returns # pylint: disable=W0511
-    generation: Optional[Any] = Field(
-        alias="huGeneration"
-    )  # TODO unsure what this returns # pylint: disable=W0511
-    version: Optional[Any] = Field(
-        alias="huVersion"
-    )  # TODO unsure what this returns # pylint: disable=W0511
+    description: Optional[Any] = Field(alias="huDescription")  # TODO unsure what this returns
+    generation: Optional[Any] = Field(alias="huGeneration")  # TODO unsure what this returns
+    version: Optional[Any] = Field(alias="huVersion")  # TODO unsure what this returns
     mobile_platform_code: Optional[Any] = Field(
         alias="mobilePlatformCode"
-    )  # TODO unsure what this returns # pylint: disable=W0511
-    multimedia_type: Optional[Any] = Field(
-        alias="multimediaType"
-    )  # TODO unsure what this returns # pylint: disable=W0511
+    )  # TODO unsure what this returns
+    multimedia_type: Optional[Any] = Field(alias="multimediaType")  # TODO unsure what this returns
 
 
 class _SubscriptionsModel(BaseModel):
     auto_renew: bool = Field(alias="autoRenew")
     category: str
-    components: Optional[Any]  # TODO unsure what this returns # pylint: disable=W0511
+    components: Optional[Any]  # TODO unsure what this returns
     consolidated_goodwill_ids: List[Any] = Field(
         alias="consolidatedGoodwillIds"
-    )  # TODO unsure what this returns # pylint: disable=W0511
+    )  # TODO unsure what this returns
     consolidated_product_ids: List[Any] = Field(
         alias="consolidatedProductIds"
-    )  # TODO unsure what this returns # pylint: disable=W0511
+    )  # TODO unsure what this returns
     display_procuct_name: str = Field(alias="displayProductName")
     display_term: str = Field(alias="displayTerm")
     future_cancel: bool = Field(alias="futureCancel")
     good_will_issued_for: Optional[Any] = Field(
         alias="goodwillIssuedFor"
-    )  # TODO unsure what this returns # pylint: disable=W0511
+    )  # TODO unsure what this returns
     product_code: str = Field(alias="productCode")
     product_description: str = Field(alias="productDescription")
     product_line: str = Field(alias="productLine")
@@ -168,11 +158,11 @@ class _SubscriptionsModel(BaseModel):
     subscription_id: str = Field(alias="subscriptionID")
     subscription_next_billing_date: Optional[Any] = Field(
         alias="subscriptionNextBillingDate",
-    )  # TODO unsure what this returns # pylint: disable=W0511
+    )  # TODO unsure what this returns
     subscription_remaining_days: int = Field(alias="subscriptionRemainingDays")
     subscription_remaining_term: Optional[Any] = Field(
         alias="subscriptionRemainingTerm",
-    )  # TODO unsure what this returns # pylint: disable=W0511
+    )  # TODO unsure what this returns
     subscription_start_date: date = Field(alias="subscriptionStartDate")
     subscription_term: str = Field(alias="subscriptionTerm")
     term: int
@@ -368,7 +358,7 @@ class VehicleGuidModel(BaseModel):
         vin (str): The VIN (Vehicle Identification Number) of the vehicle.
     """
 
-    alerts: List[Any]  # TODO unsure what this returns # pylint: disable=W0511
+    alerts: List[Any]  # TODO unsure what this returns
     asi_code: str = Field(alias="asiCode")
     brand: str
     capabilities: List[_CapabilitiesModel]
@@ -381,28 +371,24 @@ class VehicleGuidModel(BaseModel):
     date_of_first_use: Optional[date] = Field(alias="dateOfFirstUse")
     dcm: _DcmModel
     dcm_active: bool = Field(alias="dcmActive")
-    dcms: Optional[Any]  # TODO unsure what this returns # pylint: disable=W0511
+    dcms: Optional[Any]  # TODO unsure what this returns
     display_model_description: str = Field(alias="displayModelDescription")
     display_subscriptions: List[Dict[str, str]] = Field(alias="displaySubscriptions")
     electrical_platform_code: str = Field(alias="electricalPlatformCode")
     emergency_contact: Optional[Any] = Field(
         alias="emergencyContact"
-    )  # TODO unsure what this returns # pylint: disable=W0511
+    )  # TODO unsure what this returns
     ev_vehicle: bool = Field(alias="evVehicle")
     extended_capabilities: _ExtendedCapabilitiesModel = Field(alias="extendedCapabilities")
     external_subscriptions: Optional[Any] = Field(alias="externalSubscriptions")
     family_sharing: bool = Field(alias="familySharing")
     faq_url: str = Field(alias="faqUrl")
     features: _FeaturesModel
-    fleet_ind: Optional[Any] = Field(
-        alias="fleetInd"
-    )  # TODO unsure what this returns # pylint: disable=W0511
+    fleet_ind: Optional[Any] = Field(alias="fleetInd")  # TODO unsure what this returns
     fuel_type: Optional[str] = Field(alias="fuelType", default=None)
     generation: str
     head_unit: _HeadUnitModel = Field(alias="headUnit")
-    hw_type: Optional[Any] = Field(
-        alias="hwType"
-    )  # TODO unsure what this returns # pylint: disable=W0511
+    hw_type: Optional[Any] = Field(alias="hwType")  # TODO unsure what this returns
     image: str
     imei: str
     katashiki_code: str = Field(alias="katashikiCode")
@@ -414,34 +400,30 @@ class VehicleGuidModel(BaseModel):
     car_model_year: str = Field(alias="modelYear")
     nickname: Optional[str] = Field(alias="nickName", default=None)
     non_cvt_vehicle: bool = Field(alias="nonCvtVehicle")
-    old_imei: Optional[Any] = Field(
-        alias="oldImei"
-    )  # TODO unsure what this returns # pylint: disable=W0511
+    old_imei: Optional[Any] = Field(alias="oldImei")  # TODO unsure what this returns
     owner: bool
     personalized_settings: _LinksModel = Field(
         alias="personalizedSettings"
-    )  # TODO unsure what this returns # pylint: disable=W0511
+    )  # TODO unsure what this returns
     preferred: Optional[bool] = None
     primary_subscriber: bool = Field(alias="primarySubscriber")
     region: str
     registration_number: Optional[str] = Field(alias="registrationNumber")
-    remote_display: Optional[Any] = Field(
-        alias="remoteDisplay"
-    )  # TODO unsure what this returns # pylint: disable=W0511
+    remote_display: Optional[Any] = Field(alias="remoteDisplay")  # TODO unsure what this returns
     remote_service_capabilities: _RemoteServiceCapabilitiesModel = Field(
         alias="remoteServiceCapabilities"
     )
     remote_service_exceptions: List[Any] = Field(
         alias="remoteServicesExceptions"
-    )  # TODO unsure what this returns # pylint: disable=W0511
+    )  # TODO unsure what this returns
     remote_subscription_exists: bool = Field(alias="remoteSubscriptionExists")
     remote_subscription_status: str = Field(alias="remoteSubscriptionStatus")
     remote_user: bool = Field(alias="remoteUser")
     remote_user_guid: Optional[Union[UUID, str]] = Field(alias="remoteUserGuid", default=None)
     service_connect_status: Optional[Any] = Field(
         alias="serviceConnectStatus"
-    )  # TODO unsure what this returns # pylint: disable=W0511
-    services: List[Any]  # TODO unsure what this returns # pylint: disable=W0511
+    )  # TODO unsure what this returns
+    services: List[Any]  # TODO unsure what this returns
     shop_genuine_parts_url: str = Field(alias="shopGenuinePartsUrl")
     status: str
     stock_pic_reference: str = Field(alias="stockPicReference")

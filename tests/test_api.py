@@ -152,9 +152,7 @@ async def test_api_request_and_parse_endpoints(
     api = Api(controller)
 
     # Act
-    response = await api._request_and_parse(  # pylint: disable=W0212
-        model, method, endpoint, vin=VIN
-    )  # pylint: disable=W0212
+    response = await api._request_and_parse(model, method, endpoint, vin=VIN)
 
     # Assert
     controller.request_json.assert_called_once_with(method=method, endpoint=endpoint, vin=VIN)

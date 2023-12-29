@@ -39,7 +39,7 @@ from mytoyota.utils.formatters import format_odometer
         ),
     ],
 )
-def test_format_odometer_happy_path(test_input, expected):  # noqa: D103 # pylint: disable=C0116
+def test_format_odometer_happy_path(test_input, expected):  # noqa: D103
     # Act
     result = format_odometer(test_input)
 
@@ -65,7 +65,7 @@ def test_format_odometer_happy_path(test_input, expected):  # noqa: D103 # pylin
         ),
     ],
 )
-def test_format_odometer_edge_cases(test_input, expected):  # noqa: D103 # pylint: disable=C0116
+def test_format_odometer_edge_cases(test_input, expected):  # noqa: D103
     # Act
     result = format_odometer(test_input)
 
@@ -83,7 +83,7 @@ def test_format_odometer_edge_cases(test_input, expected):  # noqa: D103 # pylin
         (pytest.param([12345], TypeError, id="non_dict_in_list")),
     ],
 )
-def test_format_odometer_error_cases(test_input, expected_exception):  # noqa: D103 # pylint: disable=C0116
+def test_format_odometer_error_cases(test_input, expected_exception):  # noqa: D103
     # Act / Assert
     with pytest.raises(expected_exception):
         format_odometer(test_input)

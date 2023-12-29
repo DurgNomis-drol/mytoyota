@@ -14,7 +14,7 @@ from mytoyota.utils.locale import is_valid_locale
         pytest.param("de-DE", True, id="id_valid_german"),
     ],
 )
-def test_is_valid_locale_happy_path(locale, expected):  # noqa: D103 # pylint: disable=C0116
+def test_is_valid_locale_happy_path(locale, expected):  # noqa: D103
     # Act
     result = is_valid_locale(locale)
 
@@ -32,7 +32,7 @@ def test_is_valid_locale_happy_path(locale, expected):  # noqa: D103 # pylint: d
         pytest.param("x-private", True, id="id_valid_private_use"),  # Private use tag
     ],
 )
-def test_is_valid_locale_edge_cases(locale, expected):  # noqa: D103 # pylint: disable=C0116
+def test_is_valid_locale_edge_cases(locale, expected):  # noqa: D103
     # Act
     result = is_valid_locale(locale)
 
@@ -49,7 +49,7 @@ def test_is_valid_locale_edge_cases(locale, expected):  # noqa: D103 # pylint: d
         pytest.param("en@currency=USD", False, id="id_invalid_locale_with_currency"),
     ],
 )
-def test_is_valid_locale_error_cases(locale, expected):  # noqa: D103 # pylint: disable=C0116
+def test_is_valid_locale_error_cases(locale, expected):  # noqa: D103
     # Act
     result = is_valid_locale(locale)
 

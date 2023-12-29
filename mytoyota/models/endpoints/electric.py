@@ -37,7 +37,7 @@ class ElectricStatusModel(BaseModel):
     remaining_charge_time: Optional[int] = Field(
         alias="remainingChargeTime",
         default=None,
-    )  # TODO: Use field serializer to create timedelta # pylint: disable=W0511
+    )  # TODO: Use field serializer to create timedelta
 
 
 class ElectricResponseModel(StatusModel):

@@ -249,7 +249,7 @@ class LockStatus:
         return Door(section)
 
     # Seems to be not available for now
-    # TODO: Calculate it from all other sensor values? # pylint: disable=W0511
+    # TODO: Calculate it from all other sensor values?
     # @property
     # def overallstatus(self) -> Optional[str]:
     #     """If a warning exists for any of the sensors."""

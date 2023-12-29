@@ -41,7 +41,7 @@ class Vehicle:
             },
             {
                 "name": "health_status",
-                "capable": True,  # TODO Unsure of the required capability # pylint: disable=W0511
+                "capable": True,  # TODO Unsure of the required capability
                 "function": partial(
                     self._api.get_vehicle_health_status_endpoint,
                     vin=vehicle_info.vin,
@@ -62,7 +62,7 @@ class Vehicle:
             },
             {
                 "name": "notifications",
-                "capable": True,  # TODO Unsure of the required capability # pylint: disable=W0511
+                "capable": True,  # TODO Unsure of the required capability
                 "function": partial(self._api.get_notification_endpoint, vin=vehicle_info.vin),
             },
             {
@@ -72,7 +72,7 @@ class Vehicle:
             },
             {
                 "name": "trips",
-                "capable": True,  # TODO Unsure of the required capability # pylint: disable=W0511
+                "capable": True,  # TODO Unsure of the required capability
                 "function": partial(
                     self._api.get_trips_endpoint,
                     vin=vehicle_info.vin,
