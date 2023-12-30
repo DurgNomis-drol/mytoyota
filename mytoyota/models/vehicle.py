@@ -227,7 +227,7 @@ class Vehicle:
             self._endpoint_data["status"] if "status" in self._endpoint_data else None
         )
 
-    async def get_summary(  # pylint: disable=R0914, R0912, R0915
+    async def get_summary(  # noqa: PLR0912, PLR0915
         self,
         from_date: date,
         to_date: date,
@@ -264,11 +264,18 @@ class Vehicle:
         if resp.payload is None:
             return None
 
+        # Sort payload as code requires data in date order. Sorts the monthly summaries only
+        resp.payload.summary.sort(key=attrgetter("year", "month"))
+
         # Convert to response
         ret: List[Summary] = []
         if summary_type == SummaryType.DAILY:
-            for summary in sorted(resp.payload.summary, key=attrgetter("year", "month")):
-                for histogram in sorted(summary.histograms, key=attrgetter("day")):
+            # Convert all the daily responses from the payload to a summary response
+            for summary in resp.payload.summary:  # Loop the months
+                # Ensure daily data is in date order
+                for histogram in sorted(
+                    summary.histograms, key=attrgetter("day")
+                ):  # Loop the days
                     summary_date = date(
                         day=histogram.day, month=histogram.month, year=histogram.year
                     )
@@ -282,18 +289,23 @@ class Vehicle:
                         )
                     )
         elif summary_type == SummaryType.WEEKLY:
-            ret: List[Summary] = []
+            # To build a weekly summary we need to add together all the daily summaries for the
+            # week. A week starts on a Monday so data is added into build_hdc & build_summary
+            # until the current day is Sunday(i.e. last day of the week). At this point the
+            # build_hdc & build_summary are added to the response and we start again.
             build_hdc = None
             build_summary = None
             start_date = None
 
-            resp.payload.summary.sort(key=attrgetter("year", "month"))
-
             for summary in resp.payload.summary:
-                summary.histograms.sort(key=attrgetter("day"))
+                summary.histograms.sort(
+                    key=attrgetter("day")
+                )  # Code required days are in date order
                 for histogram in summary.histograms:
                     today = date(day=histogram.day, month=histogram.month, year=histogram.year)
-                    if start_date is None:
+                    if (
+                        start_date is None
+                    ):  # start_date is none if we are at the beginning of a new week
                         start_date = today
                         build_hdc = copy.copy(histogram.hdc)
                         build_summary = copy.copy(histogram.summary)
@@ -304,9 +316,10 @@ class Vehicle:
                             build_hdc += histogram.hdc
                         build_summary += histogram.summary
 
-                    # Start of the week is Monday so if current histogram is a Sunday add to return
-                    # and clear
-                    if today.weekday() == 0 or (
+                    # If current histogram is a Sunday then we have a full week of data so add it
+                    # to our response, also need to add to response if ts the last item in the
+                    # loops(otherwise partial week is lost)
+                    if today.weekday() == 6 or (
                         summary == resp.payload.summary[-1] and histogram == summary.histograms[-1]
                     ):
                         ret.append(
@@ -318,11 +331,10 @@ class Vehicle:
                                 build_hdc,
                             )
                         )
-                        start_date = None
-
-            return ret
+                        start_date = None  # Reset start date so we can start a new week
         elif summary_type == SummaryType.MONTHLY:
-            for summary in sorted(resp.payload.summary, key=attrgetter("year", "month")):
+            # Convert all the monthly responses from the payload to a summary response
+            for summary in resp.payload.summary:
                 summary_from_date = date(day=1, month=summary.month, year=summary.year)
                 summary_to_date = date(
                     day=calendar.monthrange(summary.year, summary.month)[1],
@@ -334,6 +346,7 @@ class Vehicle:
                     Summary(
                         summary.summary,
                         self._metric,
+                        # The data might not include an entire month so update start and end dates
                         max(summary_from_date, from_date),
                         min(summary_to_date, to_date),
                         summary.hdc,
@@ -341,12 +354,9 @@ class Vehicle:
                 )
         elif summary_type == SummaryType.YEARLY:
             # TODO: Require confirmation that the endpoint can return data older than a year
-            ret: List[Summary] = []
             build_hdc = None
             build_summary = None
             start_date = None
-
-            resp.payload.summary.sort(key=attrgetter("year", "month"))
 
             for summary in resp.payload.summary:
                 today = date(day=1, month=summary.month, year=summary.year)
@@ -361,6 +371,9 @@ class Vehicle:
                         build_hdc += summary.hdc
                     build_summary += summary.summary
 
+                # If "today" is december then we have reached the end of the year so add it the
+                # response also need to add to response if last item in list to add the last
+                # partial year
                 if today.month == 12 or summary == resp.payload.summary[-1]:
                     end_date = min(to_date, date(day=31, month=12, year=today.year))
                     ret.append(
