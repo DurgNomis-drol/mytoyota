@@ -8,19 +8,7 @@ from uuid import UUID
 from pydantic import BaseModel, Field
 
 from mytoyota.models.endpoints.common import StatusModel
-
-
-def add_with_none(this, that):
-    """Add two items.
-
-    First checking if either item is None.
-    """
-    if this is None:
-        return that
-    if that is None:
-        return this
-
-    return this + that
+from mytoyota.utils.helpers import add_with_none
 
 
 class _SummaryBaseModel(BaseModel):
