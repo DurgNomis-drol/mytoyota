@@ -1,12 +1,15 @@
 """Vehicle model."""
 import asyncio
-import calendar
 import copy
 import json
 import logging
 from datetime import date, timedelta
 from functools import partial
+from itertools import groupby
+from operator import attrgetter
 from typing import Any, Dict, List, Optional, Tuple
+
+from arrow import Arrow
 
 from mytoyota.api import Api
 from mytoyota.models.dashboard import Dashboard
@@ -16,6 +19,7 @@ from mytoyota.models.lock_status import LockStatus
 from mytoyota.models.nofication import Notification
 from mytoyota.models.summary import Summary, SummaryType
 from mytoyota.models.trips import Trip
+from mytoyota.utils.helpers import add_with_none
 from mytoyota.utils.logs import censor_all
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -232,13 +236,21 @@ class Vehicle:
         to_date: date,
         summary_type: SummaryType = SummaryType.MONTHLY,
     ) -> Optional[List[Summary]]:
-        """Return a Daily, Monthly or Yearly summary between the provided dates.
+        """Return a Daily, Weekly, Monthly or Yearly summary between the provided dates.
+
+        All but Daily can return a partial time range. For example if the summary_type is weekly
+        and the date ranges selected include partial weeks these partial weeks will be returned.
+        The dates contained in the summary will indicate the range of dates that made up the
+        partial week.
+
+        Note: Weekly and yearly summaries lose a small amount of accuracy due to rounding issues
 
         Args:
         ----
             from_date (date, required): The inclusive from date to report summaries.
             to_date (date, required): The inclusive to date to report summaries.
-            summary_type (???, optional): Daily, Monthly or Yearly summary. Monthly by default.
+            summary_type (SummaryType, optional): Daily, Monthly or Yearly summary.
+                                                  Monthly by default.
 
         Returns:
         -------
@@ -256,46 +268,16 @@ class Vehicle:
             return None
 
         # Convert to response
-        ret: List[Summary] = []
         if summary_type == SummaryType.DAILY:
-            for summary in resp.payload.summary:
-                for histogram in summary.histograms:
-                    summary_date = date(
-                        day=histogram.day, month=histogram.month, year=histogram.year
-                    )
-                    ret.append(
-                        Summary(
-                            histogram.summary,
-                            self._metric,
-                            summary_date,
-                            summary_date,
-                            summary.hdc,
-                        )
-                    )
+            return self._generate_daily_summaries(resp.payload.summary)
         elif summary_type == SummaryType.WEEKLY:
-            raise NotImplementedError
+            return self._generate_weekly_summaries(resp.payload.summary)
         elif summary_type == SummaryType.MONTHLY:
-            for summary in resp.payload.summary:
-                summary_from_date = date(day=1, month=summary.month, year=summary.year)
-                summary_to_date = date(
-                    day=calendar.monthrange(summary.year, summary.month)[1],
-                    month=summary.month,
-                    year=summary.year,
-                )
-
-                ret.append(
-                    Summary(
-                        summary.summary,
-                        self._metric,
-                        summary_from_date if summary_from_date > from_date else from_date,
-                        summary_to_date if summary_to_date < to_date else to_date,
-                        summary.hdc,
-                    )
-                )
+            return self._generate_monthly_summaries(resp.payload.summary, from_date, to_date)
         elif summary_type == SummaryType.YEARLY:
-            raise NotImplementedError
-
-        return ret
+            return self._generate_yearly_summaries(resp.payload.summary, to_date)
+        else:
+            raise AssertionError("No such SummaryType")
 
     async def get_trips(
         self, from_date: date, to_date: date, full_route: bool = False
@@ -365,3 +347,94 @@ class Vehicle:
             dump[name] = json.loads(data.model_dump_json())
 
         return censor_all(copy.deepcopy(dump))
+
+    def _generate_daily_summaries(self, summary) -> List[Summary]:
+        summary.sort(key=attrgetter("year", "month"))
+        return [
+            Summary(
+                histogram.summary,
+                self._metric,
+                Arrow(histogram.year, histogram.month, histogram.day).date(),
+                Arrow(histogram.year, histogram.month, histogram.day).date(),
+                histogram.hdc,
+            )
+            for month in summary
+            for histogram in sorted(month.histograms, key=attrgetter("day"))
+        ]
+
+    def _generate_weekly_summaries(self, summary) -> List[Summary]:
+        ret: List[Summary] = []
+        summary.sort(key=attrgetter("year", "month"))
+
+        # Flatten the list of histograms
+        histograms = [histogram for month in summary for histogram in month.histograms]
+        histograms.sort(key=lambda h: date(day=h.day, month=h.month, year=h.year))
+
+        # Group histograms by week
+        for _, week_histograms_iter in groupby(
+            histograms, key=lambda h: Arrow(h.year, h.month, h.day).span("week")[0]
+        ):
+            week_histograms = list(week_histograms_iter)
+            build_hdc = copy.copy(week_histograms[0].hdc)
+            build_summary = copy.copy(week_histograms[0].summary)
+            start_date = Arrow(
+                week_histograms[0].year, week_histograms[0].month, week_histograms[0].day
+            )
+
+            for histogram in week_histograms[1:]:
+                add_with_none(build_hdc, histogram.hdc)
+                build_summary += histogram.summary
+
+            end_date = Arrow(
+                week_histograms[-1].year, week_histograms[-1].month, week_histograms[-1].day
+            )
+            ret.append(
+                Summary(build_summary, self._metric, start_date.date(), end_date.date(), build_hdc)
+            )
+
+        return ret
+
+    def _generate_monthly_summaries(
+        self, summary, from_date: date, to_date: date
+    ) -> List[Summary]:
+        # Convert all the monthly responses from the payload to a summary response
+        ret: List[Summary] = []
+        summary.sort(key=attrgetter("year", "month"))
+        for month in summary:
+            month_start = Arrow(month.year, month.month, 1).date()
+            month_end = Arrow(month.year, month.month, 1).shift(months=1).shift(days=-1).date()
+
+            ret.append(
+                Summary(
+                    month.summary,
+                    self._metric,
+                    # The data might not include an entire month so update start and end dates
+                    max(month_start, from_date),
+                    min(month_end, to_date),
+                    month.hdc,
+                )
+            )
+
+        return ret
+
+    def _generate_yearly_summaries(self, summary, to_date: date) -> List[Summary]:
+        summary.sort(key=attrgetter("year", "month"))
+        ret: List[Summary] = []
+        build_hdc = copy.copy(summary[0].hdc)
+        build_summary = copy.copy(summary[0].summary)
+        start_date = date(day=1, month=summary[0].month, year=summary[0].year)
+
+        for month, next_month in zip(summary, summary[1:] + [None]):
+            summary_month = date(day=1, month=month.month, year=month.year)
+            add_with_none(build_hdc, month.hdc)
+            build_summary += month.summary
+
+            if next_month is None or next_month.year != month.year:
+                end_date = min(to_date, date(day=31, month=12, year=summary_month.year))
+                ret.append(Summary(build_summary, self._metric, start_date, end_date, build_hdc))
+                if next_month:
+                    start_date = date(day=1, month=next_month.month, year=next_month.year)
+                    build_hdc = copy.copy(next_month.hdc)
+                    build_summary = copy.copy(next_month.summary)
+
+        return ret
