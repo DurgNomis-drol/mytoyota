@@ -33,7 +33,7 @@ httpx = ">=0.18.1"
 arrow = "^1.1"
 importlib-metadata = "^7.0.1"
 pyjwt = "^2.8.0"
-pydantic = "^2.5.1"
+pydantic = "^1.9.0"
 hishel = "^0.0.19"
 
 [tool.poetry.dev-dependencies]
