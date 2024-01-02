@@ -267,8 +267,6 @@ class Vehicle:
         if resp.payload is None:
             return None
 
-        # Sort payload as code requires data in date order. Sorts the monthly summaries only
-
         # Convert to response
         if summary_type == SummaryType.DAILY:
             return self._generate_daily_summaries(resp.payload.summary)
