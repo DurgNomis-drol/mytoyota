@@ -1,13 +1,15 @@
 """Vehicle model."""
 import asyncio
-import calendar
 import copy
 import json
 import logging
 from datetime import date, timedelta
 from functools import partial
+from itertools import groupby
 from operator import attrgetter
 from typing import Any, Dict, List, Optional, Tuple
+
+from arrow import Arrow
 
 from mytoyota.api import Api
 from mytoyota.models.dashboard import Dashboard
@@ -269,13 +271,13 @@ class Vehicle:
 
         # Convert to response
         if summary_type == SummaryType.DAILY:
-            return self._daily_summaries(resp.payload.summary)
+            return self._generate_daily_summaries(resp.payload.summary)
         elif summary_type == SummaryType.WEEKLY:
-            return self._weekly_summaries(resp.payload.summary)
+            return self._generate_weekly_summaries(resp.payload.summary)
         elif summary_type == SummaryType.MONTHLY:
-            return self._monthly_summaries(resp.payload.summary, from_date, to_date)
+            return self._generate_monthly_summaries(resp.payload.summary, from_date, to_date)
         elif summary_type == SummaryType.YEARLY:
-            return self._yearly_summaries(resp.payload.summary, from_date, to_date)
+            return self._generate_yearly_summaries(resp.payload.summary, to_date)
         else:
             raise AssertionError("No such SummaryType")
 
@@ -348,117 +350,93 @@ class Vehicle:
 
         return censor_all(copy.deepcopy(dump))
 
-    def _daily_summaries(self, summary) -> List[Summary]:
+    def _generate_daily_summaries(self, summary) -> List[Summary]:
         summary.sort(key=attrgetter("year", "month"))
-
-        ret: List[Summary] = []
-        for month in summary:  # Loop the months
-            # Ensure daily data is in date order
-            for histogram in sorted(month.histograms, key=attrgetter("day")):  # Loop the days
-                summary_date = date(day=histogram.day, month=histogram.month, year=histogram.year)
-                ret.append(
-                    Summary(
-                        histogram.summary,
-                        self._metric,
-                        summary_date,
-                        summary_date,
-                        histogram.hdc,
-                    )
-                )
-
-        return ret
-
-    def _weekly_summaries(self, summary) -> List[Summary]:
-        # To build a weekly summary we need to add together all the daily summaries for the
-        # week. A week starts on a Monday so data is added into build_hdc & build_summary
-        # until the current day is Sunday(i.e. last day of the week). At this point the
-        # build_hdc & build_summary are added to the response and we start again.
-        build_hdc = None
-        build_summary = None
-        start_date = None
-
-        ret: List[Summary] = []
-        summary.sort(key=attrgetter("year", "month"))
-        for month in summary:
-            month.histograms.sort(key=attrgetter("day"))  # Code required days are in date order
-            for histogram in month.histograms:
-                histogram_day = date(day=histogram.day, month=histogram.month, year=histogram.year)
-                if start_date is None:
-                    start_date = histogram_day
-                    build_hdc = copy.copy(histogram.hdc)
-                    build_summary = copy.copy(histogram.summary)
-                else:
-                    add_with_none(build_hdc, histogram.hdc)
-                    build_summary += histogram.summary
-
-                # If current histogram is a Sunday then we have a full week of data so add it
-                # to our response, also need to add to response if ts the last item in the
-                # loops(otherwise partial week is lost)
-                if histogram_day.weekday() == 6 or (
-                    month == summary[-1] and histogram == month.histograms[-1]
-                ):
-                    ret.append(
-                        Summary(
-                            build_summary,
-                            self._metric,
-                            start_date,
-                            histogram_day,
-                            build_hdc,
-                        )
-                    )
-                    start_date = None  # Reset start date so we can start a new week
-
-        return ret
-
-    def _monthly_summaries(self, summary, from_date: date, to_date: date) -> List[Summary]:
-        # Convert all the monthly responses from the payload to a summary response
-
-        ret: List[Summary] = []
-        summary.sort(key=attrgetter("year", "month"))
-        for month in summary:
-            month_from_date = date(day=1, month=month.month, year=month.year)
-            month_to_date = date(
-                day=calendar.monthrange(month.year, month.month)[1],
-                month=month.month,
-                year=month.year,
+        return [
+            Summary(
+                histogram.summary,
+                self._metric,
+                Arrow(histogram.year, histogram.month, histogram.day).date(),
+                Arrow(histogram.year, histogram.month, histogram.day).date(),
+                histogram.hdc,
             )
+            for month in summary
+            for histogram in sorted(month.histograms, key=attrgetter("day"))
+        ]
+
+    def _generate_weekly_summaries(self, summary) -> List[Summary]:
+        ret: List[Summary] = []
+        summary.sort(key=attrgetter("year", "month"))
+
+        # Flatten the list of histograms
+        histograms = [histogram for month in summary for histogram in month.histograms]
+        histograms.sort(key=lambda h: date(day=h.day, month=h.month, year=h.year))
+
+        # Group histograms by week
+        for _, week_histograms_iter in groupby(
+            histograms, key=lambda h: Arrow(h.year, h.month, h.day).span("week")[0]
+        ):
+            week_histograms = list(week_histograms_iter)
+            build_hdc = copy.copy(week_histograms[0].hdc)
+            build_summary = copy.copy(week_histograms[0].summary)
+            start_date = Arrow(
+                week_histograms[0].year, week_histograms[0].month, week_histograms[0].day
+            )
+
+            for histogram in week_histograms[1:]:
+                add_with_none(build_hdc, histogram.hdc)
+                build_summary += histogram.summary
+
+            end_date = Arrow(
+                week_histograms[-1].year, week_histograms[-1].month, week_histograms[-1].day
+            )
+            ret.append(
+                Summary(build_summary, self._metric, start_date.date(), end_date.date(), build_hdc)
+            )
+
+        return ret
+
+    def _generate_monthly_summaries(
+        self, summary, from_date: date, to_date: date
+    ) -> List[Summary]:
+        # Convert all the monthly responses from the payload to a summary response
+        ret: List[Summary] = []
+        summary.sort(key=attrgetter("year", "month"))
+        for month in summary:
+            month_start = Arrow(month.year, month.month, 1).date()
+            month_end = Arrow(month.year, month.month, 1).shift(months=1).shift(days=-1).date()
 
             ret.append(
                 Summary(
                     month.summary,
                     self._metric,
                     # The data might not include an entire month so update start and end dates
-                    max(month_from_date, from_date),
-                    min(month_to_date, to_date),
+                    max(month_start, from_date),
+                    min(month_end, to_date),
                     month.hdc,
                 )
             )
 
         return ret
 
-    def _yearly_summaries(self, summar, from_date: date, to_date: date) -> List[Summary]:
-        build_hdc = None
-        build_summary = None
-        start_date = None
-
+    def _generate_yearly_summaries(self, summary, to_date: date) -> List[Summary]:
+        summary.sort(key=attrgetter("year", "month"))
         ret: List[Summary] = []
-        summar.sort(key=attrgetter("year", "month"))
-        for month in summar:
-            summary_month = date(day=1, month=month.month, year=month.year)
-            if start_date is None or summary_month < from_date:
-                start_date = summary_month
-                build_hdc = copy.copy(month.hdc)
-                build_summary = copy.copy(month.summary)
-            else:
-                add_with_none(build_hdc, month.hdc)
-                build_summary += month.summary
+        build_hdc = copy.copy(summary[0].hdc)
+        build_summary = copy.copy(summary[0].summary)
+        start_date = date(day=1, month=summary[0].month, year=summary[0].year)
 
-            # If "today" is december then we have reached the end of the year so add it the
-            # response also need to add to response if last item in list to add the last
-            # partial year
-            if summary_month.month == 12 or month == summar[-1]:
+        for month, next_month in zip(summary, summary[1:] + [None]):
+            summary_month = date(day=1, month=month.month, year=month.year)
+            add_with_none(build_hdc, month.hdc)
+            build_summary += month.summary
+
+            if next_month is None or next_month.year != month.year:
                 end_date = min(to_date, date(day=31, month=12, year=summary_month.year))
                 ret.append(Summary(build_summary, self._metric, start_date, end_date, build_hdc))
-                start_date = None
+                if next_month:
+                    start_date = date(day=1, month=next_month.month, year=next_month.year)
+                    build_hdc = copy.copy(next_month.hdc)
+                    build_summary = copy.copy(next_month.summary)
 
         return ret
