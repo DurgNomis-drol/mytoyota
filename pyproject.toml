@@ -4,7 +4,7 @@ description = "Python client for Toyota Connected Services."
 authors = ["Simon Grud Hansen <simongrud@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-version = "1.0.0"
+version = "1.1.0"
 classifiers = [
     "Development Status :: 4 - Beta",
     "License :: OSI Approved :: MIT License",
@@ -33,7 +33,7 @@ httpx = ">=0.18.1"
 arrow = "^1.1"
 importlib-metadata = "^7.0.1"
 pyjwt = "^2.8.0"
-pydantic = "^2.5.1"
+pydantic = "^1.10.0"
 hishel = "^0.0.19"
 
 [tool.poetry.dev-dependencies]
