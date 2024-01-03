@@ -160,7 +160,7 @@ class Controller:
 
             self._update_tokens(resp.json())
 
-    def _update_tokens(self, resp: Dict):
+    def _update_tokens(self, resp: Dict[str, Any]):
         access_tokens: Dict[str, Any] = resp
         if (
             "access_token" not in access_tokens
