@@ -170,8 +170,8 @@ class Controller:
         ):
             raise ToyotaLoginError(
                 f"Token retrieval failed. Missing Tokens. \
-                {access_tokens['status_code']}, \
-                {access_tokens['text']}."
+                {access_tokens.status_code}, \
+                {access_tokens.text}."
             )
         self._token = access_tokens["access_token"]
         self._refresh_token = access_tokens["refresh_token"]
