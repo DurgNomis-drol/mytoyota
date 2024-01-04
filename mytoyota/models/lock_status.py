@@ -70,7 +70,12 @@ class Door:
     @property
     def locked(self) -> Optional[bool]:
         """If the door is locked."""
-        return _get_status(self._status, status="carstatus_locked")
+        if _get_status(self._status, status="carstatus_locked") is True:
+            return True
+        if _get_status(self._status, status="carstatus_unlocked") is True:
+            return False
+        else:
+            return None
 
 
 class Doors:
