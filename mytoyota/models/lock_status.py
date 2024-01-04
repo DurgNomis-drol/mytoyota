@@ -72,7 +72,7 @@ class Door:
         """If the door is locked."""
         if _get_status(self._status, status="carstatus_locked") is True:
             return True
-        if _get_status(self._status, status="carstatus_unlocked") is True:
+        if _get_status(self._status, status="carstatus_unlocked") is False:
             return False
         else:
             return None
