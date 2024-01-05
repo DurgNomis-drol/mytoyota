@@ -31,6 +31,6 @@ jobs:
       - name: "⚙️ Install dependencies"
         run: |
           poetry install --without dev
-          poetry self add "poetry-dynamic-versioning[plugin]
+          poetry self add "poetry-dynamic-versioning[plugin]"
       - name: "🚀 Test package building"
         run: "poetry build"
