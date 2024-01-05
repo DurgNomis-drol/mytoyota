@@ -20,6 +20,9 @@ jobs:
     steps:
       - name: "⤵️ Check out code from GitHub"
         uses: "actions/checkout@v4"
+        with:
+          fetch-depth: 0
+          fetch-tags: true
       - name: "🐍 Set up Python ${{ matrix.python-version }}"
         uses: "actions/setup-python@v5"
         with:
@@ -29,6 +32,8 @@ jobs:
         with:
           poetry-version: 1.5.1
       - name: "⚙️ Install dependencies"
-        run: "poetry install --without dev"
+        run: |
+          poetry install --without dev
+          poetry self add "poetry-dynamic-versioning[plugin]"
       - name: "🚀 Test package building"
         run: "poetry build"

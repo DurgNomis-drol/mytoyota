@@ -12,7 +12,11 @@ jobs:
     steps:
       - name: "⤵️ Check out code from GitHub"
         uses: "actions/checkout@v4"
+        with:
+          fetch-depth: 0
+          fetch-tags: true
       - name: "🚀 Build package and publish to pypi"
         uses: "JRubics/poetry-publish@v1.17"
         with:
           pypi_token: "${{ secrets.PYPI_PASSWORD }}"
+          plugins: "poetry-dynamic-versioning[plugin]"
