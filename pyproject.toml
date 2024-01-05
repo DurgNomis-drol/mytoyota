@@ -78,7 +78,6 @@ fix = true
 
 [tool.poetry-dynamic-versioning]
 enable = true
-metadata = true
 latest-tag = true
 
 [build-system]
