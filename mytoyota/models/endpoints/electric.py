@@ -31,8 +31,8 @@ class ElectricStatusModel(BaseModel):
     charging_status: str = Field(alias="chargingStatus")
     ev_range: UnitValueModel = Field(alias="evRange")
     ev_range_with_ac: UnitValueModel = Field(alias="evRangeWithAc")
-    fuel_level: int = Field(alias="fuelLevel")
-    fuel_range: UnitValueModel = Field(alias="fuelRange")
+    fuel_level: Optional[int] = Field(alias="fuelLevel", default=None)
+    fuel_range: Optional[UnitValueModel] = Field(alias="fuelRange", default=None)
     last_update_timestamp: datetime = Field(alias="lastUpdateTimestamp")
     remaining_charge_time: Optional[int] = Field(
         alias="remainingChargeTime",
