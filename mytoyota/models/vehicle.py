@@ -434,7 +434,9 @@ class Vehicle:
 
                 if next_month is None or next_month.year != month.year:
                     end_date = min(to_date, date(day=31, month=12, year=summary_month.year))
-                    ret.append(Summary(build_summary, self._metric, start_date, end_date, build_hdc))
+                    ret.append(
+                        Summary(build_summary, self._metric, start_date, end_date, build_hdc)
+                    )
                     if next_month:
                         start_date = date(day=1, month=next_month.month, year=next_month.year)
                         build_hdc = copy.copy(next_month.hdc)
