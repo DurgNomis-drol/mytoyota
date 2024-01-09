@@ -16,8 +16,8 @@ class UnitValueModel(BaseModel):
 
     """
 
-    unit: str
-    value: float
+    unit: Optional[str] = None
+    value: Optional[float] = None
 
 
 class _MessageModel(BaseModel):
