@@ -44,8 +44,8 @@ class VehicleStatusModel(BaseModel):
 
 
 class _TelemetryModel(BaseModel):
-    fugage: UnitValueModel
-    rage: UnitValueModel
+    fugage: Optional[UnitValueModel] = None
+    rage: Optional[UnitValueModel] = None
     odo: UnitValueModel
 
 
