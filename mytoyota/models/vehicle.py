@@ -235,7 +235,7 @@ class Vehicle:
         from_date: date,
         to_date: date,
         summary_type: SummaryType = SummaryType.MONTHLY,
-    ) -> Optional[List[Summary]]:
+    ) -> List[Summary]:
         """Return a Daily, Weekly, Monthly or Yearly summary between the provided dates.
 
         All but Daily can return a partial time range. For example if the summary_type is weekly
