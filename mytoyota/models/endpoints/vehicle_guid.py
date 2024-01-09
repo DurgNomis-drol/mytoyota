@@ -369,12 +369,12 @@ class VehicleGuidModel(BaseModel):
     cts_links: _LinksModel = Field(alias="ctsLinks")
     data_consent: _DataConsentModel = Field(alias="dataConsent")
     date_of_first_use: Optional[date] = Field(alias="dateOfFirstUse")
-    dcm: _DcmModel
+    dcm: Optional[_DcmModel] = None
     dcm_active: bool = Field(alias="dcmActive")
     dcms: Optional[Any]  # TODO unsure what this returns
     display_model_description: str = Field(alias="displayModelDescription")
     display_subscriptions: List[Dict[str, str]] = Field(alias="displaySubscriptions")
-    electrical_platform_code: str = Field(alias="electricalPlatformCode")
+    electrical_platform_code: Optional[str] = Field(alias="electricalPlatformCode", default=None)
     emergency_contact: Optional[Any] = Field(
         alias="emergencyContact"
     )  # TODO unsure what this returns
