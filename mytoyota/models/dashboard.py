@@ -84,13 +84,13 @@ class Dashboard:
             If vehicle is electric returns 0
             If vehicle doesn't support fuel range returns None
         """
-        if self._electric:
+        if self._electric and self._electric.fuel_range:
             return convert_distance(
                 self._metric,
                 self._electric.fuel_range.unit,
                 self._electric.fuel_range.value,
             )
-        if self._telemetry.distance_to_empty:
+        if self._telemetry and self._telemetry.distance_to_empty:
             return convert_distance(
                 self._metric,
                 self._telemetry.distance_to_empty.unit,
