@@ -43,7 +43,7 @@ async def get_information():
     await client.login()
 
     print("Retrieving cars...")
-    cars = await client.get_vehicles(metric=False)
+    cars = await client.get_vehicles(metric=True)
 
     for car in cars:
         await car.update()
@@ -71,9 +71,9 @@ async def get_information():
         # )
 
         # Trips
-        pp.pprint(
-            f"Trips: f{await car.get_trips(date.today() - timedelta(days=7), date.today(), full_route=True)}"  # noqa: E501
-        )
+        # pp.pprint(
+        #    f"Trips: f{await car.get_trips(date.today() - timedelta(days=7), date.today(), full_route=True)}"  # noqa: E501
+        # )
 
         # Dump all the information collected so far:
         # pp.pprint(car._dump_all())
