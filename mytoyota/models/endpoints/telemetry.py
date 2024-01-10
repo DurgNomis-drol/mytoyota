@@ -23,7 +23,7 @@ class TelemetryModel(BaseModel):
 
     fuel_type: str = Field(alias="fuelType")
     odometer: UnitValueModel
-    fuel_level: int = Field(alias="fuelLevel")
+    fuel_level: Optional[int] = Field(alias="fuelLevel", default=None)
     distance_to_empty: Optional[UnitValueModel] = Field(alias="distanceToEmpty", default=None)
     timestamp: datetime
 
