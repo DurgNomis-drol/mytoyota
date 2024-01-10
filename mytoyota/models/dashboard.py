@@ -2,9 +2,15 @@
 from datetime import timedelta
 from typing import Any, List, Optional
 
-from mytoyota.models.endpoints.electric import ElectricResponseModel
-from mytoyota.models.endpoints.telemetry import TelemetryResponseModel
-from mytoyota.models.endpoints.vehicle_health import VehicleHealthResponseModel
+from mytoyota.models.endpoints.electric import (
+    ElectricResponseModel,
+    ElectricStatusModel,
+)
+from mytoyota.models.endpoints.telemetry import TelemetryModel, TelemetryResponseModel
+from mytoyota.models.endpoints.vehicle_health import (
+    VehicleHealthModel,
+    VehicleHealthResponseModel,
+)
 from mytoyota.utils.conversions import convert_distance
 
 
@@ -26,10 +32,10 @@ class Dashboard:
         ----------
             metric: bool:   Report distances in metric(or imperial)
         """
-        self._electric = electric.payload if electric else None
-        self._telemetry = telemetry.payload if telemetry else None
-        self._health = health.payload if health else None
-        self._metric = "km" if metric else "mi"
+        self._electric: Optional[ElectricStatusModel] = electric.payload if electric else None
+        self._telemetry: Optional[TelemetryModel] = telemetry.payload if telemetry else None
+        self._health: Optional[VehicleHealthModel] = health.payload if health else None
+        self._distance_unit: str = "km" if metric else "mi"
 
     def __repr__(self):
         """Representation of the Dashboard model."""
@@ -42,26 +48,30 @@ class Dashboard:
         )
 
     @property
-    def odometer(self) -> float:
+    def odometer(self) -> Optional[float]:
         """Odometer distance.
 
         Returns
         -------
             The latest odometer reading in the current selected units
         """
-        return convert_distance(
-            self._metric, self._telemetry.odometer.unit, self._telemetry.odometer.value
-        )
+        if self._telemetry:
+            return convert_distance(
+                self._distance_unit,
+                self._telemetry.odometer.unit,
+                self._telemetry.odometer.value,
+            )
+        return None
 
     @property
-    def fuel_level(self) -> int:
+    def fuel_level(self) -> Optional[int]:
         """Fuel level.
 
         Returns
         -------
             A value as percentage
         """
-        return self._telemetry.fuel_level
+        return self._telemetry.fuel_level if self._telemetry else None
 
     @property
     def battery_level(self) -> Optional[float]:
@@ -86,13 +96,13 @@ class Dashboard:
         """
         if self._electric and self._electric.fuel_range:
             return convert_distance(
-                self._metric,
+                self._distance_unit,
                 self._electric.fuel_range.unit,
                 self._electric.fuel_range.value,
             )
         if self._telemetry and self._telemetry.distance_to_empty:
             return convert_distance(
-                self._metric,
+                self._distance_unit,
                 self._telemetry.distance_to_empty.unit,
                 self._telemetry.distance_to_empty.value,
             )
@@ -112,7 +122,7 @@ class Dashboard:
         """
         if self._electric:
             return convert_distance(
-                self._metric,
+                self._distance_unit,
                 self._electric.ev_range.unit,
                 self._electric.ev_range.value,
             )
@@ -132,7 +142,7 @@ class Dashboard:
         """
         if self._electric:
             return convert_distance(
-                self._metric,
+                self._distance_unit,
                 self._electric.ev_range_with_ac.unit,
                 self._electric.ev_range_with_ac.value,
             )
@@ -152,9 +162,9 @@ class Dashboard:
             hybrid == fuel_range + battery_range_with_ac
             None if not supported
         """
-        if self._telemetry.distance_to_empty:
+        if self._telemetry and self._telemetry.distance_to_empty:
             return convert_distance(
-                self._metric,
+                self._distance_unit,
                 self._telemetry.distance_to_empty.unit,
                 self._telemetry.distance_to_empty.value,
             )
@@ -182,7 +192,11 @@ class Dashboard:
             None if vehicle is not currently charging.
             None if vehicle doesn't support charging
         """
-        return self._electric.remaining_charge_time if self._electric else None
+        return (
+            timedelta(minutes=self._electric.remaining_charge_time)
+            if self._electric and self._electric.remaining_charge_time
+            else None
+        )
 
     @property
     def warning_lights(self) -> Optional[List[Any]]:
