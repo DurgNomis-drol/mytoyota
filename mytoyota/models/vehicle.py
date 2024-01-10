@@ -291,6 +291,7 @@ class Vehicle:
             to_date=Arrow.now().date(),
             summary_type=SummaryType.DAILY,
         )
+        assert len(summary) < 2
         return summary[0] if len(summary) > 0 else None
 
     async def get_current_week_summary(self) -> Optional[Summary]:
@@ -305,6 +306,7 @@ class Vehicle:
             to_date=Arrow.now().date(),
             summary_type=SummaryType.WEEKLY,
         )
+        assert len(summary) < 2
         return summary[0] if len(summary) > 0 else None
 
     async def get_current_month_summary(self) -> Optional[Summary]:
@@ -319,6 +321,7 @@ class Vehicle:
             to_date=Arrow.now().date(),
             summary_type=SummaryType.MONTHLY,
         )
+        assert len(summary) < 2
         return summary[0] if len(summary) > 0 else None
 
     async def get_current_year_summary(self) -> Optional[Summary]:
@@ -333,6 +336,7 @@ class Vehicle:
             to_date=Arrow.now().date(),
             summary_type=SummaryType.YEARLY,
         )
+        assert len(summary) < 2
         return summary[0] if len(summary) > 0 else None
 
     async def get_trips(
