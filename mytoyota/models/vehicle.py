@@ -403,8 +403,6 @@ class Vehicle:
         for month in summary:
             month_start = Arrow(month.year, month.month, 1).date()
             month_end = Arrow(month.year, month.month, 1).shift(months=1).shift(days=-1).date()
-            print("M-Summary", month.summary.dict())
-            print("M-HDC", month.hdc.dict())
             ret.append(
                 Summary(
                     month.summary,
