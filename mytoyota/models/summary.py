@@ -149,17 +149,35 @@ class Summary:
 
     @property
     def fuel_consumed(self) -> float:
-        """The amount of fuel consumed.
+        """The total amount of fuel consumed.
 
         Returns
         -------
-            float: The fuel consumed in liters if metric or gallons
+            float: The total amount of fuel consumed in liters if metric or gallons
         """
         if self._summary.fuel_consumption:
             return (
                 round(self._summary.fuel_consumption / 1000.0, 3)
                 if self._metric
                 else round(self._summary.fuel_consumption / 3785.0, 3)
+            )
+
+        return 0.0
+
+    @property
+    def average_fuel_consumed(self) -> float:
+        """The average amount of fuel consumed.
+
+        Returns
+        -------
+            float: The average amount of fuel consumed in l/100km if metric or mpg
+        """
+        if self._summary.fuel_consumption:
+            avg_fuel_consumed = (self._summary.fuel_consumption / self._summary.length) * 100
+            return (
+                round(avg_fuel_consumed, 3)
+                if self._metric
+                else round(235.215 * avg_fuel_consumed, 3)
             )
 
         return 0.0

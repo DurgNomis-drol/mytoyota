@@ -24,7 +24,7 @@ class _SummaryBaseModel(BaseModel):
     duration_highway: int = Field(alias="durationHighway")
     fuel_consumption: Optional[float] = Field(
         alias="fuelConsumption", default=None
-    )  # Electric cars might not use fuel. Milliliters per 100km.
+    )  # Electric cars might not use fuel. Milliliters.
 
     def __add__(self, other: _SummaryBaseModel):
         """Add together two SummaryBaseModel's.
