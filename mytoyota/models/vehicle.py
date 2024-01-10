@@ -403,6 +403,7 @@ class Vehicle:
         for month in summary:
             month_start = Arrow(month.year, month.month, 1).date()
             month_end = Arrow(month.year, month.month, 1).shift(months=1).shift(days=-1).date()
+
             ret.append(
                 Summary(
                     month.summary,
