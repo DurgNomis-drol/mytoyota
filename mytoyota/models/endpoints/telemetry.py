@@ -14,7 +14,7 @@ class TelemetryModel(BaseModel):
     ----------
         fuel_type (str): The type of fuel.
         odometer (UnitValueModel): The odometer reading.
-        fuel_level (int): The fuel level.
+        fuel_level (Optional[int]): The fuel level.
         distance_to_empty (Optional[UnitValueModel], optional): The estimated distance to empty. \n
             Defaults to None.
         timestamp (datetime): The timestamp of the telemetry data.
