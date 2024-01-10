@@ -254,7 +254,7 @@ class Vehicle:
 
         Returns:
         -------
-            Optional[List[Summary]]: A list of summaries or None if not supported.
+            List[Summary]: A list of summaries or empty list if not supported.
         """
         if to_date > date.today():  # Future dates not allowed
             to_date = date.today()
@@ -278,6 +278,66 @@ class Vehicle:
             return self._generate_yearly_summaries(resp.payload.summary, to_date)
         else:
             raise AssertionError("No such SummaryType")
+
+    async def get_current_day_summary(self) -> Optional[Summary]:
+        """Return a summary for the current day.
+
+        Returns
+        -------
+            Optional[Summary]: A summary or None if not supported.
+        """
+        summary = await self.get_summary(
+            from_date=Arrow.now().date(),
+            to_date=Arrow.now().date(),
+            summary_type=SummaryType.DAILY,
+        )
+        assert len(summary) < 2
+        return summary[0] if len(summary) > 0 else None
+
+    async def get_current_week_summary(self) -> Optional[Summary]:
+        """Return a summary for the current week.
+
+        Returns
+        -------
+            Optional[Summary]: A summary or None if not supported.
+        """
+        summary = await self.get_summary(
+            from_date=Arrow.now().floor("week").date(),
+            to_date=Arrow.now().date(),
+            summary_type=SummaryType.WEEKLY,
+        )
+        assert len(summary) < 2
+        return summary[0] if len(summary) > 0 else None
+
+    async def get_current_month_summary(self) -> Optional[Summary]:
+        """Return a summary for the current month.
+
+        Returns
+        -------
+            Optional[Summary]: A summary or None if not supported.
+        """
+        summary = await self.get_summary(
+            from_date=Arrow.now().floor("month").date(),
+            to_date=Arrow.now().date(),
+            summary_type=SummaryType.MONTHLY,
+        )
+        assert len(summary) < 2
+        return summary[0] if len(summary) > 0 else None
+
+    async def get_current_year_summary(self) -> Optional[Summary]:
+        """Return a summary for the current year.
+
+        Returns
+        -------
+            Optional[Summary]: A summary or None if not supported.
+        """
+        summary = await self.get_summary(
+            from_date=Arrow.now().floor("year").date(),
+            to_date=Arrow.now().date(),
+            summary_type=SummaryType.YEARLY,
+        )
+        assert len(summary) < 2
+        return summary[0] if len(summary) > 0 else None
 
     async def get_trips(
         self, from_date: date, to_date: date, full_route: bool = False
