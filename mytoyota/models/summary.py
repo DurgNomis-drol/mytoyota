@@ -37,14 +37,15 @@ class Summary:
             to_date (date, required): End date for this summary
             hdc: (_HDCModel, optional): Hybrid data if available
         """
-        self._summary = summary
-        self._hdc = hdc
-        self._metric = "km" if metric else "mi"
-        self._from_date = from_date
-        self._to_date = to_date
+        self._summary: _SummaryBaseModel = summary
+        self._hdc: Optional[_HDCModel] = hdc
+        self._metric: bool = metric
+        self._distance_unit: str = "km" if metric else "mi"
+        self._from_date: date = from_date
+        self._to_date: date = to_date
 
     def __repr__(self):
-        """Representation of MonthSummary."""
+        """Representation of Summary."""
         return " ".join(
             [
                 f"{k}={getattr(self, k)!s}"
@@ -69,7 +70,7 @@ class Summary:
             full_route (bool, optional): Provide the full route information for each trip
 
         """
-        return convert_distance(self._metric, "km", self._summary.average_speed)
+        return convert_distance(self._distance_unit, "km", self._summary.average_speed)
 
     @property
     def countries(self) -> List[str]:
@@ -100,7 +101,7 @@ class Summary:
         -------
             float: Distance covered in the selected metric
         """
-        return convert_distance(self._metric, "km", self._summary.length / 1000.0)
+        return convert_distance(self._distance_unit, "km", self._summary.length / 1000.0)
 
     @property
     def ev_duration(self) -> Optional[timedelta]:
@@ -110,7 +111,9 @@ class Summary:
         -------
             timedelta: The amount of time driving using EV or None if not supported
         """
-        return timedelta(seconds=self._hdc.ev_time) if self._hdc else None
+        if self._hdc and self._hdc.ev_time:
+            return timedelta(seconds=self._hdc.ev_time)
+        return None
 
     @property
     def ev_distance(self) -> Optional[float]:
@@ -120,11 +123,9 @@ class Summary:
         -------
             timedelta: The distance driven using EV in selected metric or None if not supported
         """
-        return (
-            convert_distance(self._metric, "km", self._hdc.ev_distance / 1000.0)
-            if self._hdc
-            else None
-        )
+        if self._hdc and self._hdc.ev_distance:
+            return convert_distance(self._distance_unit, "km", self._hdc.ev_distance / 1000.0)
+        return None
 
     @property
     def from_date(self) -> date:
@@ -156,9 +157,9 @@ class Summary:
         """
         if self._summary.fuel_consumption:
             return (
-                round(self._summary.fuel_consumption / 4546.0, 3)
+                round(self._summary.fuel_consumption / 1000.0, 3)
                 if self._metric
-                else (self._summary.fuel_consumption / 1000.0)
+                else round(self._summary.fuel_consumption / 3785.0, 3)
             )
 
         return 0.0
