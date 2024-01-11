@@ -1,6 +1,7 @@
 """Simple test of new API Changes."""
 import asyncio
 import json
+import logging
 import pprint
 from datetime import date, timedelta
 
@@ -39,6 +40,14 @@ client = MyT(username=USERNAME, password=PASSWORD)
 
 async def get_information():
     """Test login and output from endpoints."""
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format="%(asctime)s %(levelname)s %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+        filename=".log",
+        filemode="w",
+    )
+
     print("Logging in...")
     await client.login()
 
