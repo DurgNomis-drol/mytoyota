@@ -8,11 +8,19 @@ formatters:
 
 handlers:
   file:
-    class: logging.handlers.RotatingFileHandler
-    formatter: simple
-    filename: .log
+    class: "logging.handlers.RotatingFileHandler"
+    formatter: "simple"
+    filename: ".log"
+    filters:
+      - "logfilter"
+
+filters:
+  logfilter:
+    (): filters.RedactingFilter
+    patterns:
+      - "filterthisstring"
 
 root:
-  level: DEBUG
+  level: "DEBUG"
   handlers:
-    - file
+    - "file"
