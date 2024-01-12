@@ -8,17 +8,24 @@ formatters:
 
 handlers:
   file:
-    class: "logging.handlers.RotatingFileHandler"
+    class: "logging.FileHandler"
     formatter: "simple"
     filename: ".log"
+    mode: "w"
     filters:
       - "logfilter"
 
 filters:
   logfilter:
-    (): filters.RedactingFilter
+    (): mytoyota.utils.logging.log_filters.RedactingFilter
     patterns:
-      - r"guid':\s*'([^']*)"
+      - 'access_token\":\s*\"([^\"]*)'
+      - 'id_token\":\s*\"([^\"]*)'
+      - 'subscriberGuid\":\s*\"([^\"]*)'
+      - 'contractId\":\s*\"([^\"]*)'
+      - 'vin\":\s*\"([^\"]*)'
+      - 'euiccid\":\s*\"([^\"]*)'
+      - "guid':\\s*'([^']*)"
 
 root:
   level: "DEBUG"
