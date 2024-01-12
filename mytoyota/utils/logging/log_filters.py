@@ -1,5 +1,6 @@
 """Module with filter log filter classes."""
 import logging
+import re
 
 
 class RedactingFilter(logging.Filter):
@@ -12,17 +13,12 @@ class RedactingFilter(logging.Filter):
 
     def filter(self, record):
         """Modify the log record to mask sensitive data."""
-        record.msg = self.redact(record.msg)
-        if isinstance(record.args, dict):
-            for k in record.args.keys():
-                record.args[k] = self.redact(record.args[k])
-        else:
-            record.args = tuple(self.redact(arg) for arg in record.args)
+        record.msg = self.mask_sensitive_data(record.msg)
         return True
 
-    def redact(self, msg):
-        """Redact logs by given patterns."""
-        msg = isinstance(msg, str) and msg or str(msg)
+    def mask_sensitive_data(self, msg):
+        """Mask sensitive data in logs by given patterns."""
         for pattern in self._patterns:
-            msg = msg.replace(pattern, "<<***>>")
+            compiled_pattern = re.compile(pattern)
+            msg = compiled_pattern.sub("****", msg)
         return msg
