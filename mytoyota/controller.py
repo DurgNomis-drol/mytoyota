@@ -18,7 +18,7 @@ from mytoyota.const import (
     AUTHORIZE_URL,
 )
 from mytoyota.exceptions import ToyotaApiError, ToyotaInternalError, ToyotaLoginError
-from mytoyota.utils.logs import format_httpx_response
+from mytoyota.utils.logging.log_utils import format_httpx_response
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 

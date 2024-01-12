@@ -4,6 +4,7 @@ import logging
 from datetime import date, datetime, timezone
 from uuid import uuid4
 
+import mytoyota.utils.logging.logging_config  # noqa # pylint: disable=unused-import
 from mytoyota.const import (
     VEHICLE_ASSOCIATION_ENDPOINT,
     VEHICLE_GLOBAL_REMOTE_ELECTRIC_STATUS_ENDPOINT,
@@ -24,6 +25,8 @@ from mytoyota.models.endpoints.telemetry import TelemetryResponseModel
 from mytoyota.models.endpoints.trips import TripsResponseModel
 from mytoyota.models.endpoints.vehicle_guid import VehiclesResponseModel
 from mytoyota.models.endpoints.vehicle_health import VehicleHealthResponseModel
+
+logger = logging.getLogger(__name__)
 
 
 class Api:
@@ -76,7 +79,7 @@ class Api:
         parsed_response = await self._request_and_parse(
             VehiclesResponseModel, "GET", VEHICLE_GUID_ENDPOINT
         )
-        logging.debug(msg=f"Parsed 'VehiclesResponseModel': {parsed_response}")
+        logger.debug(msg=f"Parsed 'VehiclesResponseModel': {parsed_response}")
         return parsed_response
 
     async def get_location_endpoint(self, vin: str) -> LocationResponseModel:
@@ -95,7 +98,7 @@ class Api:
         parsed_response = await self._request_and_parse(
             LocationResponseModel, "GET", VEHICLE_LOCATION_ENDPOINT, vin=vin
         )
-        logging.debug(msg=f"Parsed 'LocationResponseModel': {parsed_response}")
+        logger.debug(msg=f"Parsed 'LocationResponseModel': {parsed_response}")
         return parsed_response
 
     async def get_vehicle_health_status_endpoint(self, vin: str) -> VehicleHealthResponseModel:
@@ -115,7 +118,7 @@ class Api:
         parsed_response = await self._request_and_parse(
             VehicleHealthResponseModel, "GET", VEHICLE_HEALTH_STATUS_ENDPOINT, vin=vin
         )
-        logging.debug(msg=f"Parsed 'VehicleHealthResponseModel': {parsed_response}")
+        logger.debug(msg=f"Parsed 'VehicleHealthResponseModel': {parsed_response}")
         return parsed_response
 
     async def get_remote_status_endpoint(self, vin: str) -> RemoteStatusResponseModel:
@@ -126,7 +129,7 @@ class Api:
             VEHICLE_GLOBAL_REMOTE_STATUS_ENDPOINT,
             vin=vin,
         )
-        logging.debug(msg=f"Parsed 'RemoteStatusResponseModel': {parsed_response}")
+        logger.debug(msg=f"Parsed 'RemoteStatusResponseModel': {parsed_response}")
         return parsed_response
 
     async def get_vehicle_electric_status_endpoint(self, vin: str) -> ElectricResponseModel:
@@ -149,7 +152,7 @@ class Api:
             VEHICLE_GLOBAL_REMOTE_ELECTRIC_STATUS_ENDPOINT,
             vin=vin,
         )
-        logging.debug(msg=f"Parsed 'ElectricResponseModel': {parsed_response}")
+        logger.debug(msg=f"Parsed 'ElectricResponseModel': {parsed_response}")
         return parsed_response
 
     async def get_telemetry_endpoint(self, vin: str) -> TelemetryResponseModel:
@@ -168,7 +171,7 @@ class Api:
         parsed_response = await self._request_and_parse(
             TelemetryResponseModel, "GET", VEHICLE_TELEMETRY_ENDPOINT, vin=vin
         )
-        logging.debug(msg=f"Parsed 'TelemetryResponseModel': {parsed_response}")
+        logger.debug(msg=f"Parsed 'TelemetryResponseModel': {parsed_response}")
         return parsed_response
 
     async def get_notification_endpoint(self, vin: str) -> NotificationResponseModel:
@@ -192,7 +195,7 @@ class Api:
             VEHICLE_NOTIFICATION_HISTORY_ENDPOINT,
             vin=vin,
         )
-        logging.debug(msg=f"Parsed 'NotificationResponseModel': {parsed_response}")
+        logger.debug(msg=f"Parsed 'NotificationResponseModel': {parsed_response}")
         return parsed_response
 
     async def get_trips_endpoint(  # noqa: PLR0913
@@ -237,5 +240,5 @@ class Api:
         parsed_response = await self._request_and_parse(
             TripsResponseModel, "GET", endpoint, vin=vin
         )
-        logging.debug(msg=f"Parsed 'TripsResponseModel': {parsed_response}")
+        logger.debug(msg=f"Parsed 'TripsResponseModel': {parsed_response}")
         return parsed_response
