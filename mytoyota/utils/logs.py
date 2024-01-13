@@ -73,12 +73,12 @@ def format_httpx_response_json(response: Response) -> str:
                 "method": response.request.method,
                 "url": str(response.request.url),
                 "headers": response.request.headers.multi_items(),
-                "content": response.request.content.decode("utf-8"),
+                "content": response.request.content.decode("utf-8")
             },
             "response": {
                 "status": response.status_code,
                 "headers": response.headers.multi_items(),
-                "content": response.content.decode("utf-8"),
+                "content": "" if len(response.content) == 0 else response.json()
             },
         }
     )
