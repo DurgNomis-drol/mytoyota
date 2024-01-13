@@ -129,7 +129,7 @@ class _TripModel(BaseModel):
     id: UUID
     category: int
     summary: _SummaryModel
-    scores: _ScoresModel
+    scores: Optional[_ScoresModel] = None
     behaviours: Optional[List[_BehaviourModel]] = None
     hdc: Optional[_HDCModel] = None
     route: Optional[List[_RouteModel]] = None
@@ -148,7 +148,7 @@ class _SummaryItemModel(BaseModel):
     year: int
     month: int
     summary: _SummaryBaseModel
-    scores: _ScoresModel
+    scores: Optional[_ScoresModel] = None
     hdc: Optional[_HDCModel] = None
     histograms: List[_HistogramModel]
 

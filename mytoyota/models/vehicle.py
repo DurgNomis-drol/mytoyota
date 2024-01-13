@@ -235,7 +235,7 @@ class Vehicle:
         from_date: date,
         to_date: date,
         summary_type: SummaryType = SummaryType.MONTHLY,
-    ) -> Optional[List[Summary]]:
+    ) -> List[Summary]:
         """Return a Daily, Weekly, Monthly or Yearly summary between the provided dates.
 
         All but Daily can return a partial time range. For example if the summary_type is weekly
@@ -254,7 +254,7 @@ class Vehicle:
 
         Returns:
         -------
-            Optional[List[Summary]]: A list of summaries or None if not supported.
+            List[Summary]: A list of summaries or empty list if not supported.
         """
         if to_date > date.today():  # Future dates not allowed
             to_date = date.today()
@@ -264,8 +264,8 @@ class Vehicle:
         resp = await self._api.get_trips_endpoint(
             self.vin, from_date, to_date, summary=True, limit=1, offset=0
         )
-        if resp.payload is None:
-            return None
+        if resp.payload is None or len(resp.payload.summary) == 0:
+            return []
 
         # Convert to response
         if summary_type == SummaryType.DAILY:
@@ -278,6 +278,66 @@ class Vehicle:
             return self._generate_yearly_summaries(resp.payload.summary, to_date)
         else:
             raise AssertionError("No such SummaryType")
+
+    async def get_current_day_summary(self) -> Optional[Summary]:
+        """Return a summary for the current day.
+
+        Returns
+        -------
+            Optional[Summary]: A summary or None if not supported.
+        """
+        summary = await self.get_summary(
+            from_date=Arrow.now().date(),
+            to_date=Arrow.now().date(),
+            summary_type=SummaryType.DAILY,
+        )
+        assert len(summary) < 2
+        return summary[0] if len(summary) > 0 else None
+
+    async def get_current_week_summary(self) -> Optional[Summary]:
+        """Return a summary for the current week.
+
+        Returns
+        -------
+            Optional[Summary]: A summary or None if not supported.
+        """
+        summary = await self.get_summary(
+            from_date=Arrow.now().floor("week").date(),
+            to_date=Arrow.now().date(),
+            summary_type=SummaryType.WEEKLY,
+        )
+        assert len(summary) < 2
+        return summary[0] if len(summary) > 0 else None
+
+    async def get_current_month_summary(self) -> Optional[Summary]:
+        """Return a summary for the current month.
+
+        Returns
+        -------
+            Optional[Summary]: A summary or None if not supported.
+        """
+        summary = await self.get_summary(
+            from_date=Arrow.now().floor("month").date(),
+            to_date=Arrow.now().date(),
+            summary_type=SummaryType.MONTHLY,
+        )
+        assert len(summary) < 2
+        return summary[0] if len(summary) > 0 else None
+
+    async def get_current_year_summary(self) -> Optional[Summary]:
+        """Return a summary for the current year.
+
+        Returns
+        -------
+            Optional[Summary]: A summary or None if not supported.
+        """
+        summary = await self.get_summary(
+            from_date=Arrow.now().floor("year").date(),
+            to_date=Arrow.now().date(),
+            summary_type=SummaryType.YEARLY,
+        )
+        assert len(summary) < 2
+        return summary[0] if len(summary) > 0 else None
 
     async def get_trips(
         self, from_date: date, to_date: date, full_route: bool = False
@@ -424,17 +484,22 @@ class Vehicle:
         build_summary = copy.copy(summary[0].summary)
         start_date = date(day=1, month=summary[0].month, year=summary[0].year)
 
-        for month, next_month in zip(summary, summary[1:] + [None]):
-            summary_month = date(day=1, month=month.month, year=month.year)
-            add_with_none(build_hdc, month.hdc)
-            build_summary += month.summary
+        if len(summary) == 1:
+            ret.append(Summary(build_summary, self._metric, start_date, to_date, build_hdc))
+        else:
+            for month, next_month in zip(summary[1:], summary[2:] + [None]):
+                summary_month = date(day=1, month=month.month, year=month.year)
+                add_with_none(build_hdc, month.hdc)
+                build_summary += month.summary
 
-            if next_month is None or next_month.year != month.year:
-                end_date = min(to_date, date(day=31, month=12, year=summary_month.year))
-                ret.append(Summary(build_summary, self._metric, start_date, end_date, build_hdc))
-                if next_month:
-                    start_date = date(day=1, month=next_month.month, year=next_month.year)
-                    build_hdc = copy.copy(next_month.hdc)
-                    build_summary = copy.copy(next_month.summary)
+                if next_month is None or next_month.year != month.year:
+                    end_date = min(to_date, date(day=31, month=12, year=summary_month.year))
+                    ret.append(
+                        Summary(build_summary, self._metric, start_date, end_date, build_hdc)
+                    )
+                    if next_month:
+                        start_date = date(day=1, month=next_month.month, year=next_month.year)
+                        build_hdc = copy.copy(next_month.hdc)
+                        build_summary = copy.copy(next_month.summary)
 
         return ret
