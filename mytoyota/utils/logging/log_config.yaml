@@ -7,11 +7,10 @@ formatters:
     datefmt: "%Y-%m-%d %H:%M:%S"
 
 handlers:
-  file:
-    class: "logging.FileHandler"
+  stream:
+    class: "logging.StreamHandler"
     formatter: "simple"
-    filename: ".log"
-    mode: "w"
+    stream: sys.stdout
     filters:
       - "logfilter"
 
@@ -28,6 +27,6 @@ filters:
       - "guid':\\s*'([^']*)"
 
 root:
-  level: "DEBUG"
+  level: "ERROR"
   handlers:
-    - "file"
+    - "stream"
