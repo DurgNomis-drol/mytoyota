@@ -17,7 +17,12 @@ from mytoyota.const import (
     AUTHENTICATE_URL,
     AUTHORIZE_URL,
 )
-from mytoyota.exceptions import ToyotaApiError, ToyotaInternalError, ToyotaLoginError
+from mytoyota.exceptions import (
+    ToyotaApiError,
+    ToyotaInternalError,
+    ToyotaInvalidUsernameError,
+    ToyotaLoginError,
+)
 from mytoyota.utils.logs import format_httpx_response
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
@@ -88,10 +93,19 @@ class Controller:
                             cb["input"][0]["value"] = self._username
                         elif cb["type"] == "PasswordCallback":
                             cb["input"][0]["value"] = self._password
+                        elif (
+                            cb["type"] == "TextOutputCallback"
+                            and cb["output"][0]["value"] == "User Not Found"
+                        ):
+                            raise ToyotaInvalidUsernameError(
+                                "Authentication Failed. User Not Found."
+                            )
                 resp = await client.post(
                     self._authenticate_url, json=data
                 )  # , headers=standard_headers)
                 _LOGGER.debug(format_httpx_response(resp))
+                #                print(f"{format_httpx_response_json(resp)}", flush=True)
+
                 if resp.status_code != HTTPStatus.OK:
                     raise ToyotaLoginError(
                         f"Authentication Failed. {resp.status_code}, {resp.text}."
@@ -110,6 +124,8 @@ class Controller:
                 headers={"cookie": f"iPlanetDirectoryPro={data['tokenId']}"},
             )
             _LOGGER.debug(format_httpx_response(resp))
+            #  print(f"{format_httpx_response_json(resp)}", flush=True)
+
             if resp.status_code != HTTPStatus.FOUND:
                 raise ToyotaLoginError(f"Authorization failed. {resp.status_code}, {resp.text}.")
             authentication_code = parse.parse_qs(
@@ -129,6 +145,8 @@ class Controller:
                 },
             )
             _LOGGER.debug(format_httpx_response(resp))
+            #       print(f"{format_httpx_response_json(resp)}", flush=True)
+
             if resp.status_code != HTTPStatus.OK:
                 raise ToyotaLoginError(f"Token retrieval failed. {resp.status_code}, {resp.text}.")
 
@@ -155,6 +173,8 @@ class Controller:
                 },
             )
             _LOGGER.debug(format_httpx_response(resp))
+            #    print(f"{format_httpx_response_json(resp)}", flush=True)
+
             if resp.status_code != HTTPStatus.OK:
                 raise ToyotaLoginError(f"Token refresh failed. {resp.status_code}, {resp.text}.")
 
@@ -241,6 +261,8 @@ class Controller:
                 follow_redirects=True,
             )
             _LOGGER.debug(format_httpx_response(response))
+            #         print(f"{format_httpx_response_json(response)}", flush=True)
+
             if response.status_code in [
                 HTTPStatus.OK,
                 HTTPStatus.ACCEPTED,
