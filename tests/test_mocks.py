@@ -1,11 +1,11 @@
 """pytest tests for mytoyota using httpx mocking."""
 import json
+from datetime import datetime, timedelta
 from os import remove
 from shutil import copy2
 from typing import List
 
 import pytest
-from datetime import datetime, timedelta
 from pytest_httpx import HTTPXMock
 
 from mytoyota import MyT
@@ -31,7 +31,9 @@ def build_routes(httpx_mock, filenames: List[str]) -> None:  # noqa: D103
                 method=route["request"]["method"],
                 url=route["request"]["url"],
                 status_code=route["response"]["status"],
-                content=route["response"]["content"] if type(route["response"]["content"]) is str else json.dumps(route["response"]["content"]),
+                content=route["response"]["content"]
+                if isinstance(route["response"]["content"], str)
+                else json.dumps(route["response"]["content"]),
                 headers=route["response"]["headers"],
             )
 
@@ -78,14 +80,15 @@ async def test_authenticate_refresh_token(httpx_mock: HTTPXMock):  # noqa: D103
     # Nothing validates this is correct, just replays a refresh token sequence
     await client.login()
 
+
 @pytest.mark.asyncio
 async def test_get_static_data(httpx_mock: HTTPXMock):  # noqa: D103
     #  Create valid token => Means no authentication requests
-    with open("./data/mocks/cached_token.json") as f:
+    with open("./data/mocks/cached_token.json") as f:  # noqa: ASYNC101. I dont see this as a problem in test code
         valid_token = json.load(f)
         valid_token["expiration"] = datetime.now() + timedelta(hours=4)
 
-        with open(CACHE_FILENAME, "w") as wf:
+        with open(CACHE_FILENAME, "w") as wf:  # noqa: ASYNC101. I dont see this as a problem in test code
             wf.write(json.dumps(valid_token, indent=4, default=str))
 
     # Ensure expired cache file.
@@ -99,7 +102,7 @@ async def test_get_static_data(httpx_mock: HTTPXMock):  # noqa: D103
     await car.update()
 
     # Check VIN
-    assert car.vin == "01234567890123456"
+    assert car.vin == "12345678912345678"
 
     # Check alias
     assert car.alias == "RAV4"
@@ -120,14 +123,14 @@ async def test_get_static_data(httpx_mock: HTTPXMock):  # noqa: D103
 
     # Check Notifications
     assert len(car.notifications) == 3
-    assert car.notifications[0].message == "2020 RAV4 PHEV: Climate control was interrupted (Door open) [1]"
+    assert (
+        car.notifications[0].message
+        == "2020 RAV4 PHEV: Climate control was interrupted (Door open) [1]"
+    )
     assert car.notifications[0].type == "alert"
     assert car.notifications[0].category == "RemoteCommand"
-    assert car.notifications[1].message == "2020 RAV4 PHEV: Climate was started and will automatically shut off."
+    assert (
+        car.notifications[1].message
+        == "2020 RAV4 PHEV: Climate was started and will automatically shut off."
+    )
     assert car.notifications[2].message == "2020 RAV4 PHEV: Charging Interrupted [4]."
-
-
-
-
-
-

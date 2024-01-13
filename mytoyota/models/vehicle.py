@@ -3,7 +3,7 @@ import asyncio
 import copy
 import json
 import logging
-from datetime import date, timedelta
+from datetime import date
 from functools import partial
 from itertools import groupby
 from operator import attrgetter
@@ -74,7 +74,7 @@ class Vehicle:
                 "capable": vehicle_info.extended_capabilities.vehicle_status,
                 "function": partial(self._api.get_remote_status_endpoint, vin=vehicle_info.vin),
             },
-            #{
+            # {
             #    "name": "trips",
             #    "capable": True,  # TODO Unsure of the required capability
             #    "function": partial(
@@ -83,7 +83,7 @@ class Vehicle:
             #        from_date=date.today() - timedelta(days=1),
             #        to_date=date.today(),
             #    ),
-            #},
+            # },
         ]
         self._endpoint_collect = [
             (endpoint["name"], endpoint["function"])
