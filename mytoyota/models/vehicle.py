@@ -11,6 +11,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from arrow import Arrow
 
+import mytoyota.utils.logging.logging_config  # noqa # pylint: disable=unused-import
 from mytoyota.api import Api
 from mytoyota.models.dashboard import Dashboard
 from mytoyota.models.endpoints.vehicle_guid import VehicleGuidModel
@@ -20,9 +21,9 @@ from mytoyota.models.nofication import Notification
 from mytoyota.models.summary import Summary, SummaryType
 from mytoyota.models.trips import Trip
 from mytoyota.utils.helpers import add_with_none
-from mytoyota.utils.logs import censor_all
+from mytoyota.utils.logging.log_utils import censor_all
 
-_LOGGER: logging.Logger = logging.getLogger(__package__)
+_LOGGER: logging.Logger = logging.getLogger(__name__)
 
 
 class Vehicle:

@@ -11,13 +11,14 @@ information, sensor data, fuel level, driving statistics and more.
 import logging
 from typing import List, Optional
 
+import mytoyota.utils.logging.logging_config  # noqa # pylint: disable=unused-import
 from mytoyota.api import Api
 from mytoyota.models.vehicle import Vehicle
 
 from .controller import Controller
 from .exceptions import ToyotaInvalidUsernameError
 
-_LOGGER: logging.Logger = logging.getLogger(__package__)
+_LOGGER: logging.Logger = logging.getLogger(__name__)
 
 
 class MyT:

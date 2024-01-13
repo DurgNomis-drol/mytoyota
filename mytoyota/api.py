@@ -1,8 +1,10 @@
 """Toyota Connected Services API."""
 
+import logging
 from datetime import date, datetime, timezone
 from uuid import uuid4
 
+import mytoyota.utils.logging.logging_config  # noqa # pylint: disable=unused-import
 from mytoyota.const import (
     VEHICLE_ASSOCIATION_ENDPOINT,
     VEHICLE_GLOBAL_REMOTE_ELECTRIC_STATUS_ENDPOINT,
@@ -23,6 +25,8 @@ from mytoyota.models.endpoints.telemetry import TelemetryResponseModel
 from mytoyota.models.endpoints.trips import TripsResponseModel
 from mytoyota.models.endpoints.vehicle_guid import VehiclesResponseModel
 from mytoyota.models.endpoints.vehicle_health import VehicleHealthResponseModel
+
+_LOGGER: logging.Logger = logging.getLogger(__name__)
 
 
 class Api:
@@ -72,7 +76,11 @@ class Api:
 
     async def get_vehicles_endpoint(self) -> VehiclesResponseModel:
         """Return list of vehicles registered with provider."""
-        return await self._request_and_parse(VehiclesResponseModel, "GET", VEHICLE_GUID_ENDPOINT)
+        parsed_response = await self._request_and_parse(
+            VehiclesResponseModel, "GET", VEHICLE_GUID_ENDPOINT
+        )
+        _LOGGER.debug(msg=f"Parsed 'VehiclesResponseModel': {parsed_response}")
+        return parsed_response
 
     async def get_location_endpoint(self, vin: str) -> LocationResponseModel:
         """Get the last known location of your car. Only updates when car is parked.
@@ -87,9 +95,11 @@ class Api:
         -------
             LocationResponseModel: A pydantic model for the location response
         """
-        return await self._request_and_parse(
+        parsed_response = await self._request_and_parse(
             LocationResponseModel, "GET", VEHICLE_LOCATION_ENDPOINT, vin=vin
         )
+        _LOGGER.debug(msg=f"Parsed 'LocationResponseModel': {parsed_response}")
+        return parsed_response
 
     async def get_vehicle_health_status_endpoint(self, vin: str) -> VehicleHealthResponseModel:
         r"""Get the latest health status.
@@ -105,18 +115,22 @@ class Api:
         -------
             VehicleHealthResponseModel: A pydantic model for the vehicle health response
         """
-        return await self._request_and_parse(
+        parsed_response = await self._request_and_parse(
             VehicleHealthResponseModel, "GET", VEHICLE_HEALTH_STATUS_ENDPOINT, vin=vin
         )
+        _LOGGER.debug(msg=f"Parsed 'VehicleHealthResponseModel': {parsed_response}")
+        return parsed_response
 
     async def get_remote_status_endpoint(self, vin: str) -> RemoteStatusResponseModel:
         """Get information about the vehicle."""
-        return await self._request_and_parse(
+        parsed_response = await self._request_and_parse(
             RemoteStatusResponseModel,
             "GET",
             VEHICLE_GLOBAL_REMOTE_STATUS_ENDPOINT,
             vin=vin,
         )
+        _LOGGER.debug(msg=f"Parsed 'RemoteStatusResponseModel': {parsed_response}")
+        return parsed_response
 
     async def get_vehicle_electric_status_endpoint(self, vin: str) -> ElectricResponseModel:
         r"""Get the latest electric status.
@@ -132,12 +146,14 @@ class Api:
         -------
             ElectricResponseModel: A pydantic model for the electric response
         """
-        return await self._request_and_parse(
+        parsed_response = await self._request_and_parse(
             ElectricResponseModel,
             "GET",
             VEHICLE_GLOBAL_REMOTE_ELECTRIC_STATUS_ENDPOINT,
             vin=vin,
         )
+        _LOGGER.debug(msg=f"Parsed 'ElectricResponseModel': {parsed_response}")
+        return parsed_response
 
     async def get_telemetry_endpoint(self, vin: str) -> TelemetryResponseModel:
         """Get the latest telemetry status.
@@ -152,9 +168,11 @@ class Api:
         -------
             TelemetryResponseModel: A pydantic model for the telemetry response
         """
-        return await self._request_and_parse(
+        parsed_response = await self._request_and_parse(
             TelemetryResponseModel, "GET", VEHICLE_TELEMETRY_ENDPOINT, vin=vin
         )
+        _LOGGER.debug(msg=f"Parsed 'TelemetryResponseModel': {parsed_response}")
+        return parsed_response
 
     async def get_notification_endpoint(self, vin: str) -> NotificationResponseModel:
         """Get all available notifications for the vehicle.
@@ -171,12 +189,14 @@ class Api:
         -------
             NotificationResponseModel: A pydantic model for the notification response
         """
-        return await self._request_and_parse(
+        parsed_response = await self._request_and_parse(
             NotificationResponseModel,
             "GET",
             VEHICLE_NOTIFICATION_HISTORY_ENDPOINT,
             vin=vin,
         )
+        _LOGGER.debug(msg=f"Parsed 'NotificationResponseModel': {parsed_response}")
+        return parsed_response
 
     async def get_trips_endpoint(  # noqa: PLR0913
         self,
@@ -217,4 +237,8 @@ class Api:
             limit=limit,
             offset=offset,
         )
-        return await self._request_and_parse(TripsResponseModel, "GET", endpoint, vin=vin)
+        parsed_response = await self._request_and_parse(
+            TripsResponseModel, "GET", endpoint, vin=vin
+        )
+        _LOGGER.debug(msg=f"Parsed 'TripsResponseModel': {parsed_response}")
+        return parsed_response

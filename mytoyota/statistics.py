@@ -4,6 +4,7 @@ import logging
 import arrow
 from arrow import Arrow
 
+import mytoyota.utils.logging.logging_config  # noqa # pylint: disable=unused-import
 from mytoyota.const import (
     BUCKET,
     DATA,
@@ -29,7 +30,7 @@ from mytoyota.utils.conversions import (
     convert_to_mpg,
 )
 
-_LOGGER: logging.Logger = logging.getLogger(__package__)
+_LOGGER: logging.Logger = logging.getLogger(__name__)
 
 
 class Statistics:
