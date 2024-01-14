@@ -18,7 +18,12 @@ from mytoyota.const import (
     AUTHENTICATE_URL,
     AUTHORIZE_URL,
 )
-from mytoyota.exceptions import ToyotaApiError, ToyotaInternalError, ToyotaLoginError
+from mytoyota.exceptions import (
+    ToyotaApiError,
+    ToyotaInternalError,
+    ToyotaInvalidUsernameError,
+    ToyotaLoginError,
+)
 from mytoyota.utils.logging.log_utils import format_httpx_response
 
 _LOGGER: logging.Logger = logging.getLogger(__name__)
@@ -89,6 +94,13 @@ class Controller:
                             cb["input"][0]["value"] = self._username
                         elif cb["type"] == "PasswordCallback":
                             cb["input"][0]["value"] = self._password
+                        elif (
+                            cb["type"] == "TextOutputCallback"
+                            and cb["output"][0]["value"] == "User Not Found"
+                        ):
+                            raise ToyotaInvalidUsernameError(
+                                "Authentication Failed. User Not Found."
+                            )
                 resp = await client.post(
                     self._authenticate_url, json=data
                 )  # , headers=standard_headers)
