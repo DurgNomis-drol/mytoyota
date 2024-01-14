@@ -380,10 +380,6 @@ class Vehicle:
 
         return ret
 
-    #
-    # More get functionality depending on what we find
-    #
-
     async def set_alias(self, value) -> bool:
         """Set the alias for the vehicle.
 
@@ -396,6 +392,23 @@ class Vehicle:
             bool
         """
         return value
+
+    async def force_update(self) -> None:
+        """Force update of endpoints
+
+        Returns
+        -------
+
+        """
+        endpoints_to_test = ["/v1/global/remote/electric/realtime-status", "/v1/global/remote/refresh-status",
+                             "/v1/global/remote/refresh-climate-status"]
+
+        for ep in endpoints_to_test:
+            try:
+                resp = await self._api.controller.request_json("POST", ep, vin=self.vin)
+                print(f"{ep}: {resp}")
+            except Exception as e:
+                print(f"{ep}: Threw {e}")
 
     #
     # More set functionality depending on what we find
