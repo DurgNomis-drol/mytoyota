@@ -10,7 +10,8 @@ from mytoyota.client import MyT
 from mytoyota.models.summary import SummaryType
 
 pp = pprint.PrettyPrinter(indent=4)
-logger = logging.getLogger(__name__)
+_LOGGER = logging.getLogger(__name__)
+
 
 # Set your username and password in a file on top level called "credentials.json" in the format:
 #   {
