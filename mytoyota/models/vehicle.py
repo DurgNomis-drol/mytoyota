@@ -3,7 +3,7 @@ import asyncio
 import copy
 import json
 import logging
-from datetime import date, timedelta
+from datetime import date
 from functools import partial
 from itertools import groupby
 from operator import attrgetter
