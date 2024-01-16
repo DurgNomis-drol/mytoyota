@@ -122,13 +122,14 @@ YESTERDAY = TODAY - timedelta(days=1)
         ),
     ],
 )
-async def test_api_request_and_parse_endpoints(
-    method, endpoint, model, response_data_json_path, test_id
+async def test_api_request_and_parse_endpoints(  # NOQA: PLR0913
+    data_folder, method, endpoint, model, response_data_json_path, test_id
 ):
     """Test the API for various endpoints.
 
     Args:
     ----
+        data_folder: Path to find data files
         method: The method with which the API endpoint is to be addressed.
         endpoint: The API endpoint to be tested.
         model: The pydantic model class to test.
@@ -143,7 +144,7 @@ async def test_api_request_and_parse_endpoints(
     # Arrange
 
     with open(  # noqa : ASYNC101
-        f"tests/data/endpoints/{response_data_json_path}.json", "r", encoding="utf-8"
+        f"{data_folder}/{response_data_json_path}.json", "r", encoding="utf-8"
     ) as f:
         response_data = json.load(f)
 

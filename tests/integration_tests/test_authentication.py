@@ -1,7 +1,7 @@
 """pytest tests for mytoyota using httpx mocking."""
 import json
 from datetime import datetime, timedelta
-from os import remove
+from pathlib import Path
 from shutil import copy2
 from typing import List
 
@@ -13,17 +13,14 @@ from mytoyota.controller import CACHE_FILENAME
 from mytoyota.exceptions import ToyotaInvalidUsernameError, ToyotaLoginError
 
 
-def remove_cache() -> None:  # noqa: D103
-    # Remove cache file if exists
-    try:
-        remove(CACHE_FILENAME)
-    except FileNotFoundError:
-        pass
-
-
-def build_routes(httpx_mock, filenames: List[str]) -> None:  # noqa: D103
+def build_routes(httpx_mock: HTTPXMock, filenames: List[str]) -> None:  # noqa: D103
     for filename in filenames:
-        with open(filename) as f:  # I cant see a problem for the tests
+        # TODO: Move to fixture once I know how to use a fixture from a fixture
+        path: str = f"{Path(__file__).parent}/data/"
+
+        with open(
+            f"{path}/{filename}", encoding="utf-8"
+        ) as f:  # I cant see a problem for the tests
             routes = json.load(f)
 
         for route in routes:
@@ -39,9 +36,9 @@ def build_routes(httpx_mock, filenames: List[str]) -> None:  # noqa: D103
 
 
 @pytest.mark.asyncio
-async def test_authenticate(httpx_mock: HTTPXMock):  # noqa: D103
-    remove_cache()
-    build_routes(httpx_mock, ["./data/mocks/authenticate_working.json"])
+@pytest.mark.usefixtures("remove_cache")
+async def test_authenticate(httpx_mock):  # noqa: D103
+    build_routes(httpx_mock, ["authenticate_working.json"])
 
     client = MyT("user@email.com", "password")
     # Nothing validates this is correct, just replays a "correct" authentication sequence
@@ -49,9 +46,9 @@ async def test_authenticate(httpx_mock: HTTPXMock):  # noqa: D103
 
 
 @pytest.mark.asyncio
+@pytest.mark.usefixtures("remove_cache")
 async def test_authenticate_invalid_username(httpx_mock: HTTPXMock):  # noqa: D103
-    remove_cache()
-    build_routes(httpx_mock, ["./data/mocks/authenticate_invalid_username.json"])
+    build_routes(httpx_mock, ["authenticate_invalid_username.json"])
 
     client = MyT("user@email.com", "password")
     # Nothing validates this is correct, just replays an invalid username authentication sequence
@@ -60,9 +57,9 @@ async def test_authenticate_invalid_username(httpx_mock: HTTPXMock):  # noqa: D1
 
 
 @pytest.mark.asyncio
+@pytest.mark.usefixtures("remove_cache")
 async def test_authenticate_invalid_password(httpx_mock: HTTPXMock):  # noqa: D103
-    remove_cache()
-    build_routes(httpx_mock, ["./data/mocks/authenticate_invalid_password.json"])
+    build_routes(httpx_mock, ["authenticate_invalid_password.json"])
 
     client = MyT("user@email.com", "password")
     # Nothing validates this is correct, just replays an invalid username authentication sequence
@@ -71,10 +68,10 @@ async def test_authenticate_invalid_password(httpx_mock: HTTPXMock):  # noqa: D1
 
 
 @pytest.mark.asyncio
-async def test_authenticate_refresh_token(httpx_mock: HTTPXMock):  # noqa: D103
+async def test_authenticate_refresh_token(data_folder, httpx_mock: HTTPXMock):  # noqa: D103
     # Ensure expired cache file.
-    copy2("./data/mocks/cached_token.json", CACHE_FILENAME)
-    build_routes(httpx_mock, ["./data/mocks/authenticate_refresh_token.json"])
+    copy2(f"{data_folder}/cached_token.json", CACHE_FILENAME)
+    build_routes(httpx_mock, ["authenticate_refresh_token.json"])
 
     client = MyT("user@email.info", "password")
     # Nothing validates this is correct, just replays a refresh token sequence
@@ -82,17 +79,17 @@ async def test_authenticate_refresh_token(httpx_mock: HTTPXMock):  # noqa: D103
 
 
 @pytest.mark.asyncio
-async def test_get_static_data(httpx_mock: HTTPXMock):  # noqa: D103
+async def test_get_static_data(data_folder, httpx_mock: HTTPXMock):  # noqa: D103
     #  Create valid token => Means no authentication requests
-    with open("./data/mocks/cached_token.json") as f:  # noqa: ASYNC101. I dont see this as a problem in test code
+    with open(f"{data_folder}/cached_token.json", encoding="utf-8") as f:  # noqa: ASYNC101. I dont see this as a problem in test code
         valid_token = json.load(f)
         valid_token["expiration"] = datetime.now() + timedelta(hours=4)
 
-        with open(CACHE_FILENAME, "w") as wf:  # noqa: ASYNC101. I dont see this as a problem in test code
+        with open(CACHE_FILENAME, "w", encoding="utf-8") as wf:  # noqa: ASYNC101. I dont see this as a problem in test code
             wf.write(json.dumps(valid_token, indent=4, default=str))
 
     # Ensure expired cache file.
-    build_routes(httpx_mock, ["./data/mocks/get_static_data.json"])
+    build_routes(httpx_mock, ["get_static_data.json"])
 
     client = MyT("user@email.info", "password")
     # Nothing validates this is correct, just replays a refresh token sequence
