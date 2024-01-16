@@ -1,7 +1,9 @@
 """Conversion utilities used."""
 import logging
 
-_LOGGER: logging.Logger = logging.getLogger(__package__)
+import mytoyota.utils.logging.logging_config  # noqa # pylint: disable=unused-import
+
+_LOGGER: logging.Logger = logging.getLogger(__name__)
 
 
 def convert_to_miles(kilometers: float) -> float:

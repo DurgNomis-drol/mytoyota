@@ -1,0 +1,32 @@
+version: 1
+disable_existing_loggers: False
+
+formatters:
+  simple:
+    format: "%(asctime)s %(levelname)s %(message)s"
+    datefmt: "%Y-%m-%d %H:%M:%S"
+
+handlers:
+  stream:
+    class: "logging.StreamHandler"
+    formatter: "simple"
+    stream: sys.stdout
+    filters:
+      - "logfilter"
+
+filters:
+  logfilter:
+    (): mytoyota.utils.logging.log_filters.RedactingFilter
+    patterns:
+      - 'access_token\":\s*\"([^\"]*)'
+      - 'id_token\":\s*\"([^\"]*)'
+      - 'subscriberGuid\":\s*\"([^\"]*)'
+      - 'contractId\":\s*\"([^\"]*)'
+      - 'vin\":\s*\"([^\"]*)'
+      - 'euiccid\":\s*\"([^\"]*)'
+      - "guid':\\s*'([^']*)"
+
+root:
+  level: "ERROR"
+  handlers:
+    - "stream"
