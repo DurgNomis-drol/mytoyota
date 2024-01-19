@@ -20,6 +20,7 @@ from mytoyota.controller import Controller
 from mytoyota.models.endpoints.electric import ElectricResponseModel
 from mytoyota.models.endpoints.location import LocationResponseModel
 from mytoyota.models.endpoints.notifications import NotificationResponseModel
+from mytoyota.models.endpoints.service_history import ServiceHistoryResponseModel
 from mytoyota.models.endpoints.status import RemoteStatusResponseModel
 from mytoyota.models.endpoints.telemetry import TelemetryResponseModel
 from mytoyota.models.endpoints.trips import TripsResponseModel
@@ -241,4 +242,23 @@ class Api:
             TripsResponseModel, "GET", endpoint, vin=vin
         )
         _LOGGER.debug(msg=f"Parsed 'TripsResponseModel': {parsed_response}")
+        return parsed_response
+
+    async def get_service_history_endpoint(self, vin: str) -> ServiceHistoryResponseModel:
+        """Get the current servic history.
+
+        Response includes service category, date and dealer.
+
+        Args:
+        ----
+            vin: str:   The vehicles VIN
+
+        Returns:
+        -------
+            ServicHistoryResponseModel: A pydantic model for the service history response
+        """
+        parsed_response = await self._request_and_parse(
+            ServiceHistoryResponseModel, "GET", VEHICLE_TELEMETRY_ENDPOINT, vin=vin
+        )
+        _LOGGER.debug(msg=f"Parsed 'ServiceHistoryResponseModel': {parsed_response}")
         return parsed_response
