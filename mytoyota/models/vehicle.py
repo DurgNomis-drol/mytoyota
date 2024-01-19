@@ -75,6 +75,11 @@ class Vehicle:
                 "capable": vehicle_info.extended_capabilities.vehicle_status,
                 "function": partial(self._api.get_remote_status_endpoint, vin=vehicle_info.vin),
             },
+            {
+                "name": "service_history",
+                "capable": vehicle_info.features.service_history,
+                "function": partial(self._api.get_service_history_endpoint, vin=vehicle_info.vin),
+            },
         ]
         self._endpoint_collect = [
             (endpoint["name"], endpoint["function"])
@@ -429,7 +434,9 @@ class Vehicle:
             build_hdc = copy.copy(week_histograms[0].hdc)
             build_summary = copy.copy(week_histograms[0].summary)
             start_date = Arrow(
-                week_histograms[0].year, week_histograms[0].month, week_histograms[0].day
+                week_histograms[0].year,
+                week_histograms[0].month,
+                week_histograms[0].day,
             )
 
             for histogram in week_histograms[1:]:
@@ -437,10 +444,18 @@ class Vehicle:
                 build_summary += histogram.summary
 
             end_date = Arrow(
-                week_histograms[-1].year, week_histograms[-1].month, week_histograms[-1].day
+                week_histograms[-1].year,
+                week_histograms[-1].month,
+                week_histograms[-1].day,
             )
             ret.append(
-                Summary(build_summary, self._metric, start_date.date(), end_date.date(), build_hdc)
+                Summary(
+                    build_summary,
+                    self._metric,
+                    start_date.date(),
+                    end_date.date(),
+                    build_hdc,
+                )
             )
 
         return ret
