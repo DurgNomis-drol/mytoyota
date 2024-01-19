@@ -1,16 +1,13 @@
 import asyncio
-import httpx
 import json
 import sys
-from mytoyota import MyT
-from mytoyota.models.vehicle import Vehicle
 from pprint import PrettyPrinter
 
+from mytoyota import MyT
+from mytoyota.models.vehicle import Vehicle
 
-async def test_endpoint(myt: MyT,
-                        vehicle: Vehicle,
-                        method: str,
-                        endpoint: str) -> None:
+
+async def test_endpoint(myt: MyT, vehicle: Vehicle, method: str, endpoint: str) -> None:
     print(f"+++++ Endpoint: {endpoint}")
     try:
         response = await myt._api.controller.request_raw(method, endpoint, vin=vehicle.vin)
@@ -20,16 +17,17 @@ async def test_endpoint(myt: MyT,
     if response:
         print(f"----- Status:\n({response.status_code},{response.reason_phrase})\n")
         print(f"----- Headers:\n{response.headers}\n")
-        print(f"----- Content:\n")
+        print("----- Content:\n")
         try:
-            j = json.loads(response.content.decode('utf-8'))
+            j = json.loads(response.content.decode("utf-8"))
             pp = PrettyPrinter(indent=4)
             pp.pprint(j)
-        except Exception as e:
+        except Exception:
             print(f"{response.content.decode('utf-8')}")
 
     else:
         print(f"FAILED: {sys.argv[2]} => {response.reason_phrase}({response.status_code})")
+
 
 def load_credentials():
     """Load credentials from 'credentials.json'."""
@@ -58,7 +56,7 @@ async def main():
 
     # If an endpoint URL has been provided on the command line then we just test it
     if len(sys.argv) == 3:
-        response = await test_endpoint(client, vehicles[0], sys.argv[1], sys.argv[2])
+        await test_endpoint(client, vehicles[0], sys.argv[1], sys.argv[2])
 
     elif len(sys.argv) == 2:
         with open(sys.argv[1], "r") as f:
@@ -67,14 +65,15 @@ async def main():
                 if len(url) == 0:
                     break
 
-                if url[0] != '#':
+                if url[0] != "#":
                     print(f"-> {url.strip()} <-")
                     await test_endpoint(client, vehicles[0], "GET", url.strip())
 
         pass
     else:
-        print("Expects 1 argument to file containing METHOD,\"URL\" pair on each line")
+        print('Expects 1 argument to file containing METHOD,"URL" pair on each line')
         print("Expects 2 arguments(METHOD, ENDPOINT to test a single endpoint")
+
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(main())
