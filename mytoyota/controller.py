@@ -105,7 +105,6 @@ class Controller:
                     self._authenticate_url, json=data
                 )  # , headers=standard_headers)
                 _LOGGER.debug(format_httpx_response(resp))
-                #                print(f"{format_httpx_response_json(resp)},", flush=True)
 
                 if resp.status_code != HTTPStatus.OK:
                     raise ToyotaLoginError(
@@ -125,7 +124,6 @@ class Controller:
                 headers={"cookie": f"iPlanetDirectoryPro={data['tokenId']}"},
             )
             _LOGGER.debug(format_httpx_response(resp))
-            #            print(f"{format_httpx_response_json(resp)},", flush=True)
 
             if resp.status_code != HTTPStatus.FOUND:
                 raise ToyotaLoginError(f"Authorization failed. {resp.status_code}, {resp.text}.")
@@ -146,7 +144,6 @@ class Controller:
                 },
             )
             _LOGGER.debug(format_httpx_response(resp))
-            #            print(f"{format_httpx_response_json(resp)},", flush=True)
 
             if resp.status_code != HTTPStatus.OK:
                 raise ToyotaLoginError(f"Token retrieval failed. {resp.status_code}, {resp.text}.")
@@ -174,7 +171,6 @@ class Controller:
                 },
             )
             _LOGGER.debug(format_httpx_response(resp))
-            #            print(f"{format_httpx_response_json(resp)},", flush=True)
 
             if resp.status_code != HTTPStatus.OK:
                 raise ToyotaLoginError(f"Token refresh failed. {resp.status_code}, {resp.text}.")
@@ -262,7 +258,6 @@ class Controller:
                 follow_redirects=True,
             )
             _LOGGER.debug(format_httpx_response(response))
-            #            print(f"{format_httpx_response_json(response)},", flush=True)
 
             if response.status_code in [
                 HTTPStatus.OK,
