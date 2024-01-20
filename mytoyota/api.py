@@ -7,6 +7,9 @@ from uuid import uuid4
 import mytoyota.utils.logging.logging_config  # noqa # pylint: disable=unused-import
 from mytoyota.const import (
     VEHICLE_ASSOCIATION_ENDPOINT,
+    VEHICLE_CLIMATE_CONTROL_ENDPOINT,
+    VEHICLE_CLIMATE_SETTINGS_ENDPOINT,
+    VEHICLE_CLIMATE_STATUS_ENDPOINT,
     VEHICLE_GLOBAL_REMOTE_ELECTRIC_STATUS_ENDPOINT,
     VEHICLE_GLOBAL_REMOTE_STATUS_ENDPOINT,
     VEHICLE_GUID_ENDPOINT,
@@ -17,6 +20,13 @@ from mytoyota.const import (
     VEHICLE_TRIPS_ENDPOINT,
 )
 from mytoyota.controller import Controller
+from mytoyota.models.endpoints.climate import (
+    ClimateControlModel,
+    ClimateSettingsModel,
+    ClimateSettingsResponseModel,
+    ClimateStatusResponseModel,
+)
+from mytoyota.models.endpoints.common import StatusModel
 from mytoyota.models.endpoints.electric import ElectricResponseModel
 from mytoyota.models.endpoints.location import LocationResponseModel
 from mytoyota.models.endpoints.notifications import NotificationResponseModel
@@ -196,6 +206,66 @@ class Api:
             vin=vin,
         )
         _LOGGER.debug(msg=f"Parsed 'NotificationResponseModel': {parsed_response}")
+        return parsed_response
+
+    async def get_climate_status_endpoint(self, vin: str) -> ClimateStatusResponseModel:
+        """Get the current climate status.
+
+        The current climate status.
+
+        Args:
+        ----
+            vin: str:   The vehicles VIN
+
+        Returns:
+        -------
+            ClimateStatusResponseModel: A pydantic model for the climate status
+
+            NOTE: Only returns data if the climate control is on. If it is off it will return a
+            status == 0 and all other fields will be None.
+        """
+        parsed_response = await self._request_and_parse(
+            ClimateStatusResponseModel,
+            "GET",
+            VEHICLE_CLIMATE_STATUS_ENDPOINT,
+            vin=vin,
+        )
+        _LOGGER.debug(msg=f"Parsed 'ClimateStatusResponseModel': {parsed_response}")
+        return parsed_response
+
+    async def get_climate_settings_endpoint(self, vin: str) -> ClimateSettingsResponseModel:
+        parsed_response: ClimateSettingsResponseModel = await self._request_and_parse(
+            ClimateSettingsResponseModel,
+            "GET",
+            VEHICLE_CLIMATE_SETTINGS_ENDPOINT,
+            vin=vin,
+        )
+        _LOGGER.debug(msg=f"Parsed 'StatusModel': {parsed_response}")
+        return parsed_response
+
+    async def put_climate_settings_endpoint(
+        self, vin: str, settings: ClimateSettingsModel
+    ) -> StatusModel:
+        parsed_response: StatusModel = await self._request_and_parse(
+            StatusModel, "PUT", VEHICLE_CLIMATE_SETTINGS_ENDPOINT, vin=vin, body=settings.json()
+        )
+        _LOGGER.debug(msg=f"Parsed 'StatusModel': {parsed_response}")
+        return parsed_response
+
+    async def put_climate_control_endpoint(
+        self, vin: str, command: ClimateControlModel
+    ) -> StatusModel:
+        """ "
+        Sends command to climate control endpoint.
+
+        NOTE: Commands are a string. Current known strings:
+            engine-start: Starts engine and therefore climate settings are "enabled"
+            engine-stop: Stops engine and therefore climate settings are "disabled"
+        """
+        parsed_response: StatusModel = await self._request_and_parse(
+            StatusModel, "PUT", VEHICLE_CLIMATE_CONTROL_ENDPOINT, vin=vin, body=command.json()
+        )
+        _LOGGER.debug(msg=f"Parsed 'StatusModel': {parsed_response}")
         return parsed_response
 
     async def get_trips_endpoint(  # noqa: PLR0913

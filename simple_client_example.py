@@ -50,7 +50,14 @@ async def get_information():
     cars = await client.get_vehicles(metric=True)
 
     for car in cars:
-        await car.update()
+        #  await car.update()
+
+        response = await car._api.get_climate_settings_endpoint(car.vin)
+        print(response)
+        response = await car._api.get_climate_status_endpoint(car.vin)
+        print(response)
+
+        exit()
 
         # Dashboard Information
         pp.pprint(f"Dashboard: {car.dashboard}")

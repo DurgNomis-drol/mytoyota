@@ -75,6 +75,11 @@ class Vehicle:
                 "capable": vehicle_info.extended_capabilities.vehicle_status,
                 "function": partial(self._api.get_remote_status_endpoint, vin=vehicle_info.vin),
             },
+            {
+                "name": "climate-status",
+                "capable": True,  # TODO: Needs working out
+                "function": partial(self._api.get_climate_status_endpoint, vin=vehicle_info.vin),
+            },
         ]
         self._endpoint_collect = [
             (endpoint["name"], endpoint["function"])
