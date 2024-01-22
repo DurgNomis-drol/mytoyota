@@ -5,6 +5,8 @@ from typing import Any, List, Optional
 
 from pydantic import BaseModel, Field
 
+from mytoyota.models.endpoints.common import StatusModel
+
 
 class ServiceHistoryModel(BaseModel):
     """Represents a service history record.
@@ -53,10 +55,10 @@ class ServiceHistoriesModel(BaseModel):
     )
 
 
-class ServiceHistoryResponseModel(BaseModel):
+class ServiceHistoryResponseModel(StatusModel):
     """Model representing a service history response.
 
-    Inherits from BaseModel.
+    Inherits from StatusModel.
 
     Attributes
     ----------
