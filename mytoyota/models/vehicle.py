@@ -18,6 +18,7 @@ from mytoyota.models.endpoints.vehicle_guid import VehicleGuidModel
 from mytoyota.models.location import Location
 from mytoyota.models.lock_status import LockStatus
 from mytoyota.models.nofication import Notification
+from mytoyota.models.service_history import ServiceHistory
 from mytoyota.models.summary import Summary, SummaryType
 from mytoyota.models.trips import Trip
 from mytoyota.utils.helpers import add_with_none
@@ -204,11 +205,27 @@ class Vehicle:
 
         """
         if "notifications" in self._endpoint_data:
-            ret = []
+            ret: List[Notification] = []
             for p in self._endpoint_data["notifications"].payload:
-                for n in p.notifications:
-                    ret.append(Notification(n))
+                ret.extend(Notification(n) for n in p.notifications)
+            return ret
 
+        return None
+
+    @property
+    def service_history(self) -> Optional[List[ServiceHistory]]:
+        r"""Returns a list of service history entries for the vehicle.
+
+        Returns
+        -------
+            Optional[List[ServiceHistory]]: A list of service history entries for the vehicle,
+            or None if not supported.
+
+        """
+        if "service_history" in self._endpoint_data:
+            ret: List[ServiceHistory] = []
+            for p in self._endpoint_data["service_history"].payload:
+                ret.extend(ServiceHistory(n) for n in p.service_histories)
             return ret
 
         return None
