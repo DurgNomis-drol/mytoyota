@@ -30,8 +30,8 @@ class ServiceHistoryModel(BaseModel):
     notes: Any
     operations_performed: Any = Field(alias="operationsPerformed")
     ro_number: Any = Field(alias="roNumber")
-    service_category: str = Field(alias="customerCreatedRecord")
-    service_date: date = Field(alias="serviceCategory")
+    service_category: str = Field(alias="serviceCategory")
+    service_date: date = Field(alias="serviceDate")
     service_history_id: str = Field(alias="serviceHistoryId")
     service_provider: str = Field(alias="serviceProvider")
     servicing_dealer: Any = Field(alias="servicingDealer")

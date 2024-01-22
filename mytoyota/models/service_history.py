@@ -35,6 +35,7 @@ class ServiceHistory:
         -------
             str: Category of notification
         """
+        print("self", self._service_history)
         return self._service_history.customer_created_record
 
     @property

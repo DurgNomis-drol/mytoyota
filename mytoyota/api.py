@@ -13,6 +13,7 @@ from mytoyota.const import (
     VEHICLE_HEALTH_STATUS_ENDPOINT,
     VEHICLE_LOCATION_ENDPOINT,
     VEHICLE_NOTIFICATION_HISTORY_ENDPOINT,
+    VEHICLE_SERVICE_HISTORY_ENDPONT,
     VEHICLE_TELEMETRY_ENDPOINT,
     VEHICLE_TRIPS_ENDPOINT,
 )
@@ -258,7 +259,7 @@ class Api:
             ServicHistoryResponseModel: A pydantic model for the service history response
         """
         parsed_response = await self._request_and_parse(
-            ServiceHistoryResponseModel, "GET", VEHICLE_TELEMETRY_ENDPOINT, vin=vin
+            ServiceHistoryResponseModel, "GET", VEHICLE_SERVICE_HISTORY_ENDPONT, vin=vin
         )
         _LOGGER.debug(msg=f"Parsed 'ServiceHistoryResponseModel': {parsed_response}")
         return parsed_response
