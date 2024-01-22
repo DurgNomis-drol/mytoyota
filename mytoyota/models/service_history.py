@@ -1,4 +1,5 @@
 """models for vehicle service history."""
+from datetime import date
 from typing import Any, Optional
 
 from mytoyota.models.endpoints.service_history import ServiceHistoryModel
@@ -26,6 +27,16 @@ class ServiceHistory:
                 if isinstance(v, property)
             ],
         )
+
+    @property
+    def service_date(self) -> date:
+        """The date of the service.
+
+        Returns
+        -------
+            date: The date of the service.
+        """
+        return self._service_history.service_date
 
     @property
     def customer_created_record(self) -> bool:
@@ -110,6 +121,7 @@ class ServiceHistory:
         """
         return self._service_history.service_provider
 
+    @property
     def servicing_dealer(self) -> Any:
         """Dealer that performed the service.
 

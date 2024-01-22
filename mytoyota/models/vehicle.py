@@ -232,6 +232,19 @@ class Vehicle:
 
         return None
 
+    def get_latest_service_history(self) -> Optional[ServiceHistory]:
+        r"""Return the latest service history entry for the vehicle.
+
+        Returns
+        -------
+            Optional[ServiceHistory]: A service history entry for the vehicle,
+            ordered by date and ro_number. None if not supported or unknown.
+
+        """
+        if self.service_history is not None:
+            return max(self.service_history, key=lambda x: (x.service_date, x.ro_number))
+        return None
+
     @property
     def lock_status(self) -> Optional[LockStatus]:
         """Returns the latest lock status of Doors & Windows.
