@@ -225,7 +225,8 @@ class Vehicle:
         if "service_history" in self._endpoint_data:
             ret: List[ServiceHistory] = []
             for p in self._endpoint_data["service_history"].payload:
-                ret.extend(ServiceHistory(sh) for sh in p)
+                print("service", p, type(p))
+                # ret.extend(ServiceHistory(n) for n in p)
             return ret
 
         return None
