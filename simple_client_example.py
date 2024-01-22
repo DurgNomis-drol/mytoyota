@@ -61,7 +61,7 @@ async def get_information():
         # Notifications
         pp.pprint(f"Notifications: {[[x] for x in car.notifications]}")
         # Service history
-        pp.pprint(f"Service history: {[[x] for x in car.service_history]}")
+        pp.pprint(f"Latests service: {car.get_latest_service_history()}")
         # Summary
         # pp.pprint(
         #    f"Summary: {[[x] for x in await car.get_summary(date.today() - timedelta(days=7), date.today(), summary_type=SummaryType.DAILY)]}"  # noqa: E501 # pylint: disable=C0301

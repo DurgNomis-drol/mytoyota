@@ -238,11 +238,11 @@ class Vehicle:
         Returns
         -------
             Optional[ServiceHistory]: A service history entry for the vehicle,
-            ordered by date and ro_number. None if not supported or unknown.
+            ordered by date and service_category. None if not supported or unknown.
 
         """
         if self.service_history is not None:
-            return max(self.service_history, key=lambda x: (x.service_date, x.ro_number))
+            return max(self.service_history, key=lambda x: (x.service_date, x.service_category))
         return None
 
     @property
