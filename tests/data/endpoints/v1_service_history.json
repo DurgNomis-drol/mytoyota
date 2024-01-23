@@ -1,0 +1,67 @@
+{
+  "payload": {
+    "serviceHistories": [
+      {
+        "customerCreatedRecord": false,
+        "mileage": "30087",
+        "notes": null,
+        "operationsPerformed": null,
+        "roNumber": null,
+        "serviceCategory": "HSC",
+        "serviceDate": "2023-11-16",
+        "serviceHistoryId": "12345678",
+        "serviceProvider": "Provider 1",
+        "servicingDealer": null,
+        "unit": "km"
+      },
+      {
+        "customerCreatedRecord": false,
+        "mileage": "21738",
+        "notes": null,
+        "operationsPerformed": null,
+        "roNumber": null,
+        "serviceCategory": "HSC",
+        "serviceDate": "2022-12-20",
+        "serviceHistoryId": "1234567",
+        "serviceProvider": "Provider 2",
+        "servicingDealer": null,
+        "unit": "km"
+      },
+      {
+        "customerCreatedRecord": false,
+        "mileage": null,
+        "notes": null,
+        "operationsPerformed": null,
+        "roNumber": null,
+        "serviceCategory": "VDE",
+        "serviceDate": "2020-11-19",
+        "serviceHistoryId": "123456",
+        "serviceProvider": "Provider 3",
+        "servicingDealer": null,
+        "unit": null
+      },
+      {
+        "customerCreatedRecord": false,
+        "mileage": "10",
+        "notes": null,
+        "operationsPerformed": null,
+        "roNumber": null,
+        "serviceCategory": "RPR",
+        "serviceDate": "2020-11-19",
+        "serviceHistoryId": "12345",
+        "serviceProvider": "Provider 1",
+        "servicingDealer": null,
+        "unit": "km"
+      }
+    ]
+  },
+  "status": {
+    "messages": [
+      {
+        "description": "Request Processed successfully",
+        "detailedDescription": "Request Processed successfully",
+        "responseCode": "OSH-001"
+      }
+    ]
+  }
+}

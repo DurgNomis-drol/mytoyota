@@ -18,6 +18,7 @@ from mytoyota.models.endpoints.vehicle_guid import VehicleGuidModel
 from mytoyota.models.location import Location
 from mytoyota.models.lock_status import LockStatus
 from mytoyota.models.nofication import Notification
+from mytoyota.models.service_history import ServiceHistory
 from mytoyota.models.summary import Summary, SummaryType
 from mytoyota.models.trips import Trip
 from mytoyota.utils.helpers import add_with_none
@@ -74,6 +75,11 @@ class Vehicle:
                 "name": "status",
                 "capable": vehicle_info.extended_capabilities.vehicle_status,
                 "function": partial(self._api.get_remote_status_endpoint, vin=vehicle_info.vin),
+            },
+            {
+                "name": "service_history",
+                "capable": vehicle_info.features.service_history,
+                "function": partial(self._api.get_service_history_endpoint, vin=vehicle_info.vin),
             },
         ]
         self._endpoint_collect = [
@@ -199,13 +205,44 @@ class Vehicle:
 
         """
         if "notifications" in self._endpoint_data:
-            ret = []
+            ret: List[Notification] = []
             for p in self._endpoint_data["notifications"].payload:
-                for n in p.notifications:
-                    ret.append(Notification(n))
-
+                ret.extend(Notification(n) for n in p.notifications)
             return ret
 
+        return None
+
+    @property
+    def service_history(self) -> Optional[List[ServiceHistory]]:
+        r"""Returns a list of service history entries for the vehicle.
+
+        Returns
+        -------
+            Optional[List[ServiceHistory]]: A list of service history entries for the vehicle,
+            or None if not supported.
+
+        """
+        if "service_history" in self._endpoint_data:
+            ret: List[ServiceHistory] = []
+            payload = self._endpoint_data["service_history"].payload
+            ret.extend(
+                ServiceHistory(service_history) for service_history in payload.service_histories
+            )
+            return ret
+
+        return None
+
+    def get_latest_service_history(self) -> Optional[ServiceHistory]:
+        r"""Return the latest service history entry for the vehicle.
+
+        Returns
+        -------
+            Optional[ServiceHistory]: A service history entry for the vehicle,
+            ordered by date and service_category. None if not supported or unknown.
+
+        """
+        if self.service_history is not None:
+            return max(self.service_history, key=lambda x: (x.service_date, x.service_category))
         return None
 
     @property
@@ -429,7 +466,9 @@ class Vehicle:
             build_hdc = copy.copy(week_histograms[0].hdc)
             build_summary = copy.copy(week_histograms[0].summary)
             start_date = Arrow(
-                week_histograms[0].year, week_histograms[0].month, week_histograms[0].day
+                week_histograms[0].year,
+                week_histograms[0].month,
+                week_histograms[0].day,
             )
 
             for histogram in week_histograms[1:]:
@@ -437,10 +476,18 @@ class Vehicle:
                 build_summary += histogram.summary
 
             end_date = Arrow(
-                week_histograms[-1].year, week_histograms[-1].month, week_histograms[-1].day
+                week_histograms[-1].year,
+                week_histograms[-1].month,
+                week_histograms[-1].day,
             )
             ret.append(
-                Summary(build_summary, self._metric, start_date.date(), end_date.date(), build_hdc)
+                Summary(
+                    build_summary,
+                    self._metric,
+                    start_date.date(),
+                    end_date.date(),
+                    build_hdc,
+                )
             )
 
         return ret
