@@ -10,7 +10,6 @@ handlers:
   stream:
     class: "logging.StreamHandler"
     formatter: "simple"
-    stream: sys.stdout
     filters:
       - "logfilter"
 
