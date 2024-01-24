@@ -236,7 +236,9 @@ class Controller:
                 "guid": self._uuid,
                 "authorization": f"Bearer {self._token}",
                 "x-channel": "ONEAPP",
-                "x-brand": "T",
+                "x-appbrand": "L",
+                "brand": "L",
+                "x-brand": "L",
                 "user-agent": "okhttp/4.10.0",
             },
         )

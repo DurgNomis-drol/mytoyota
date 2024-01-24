@@ -84,7 +84,4 @@ async def get_information():
         # Dump all the information collected so far:
         # pp.pprint(car._dump_all())
 
-
-loop = asyncio.get_event_loop()
-loop.run_until_complete(get_information())
-loop.close()
+asyncio.run(get_information())
