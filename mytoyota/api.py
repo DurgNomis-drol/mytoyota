@@ -247,7 +247,7 @@ class Api:
         self, vin: str, settings: ClimateSettingsModel
     ) -> StatusModel:
         parsed_response: StatusModel = await self._request_and_parse(
-            StatusModel, "PUT", VEHICLE_CLIMATE_SETTINGS_ENDPOINT, vin=vin, body=settings.json()
+            StatusModel, "PUT", VEHICLE_CLIMATE_SETTINGS_ENDPOINT, vin=vin, body=settings.json(exclude_unset=True, by_alias=True)
         )
         _LOGGER.debug(msg=f"Parsed 'StatusModel': {parsed_response}")
         return parsed_response

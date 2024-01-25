@@ -8,6 +8,7 @@ from datetime import date, timedelta
 import mytoyota.utils.logging.logging_config  # noqa # pylint: disable=unused-import
 from mytoyota.client import MyT
 from mytoyota.models.summary import SummaryType
+from mytoyota.models.endpoints.climate import ClimateSettingsModel, ACParameters, ACOperations
 
 pp = pprint.PrettyPrinter(indent=4)
 _LOGGER = logging.getLogger(__name__)
@@ -52,10 +53,29 @@ async def get_information():
     for car in cars:
         #  await car.update()
 
+        # Get current settings
         response = await car._api.get_climate_settings_endpoint(car.vin)
         print(response)
         response = await car._api.get_climate_status_endpoint(car.vin)
         print(response)
+
+        # Put the climate settings we want
+        climate_settings: ClimateSettingsModel = ClimateSettingsModel(settingsOn=True,
+                                                                      temperature=21,
+                                                                      temperatureUnit="C",
+                                                                      acOperations=[ACOperations(categoryName="defrost",
+                                                                                                 acParameters=[ACParameters(enabled=True, name="frontDefrost"),
+                                                                                                               ACParameters(enabled=False, name="rearDefrost")])])
+        print(climate_settings.json(exclude_unset=True, by_alias=True))
+        response = await car._api.put_climate_settings_endpoint(car.vin, climate_settings)
+        print(response)
+
+        #response = await car._api.get_climate_settings_endpoint(car.vin)
+        #print(response)
+
+
+
+
 
         exit()
 

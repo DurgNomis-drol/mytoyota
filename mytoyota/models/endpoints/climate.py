@@ -8,30 +8,36 @@ from mytoyota.models.endpoints.common import StatusModel, UnitValueModel
 
 
 class ACParameters(BaseModel):
-    available: bool
-    display_name: List[str] = Field(alias="displayName")
-    enabled: Optional[bool] = False
-    icon_url: str = Field(alias="iconUrl")
+    """
+    Note: Some values are optional as model is also used for SETTING(i.e. Putting) the model
+    """
+    available: Optional[bool] = None
+    display_name: Optional[str] = Field(alias="displayName")
+    enabled: bool = False
+    icon_url: Optional[str] = Field(alias="iconUrl", default=None)
     name: str
 
 
 class ACOperations(BaseModel):
-    available: bool
-    category_display_name: str = Field(alias="categoryDisplayName")
+    """
+    Note: Some values are optional as model is also used for SETTING(i.e. Putting) the model
+    """
+    available: Optional[bool] = None
+    category_display_name: Optional[str] = Field(alias="categoryDisplayName", default=None)
     category_name: str = Field(alias="categoryName")
-
-
-# class PutACOperations(BaseModel):
-#    ac_parameters
+    ac_parameters: List[ACParameters] = Field(alias="acParameters")
 
 
 class ClimateSettingsModel(BaseModel):
+    """
+    Note: Some values are optional as model is also used for SETTING(i.e. Putting) the model
+    """
     ac_operations: List[ACOperations] = Field(alias="acOperations")
-    max_temp: float = Field(alias="maxTemp")
-    min_temp: float = Field(alias="minTemp")
+    max_temp: Optional[float] = Field(alias="maxTemp", default = None)
+    min_temp: Optional[float] = Field(alias="minTemp", default=None)
     settings_on: bool = Field(alias="settingsOn")
-    temp_interval: float = Field(alias="tempInterval")
-    temperature: float
+    temp_interval: Optional[float] = Field(alias="tempInterval", default=None)
+    temperature: int
     temperature_unit: str = Field(alias="temperatureUnit")
 
 
