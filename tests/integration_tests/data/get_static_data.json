@@ -801,5 +801,112 @@
         }
       }
     }
+  },
+  {
+    "request": {
+      "method": "GET",
+      "url": "https://ctpa-oneapi.tceu-ctp-prd.toyotaconnectedeurope.io/v1/servicehistory/vehicle/summary",
+      "headers": [
+        ["host", "ctpa-oneapi.tceu-ctp-prd.toyotaconnectedeurope.io"],
+        ["accept", "*/*"],
+        ["accept-encoding", "gzip, deflate"],
+        ["connection", "keep-alive"],
+        ["x-api-key", "tTZipv6liF74PwMfk9Ed68AQ0bISswwf3iHQdqcF"],
+        ["x-guid", "d95b0b58-3b3f-40e3-99ca-a3aa2a22a204"],
+        ["guid", "d95b0b58-3b3f-40e3-99ca-a3aa2a22a204"],
+        [
+          "authorization",
+          "Bearer eyJ0eXAiOiJKV1QiLCJraWQiOiJZeVZ2SEU5d0xKNDBWVEpyc3pBNDJ6eTNyWjg9IiwiYWxnIjoiUlMyNTYifQ"
+        ],
+        ["x-channel", "ONEAPP"],
+        ["x-brand", "T"],
+        ["user-agent", "okhttp/4.10.0"],
+        ["vin", "12345678912345678"]
+      ],
+      "content": ""
+    },
+    "response": {
+      "status": 200,
+      "headers": [
+        ["date", "Sat, 13 Jan 2024 16:30:27 GMT"],
+        ["content-type", "application/json"],
+        ["content-length", "260"],
+        ["connection", "keep-alive"],
+        ["x-amzn-requestid", "5e0e8953-cf98-4f1c-bbca-287bbc7d9583"],
+        ["access-control-allow-origin", "*"],
+        ["x-amz-apigw-id", "RfIZeGgNFiAEZhg="],
+        [
+          "x-amzn-trace-id",
+          "Root=1-65a2baa2-540951cb0b3ac2dd1f06c5a7;Sampled=0;lineage=aeb55e6e:0"
+        ]
+      ],
+      "content": {
+        "payload": {
+          "serviceHistories": [
+            {
+              "customerCreatedRecord": false,
+              "mileage": "30087",
+              "notes": null,
+              "operationsPerformed": null,
+              "roNumber": null,
+              "serviceCategory": "HSC",
+              "serviceDate": "2023-11-16",
+              "serviceHistoryId": "12345678",
+              "serviceProvider": "Provider 1",
+              "servicingDealer": null,
+              "unit": "km"
+            },
+            {
+              "customerCreatedRecord": false,
+              "mileage": "21738",
+              "notes": null,
+              "operationsPerformed": null,
+              "roNumber": null,
+              "serviceCategory": "HSC",
+              "serviceDate": "2022-12-20",
+              "serviceHistoryId": "1234567",
+              "serviceProvider": "Provider 2",
+              "servicingDealer": null,
+              "unit": "km"
+            },
+            {
+              "customerCreatedRecord": false,
+              "mileage": null,
+              "notes": null,
+              "operationsPerformed": null,
+              "roNumber": null,
+              "serviceCategory": "VDE",
+              "serviceDate": "2020-11-19",
+              "serviceHistoryId": "123456",
+              "serviceProvider": "Provider 3",
+              "servicingDealer": null,
+              "unit": null
+            },
+            {
+              "customerCreatedRecord": false,
+              "mileage": "10",
+              "notes": null,
+              "operationsPerformed": null,
+              "roNumber": null,
+              "serviceCategory": "RPR",
+              "serviceDate": "2020-11-19",
+              "serviceHistoryId": "12345",
+              "serviceProvider": "Provider 1",
+              "servicingDealer": null,
+              "unit": "km"
+            }
+          ]
+        },
+        "status": {
+          "messages": [
+            {
+              "description": "Request Processed successfully",
+              "detailedDescription": "Request Processed successfully",
+              "responseCode": "OSH-001"
+            }
+          ]
+        }
+      }
+    }
   }
 ]
