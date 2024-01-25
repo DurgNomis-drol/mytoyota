@@ -47,7 +47,7 @@ async def get_information():
     await client.login()
 
     print("Retrieving cars...")
-    cars = await client.get_vehicles(metric=True)
+    cars = await client.get_vehicles(metric=True, brand="Lexus")
 
     for car in cars:
         await car.update()
@@ -83,5 +83,6 @@ async def get_information():
 
         # Dump all the information collected so far:
         # pp.pprint(car._dump_all())
+
 
 asyncio.run(get_information())

@@ -30,12 +30,15 @@ _LOGGER: logging.Logger = logging.getLogger(__name__)
 class Vehicle:
     """Vehicle data representation."""
 
-    def __init__(self, api: Api, vehicle_info: VehicleGuidModel, metric: bool = True) -> None:
+    def __init__(
+        self, api: Api, vehicle_info: VehicleGuidModel, metric: bool = True, brand: str = "Toyota"
+    ) -> None:
         """Initialise the Vehicle data representation."""
         self._vehicle_info = vehicle_info
         self._api = api
         self._endpoint_data: Dict[str, Any] = {}
         self._metric = metric
+        self._brand = brand
 
         # Endpoint Name, Function to check if car supports the endpoint, endpoint to call to update
         api_endpoints = [
