@@ -47,7 +47,7 @@ async def get_information():
     await client.login()
 
     print("Retrieving cars...")
-    cars = await client.get_vehicles(metric=True, brand="Lexus")
+    cars = await client.get_vehicles(metric=True, brand="L")
 
     for car in cars:
         await car.update()
