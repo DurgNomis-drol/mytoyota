@@ -63,6 +63,6 @@ class MyT:
         _LOGGER.debug("Getting list of vehicles associated with the account")
         vehicles = await self._api.get_vehicles_endpoint(brand)
         if vehicles.payload is not None:
-            return [Vehicle(self._api, v, metric, brand) for v in vehicles.payload]
+            return [Vehicle(self._api, v, metric) for v in vehicles.payload]
 
         return []
