@@ -13,12 +13,14 @@ from mytoyota.const import (
     VEHICLE_HEALTH_STATUS_ENDPOINT,
     VEHICLE_LOCATION_ENDPOINT,
     VEHICLE_NOTIFICATION_HISTORY_ENDPOINT,
+    VEHICLE_SERVICE_HISTORY_ENDPONT,
     VEHICLE_TELEMETRY_ENDPOINT,
     VEHICLE_TRIPS_ENDPOINT,
 )
 from mytoyota.models.endpoints.electric import ElectricResponseModel
 from mytoyota.models.endpoints.location import LocationResponseModel
 from mytoyota.models.endpoints.notifications import NotificationResponseModel
+from mytoyota.models.endpoints.service_history import ServiceHistoryResponseModel
 
 # from mytoyota.models.endpoints.account import AccountResponseModel
 from mytoyota.models.endpoints.status import RemoteStatusResponseModel
@@ -88,6 +90,13 @@ YESTERDAY = TODAY - timedelta(days=1)
             NotificationResponseModel,
             "v2_notification",
             "notification-happy",
+        ),
+        (
+            "GET",
+            VEHICLE_SERVICE_HISTORY_ENDPONT,
+            ServiceHistoryResponseModel,
+            "v1_service_history",
+            "service_history-happy",
         ),
         (
             "GET",
