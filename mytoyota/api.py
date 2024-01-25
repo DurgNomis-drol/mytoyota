@@ -79,7 +79,7 @@ class Api:
     #            method="POST", endpoint="/v2/global/remote/wake"
     #        )
 
-    async def get_vehicles_endpoint(self, brand: str = "Toyota") -> VehiclesResponseModel:
+    async def get_vehicles_endpoint(self, brand: str = "T") -> VehiclesResponseModel:
         """Return list of vehicles registered with provider."""
         parsed_response = await self._request_and_parse(
             VehiclesResponseModel, "GET", VEHICLE_GUID_ENDPOINT, brand

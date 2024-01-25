@@ -31,7 +31,7 @@ from mytoyota.models.endpoints.vehicle_health import VehicleHealthResponseModel
 
 # Constants for tests
 VIN = "Random0815"
-BRAND = "Toyota"
+BRAND = "T"
 GUID = "123e4567-e89b-12d3-a456-426614174000"
 ALIAS = "MyCar"
 TODAY = date.today()

@@ -37,13 +37,13 @@ CACHE_FILENAME: Path = Path.home() / ".cache" / "toyota_credentials_cache_contai
 
 def get_brand_headers(headers: Dict[str, Any], brand: str) -> Dict[str, Any]:
     """Update the headers, depending on the given car brand."""
-    if brand == "Lexus":
+    if brand == "L":
         headers |= {
             "x-appbrand": "L",
             "brand": "L",
             "x-brand": "L",
         }
-    elif brand == "Toyota":
+    elif brand == "T":
         headers["x-brand"] = "T"
     return headers
 
@@ -228,7 +228,7 @@ class Controller:
         self,
         method: str,
         endpoint: str,
-        brand: str = "Toyota",
+        brand: str = "T",
         vin: Optional[str] = None,
         body: Optional[Dict[str, Any]] = None,
         params: Optional[Dict[str, Any]] = None,
@@ -280,7 +280,7 @@ class Controller:
         self,
         method: str,
         endpoint: str,
-        brand: str = "Toyota",
+        brand: str = "T",
         vin: Optional[str] = None,
         body: Optional[Dict[str, Any]] = None,
         params: Optional[Dict[str, Any]] = None,
