@@ -87,7 +87,7 @@ class Statistics:
             for attribute in attributes_to_convert:
                 if attribute in periode[DATA]:
                     if attribute == "totalFuelConsumedInL":
-                        _LOGGER.debug(f"Converting attribute {attribute}...")
+                        _LOGGER.debug(msg=f"Converting attribute {attribute}...")
                         periode[DATA][attribute] = (
                             convert_to_liter_per_100_miles(periode[DATA][attribute])
                             if use_liters
@@ -95,7 +95,7 @@ class Statistics:
                         )
                         continue
 
-                    _LOGGER.debug(f"Converting attribute {attribute} to miles...")
+                    _LOGGER.debug(msg=f"Converting attribute {attribute} to miles...")
                     periode[DATA][attribute] = convert_to_miles(periode[DATA][attribute])
         return data
 
