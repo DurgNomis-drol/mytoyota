@@ -103,7 +103,7 @@ class Statistics:
         """Add bucket and return statistics in a uniform way."""
         _LOGGER.debug("Updating bucket for statistics....")
 
-        if interval is DAY:
+        if interval == DAY:
             for day in data[HISTOGRAM]:
                 year = day[BUCKET][YEAR]
                 dayofyear = day[BUCKET][DAYOFYEAR]
@@ -120,7 +120,7 @@ class Statistics:
                 )
             return data[HISTOGRAM]
 
-        if interval is ISOWEEK:
+        if interval == ISOWEEK:
             data_with_bucket: dict = {
                 BUCKET: {
                     YEAR: self._now.year,
@@ -132,7 +132,7 @@ class Statistics:
             }
             return [data_with_bucket]
 
-        if interval is MONTH:
+        if interval == MONTH:
             for month in data[HISTOGRAM]:
                 month[BUCKET].update(
                     {
@@ -146,7 +146,7 @@ class Statistics:
                 )
             return data[HISTOGRAM]
 
-        if interval is YEAR:
+        if interval == YEAR:
             data_with_bucket: dict = {
                 BUCKET: {
                     YEAR: self._now.year,
