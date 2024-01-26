@@ -1,0 +1,59 @@
+[
+  {
+    "request": {
+      "method": "POST",
+      "url": "https://b2c-login.toyota-europe.com/oauth2/realms/root/realms/tme/access_token",
+      "headers": [
+        ["host", "b2c-login.toyota-europe.com"],
+        ["accept", "*/*"],
+        ["accept-encoding", "gzip, deflate"],
+        ["connection", "keep-alive"],
+        ["user-agent", "python-httpx/0.26.0"],
+        ["authorization", "basic b25lYXBwOm9uZWFwcA=="],
+        ["content-length", "1500"],
+        ["content-type", "application/x-www-form-urlencoded"]
+      ],
+      "content": "client_id=oneapp&redirect_uri=com.toyota.oneapp%3A%2Foauth2Callback&grant_type=refresh_token&code_verifier=plain&refresh_token=eyJ0eXAiOiJKV1QiLCJraWQiOiJZeVZ2SEU5d0xKNDBWVEpyc3pBNDJ6eTNyWjg9IiwiYWxnIjoiUlMyNTYifQ"
+    },
+    "response": {
+      "status": 200,
+      "headers": [
+        ["content-type", "application/json;charset=UTF-8"],
+        ["content-length", "4271"],
+        ["access-control-allow-credentials", "true"],
+        [
+          "access-control-allow-headers",
+          "X-Username,x-username,Cookie,Host,Authorization,Access-Control-Allow-Headers,Content-Type,X-OpenIDM-OAuth-Login,X-OpenIDM-DataStoreToken,X-Requested-With,Cache-Control,Accept-Language,accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,X-OpenAM-Username,X-OpenAM-Password,iPlanetDirectoryPro,Accept-API-Version"
+        ],
+        ["access-control-allow-methods", "GET, POST, OPTIONS, DELETE, PUT"],
+        [
+          "access-control-allow-origin",
+          "https://b2c-login.toyota-europe.com,https://b2c-idm.toyota-europe.com,http://b2c-login.toyota-europe.com,http://b2c-idm.toyota-europe.com,https://tas600-huapps-acc-c.toyota-europe.com"
+        ],
+        [
+          "access-control-expose-headers",
+          "x-username,X-Username,Access-Control-Allow-Headers,Access-Control-Allow-Origin,Access-Control-Allow-Credentials,Set-Cookie"
+        ],
+        ["pragma", "no-cache"],
+        ["server", "nginx/1.21.6"],
+        ["x-content-type-options", "nosniff"],
+        ["x-frame-options", "SAMEORIGIN"],
+        ["x-amz-cf-pop", "LHR61-P1"],
+        [
+          "x-amz-cf-id",
+          "M6twOxfIlz6RC1mVOg6VSqtcWAIstJPnXQreE7f3umGRVVIgIoQjNA=="
+        ],
+        ["cache-control", "no-store"],
+        ["expires", "Sat, 13 Jan 2024 15:34:52 GMT"],
+        ["date", "Sat, 13 Jan 2024 15:34:52 GMT"],
+        ["connection", "keep-alive"],
+        [
+          "set-cookie",
+          "route=00b47624ed45b7f29ea4e40234059589; expires=Mon, 15-Jan-24 15:34:52 GMT; max-age=172800; path=/"
+        ],
+        ["strict-transport-security", "max-age=86400"]
+      ],
+      "content": "{\"access_token\":\"eyJ0eXAiOiJKV1QiLCJraWQiOiJZeVZ2SEU5d0xKNDBWVEpyc3pBNDJ6eTNyWjg9IiwiYWxnIjoiUlMyNTYifQ\",\"refresh_token\":\"eyJ0eXAiOiJKV1QiLCJraWQiOiJZeVZ2SEU5d0xKNDBWVEpyc3pBNDJ6eTNyWjg9IiwiYWxnIjoiUlMyNTYifQ\",\"scope\":\"openid profile write\",\"id_token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSm9obiBEb2UiLCJ1dWlkIjoiMTIzNDU2Nzg5In0.WRnmzTP3vOK0W_Xh2sw4OpxxqDksjeeBgx3_4y4UeZU\",\"token_type\":\"Bearer\",\"expires_in\":3599}"
+    }
+  }
+]

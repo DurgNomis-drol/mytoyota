@@ -1,4 +1,5 @@
 """Utilities for manipulating returns for log output tasks."""
+import json
 from typing import Any, Dict, Optional
 
 from httpx import Response
@@ -51,6 +52,35 @@ def format_httpx_response(response: Response) -> str:
         f"  Status : ({response.status_code},{response.reason_phrase})\n"
         f"  Headers: {response.headers}\n"
         f"  Content: {response.content.decode('utf-8')}"
+    )
+
+
+def format_httpx_response_json(response: Response) -> str:
+    """Format an HTTPX response into a json string representation.
+
+    Args:
+    ----
+        response (Response): The HTTPX response object to format.
+
+    Returns:
+    -------
+        str: The formatted representation of the HTTPX response.
+
+    """
+    return json.dumps(
+        {
+            "request": {
+                "method": response.request.method,
+                "url": str(response.request.url),
+                "headers": response.request.headers.multi_items(),
+                "content": response.request.content.decode("utf-8"),
+            },
+            "response": {
+                "status": response.status_code,
+                "headers": response.headers.multi_items(),
+                "content": "" if len(response.content) == 0 else response.json(),
+            },
+        }
     )
 
 

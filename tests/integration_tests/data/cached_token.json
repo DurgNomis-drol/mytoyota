@@ -1,0 +1,7 @@
+{
+  "access_token": "eyJ0eXAiOiJKV1QiLCJraWQiOiJZeVZ2SEU5d0xKNDBWVEpyc3pBNDJ6eTNyWjg9IiwiYWxnIjoiUlMyNTYifQ",
+  "refresh_token": "eyJ0eXAiOiJKV1QiLCJraWQiOiJZeVZ2SEU5d0xKNDBWVEpyc3pBNDJ6eTNyWjg9IiwiYWxnIjoiUlMyNTYifQ",
+  "uuid": "12345678-1234-1234-1234-123456789012",
+  "expiration": "2024-01-01 16:20:20.316881",
+  "username": "user@email.info"
+}

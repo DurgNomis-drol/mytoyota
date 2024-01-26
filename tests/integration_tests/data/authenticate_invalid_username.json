@@ -1,0 +1,187 @@
+[
+  {
+    "request": {
+      "method": "POST",
+      "url": "https://b2c-login.toyota-europe.com/json/realms/root/realms/tme/authenticate?authIndexType=service&authIndexValue=oneapp",
+      "headers": [
+        ["host", "b2c-login.toyota-europe.com"],
+        ["accept", "*/*"],
+        ["accept-encoding", "gzip, deflate"],
+        ["connection", "keep-alive"],
+        ["user-agent", "python-httpx/0.26.0"],
+        ["content-length", "2"],
+        ["content-type", "application/json"]
+      ],
+      "body": "{}"
+    },
+    "response": {
+      "status": 200,
+      "headers": [
+        ["content-type", "application/json"],
+        ["content-length", "2333"],
+        ["access-control-allow-credentials", "true"],
+        [
+          "access-control-allow-headers",
+          "X-Username,x-username,Cookie,Host,Authorization,Access-Control-Allow-Headers,Content-Type,X-OpenIDM-OAuth-Login,X-OpenIDM-DataStoreToken,X-Requested-With,Cache-Control,Accept-Language,accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,X-OpenAM-Username,X-OpenAM-Password,iPlanetDirectoryPro,Accept-API-Version"
+        ],
+        ["access-control-allow-methods", "GET, POST, OPTIONS, DELETE, PUT"],
+        [
+          "access-control-allow-origin",
+          "https://b2c-login.toyota-europe.com,https://b2c-idm.toyota-europe.com,http://b2c-login.toyota-europe.com,http://b2c-idm.toyota-europe.com,https://tas600-huapps-acc-c.toyota-europe.com"
+        ],
+        [
+          "access-control-expose-headers",
+          "x-username,X-Username,Access-Control-Allow-Headers,Access-Control-Allow-Origin,Access-Control-Allow-Credentials,Set-Cookie"
+        ],
+        ["content-api-version", "resource=2.1"],
+        ["pragma", "no-cache"],
+        ["server", "nginx/1.21.6"],
+        ["x-content-type-options", "nosniff"],
+        ["x-frame-options", "SAMEORIGIN"],
+        ["x-amz-cf-pop", "LHR61-P1"],
+        [
+          "x-amz-cf-id",
+          "xIN4ORjQX9QaWG9H26O_gUcRMbzfc74cLFuTYlNovjmhUjztq_Mh0A=="
+        ],
+        ["cache-control", "private, max-age=0"],
+        ["expires", "Sat, 13 Jan 2024 14:50:00 GMT"],
+        ["date", "Sat, 13 Jan 2024 14:50:00 GMT"],
+        ["connection", "keep-alive"],
+        [
+          "set-cookie",
+          "route=1114d122a4f3e7d58cf0ae5ce740dc57; expires=Mon, 15-Jan-24 14:50:00 GMT; max-age=172800; path=/"
+        ],
+        [
+          "set-cookie",
+          "amlbcookie=01; Path=/; Secure; HttpOnly; SameSite=none"
+        ],
+        ["strict-transport-security", "max-age=86400"]
+      ],
+      "content": "{\"authId\":\"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9\",\"callbacks\":[{\"type\":\"NameCallback\",\"output\":[{\"name\":\"prompt\",\"value\":\"Market Locale\"}],\"input\":[{\"name\":\"IDToken1\",\"value\":\"\"}],\"_id\":0},{\"type\":\"NameCallback\",\"output\":[{\"name\":\"prompt\",\"value\":\"Internationalization\"}],\"input\":[{\"name\":\"IDToken2\",\"value\":\"\"}],\"_id\":1},{\"type\":\"NameCallback\",\"output\":[{\"name\":\"prompt\",\"value\":\"UI Locales\"}],\"input\":[{\"name\":\"IDToken3\",\"value\":\"\"}],\"_id\":2}]}"
+    }
+  },
+  {
+    "request": {
+      "method": "POST",
+      "url": "https://b2c-login.toyota-europe.com/json/realms/root/realms/tme/authenticate?authIndexType=service&authIndexValue=oneapp",
+      "headers": [
+        ["host", "b2c-login.toyota-europe.com"],
+        ["accept", "*/*"],
+        ["accept-encoding", "gzip, deflate"],
+        ["connection", "keep-alive"],
+        ["user-agent", "python-httpx/0.26.0"],
+        ["cookie", "amlbcookie=01; route=1114d122a4f3e7d58cf0ae5ce740dc57"],
+        ["content-length", "2377"],
+        ["content-type", "application/json"]
+      ],
+      "body": "{\"authId\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9\", \"callbacks\": [{\"type\": \"NameCallback\", \"output\": [{\"name\": \"prompt\", \"value\": \"Market Locale\"}], \"input\": [{\"name\": \"IDToken1\", \"value\": \"\"}], \"_id\": 0}, {\"type\": \"NameCallback\", \"output\": [{\"name\": \"prompt\", \"value\": \"Internationalization\"}], \"input\": [{\"name\": \"IDToken2\", \"value\": \"\"}], \"_id\": 1}, {\"type\": \"NameCallback\", \"output\": [{\"name\": \"prompt\", \"value\": \"UI Locales\"}], \"input\": [{\"name\": \"IDToken3\", \"value\": \"\"}], \"_id\": 2}]}"
+    },
+    "response": {
+      "status": 200,
+      "headers": [
+        ["content-type", "application/json"],
+        ["content-length", "2597"],
+        ["access-control-allow-credentials", "true"],
+        [
+          "access-control-allow-headers",
+          "X-Username,x-username,Cookie,Host,Authorization,Access-Control-Allow-Headers,Content-Type,X-OpenIDM-OAuth-Login,X-OpenIDM-DataStoreToken,X-Requested-With,Cache-Control,Accept-Language,accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,X-OpenAM-Username,X-OpenAM-Password,iPlanetDirectoryPro,Accept-API-Version"
+        ],
+        ["access-control-allow-methods", "GET, POST, OPTIONS, DELETE, PUT"],
+        [
+          "access-control-allow-origin",
+          "https://b2c-login.toyota-europe.com,https://b2c-idm.toyota-europe.com,http://b2c-login.toyota-europe.com,http://b2c-idm.toyota-europe.com,https://tas600-huapps-acc-c.toyota-europe.com"
+        ],
+        [
+          "access-control-expose-headers",
+          "x-username,X-Username,Access-Control-Allow-Headers,Access-Control-Allow-Origin,Access-Control-Allow-Credentials,Set-Cookie"
+        ],
+        ["content-api-version", "resource=2.1"],
+        ["pragma", "no-cache"],
+        ["server", "nginx/1.21.6"],
+        ["x-content-type-options", "nosniff"],
+        ["x-frame-options", "SAMEORIGIN"],
+        ["x-amz-cf-pop", "LHR61-P1"],
+        [
+          "x-amz-cf-id",
+          "bNNgqVK6oBfyKQ3vdnjgUnhnigI126vATe3dsiVfpTINUp4Ztjb2Ww=="
+        ],
+        ["cache-control", "private, max-age=0"],
+        ["expires", "Sat, 13 Jan 2024 14:50:00 GMT"],
+        ["date", "Sat, 13 Jan 2024 14:50:00 GMT"],
+        ["connection", "keep-alive"],
+        [
+          "set-cookie",
+          "route=1114d122a4f3e7d58cf0ae5ce740dc57; expires=Mon, 15-Jan-24 14:50:00 GMT; max-age=172800; path=/"
+        ],
+        [
+          "set-cookie",
+          "amlbcookie=01; Path=/; Secure; HttpOnly; SameSite=none"
+        ],
+        ["strict-transport-security", "max-age=86400"]
+      ],
+      "content": "{\"authId\":\"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9\",\"callbacks\":[{\"type\":\"NameCallback\",\"output\":[{\"name\":\"prompt\",\"value\":\"User Name\"}],\"input\":[{\"name\":\"IDToken1\",\"value\":\"\"}],\"_id\":3},{\"type\":\"ChoiceCallback\",\"output\":[{\"name\":\"prompt\",\"value\":\"Prompt\"},{\"name\":\"choices\",\"value\":[\"Local\",\"Google\",\"Facebook\",\"Apple\"]},{\"name\":\"defaultChoice\",\"value\":0}],\"input\":[{\"name\":\"IDToken2\",\"value\":0}],\"_id\":4}]}"
+    }
+  },
+  {
+    "request": {
+      "method": "POST",
+      "url": "https://b2c-login.toyota-europe.com/json/realms/root/realms/tme/authenticate?authIndexType=service&authIndexValue=oneapp",
+      "headers": [
+        ["host", "b2c-login.toyota-europe.com"],
+        ["accept", "*/*"],
+        ["accept-encoding", "gzip, deflate"],
+        ["connection", "keep-alive"],
+        ["user-agent", "python-httpx/0.26.0"],
+        ["cookie", "amlbcookie=01; route=1114d122a4f3e7d58cf0ae5ce740dc57"],
+        ["content-length", "2661"],
+        ["content-type", "application/json"]
+      ],
+      "content": "{\"authId\": \"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdXRoSW5kZXhWYWx1ZSI6Im9uZWFwcCIsIm90ayI6ImZ0cGlna2wzZThrM3VmdXRndW40MGVzaDVxIiwiYXV0aEluZGV4VHlwZSI6InNlcnZpY2UiLCJyZWFsbSI6Ii90bWUiLCJzZXNzaW9uSWQiOiIqQUFKVFNRQUNNRElBQkhSNWNHVUFDRXBYVkY5QlZWUklBQUpUTVFBQ01ERS4qZXlKMGVYQWlPaUpLVjFRaUxDSmpkSGtpT2lKS1YxUWlMQ0poYkdjaU9pSklVekkxTmlKOS5aWGxLTUdWWVFXbFBhVXBMVmpGUmFVeERTbXhpYlUxcFQybEtRazFVU1RSUk1FcEVURlZvVkUxcVZUSkphWGRwV1ZkNGJrbHFiMmxhUjJ4NVNXNHdMaTVoVGtKblFubHJkVzFaUkhST2IwUlBZVzAyZUc5QkxsUkxRMmRCVG5odVJqVnNRVFF5ZW1kaE16RmpiVEl6ZEhKRlMxWlZPVmg1Um5welJUUlJUM2gzTkVsVk5tSktSRzFIVld4RmRVbFJOVGh3TVVseVNtWndXVXB2UzBwUGVtbGhUVEIwU0RFd05rSXpjVzU1VW5sMFRsTkVNVGxDVG5jM1RrUlJUVXRSV0hoUVZVRllZV28wZGpJMWFHbHRYM0l3U2tSMU5IcFZPRFZHYzA4eFEzaHBjV3d6T1hsWFdrUm1iRzF6YzFKQ1kyb3pVMEZVU0VOMk9XUmlaSFIwWjFOclIyWk9MVUZJVlZGRFZGZEpPVTQ1ZWxJMWQwOXVjalJuTTNWcGFrNHpTVTE0VGtaZk1qSnBWVGt6WkRWWlZpMXdYM3B0VUZabU5XTklTRVp6VUZWamNuQm1jSE5rT1RVeGRHNXFWRlJFY0UxSVYwMTBSbUpqTWtsNVVXeExiMlIyVEVwdlIzRlJlbEUxVWxSS2JIUTJlVk5sTmxCRlJWRmlVSGwyTFROb1gyNTBaME5FZDB4cVJqTmFSVzU2UlVsd09VVm5ia0oxUldKVVRYSkNVMFJIVkhoVWNrWnhWbkZVTm1zNVNIWlRWMlEzVDA1SWRXZG1VV28zV2xWQ01GVmZMWEJ2WjA1WVlWUnROSEp0TjE5aGREQm9WRTkyVFMxQllsTlVWV00zVERGMVdsOVZja2RPWW1jeFdFWnJMVmg2VWpRMGFFdHpTbE5mV0ZScVdGVm5ZMDg1YlVkbFlXWlhNMFZCTURoNmR6RXlZVkJXWlVOV2JEZG5iak5TVkZwR00zaHlYMWhSUTIxVVpFcDNaM0J5ZW5wR05HbFdUVkJtVTBSbFExWnZXbXBvVUhWbFkwMUxkMHRZYmtsdFZXZzFlbXBJUTJNdE9WaFJaRnBmUm5CbFFtdHhOMWcyT1RONVJFbGtiRXg2VlhOdmRISlJVMUZIVm1abVgySlhiSGgzTjFSM2NFRjVkREZCZFVvMGFrUTFSSE5xU25NNFEzRTRRME5NUkZjMFREUkVkR0UyYW5kNVFVVmpMV1p4UmpWUExUUnRUVU16UnpReUxVSTJObmRSVUd0eE5HVjZUSHBrUkZScmRrMWZSeTA0WTNKd1UwYzJaRGRqU2pSTU0xQjJkMlJIT1d0a2QxVmxTMmxvYzNremNtcEZZalYwWmxkc1lUUk1UaTA0U0d4elRreHRaMmxWTWxocFVYZHpZUzFUWTJSU09WVTFUazFKZVRaeFNIbDZNRUUxYWs1RmFYVjBkRWhCU1RKME0zZHRPR05JYUU1c09FNDRWSEYzTkVwRVRVOUtjV1ZWVWtKZlQzUm5UV1pxVVdsQkxUUXRTR2haVTJKb2MxbEVaSEF3TVhKa1FrRlZSRlJoT1hGeVlWWk1lbmxUUmpGclpGZE9jRWRSYUhwSVYwMTNYM1o2WHkxRVUyTTVhVEU1TVVoU04yUlBUVEkyVldoUU1GVTVVRTFrTjBFd1NHODBTMlZyVldGU1UzUTFSVXBrVkdWU2JtSnlVR1F5WW1NemMzWnJMbGhuWkVwaGRWQjBTRTA1YmtZd1VqWnVTazVxVm1jLldnWkdGWmd3bXNNZFEtMDVsSlhJMC1LVW9sZnhjZnNvVk5vakt6b1ptZVEiLCJleHAiOjE3MDUxNTkyMDAsImlhdCI6MTcwNTE1NzQwMH0.gpWnTRI7g8sO-kzppieCiPkK6W_cbHhmrsKGvSHnwb0\", \"callbacks\": [{\"type\": \"NameCallback\", \"output\": [{\"name\": \"prompt\", \"value\": \"User Name\"}], \"input\": [{\"name\": \"IDToken1\", \"value\": \"user@email.info\"}], \"_id\": 3}, {\"type\": \"ChoiceCallback\", \"output\": [{\"name\": \"prompt\", \"value\": \"Prompt\"}, {\"name\": \"choices\", \"value\": [\"Local\", \"Google\", \"Facebook\", \"Apple\"]}, {\"name\": \"defaultChoice\", \"value\": 0}], \"input\": [{\"name\": \"IDToken2\", \"value\": 0}], \"_id\": 4}]}"
+    },
+    "response": {
+      "status": 200,
+      "headers": [
+        ["content-type", "application/json"],
+        ["content-length", "2640"],
+        ["access-control-allow-credentials", "true"],
+        [
+          "access-control-allow-headers",
+          "X-Username,x-username,Cookie,Host,Authorization,Access-Control-Allow-Headers,Content-Type,X-OpenIDM-OAuth-Login,X-OpenIDM-DataStoreToken,X-Requested-With,Cache-Control,Accept-Language,accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,X-OpenAM-Username,X-OpenAM-Password,iPlanetDirectoryPro,Accept-API-Version"
+        ],
+        ["access-control-allow-methods", "GET, POST, OPTIONS, DELETE, PUT"],
+        [
+          "access-control-allow-origin",
+          "https://b2c-login.toyota-europe.com,https://b2c-idm.toyota-europe.com,http://b2c-login.toyota-europe.com,http://b2c-idm.toyota-europe.com,https://tas600-huapps-acc-c.toyota-europe.com"
+        ],
+        [
+          "access-control-expose-headers",
+          "x-username,X-Username,Access-Control-Allow-Headers,Access-Control-Allow-Origin,Access-Control-Allow-Credentials,Set-Cookie"
+        ],
+        ["content-api-version", "resource=2.1"],
+        ["pragma", "no-cache"],
+        ["server", "nginx/1.21.6"],
+        ["x-content-type-options", "nosniff"],
+        ["x-frame-options", "SAMEORIGIN"],
+        ["x-amz-cf-pop", "LHR61-P1"],
+        [
+          "x-amz-cf-id",
+          "T2EC5kQIbAaJIajxOeq6peRSlyaxANW4EiuWOpOSnp1KhHXAABAPuA=="
+        ],
+        ["cache-control", "private, max-age=0"],
+        ["expires", "Sat, 13 Jan 2024 14:50:01 GMT"],
+        ["date", "Sat, 13 Jan 2024 14:50:01 GMT"],
+        ["connection", "keep-alive"],
+        [
+          "set-cookie",
+          "route=1114d122a4f3e7d58cf0ae5ce740dc57; expires=Mon, 15-Jan-24 14:50:01 GMT; max-age=172800; path=/"
+        ],
+        [
+          "set-cookie",
+          "amlbcookie=01; Path=/; Secure; HttpOnly; SameSite=none"
+        ],
+        ["strict-transport-security", "max-age=86400"]
+      ],
+      "content": "{\"authId\":\"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.\",\"callbacks\":[{\"type\":\"TextOutputCallback\",\"output\":[{\"name\":\"message\",\"value\":\"User Not Found\"},{\"name\":\"messageType\",\"value\":\"2\"}]}]}"
+    }
+  }
+]

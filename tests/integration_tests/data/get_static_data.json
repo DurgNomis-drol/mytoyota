@@ -1,0 +1,912 @@
+[
+  {
+    "request": {
+      "method": "GET",
+      "url": "https://ctpa-oneapi.tceu-ctp-prd.toyotaconnectedeurope.io/v2/vehicle/guid",
+      "headers": [
+        ["host", "ctpa-oneapi.tceu-ctp-prd.toyotaconnectedeurope.io"],
+        ["accept", "*/*"],
+        ["accept-encoding", "gzip, deflate"],
+        ["connection", "keep-alive"],
+        ["x-api-key", "tTZipv6liF74PwMfk9Ed68AQ0bISswwf3iHQdqcF"],
+        ["x-guid", "d95b0b58-3b3f-40e3-99ca-a3aa2a22a204"],
+        ["guid", "d95b0b58-3b3f-40e3-99ca-a3aa2a22a204"],
+        [
+          "authorization",
+          "Bearer eyJ0eXAiOiJKV1QiLCJraWQiOiJZeVZ2SEU5d0xKNDBWVEpyc3pBNDJ6eTNyWjg9IiwiYWxnIjoiUlMyNTYifQ"
+        ],
+        ["x-channel", "ONEAPP"],
+        ["x-brand", "T"],
+        ["user-agent", "okhttp/4.10.0"]
+      ],
+      "content": ""
+    },
+    "response": {
+      "status": 200,
+      "headers": [
+        ["date", "Sat, 13 Jan 2024 16:30:26 GMT"],
+        ["content-type", "application/json"],
+        ["content-length", "9240"],
+        ["connection", "keep-alive"],
+        ["x-amzn-requestid", "3aab58b0-887a-4061-b916-67b5e5c956b5"],
+        ["access-control-allow-origin", "*"],
+        ["x-amz-apigw-id", "RfIZYG-FliAEL0w="],
+        [
+          "x-amzn-trace-id",
+          "Root=1-65a2baa2-2195c0c85fa97d9523d98912;Sampled=0;lineage=aeb55e6e:0"
+        ]
+      ],
+      "content": {
+        "status": {
+          "messages": [
+            {
+              "responseCode": "ONE-VL-10000",
+              "description": "Successfully retreived all vehicles",
+              "detailedDescription": "Successfully retreived all vehicles"
+            }
+          ]
+        },
+        "payload": [
+          {
+            "registrationNumber": null,
+            "vin": "12345678912345678",
+            "modelYear": "2020",
+            "modelName": "RAV4 Plug-in MY21",
+            "modelDescription": "RAV4 Plug-in MY21",
+            "modelCode": "RE",
+            "region": "EU",
+            "status": "ACTIVE",
+            "generation": "17CYPLUS",
+            "image": "https://dj3z27z47basa.cloudfront.net/17978304-7589-46b9-a630-64943bd91113",
+            "nickName": "RAV4",
+            "brand": "T",
+            "hwType": null,
+            "asiCode": "FB",
+            "subscriptionStatus": "SUBSCRIBED",
+            "primarySubscriber": true,
+            "remoteUser": true,
+            "evVehicle": true,
+            "remoteSubscriptionStatus": "ACTIVE",
+            "remoteUserGuid": "12345678-1234-1234-1234-123456789012",
+            "subscriberGuid": "12345678-1234-1234-1234-123456789012",
+            "remoteDisplay": "7",
+            "emergencyContact": null,
+            "remoteServiceCapabilities": {
+              "powerWindowCapable": false,
+              "ventilatorCapable": false,
+              "moonRoofCapable": false,
+              "steeringWheelHeaterCapable": false,
+              "allowHvacOverrideCapable": false,
+              "estartStopCapable": false,
+              "estartEnabled": false,
+              "hazardCapable": false,
+              "dlockUnlockCapable": false,
+              "estopEnabled": false,
+              "acsettingEnabled": false,
+              "guestDriverCapable": false,
+              "vehicleFinderCapable": false,
+              "headLightCapable": false,
+              "trunkCapable": false
+            },
+            "nonCvtVehicle": false,
+            "remoteServicesExceptions": [],
+            "extendedCapabilities": {
+              "remoteEngineStartStop": false,
+              "remoteEConnectCapable": true,
+              "doorLockUnlockCapable": false,
+              "frontDriverDoorLockStatus": false,
+              "frontPassengerDoorLockStatus": false,
+              "rearDriverDoorLockStatus": false,
+              "rearPassengerDoorLockStatus": false,
+              "frontDriverDoorOpenStatus": false,
+              "frontPassengerDoorOpenStatus": false,
+              "rearDriverDoorOpenStatus": false,
+              "rearPassengerDoorOpenStatus": false,
+              "frontDriverDoorWindowStatus": false,
+              "frontPassengerDoorWindowStatus": false,
+              "rearDriverDoorWindowStatus": false,
+              "rearPassengerDoorWindowStatus": false,
+              "rearHatchRearWindow": true,
+              "moonroof": false,
+              "powerWindowsCapable": false,
+              "hazardCapable": false,
+              "hornCapable": false,
+              "lightsCapable": false,
+              "climateCapable": false,
+              "climateTemperatureControlFull": false,
+              "climateTemperatureControlLimited": false,
+              "frontDriverSeatHeater": false,
+              "frontPassengerSeatHeater": false,
+              "rearDriverSeatHeater": false,
+              "rearPassengerSeatHeater": false,
+              "frontDriverSeatVentilation": false,
+              "frontPassengerSeatVentilation": false,
+              "rearDriverSeatVentilation": false,
+              "rearPassengerSeatVentilation": false,
+              "steeringHeater": false,
+              "mirrorHeater": false,
+              "frontDefogger": true,
+              "rearDefogger": true,
+              "vehicleFinder": false,
+              "guestDriver": true,
+              "buzzerCapable": false,
+              "trunkLockUnlockCapable": false,
+              "evChargeStationsCapable": true,
+              "fcvStationsCapable": false,
+              "lastParkedCapable": true,
+              "acScheduling": true,
+              "chargeManagement": true,
+              "nextCharge": true,
+              "weeklyCharge": false,
+              "powerTailgateCapable": false,
+              "batteryStatus": false,
+              "evBattery": false,
+              "drivePulse": false,
+              "electricPulse": false,
+              "hydrogenPulse": false,
+              "hybridPulse": true,
+              "emergencyAssist": false,
+              "bumpCollisions": false,
+              "fuelLevelAvailable": true,
+              "fuelRangeAvailable": true,
+              "equippedWithAlarm": false,
+              "manualRearWindows": false,
+              "lightStatus": false,
+              "bonnetStatus": false,
+              "sunroof": false,
+              "smartKeyStatus": false,
+              "ecare": false,
+              "tryAndPlay": false,
+              "dashboardWarningLights": false,
+              "weHybridCapable": false,
+              "enhancedSecuritySystemCapable": false,
+              "vehicleStatus": false,
+              "stellantisVehicleStatusCapable": false,
+              "stellantisClimateCapable": false,
+              "vehicleDiagnosticCapable": true,
+              "telemetryCapable": true,
+              "econnectClimateCapable": true,
+              "econnectVehicleStatusCapable": true
+            },
+            "electricalPlatformCode": "19",
+            "personalizedSettings": {
+              "name": null,
+              "link": null,
+              "imageUrl": null,
+              "body": null,
+              "buttonText": null
+            },
+            "fuelType": "I",
+            "fleetInd": null,
+            "svlStatus": false,
+            "displayModelDescription": "2020 Toyota RAV4 Plug-in MY21",
+            "manufacturerCode": "TOY",
+            "suffixCode": null,
+            "imei": "123456789012345",
+            "color": "Dark Blue Metallic",
+            "vehicleDataConsents": null,
+            "dataConsent": {
+              "serviceConnect": "False",
+              "can300": "False",
+              "dealerContact": "False",
+              "ubi": "false"
+            },
+            "vehicleCapabilities": [],
+            "capabilities": [
+              {
+                "name": "EvRemoteService",
+                "description": null,
+                "value": true,
+                "translation": {
+                  "english": null,
+                  "french": null,
+                  "spanish": null
+                },
+                "display": true,
+                "displayName": null
+              },
+              {
+                "name": "alexaSkillCapable",
+                "description": null,
+                "value": true,
+                "translation": {
+                  "english": null,
+                  "french": null,
+                  "spanish": null
+                },
+                "display": false,
+                "displayName": null
+              },
+              {
+                "name": "alexaStandardCapable",
+                "description": null,
+                "value": true,
+                "translation": {
+                  "english": null,
+                  "french": null,
+                  "spanish": null
+                },
+                "display": true,
+                "displayName": null
+              },
+              {
+                "name": "androidAutoCapable",
+                "description": null,
+                "value": true,
+                "translation": {
+                  "english": null,
+                  "french": null,
+                  "spanish": null
+                },
+                "display": true,
+                "displayName": null
+              },
+              {
+                "name": "carplayStandardCapable",
+                "description": null,
+                "value": true,
+                "translation": {
+                  "english": null,
+                  "french": null,
+                  "spanish": null
+                },
+                "display": true,
+                "displayName": null
+              },
+              {
+                "name": "googleAssistantCapable",
+                "description": null,
+                "value": true,
+                "translation": {
+                  "english": null,
+                  "french": null,
+                  "spanish": null
+                },
+                "display": false,
+                "displayName": null
+              }
+            ],
+            "subscriptions": [
+              {
+                "subscriptionID": "12345678901234567-1234567890",
+                "productName": "REMOTE SERVICES",
+                "productDescription": "Standard Remote Services",
+                "displayProductName": "REMOTE SERVICES",
+                "subscriptionEndDate": "2027-01-01",
+                "subscriptionNextBillingDate": null,
+                "subscriptionStartDate": "2023-01-01",
+                "status": "ACTIVE",
+                "type": "Trial",
+                "subscriptionRemainingDays": 1111,
+                "subscriptionRemainingTerm": null,
+                "productCode": "PROD_REMOTESERVICE",
+                "productLine": "PROD_REMOTESERVICE",
+                "productType": null,
+                "term": 48,
+                "termUnit": "MTH",
+                "goodwillIssuedFor": null,
+                "renewable": false,
+                "displayTerm": "Expires On NOV 01, 2027",
+                "subscriptionTerm": "YRLY",
+                "autoRenew": false,
+                "futureCancel": false,
+                "consolidatedProductIds": [],
+                "consolidatedGoodwillIds": [],
+                "components": null,
+                "category": "STANDALONE"
+              },
+              {
+                "subscriptionID": "12345678901234567-1234567890",
+                "productName": "STANDARD SERVICES",
+                "productDescription": "Standard Services",
+                "displayProductName": "STANDARD SERVICES",
+                "subscriptionEndDate": "2033-01-08",
+                "subscriptionNextBillingDate": null,
+                "subscriptionStartDate": "2023-01-08",
+                "status": "ACTIVE",
+                "type": "Trial",
+                "subscriptionRemainingDays": 1111,
+                "subscriptionRemainingTerm": null,
+                "productCode": "PROD_STANDARDSERVICES",
+                "productLine": "PROD_STANDARDSERVICES",
+                "productType": null,
+                "term": 120,
+                "termUnit": "MTH",
+                "goodwillIssuedFor": null,
+                "renewable": false,
+                "displayTerm": "Expires On NOV 01, 2033",
+                "subscriptionTerm": "YRLY",
+                "autoRenew": false,
+                "futureCancel": false,
+                "consolidatedProductIds": [],
+                "consolidatedGoodwillIds": [],
+                "components": null,
+                "category": "STANDALONE"
+              }
+            ],
+            "services": [],
+            "displaySubscriptions": [
+              {
+                "productName": "REMOTE SERVICES",
+                "displayStatus": "Expires On JAN 01, 2027"
+              },
+              {
+                "productName": "STANDARD SERVICES",
+                "displayStatus": "Expires On JAN 01, 2033"
+              }
+            ],
+            "alerts": [],
+            "features": {
+              "achPayment": 0,
+              "addServiceRecord": 0,
+              "autoDrive": 0,
+              "cerence": 0,
+              "chargingStation": 1,
+              "climateStartEngine": 0,
+              "collisionAssistance": 0,
+              "connectedCard": 0,
+              "connectedInsurance": 0,
+              "connectedSupport": 0,
+              "crashNotification": 0,
+              "criticalAlert": 0,
+              "dashboardLights": 0,
+              "dealerAppointment": 1,
+              "digitalKey": 0,
+              "doorLockCapable": 0,
+              "drivePulse": 0,
+              "driverCompanion": 0,
+              "driverScore": 0,
+              "dtcAccess": 0,
+              "dynamicNavi": 0,
+              "ecoHistory": 0,
+              "ecoRanking": 0,
+              "electricPulse": 0,
+              "emergencyAssist": 0,
+              "enhancedSecuritySystem": 0,
+              "evChargeStation": 1,
+              "evRemoteServices": 0,
+              "evVehicleStatus": 0,
+              "financialServices": 0,
+              "flexRental": 0,
+              "h2FuelStation": 0,
+              "homeCharge": 1,
+              "howToVideos": 0,
+              "hybridPulse": 1,
+              "hydrogenPulse": 0,
+              "importantMessage": 0,
+              "insurance": 0,
+              "lastParked": 1,
+              "lcfs": 0,
+              "linkedAccounts": 0,
+              "maintenanceTimeline": 0,
+              "marketingCard": 0,
+              "marketingConsent": 0,
+              "masterConsentEditable": 0,
+              "myDestination": 0,
+              "ownersManual": 0,
+              "paidProduct": 0,
+              "parkedVehicleLocator": 0,
+              "parking": 0,
+              "parkingNotes": 0,
+              "personalizedSettings": 0,
+              "privacy": 1,
+              "recentTrip": 0,
+              "remoteDtc": 0,
+              "remoteParking": 0,
+              "remoteService": 1,
+              "roadsideAssistance": 0,
+              "safetyRecall": 0,
+              "scheduleMaintenance": 0,
+              "serviceHistory": 1,
+              "shopGenuineParts": 0,
+              "smartCharging": 1,
+              "ssaDownload": 0,
+              "sxmRadio": 0,
+              "telemetry": 1,
+              "tff": 0,
+              "tirePressure": 0,
+              "v1g": 0,
+              "vaSetting": 0,
+              "vehicleDiagnostic": 1,
+              "vehicleHealthReport": 0,
+              "vehicleSpecifications": 0,
+              "vehicleStatus": 0,
+              "weHybrid": 0,
+              "wifi": 0,
+              "xcapp": 0
+            },
+            "subscriptionExpirationStatus": false,
+            "faqUrl": "http://toyota.com/FAQ",
+            "shopGenuinePartsUrl": "https://parts.toyota.com/accessories/Toyota_2020_RAV4.html?partner=ONEAPP2020RAV4",
+            "familySharing": false,
+            "ctsLinks": {
+              "name": "Connected Services Support",
+              "link": "https://qa.toyotaaudioandconnectedservicessupport.com/toyota/home?source=OneApp&vin=12345678912345678",
+              "imageUrl": null,
+              "body": null,
+              "buttonText": null
+            },
+            "tffLinks": {
+              "name": null,
+              "link": null,
+              "imageUrl": null,
+              "body": null,
+              "buttonText": null
+            },
+            "headUnit": {
+              "mobilePlatformCode": null,
+              "huDescription": null,
+              "huGeneration": null,
+              "huVersion": null,
+              "multimediaType": null
+            },
+            "katashikiCode": "1234567-123456",
+            "oldImei": null,
+            "stockPicReference": "https://dj3z27z47basa.cloudfront.net/17978304-7589-46b9-a630-64943bd91113",
+            "transmissionType": "A",
+            "dateOfFirstUse": "2022-01-01",
+            "dcm": {
+              "dcmModelYear": "19",
+              "dcmDestination": "10",
+              "countryCode": "408",
+              "dcmSupplier": "65",
+              "dcmSupplierName": "Continental",
+              "dcmGrade": "1",
+              "euiccid": "12345678901234567890123456789012",
+              "hardwareType": null,
+              "vehicleUnitTerminalNumber": null
+            },
+            "dcms": null,
+            "manufacturedDate": "2022-01-01",
+            "contractId": "T-1234567891234",
+            "carlineName": "RAV4 PHEV",
+            "externalSubscriptions": null,
+            "serviceConnectStatus": null,
+            "owner": true,
+            "remoteSubscriptionExists": true,
+            "dcmActive": false,
+            "commercialRental": false,
+            "preferred": 1
+          }
+        ]
+      }
+    }
+  },
+  {
+    "request": {
+      "method": "GET",
+      "url": "https://ctpa-oneapi.tceu-ctp-prd.toyotaconnectedeurope.io/v2/notification/history",
+      "headers": [
+        ["host", "ctpa-oneapi.tceu-ctp-prd.toyotaconnectedeurope.io"],
+        ["accept", "*/*"],
+        ["accept-encoding", "gzip, deflate"],
+        ["connection", "keep-alive"],
+        ["x-api-key", "tTZipv6liF74PwMfk9Ed68AQ0bISswwf3iHQdqcF"],
+        ["x-guid", "d95b0b58-3b3f-40e3-99ca-a3aa2a22a204"],
+        ["guid", "d95b0b58-3b3f-40e3-99ca-a3aa2a22a204"],
+        [
+          "authorization",
+          "Bearer eyJ0eXAiOiJKV1QiLCJraWQiOiJZeVZ2SEU5d0xKNDBWVEpyc3pBNDJ6eTNyWjg9IiwiYWxnIjoiUlMyNTYifQ"
+        ],
+        ["x-channel", "ONEAPP"],
+        ["x-brand", "T"],
+        ["user-agent", "okhttp/4.10.0"],
+        ["vin", "12345678912345678"]
+      ],
+      "content": ""
+    },
+    "response": {
+      "status": 200,
+      "headers": [
+        ["date", "Sat, 13 Jan 2024 16:30:26 GMT"],
+        ["content-type", "application/json"],
+        ["content-length", "12916"],
+        ["connection", "keep-alive"],
+        ["x-amzn-requestid", "c813e157-ba0f-4fc9-a712-37f1c6c43cf4"],
+        ["access-control-allow-origin", "*"],
+        ["x-amz-apigw-id", "RfIZeECmliAEOfg="],
+        [
+          "x-amzn-trace-id",
+          "Root=1-65a2baa2-04adbc98431eeb643eaa3e25;Sampled=0;lineage=aeb55e6e:0|412c0528:0"
+        ]
+      ],
+      "content": {
+        "guid": "12345678-1234-1234-1234-123456789123",
+        "statusCode": 200,
+        "headers": {
+          "Content-Type": "text/plain"
+        },
+        "body": "Success",
+        "payload": [
+          {
+            "vin": "12345678912345678",
+            "notifications": [
+              {
+                "messageId": "65a0e1d516efe8e6ff4d1319",
+                "vin": "12345678912345678",
+                "notificationDate": "2024-01-12T06:53:09.105Z",
+                "isRead": false,
+                "iconUrl": "https://assets.preprod.ctdevops.com/assets/notification/icons/remoteconnect.png",
+                "message": "2020 RAV4 PHEV: Climate control was interrupted (Door open) [1]",
+                "status": "interrupted",
+                "type": "alert",
+                "category": "RemoteCommand",
+                "displayCategory": "Remote Commands"
+              },
+              {
+                "messageId": "65a0df84f316a42fe79de05e",
+                "vin": "12345678912345678",
+                "notificationDate": "2024-01-12T06:43:16.843Z",
+                "isRead": false,
+                "iconUrl": "https://assets.preprod.ctdevops.com/assets/notification/icons/remoteconnect.png",
+                "message": "2020 RAV4 PHEV: Climate was started and will automatically shut off.",
+                "status": "completed",
+                "type": "alert",
+                "category": "RemoteCommand",
+                "displayCategory": "Remote Commands"
+              },
+              {
+                "messageId": "659f3a0e96c8ef294705d558",
+                "vin": "12345678912345678",
+                "notificationDate": "2024-01-11T00:45:02.860Z",
+                "isRead": true,
+                "readTimestamp": "2024-01-12T06:42:22.199Z",
+                "iconUrl": "https://assets.preprod.ctdevops.com/assets/notification/icons/general.png",
+                "message": "2020 RAV4 PHEV: Charging Interrupted [4].",
+                "status": "completed",
+                "type": "alert",
+                "category": "ChargingAlert",
+                "displayCategory": "General"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "request": {
+      "method": "GET",
+      "url": "https://ctpa-oneapi.tceu-ctp-prd.toyotaconnectedeurope.io/v1/location",
+      "headers": [
+        ["host", "ctpa-oneapi.tceu-ctp-prd.toyotaconnectedeurope.io"],
+        ["accept", "*/*"],
+        ["accept-encoding", "gzip, deflate"],
+        ["connection", "keep-alive"],
+        ["x-api-key", "tTZipv6liF74PwMfk9Ed68AQ0bISswwf3iHQdqcF"],
+        ["x-guid", "d95b0b58-3b3f-40e3-99ca-a3aa2a22a204"],
+        ["guid", "d95b0b58-3b3f-40e3-99ca-a3aa2a22a204"],
+        [
+          "authorization",
+          "Bearer eyJ0eXAiOiJKV1QiLCJraWQiOiJZeVZ2SEU5d0xKNDBWVEpyc3pBNDJ6eTNyWjg9IiwiYWxnIjoiUlMyNTYifQ"
+        ],
+        ["x-channel", "ONEAPP"],
+        ["x-brand", "T"],
+        ["user-agent", "okhttp/4.10.0"],
+        ["vin", "12345678912345678"]
+      ],
+      "content": ""
+    },
+    "response": {
+      "status": 200,
+      "headers": [
+        ["date", "Sat, 13 Jan 2024 16:30:26 GMT"],
+        ["content-type", "application/json"],
+        ["content-length", "278"],
+        ["connection", "keep-alive"],
+        ["x-amzn-requestid", "e24d76a6-1835-4d6e-8789-c31175d4996a"],
+        ["access-control-allow-origin", "*"],
+        ["x-amz-apigw-id", "RfIZeFpWFiAEezg="],
+        [
+          "x-amzn-trace-id",
+          "Root=1-65a2baa2-7d708a805c88aee22d4b3345;Sampled=0;lineage=aeb55e6e:0"
+        ]
+      ],
+      "content": {
+        "payload": {
+          "vin": "12345678912345678",
+          "lastTimestamp": "2024-01-13T15:02:28Z",
+          "vehicleLocation": {
+            "displayName": "Last Parked",
+            "latitude": 50.0,
+            "longitude": 0.0,
+            "locationAcquisitionDatetime": "2024-01-13T15:02:28Z"
+          }
+        },
+        "status": "SUCCESS",
+        "code": 200,
+        "message": "Ok",
+        "errors": []
+      }
+    }
+  },
+  {
+    "request": {
+      "method": "GET",
+      "url": "https://ctpa-oneapi.tceu-ctp-prd.toyotaconnectedeurope.io/v1/global/remote/electric/status",
+      "headers": [
+        ["host", "ctpa-oneapi.tceu-ctp-prd.toyotaconnectedeurope.io"],
+        ["accept", "*/*"],
+        ["accept-encoding", "gzip, deflate"],
+        ["connection", "keep-alive"],
+        ["x-api-key", "tTZipv6liF74PwMfk9Ed68AQ0bISswwf3iHQdqcF"],
+        ["x-guid", "d95b0b58-3b3f-40e3-99ca-a3aa2a22a204"],
+        ["guid", "d95b0b58-3b3f-40e3-99ca-a3aa2a22a204"],
+        [
+          "authorization",
+          "Bearer eyJ0eXAiOiJKV1QiLCJraWQiOiJZeVZ2SEU5d0xKNDBWVEpyc3pBNDJ6eTNyWjg9IiwiYWxnIjoiUlMyNTYifQ"
+        ],
+        ["x-channel", "ONEAPP"],
+        ["x-brand", "T"],
+        ["user-agent", "okhttp/4.10.0"],
+        ["vin", "12345678912345678"]
+      ],
+      "content": ""
+    },
+    "response": {
+      "status": 200,
+      "headers": [
+        ["date", "Sat, 13 Jan 2024 16:30:27 GMT"],
+        ["content-type", "application/json"],
+        ["content-length", "444"],
+        ["connection", "keep-alive"],
+        ["x-amzn-requestid", "f0cc029a-cd86-4ddc-a8a5-7d366d9d1b25"],
+        ["access-control-allow-origin", "*"],
+        ["x-amz-apigw-id", "RfIZeE75FiAEMvQ="],
+        [
+          "x-amzn-trace-id",
+          "Root=1-65a2baa2-6881865f45dcadeb1f22a1de;Sampled=0;lineage=aeb55e6e:0"
+        ]
+      ],
+      "content": {
+        "status": {
+          "messages": [
+            {
+              "responseCode": "ONE-GLOBAL-RS-10000",
+              "description": "Request Completed Successfully",
+              "detailedDescription": "Request Completed Successfully"
+            }
+          ]
+        },
+        "payload": {
+          "fuelLevel": 11,
+          "batteryLevel": 22,
+          "chargingStatus": "none",
+          "evRange": {
+            "unit": "km",
+            "value": 33
+          },
+          "evRangeWithAc": {
+            "unit": "km",
+            "value": 30
+          },
+          "fuelRange": {
+            "unit": "mi",
+            "value": 70
+          },
+          "canSetNextChargingEvent": true,
+          "lastUpdateTimestamp": "2024-01-13T15:12:30Z"
+        }
+      }
+    }
+  },
+  {
+    "request": {
+      "method": "GET",
+      "url": "https://ctpa-oneapi.tceu-ctp-prd.toyotaconnectedeurope.io/v3/telemetry",
+      "headers": [
+        ["host", "ctpa-oneapi.tceu-ctp-prd.toyotaconnectedeurope.io"],
+        ["accept", "*/*"],
+        ["accept-encoding", "gzip, deflate"],
+        ["connection", "keep-alive"],
+        ["x-api-key", "tTZipv6liF74PwMfk9Ed68AQ0bISswwf3iHQdqcF"],
+        ["x-guid", "d95b0b58-3b3f-40e3-99ca-a3aa2a22a204"],
+        ["guid", "d95b0b58-3b3f-40e3-99ca-a3aa2a22a204"],
+        [
+          "authorization",
+          "Bearer eyJ0eXAiOiJKV1QiLCJraWQiOiJZeVZ2SEU5d0xKNDBWVEpyc3pBNDJ6eTNyWjg9IiwiYWxnIjoiUlMyNTYifQ"
+        ],
+        ["x-channel", "ONEAPP"],
+        ["x-brand", "T"],
+        ["user-agent", "okhttp/4.10.0"],
+        ["vin", "12345678912345678"]
+      ],
+      "content": ""
+    },
+    "response": {
+      "status": 200,
+      "headers": [
+        ["date", "Sat, 13 Jan 2024 16:30:27 GMT"],
+        ["content-type", "application/json"],
+        ["content-length", "260"],
+        ["connection", "keep-alive"],
+        ["x-amzn-requestid", "5e0e8953-cf98-4f1c-bbca-287bbc7d9583"],
+        ["access-control-allow-origin", "*"],
+        ["x-amz-apigw-id", "RfIZeGgNFiAEZhg="],
+        [
+          "x-amzn-trace-id",
+          "Root=1-65a2baa2-540951cb0b3ac2dd1f06c5a7;Sampled=0;lineage=aeb55e6e:0"
+        ]
+      ],
+      "content": {
+        "payload": {
+          "fuelType": "I",
+          "odometer": {
+            "value": 6213.712,
+            "unit": "mi"
+          },
+          "fuelLevel": 10,
+          "batteryLevel": 60,
+          "distanceToEmpty": {
+            "value": 100,
+            "unit": "km"
+          },
+          "timestamp": "2024-01-13T15:12:30Z",
+          "chargingStatus": "none"
+        },
+        "status": "SUCCESS",
+        "code": 200,
+        "message": "Ok",
+        "errors": []
+      }
+    }
+  },
+  {
+    "request": {
+      "method": "GET",
+      "url": "https://ctpa-oneapi.tceu-ctp-prd.toyotaconnectedeurope.io/v1/vehiclehealth/status",
+      "headers": [
+        ["host", "ctpa-oneapi.tceu-ctp-prd.toyotaconnectedeurope.io"],
+        ["accept", "*/*"],
+        ["accept-encoding", "gzip, deflate"],
+        ["connection", "keep-alive"],
+        ["x-api-key", "tTZipv6liF74PwMfk9Ed68AQ0bISswwf3iHQdqcF"],
+        ["x-guid", "d95b0b58-3b3f-40e3-99ca-a3aa2a22a204"],
+        ["guid", "d95b0b58-3b3f-40e3-99ca-a3aa2a22a204"],
+        [
+          "authorization",
+          "Bearer eyJ0eXAiOiJKV1QiLCJraWQiOiJZeVZ2SEU5d0xKNDBWVEpyc3pBNDJ6eTNyWjg9IiwiYWxnIjoiUlMyNTYifQ"
+        ],
+        ["x-channel", "ONEAPP"],
+        ["x-brand", "T"],
+        ["user-agent", "okhttp/4.10.0"],
+        ["vin", "12345678912345678"]
+      ],
+      "content": ""
+    },
+    "response": {
+      "status": 200,
+      "headers": [
+        ["date", "Sat, 13 Jan 2024 16:30:27 GMT"],
+        ["content-type", "application/json"],
+        ["content-length", "164"],
+        ["connection", "keep-alive"],
+        ["x-amzn-requestid", "7013673d-c7ea-4236-9473-98f3114b64b7"],
+        ["access-control-allow-origin", "*"],
+        ["x-amz-apigw-id", "RfIZeHOYliAEGTg="],
+        [
+          "x-amzn-trace-id",
+          "Root=1-65a2baa2-3bd3d8210283eeb1453102a5;Sampled=0;lineage=aeb55e6e:0"
+        ]
+      ],
+      "content": {
+        "status": "SUCCESS",
+        "code": 200,
+        "errors": [],
+        "payload": {
+          "quantityOfEngOilIcon": [],
+          "warning": [],
+          "vin": "12345678912345678",
+          "wnglastUpdTime": "2024-01-13T16:30:27.263Z"
+        }
+      }
+    }
+  },
+  {
+    "request": {
+      "method": "GET",
+      "url": "https://ctpa-oneapi.tceu-ctp-prd.toyotaconnectedeurope.io/v1/servicehistory/vehicle/summary",
+      "headers": [
+        ["host", "ctpa-oneapi.tceu-ctp-prd.toyotaconnectedeurope.io"],
+        ["accept", "*/*"],
+        ["accept-encoding", "gzip, deflate"],
+        ["connection", "keep-alive"],
+        ["x-api-key", "tTZipv6liF74PwMfk9Ed68AQ0bISswwf3iHQdqcF"],
+        ["x-guid", "d95b0b58-3b3f-40e3-99ca-a3aa2a22a204"],
+        ["guid", "d95b0b58-3b3f-40e3-99ca-a3aa2a22a204"],
+        [
+          "authorization",
+          "Bearer eyJ0eXAiOiJKV1QiLCJraWQiOiJZeVZ2SEU5d0xKNDBWVEpyc3pBNDJ6eTNyWjg9IiwiYWxnIjoiUlMyNTYifQ"
+        ],
+        ["x-channel", "ONEAPP"],
+        ["x-brand", "T"],
+        ["user-agent", "okhttp/4.10.0"],
+        ["vin", "12345678912345678"]
+      ],
+      "content": ""
+    },
+    "response": {
+      "status": 200,
+      "headers": [
+        ["date", "Sat, 13 Jan 2024 16:30:27 GMT"],
+        ["content-type", "application/json"],
+        ["content-length", "260"],
+        ["connection", "keep-alive"],
+        ["x-amzn-requestid", "5e0e8953-cf98-4f1c-bbca-287bbc7d9583"],
+        ["access-control-allow-origin", "*"],
+        ["x-amz-apigw-id", "RfIZeGgNFiAEZhg="],
+        [
+          "x-amzn-trace-id",
+          "Root=1-65a2baa2-540951cb0b3ac2dd1f06c5a7;Sampled=0;lineage=aeb55e6e:0"
+        ]
+      ],
+      "content": {
+        "payload": {
+          "serviceHistories": [
+            {
+              "customerCreatedRecord": false,
+              "mileage": "30087",
+              "notes": null,
+              "operationsPerformed": null,
+              "roNumber": null,
+              "serviceCategory": "HSC",
+              "serviceDate": "2023-11-16",
+              "serviceHistoryId": "12345678",
+              "serviceProvider": "Provider 1",
+              "servicingDealer": null,
+              "unit": "km"
+            },
+            {
+              "customerCreatedRecord": false,
+              "mileage": "21738",
+              "notes": null,
+              "operationsPerformed": null,
+              "roNumber": null,
+              "serviceCategory": "HSC",
+              "serviceDate": "2022-12-20",
+              "serviceHistoryId": "1234567",
+              "serviceProvider": "Provider 2",
+              "servicingDealer": null,
+              "unit": "km"
+            },
+            {
+              "customerCreatedRecord": false,
+              "mileage": null,
+              "notes": null,
+              "operationsPerformed": null,
+              "roNumber": null,
+              "serviceCategory": "VDE",
+              "serviceDate": "2020-11-19",
+              "serviceHistoryId": "123456",
+              "serviceProvider": "Provider 3",
+              "servicingDealer": null,
+              "unit": null
+            },
+            {
+              "customerCreatedRecord": false,
+              "mileage": "10",
+              "notes": null,
+              "operationsPerformed": null,
+              "roNumber": null,
+              "serviceCategory": "RPR",
+              "serviceDate": "2020-11-19",
+              "serviceHistoryId": "12345",
+              "serviceProvider": "Provider 1",
+              "servicingDealer": null,
+              "unit": "km"
+            }
+          ]
+        },
+        "status": {
+          "messages": [
+            {
+              "description": "Request Processed successfully",
+              "detailedDescription": "Request Processed successfully",
+              "responseCode": "OSH-001"
+            }
+          ]
+        }
+      }
+    }
+  }
+]
