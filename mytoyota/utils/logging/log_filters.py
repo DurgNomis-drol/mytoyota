@@ -20,5 +20,5 @@ class RedactingFilter(logging.Filter):
         """Mask sensitive data in logs by given patterns."""
         for pattern in self._patterns:
             compiled_pattern = re.compile(pattern)
-            msg = compiled_pattern.sub("****", msg)
+            msg = compiled_pattern.sub("****", str(msg))
         return msg
