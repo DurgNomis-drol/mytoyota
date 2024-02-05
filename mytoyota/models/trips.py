@@ -20,6 +20,7 @@ class Trip:
         ----
             trip (_TripModel, required): Contains all information regarding the trip
             metric (bool, required): Report in Metric or Imperial
+
         """
         self._trip = trip
         self._metric = "km" if metric else "mi"
@@ -41,6 +42,7 @@ class Trip:
         Returns
         -------
             Tuple[float, float]: Start location (Lat, Lon)
+
         """
         return self._trip.summary.start_lat, self._trip.summary.start_lon
 
@@ -51,6 +53,7 @@ class Trip:
         Returns
         -------
             Tuple[float, float]: End location (Lat, Lon)
+
         """
         return self._trip.summary.end_lat, self._trip.summary.end_lon
 
@@ -61,6 +64,7 @@ class Trip:
         Returns
         -------
             datetime: Start time of trip
+
         """
         return self._trip.summary.start_ts
 
@@ -71,6 +75,7 @@ class Trip:
         Returns
         -------
             datetime: End time of trip
+
         """
         return self._trip.summary.end_ts
 
@@ -81,6 +86,7 @@ class Trip:
         Returns
         -------
             timedelta: The amount of time driving
+
         """
         return timedelta(seconds=self._trip.summary.duration)
 
@@ -91,6 +97,7 @@ class Trip:
         Returns
         -------
             float: Distance covered in the selected metric
+
         """
         return convert_distance(self._metric, "km", self._trip.summary.length / 1000.0)
 
@@ -101,6 +108,7 @@ class Trip:
         Returns
         -------
             timedelta: The amount of time driving using EV or None if not supported
+
         """
         return timedelta(seconds=self._trip.hdc.ev_time) if self._trip.hdc else None
 
@@ -111,6 +119,7 @@ class Trip:
         Returns
         -------
             timedelta: The distance driven using EV in selected metric or None if not supported
+
         """
         return (
             convert_distance(self._metric, "km", self._trip.hdc.ev_distance / 1000.0)
@@ -120,17 +129,39 @@ class Trip:
 
     @property
     def fuel_consumed(self) -> float:
-        """The amount of fuel consumed.
+        """The total amount of fuel consumed.
 
         Returns
         -------
-            float: The fuel consumed in liters if metric or gallons
+            float: The total amount of fuel consumed in liters if metric or gallons
+
         """
         if self._trip.summary.fuel_consumption:
             return (
-                round(self._trip.summary.fuel_consumption / 4546.0, 3)
+                round(self._trip.summary.fuel_consumption / 1000.0, 3)
                 if self._metric
-                else (self._trip.summary.fuel_consumption / 1000.0)
+                else round(self._trip.summary.fuel_consumption / 3785.0, 3)
+            )
+
+        return 0.0
+
+    @property
+    def average_fuel_consumed(self) -> float:
+        """The average amount of fuel consumed.
+
+        Returns
+        -------
+            float: The average amount of fuel consumed in l/100km if metric or mpg
+
+        """
+        if self._trip.summary.fuel_consumption:
+            avg_fuel_consumed = (
+                self._trip.summary.fuel_consumption / self._trip.summary.length
+            ) * 100
+            return (
+                round(avg_fuel_consumed, 3)
+                if self._metric
+                else round(235.215 * avg_fuel_consumed, 3)
             )
 
         return 0.0
@@ -143,6 +174,7 @@ class Trip:
         -------
             Optional[List[Tuple[float, float]]]: List of Lat, Lon of the route taken.
                 None if no route provided.
+
         """
         if self._trip.route:
             return [(rm.lat, rm.lon) for rm in self._trip.route]
