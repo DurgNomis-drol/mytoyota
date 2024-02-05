@@ -46,6 +46,7 @@ class Api:
         Returns:
         -------
             None
+
         """
         self.controller = controller
 
@@ -96,6 +97,7 @@ class Api:
         Returns:
         -------
             LocationResponseModel: A pydantic model for the location response
+
         """
         parsed_response = await self._request_and_parse(
             LocationResponseModel, "GET", VEHICLE_LOCATION_ENDPOINT, vin=vin
@@ -116,6 +118,7 @@ class Api:
         Returns:
         -------
             VehicleHealthResponseModel: A pydantic model for the vehicle health response
+
         """
         parsed_response = await self._request_and_parse(
             VehicleHealthResponseModel, "GET", VEHICLE_HEALTH_STATUS_ENDPOINT, vin=vin
@@ -147,6 +150,7 @@ class Api:
         Returns:
         -------
             ElectricResponseModel: A pydantic model for the electric response
+
         """
         parsed_response = await self._request_and_parse(
             ElectricResponseModel,
@@ -169,6 +173,7 @@ class Api:
         Returns:
         -------
             TelemetryResponseModel: A pydantic model for the telemetry response
+
         """
         parsed_response = await self._request_and_parse(
             TelemetryResponseModel, "GET", VEHICLE_TELEMETRY_ENDPOINT, vin=vin
@@ -190,6 +195,7 @@ class Api:
         Returns:
         -------
             NotificationResponseModel: A pydantic model for the notification response
+
         """
         parsed_response = await self._request_and_parse(
             NotificationResponseModel,
@@ -230,6 +236,7 @@ class Api:
         Returns:
         -------
             TripsResponseModel: A pydantic model for the trips response
+
         """
         endpoint = VEHICLE_TRIPS_ENDPOINT.format(
             from_date=from_date,
@@ -257,6 +264,7 @@ class Api:
         Returns:
         -------
             ServicHistoryResponseModel: A pydantic model for the service history response
+
         """
         parsed_response = await self._request_and_parse(
             ServiceHistoryResponseModel, "GET", VEHICLE_SERVICE_HISTORY_ENDPONT, vin=vin

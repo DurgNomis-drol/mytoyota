@@ -298,6 +298,7 @@ class Controller:
         Examples:
         --------
             response = await request_json("GET", "/cars", vin="1234567890")
+
         """
         response = await self.request_raw(method, endpoint, vin, body, params, headers)
 
