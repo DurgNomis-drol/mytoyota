@@ -424,7 +424,7 @@ class VehicleGuidModel(BaseModel):
         alias="serviceConnectStatus"
     )  # TODO unsure what this returns
     services: List[Any]  # TODO unsure what this returns
-    shop_genuine_parts_url: str = Field(alias="shopGenuinePartsUrl")
+    shop_genuine_parts_url: Optional[str] = Field(alias="shopGenuinePartsUrl")
     status: str
     stock_pic_reference: str = Field(alias="stockPicReference")
     subscriber_guid: UUID = Field(alias="subscriberGuid")
