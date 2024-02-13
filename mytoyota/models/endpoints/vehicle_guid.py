@@ -356,6 +356,7 @@ class VehicleGuidModel(BaseModel):
         vehicle_capabilities (List[Any]): The capabilities of the vehicle.
         vehicle_data_consents (Optional[Any]): The vehicle data consents of the vehicle.
         vin (str): The VIN (Vehicle Identification Number) of the vehicle.
+
     """
 
     alerts: List[Any]  # TODO unsure what this returns

@@ -142,6 +142,7 @@ class Vehicle:
             "mildhybrid" if hybrid
             "phev" if plugin hybrid
             "ev" if full electric vehicle
+
         """
         # TODO enum
         # TODO currently guessing until we see a mild hybrid and full EV
@@ -159,6 +160,7 @@ class Vehicle:
         Returns
         -------
             A dashboard
+
         """
         # Always returns a Dashboard object as we can always get the odometer value
         return Dashboard(
@@ -182,6 +184,7 @@ class Vehicle:
           providing location information.
           _Note_ an empty location object can be returned when the Vehicle
           supports location but none is currently available.
+
         """
         return (
             Location(self._endpoint_data["location"])
@@ -253,6 +256,7 @@ class Vehicle:
         -------
             Optional[LockStatus]: The latest lock status of Doors & Windows,
             or None if not supported.
+
         """
         return LockStatus(
             self._endpoint_data["status"] if "status" in self._endpoint_data else None
@@ -283,6 +287,7 @@ class Vehicle:
         Returns:
         -------
             List[Summary]: A list of summaries or empty list if not supported.
+
         """
         if to_date > date.today():  # Future dates not allowed
             to_date = date.today()
@@ -313,6 +318,7 @@ class Vehicle:
         Returns
         -------
             Optional[Summary]: A summary or None if not supported.
+
         """
         summary = await self.get_summary(
             from_date=Arrow.now().date(),
@@ -328,6 +334,7 @@ class Vehicle:
         Returns
         -------
             Optional[Summary]: A summary or None if not supported.
+
         """
         summary = await self.get_summary(
             from_date=Arrow.now().floor("week").date(),
@@ -343,6 +350,7 @@ class Vehicle:
         Returns
         -------
             Optional[Summary]: A summary or None if not supported.
+
         """
         summary = await self.get_summary(
             from_date=Arrow.now().floor("month").date(),
@@ -358,6 +366,7 @@ class Vehicle:
         Returns
         -------
             Optional[Summary]: A summary or None if not supported.
+
         """
         summary = await self.get_summary(
             from_date=Arrow.now().floor("year").date(),
@@ -381,6 +390,7 @@ class Vehicle:
         Returns:
         -------
             Optional[List[Something]]: A list of all trips or None if not supported.
+
         """
         ret: List[Trip] = []
         offset = 0
@@ -421,6 +431,7 @@ class Vehicle:
         Returns:
         -------
             bool
+
         """
         return value
 

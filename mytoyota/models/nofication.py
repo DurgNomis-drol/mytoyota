@@ -31,6 +31,7 @@ class Notification:
         Returns
         -------
             str: Category of notification
+
         """
         return self._notification.category
 
@@ -65,6 +66,7 @@ class Notification:
         Returns
         -------
             str: Notification type
+
         """
         return self._notification.type
 
@@ -75,5 +77,6 @@ class Notification:
         Returns
         -------
             datime: Time of notification
+
         """
         return self._notification.notification_date
