@@ -31,6 +31,7 @@ class Dashboard:
         Parameters
         ----------
             metric: bool:   Report distances in metric(or imperial)
+
         """
         self._electric: Optional[ElectricStatusModel] = electric.payload if electric else None
         self._telemetry: Optional[TelemetryModel] = telemetry.payload if telemetry else None
@@ -54,6 +55,7 @@ class Dashboard:
         Returns
         -------
             The latest odometer reading in the current selected units
+
         """
         if self._telemetry:
             return convert_distance(
@@ -70,6 +72,7 @@ class Dashboard:
         Returns
         -------
             A value as percentage
+
         """
         return self._telemetry.fuel_level if self._telemetry else None
 
@@ -80,6 +83,7 @@ class Dashboard:
         Returns
         -------
             A value as percentage
+
         """
         return self._electric.battery_level if self._electric else None
 
@@ -93,6 +97,7 @@ class Dashboard:
 
             If vehicle is electric returns 0
             If vehicle doesn't support fuel range returns None
+
         """
         if self._electric and self._electric.fuel_range:
             return convert_distance(
@@ -119,6 +124,7 @@ class Dashboard:
 
             If vehicle is fuel only returns None
             If vehicle doesn't support battery range returns None
+
         """
         if self._electric:
             return convert_distance(
@@ -139,6 +145,7 @@ class Dashboard:
 
             If vehicle is fuel only returns 0
             If vehicle doesn't support battery range returns 0
+
         """
         if self._electric:
             return convert_distance(
@@ -161,6 +168,7 @@ class Dashboard:
             ev only == battery_range_with_ac
             hybrid == fuel_range + battery_range_with_ac
             None if not supported
+
         """
         if self._telemetry and self._telemetry.distance_to_empty:
             return convert_distance(
@@ -179,6 +187,7 @@ class Dashboard:
         -------
             A string containing the charging status as reported by the vehicle
             None if vehicle doesn't support charging
+
         """
         return self._electric.charging_status if self._electric else None
 
@@ -191,6 +200,7 @@ class Dashboard:
             The amount of time left
             None if vehicle is not currently charging.
             None if vehicle doesn't support charging
+
         """
         return (
             timedelta(minutes=self._electric.remaining_charge_time)
@@ -206,5 +216,6 @@ class Dashboard:
         -------
             List of latest dashboard warning lights
             _Note_ Not fully understood
+
         """
         return self._health.warning if self._health else None

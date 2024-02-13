@@ -36,6 +36,7 @@ class Summary:
             from_date (date, required): Start date for this summary
             to_date (date, required): End date for this summary
             hdc: (_HDCModel, optional): Hybrid data if available
+
         """
         self._summary: _SummaryBaseModel = summary
         self._hdc: Optional[_HDCModel] = hdc
@@ -80,6 +81,7 @@ class Summary:
         -------
             List[str]: List of countries visited in 'ISO 3166-1 alpha-2' or
                 two-letter country codes format.
+
         """
         return self._summary.countries
 
@@ -90,6 +92,7 @@ class Summary:
         Returns
         -------
             timedelta: The amount of time driving
+
         """
         return timedelta(seconds=self._summary.duration)
 
@@ -100,6 +103,7 @@ class Summary:
         Returns
         -------
             float: Distance covered in the selected metric
+
         """
         return convert_distance(self._distance_unit, "km", self._summary.length / 1000.0)
 
@@ -110,6 +114,7 @@ class Summary:
         Returns
         -------
             timedelta: The amount of time driving using EV or None if not supported
+
         """
         if self._hdc and self._hdc.ev_time:
             return timedelta(seconds=self._hdc.ev_time)
@@ -122,6 +127,7 @@ class Summary:
         Returns
         -------
             timedelta: The distance driven using EV in selected metric or None if not supported
+
         """
         if self._hdc and self._hdc.ev_distance:
             return convert_distance(self._distance_unit, "km", self._hdc.ev_distance / 1000.0)
@@ -134,6 +140,7 @@ class Summary:
         Returns
         -------
             date:         The date the summary started
+
         """
         return self._from_date
 
@@ -144,6 +151,7 @@ class Summary:
         Returns
         -------
             date:         The date the summary ended
+
         """
         return self._to_date
 
@@ -154,6 +162,7 @@ class Summary:
         Returns
         -------
             float: The total amount of fuel consumed in liters if metric or gallons
+
         """
         if self._summary.fuel_consumption:
             return (
@@ -171,6 +180,7 @@ class Summary:
         Returns
         -------
             float: The average amount of fuel consumed in l/100km if metric or mpg
+
         """
         if self._summary.fuel_consumption:
             avg_fuel_consumed = (self._summary.fuel_consumption / self._summary.length) * 100

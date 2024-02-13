@@ -34,6 +34,7 @@ class _SummaryBaseModel(BaseModel):
         Args:
         ----
         other: _SummaryBaseModel: to be added
+
         """
         if other is not None:
             self.length += other.length
@@ -101,6 +102,7 @@ class _HDCModel(BaseModel):
         Args:
         ----
         other: _SummaryBaseModel: to be added
+
         """
         if other is not None:
             self.ev_time = add_with_none(self.ev_time, other.ev_time)
