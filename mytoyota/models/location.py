@@ -31,6 +31,7 @@ class Location:
         Returns
         -------
             Latest latitude or None. _Not always available_.
+
         """
         return self._location.latitude if self._location else None
 
@@ -41,6 +42,7 @@ class Location:
         Returns
         -------
             Latest longitude or None. _Not always available_.
+
         """
         return self._location.longitude if self._location else None
 
@@ -51,6 +53,7 @@ class Location:
         Returns
         -------
            Position aquired timestamp or None. _Not always available_.
+
         """
         return self._location.location_acquisition_datetime if self._location else None
 
@@ -61,5 +64,6 @@ class Location:
         Returns
         -------
           The state of the position or None. _Not always available_.
+
         """
         return self._location.display_name if self._location else None

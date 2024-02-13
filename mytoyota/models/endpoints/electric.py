@@ -22,6 +22,7 @@ class ElectricStatusModel(BaseModel):
         fuel_range (UnitValueModel): The fuel range of the electric vehicle.
         last_update_timestamp (datetime): The timestamp of the last update.
         remaining_charge_time Optional[int]: The time till full in minutes.
+
     """
 
     battery_level: int = Field(alias="batteryLevel")

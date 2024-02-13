@@ -35,6 +35,7 @@ class ServiceHistory:
         Returns
         -------
             date: The date of the service.
+
         """
         return self._service_history.service_date
 
@@ -45,6 +46,7 @@ class ServiceHistory:
         Returns
         -------
             str: Category of notification
+
         """
         return self._service_history.customer_created_record
 
@@ -78,6 +80,7 @@ class ServiceHistory:
         Returns
         -------
             Any: Additional notes about the service
+
         """
         return self._service_history.notes
 
@@ -88,6 +91,7 @@ class ServiceHistory:
         Returns
         -------
             Any: The operations performed during the service
+
         """
         return self._service_history.operations_performed
 
@@ -98,6 +102,7 @@ class ServiceHistory:
         Returns
         -------
             Any: The RO (Repair Order) number associated with the service
+
         """
         return self._service_history.ro_number
 
@@ -108,6 +113,7 @@ class ServiceHistory:
         Returns
         -------
             str: The category of the service.
+
         """
         return self._service_history.service_category
 
@@ -118,6 +124,7 @@ class ServiceHistory:
         Returns
         -------
             str: The service provider
+
         """
         return self._service_history.service_provider
 
@@ -128,5 +135,6 @@ class ServiceHistory:
         Returns
         -------
             Any: The dealer that performed the service
+
         """
         return self._service_history.servicing_dealer
