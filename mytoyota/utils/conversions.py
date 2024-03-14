@@ -1,20 +1,18 @@
 """Conversion utilities used."""
 import logging
 
-import mytoyota.utils.logging.logging_config  # noqa # pylint: disable=unused-import
-
 _LOGGER: logging.Logger = logging.getLogger(__name__)
 
 
 def convert_to_miles(kilometers: float) -> float:
     """Convert kilometers to miles."""
-    _LOGGER.debug(f"Converting {kilometers} to miles...")
+    _LOGGER.debug("Converting %s kilometers to miles...", kilometers)
     return kilometers * 0.621371192
 
 
 def convert_to_km(miles: float) -> float:
     """Convert kilometers to miles."""
-    _LOGGER.debug(f"Converting {miles} to kilometers...")
+    _LOGGER.debug("Converting %s miles to kilometers...", miles)
     return miles * 1.60934
 
 
@@ -29,11 +27,11 @@ def convert_distance(convert_to: str, convert_from: str, value: float, decimal_p
 
 def convert_to_liter_per_100_miles(liters: float) -> float:
     """Convert liters per 100 km to liters per 100 miles."""
-    _LOGGER.debug("Converting to L/100miles...")
+    _LOGGER.debug("Converting %s liters to L/100miles...", liters)
     return round(liters * 1.609344, 4)
 
 
 def convert_to_mpg(liters_per_100_km: float) -> float:
     """Convert to miles per UK gallon (MPG)."""
-    _LOGGER.debug("Converting to MPG...")
+    _LOGGER.debug("Converting %s L/100km to MPG...", liters_per_100_km)
     return round(282.5 / liters_per_100_km, 4) if liters_per_100_km > 0.0 else 0.0

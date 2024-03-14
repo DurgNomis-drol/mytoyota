@@ -4,7 +4,6 @@ import logging
 from datetime import date, datetime, timezone
 from uuid import uuid4
 
-import mytoyota.utils.logging.logging_config  # noqa # pylint: disable=unused-import
 from mytoyota.const import (
     VEHICLE_ASSOCIATION_ENDPOINT,
     VEHICLE_GLOBAL_REMOTE_ELECTRIC_STATUS_ENDPOINT,
