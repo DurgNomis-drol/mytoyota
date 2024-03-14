@@ -22,7 +22,7 @@ from mytoyota.models.service_history import ServiceHistory
 from mytoyota.models.summary import Summary, SummaryType
 from mytoyota.models.trips import Trip
 from mytoyota.utils.helpers import add_with_none
-from mytoyota.utils.logging.log_utils import censor_all
+from mytoyota.utils.log_utils import censor_all
 
 _LOGGER: logging.Logger = logging.getLogger(__name__)
 
