@@ -1,16 +1,13 @@
 """Simple test of new API Changes."""
 import asyncio
 import json
-import logging
 import pprint
 from datetime import date, timedelta
 
-import mytoyota.utils.logging.logging_config  # noqa # pylint: disable=unused-import
 from mytoyota.client import MyT
 from mytoyota.models.summary import SummaryType
 
 pp = pprint.PrettyPrinter(indent=4)
-_LOGGER = logging.getLogger(__name__)
 
 
 # Set your username and password in a file on top level called "credentials.json" in the format:

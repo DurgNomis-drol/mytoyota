@@ -11,7 +11,6 @@ import hishel
 import httpx
 import jwt
 
-import mytoyota.utils.logging.logging_config  # noqa # pylint: disable=unused-import
 from mytoyota.const import (
     ACCESS_TOKEN_URL,
     API_BASE_URL,
@@ -24,7 +23,7 @@ from mytoyota.exceptions import (
     ToyotaInvalidUsernameError,
     ToyotaLoginError,
 )
-from mytoyota.utils.logging.log_utils import format_httpx_response
+from mytoyota.utils.log_utils import format_httpx_response
 
 _LOGGER: logging.Logger = logging.getLogger(__name__)
 
