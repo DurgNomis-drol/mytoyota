@@ -115,7 +115,7 @@ class _DcmModel(BaseModel):  # Data connection model
     grade: str = Field(alias="dcmGrade")
     car_model_year: str = Field(alias="dcmModelYear")
     supplier: str = Field(alias="dcmSupplier")
-    supplier_name: str = Field(alias="dcmSupplierName")
+    supplier_name: Optional[str] = Field(alias="dcmSupplierName", default=None)
     euicc_id: str = Field(alias="euiccid")
     hardware_type: Optional[str] = Field(alias="hardwareType")
     vehicle_unit_terminal_number: Optional[str] = Field(alias="vehicleUnitTerminalNumber")
