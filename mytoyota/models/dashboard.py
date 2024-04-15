@@ -126,7 +126,7 @@ class Dashboard:
             If vehicle doesn't support battery range returns None
 
         """
-        if self._electric:
+        if self._electric and self._electric.ev_range:
             return convert_distance(
                 self._distance_unit,
                 self._electric.ev_range.unit,
@@ -147,7 +147,7 @@ class Dashboard:
             If vehicle doesn't support battery range returns 0
 
         """
-        if self._electric:
+        if self._electric and self._electric.ev_range_with_ac:
             return convert_distance(
                 self._distance_unit,
                 self._electric.ev_range_with_ac.unit,
