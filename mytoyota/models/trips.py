@@ -167,6 +167,20 @@ class Trip:
         return 0.0
 
     @property
+    def score(self) -> float:
+        """The (hybrid) score for the trip.
+
+        Returns
+        -------
+            float: The hybrid score for the trip
+
+        """
+        if self._trip.scores and self._trip.scores.global_:
+            return self._trip.scores.global_
+
+        return 0.0
+
+    @property
     def route(self) -> Optional[List[Tuple[float, float]]]:
         """The route taken.
 
