@@ -61,7 +61,7 @@ class NotificationResponseModel(BaseModel):
 
     """
 
-    guid: UUID
+    guid: UUID = None
     status_code: int = Field(alias="statusCode")
     headers: _HeadersModel
     body: str
