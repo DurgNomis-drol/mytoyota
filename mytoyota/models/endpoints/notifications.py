@@ -43,7 +43,7 @@ class NotificationModel(BaseModel):
 
 
 class _PayloadItemModel(BaseModel):
-    vin: str
+    vin: str = None
     notifications: List[NotificationModel]
 
 
