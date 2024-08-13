@@ -43,7 +43,7 @@ class NotificationModel(BaseModel):
 
 
 class _PayloadItemModel(BaseModel):
-    vin: str
+    vin: str = None
     notifications: List[NotificationModel]
 
 
@@ -61,7 +61,7 @@ class NotificationResponseModel(BaseModel):
 
     """
 
-    guid: UUID
+    guid: UUID = None
     status_code: int = Field(alias="statusCode")
     headers: _HeadersModel
     body: str
