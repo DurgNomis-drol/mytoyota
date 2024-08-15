@@ -111,12 +111,12 @@ class _LinksModel(BaseModel):
 
 class _DcmModel(BaseModel):  # Data connection model
     country_code: Optional[str] = Field(alias="countryCode", default=None)
-    destination: str = Field(alias="dcmDestination")
-    grade: str = Field(alias="dcmGrade")
-    car_model_year: str = Field(alias="dcmModelYear")
-    supplier: str = Field(alias="dcmSupplier")
+    destination: str = Field(alias="dcmDestination", default=None)
+    grade: str = Field(alias="dcmGrade", default=None)
+    car_model_year: str = Field(alias="dcmModelYear", default=None)
+    supplier: str = Field(alias="dcmSupplier", default=None)
     supplier_name: Optional[str] = Field(alias="dcmSupplierName", default=None)
-    euicc_id: str = Field(alias="euiccid")
+    euicc_id: str = Field(alias="euiccid", default=None)
     hardware_type: Optional[str] = Field(alias="hardwareType")
     vehicle_unit_terminal_number: Optional[str] = Field(alias="vehicleUnitTerminalNumber")
 
