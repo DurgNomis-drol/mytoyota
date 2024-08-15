@@ -2,17 +2,18 @@
 from datetime import datetime
 from typing import List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
 from mytoyota.models.endpoints.common import StatusModel, UnitValueModel
+from mytoyota.utils.models import CustomBaseModel
 
 
-class _ValueStatusModel(BaseModel):
-    value: str
-    status: int
+class _ValueStatusModel(CustomBaseModel):
+    value: Optional[str]
+    status: Optional[int]
 
 
-class SectionModel(BaseModel):
+class SectionModel(CustomBaseModel):
     """Model representing the status category of a vehicle.
 
     Attributes
@@ -22,11 +23,11 @@ class SectionModel(BaseModel):
 
     """
 
-    section: str
-    values: List[_ValueStatusModel]
+    section: Optional[str]
+    values: Optional[List[_ValueStatusModel]]
 
 
-class VehicleStatusModel(BaseModel):
+class VehicleStatusModel(CustomBaseModel):
     """Model representing the status category of a vehicle.
 
     Attributes
@@ -38,18 +39,18 @@ class VehicleStatusModel(BaseModel):
 
     """
 
-    category: str
-    display_order: int = Field(alias="displayOrder")
-    sections: List[SectionModel]
+    category: Optional[str]
+    display_order: Optional[int] = Field(alias="displayOrder")
+    sections: Optional[List[SectionModel]]
 
 
-class _TelemetryModel(BaseModel):
+class _TelemetryModel(CustomBaseModel):
     fugage: Optional[UnitValueModel] = None
     rage: Optional[UnitValueModel] = None
-    odo: UnitValueModel
+    odo: Optional[UnitValueModel]
 
 
-class RemoteStatusModel(BaseModel):
+class RemoteStatusModel(CustomBaseModel):
     """Model representing the remote status of a vehicle.
 
     Attributes
@@ -64,13 +65,13 @@ class RemoteStatusModel(BaseModel):
 
     """
 
-    vehicle_status: List[VehicleStatusModel] = Field(alias="vehicleStatus")
-    telemetry: _TelemetryModel
-    occurrence_date: datetime = Field(alias="occurrenceDate")
-    caution_overall_count: int = Field(alias="cautionOverallCount")
-    latitude: float
-    longitude: float
-    location_acquisition_datetime: datetime = Field(alias="locationAcquisitionDatetime")
+    vehicle_status: Optional[List[VehicleStatusModel]] = Field(alias="vehicleStatus")
+    telemetry: Optional[_TelemetryModel]
+    occurrence_date: Optional[datetime] = Field(alias="occurrenceDate")
+    caution_overall_count: Optional[int] = Field(alias="cautionOverallCount")
+    latitude: Optional[float]
+    longitude: Optional[float]
+    location_acquisition_datetime: Optional[datetime] = Field(alias="locationAcquisitionDatetime")
 
 
 class RemoteStatusResponseModel(StatusModel):

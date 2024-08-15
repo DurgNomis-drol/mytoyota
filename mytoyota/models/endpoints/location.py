@@ -2,19 +2,20 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
 from mytoyota.models.endpoints.common import StatusModel
+from mytoyota.utils.models import CustomBaseModel
 
 
-class _VehicleLocationModel(BaseModel):
-    display_name: str = Field(alias="displayName")
-    latitude: float
-    location_acquisition_datetime: datetime = Field(alias="locationAcquisitionDatetime")
-    longitude: float
+class _VehicleLocationModel(CustomBaseModel):
+    display_name: Optional[str] = Field(alias="displayName")
+    latitude: Optional[float]
+    location_acquisition_datetime: Optional[datetime] = Field(alias="locationAcquisitionDatetime")
+    longitude: Optional[float]
 
 
-class LocationModel(BaseModel):
+class LocationModel(CustomBaseModel):
     r"""Model representing the location of a vehicle.
 
     Attributes

@@ -3,12 +3,13 @@
 from datetime import date
 from typing import Any, List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
 from mytoyota.models.endpoints.common import StatusModel
+from mytoyota.utils.models import CustomBaseModel
 
 
-class ServiceHistoryModel(BaseModel):
+class ServiceHistoryModel(CustomBaseModel):
     """Represents a service history record.
 
     Attributes
@@ -27,20 +28,20 @@ class ServiceHistoryModel(BaseModel):
 
     """
 
-    customer_created_record: bool = Field(alias="customerCreatedRecord")
+    customer_created_record: Optional[bool] = Field(alias="customerCreatedRecord")
     mileage: Optional[int] = None
     notes: Any
     operations_performed: Any = Field(alias="operationsPerformed")
     ro_number: Any = Field(alias="roNumber")
-    service_category: str = Field(alias="serviceCategory")
-    service_date: date = Field(alias="serviceDate")
-    service_history_id: str = Field(alias="serviceHistoryId")
-    service_provider: str = Field(alias="serviceProvider")
+    service_category: Optional[str] = Field(alias="serviceCategory")
+    service_date: Optional[date] = Field(alias="serviceDate")
+    service_history_id: Optional[str] = Field(alias="serviceHistoryId")
+    service_provider: Optional[str] = Field(alias="serviceProvider")
     servicing_dealer: Any = Field(alias="servicingDealer")
     unit: Optional[str] = None
 
 
-class ServiceHistoriesModel(BaseModel):
+class ServiceHistoriesModel(CustomBaseModel):
     r"""Model representing a list of service histories.
 
     Attributes
@@ -50,7 +51,7 @@ class ServiceHistoriesModel(BaseModel):
 
     """
 
-    service_histories: List[Optional[ServiceHistoryModel]] = Field(
+    service_histories: Optional[List[Optional[ServiceHistoryModel]]] = Field(
         alias="serviceHistories", default=[]
     )
 
