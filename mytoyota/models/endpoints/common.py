@@ -1,10 +1,12 @@
 """Toyota Connected Services API - Common Endpoint Models."""
 from typing import List, Optional, Union
 
-from pydantic import BaseModel, Field
+from pydantic import Field
+
+from mytoyota.utils.models import CustomBaseModel
 
 
-class UnitValueModel(BaseModel):
+class UnitValueModel(CustomBaseModel):
     """Model representing a unit and a value.
 
     Can be reused several times within other models.
@@ -20,17 +22,17 @@ class UnitValueModel(BaseModel):
     value: Optional[float] = None
 
 
-class _MessageModel(BaseModel):
-    description: str
+class _MessageModel(CustomBaseModel):
+    description: Optional[str]
     detailed_description: Optional[str] = Field(alias="detailedDescription", default=None)
-    response_code: str = Field(alias="responseCode")
+    response_code: Optional[str] = Field(alias="responseCode")
 
 
-class _MessagesModel(BaseModel):
-    messages: List[_MessageModel]
+class _MessagesModel(CustomBaseModel):
+    messages: Optional[List[_MessageModel]]
 
 
-class StatusModel(BaseModel):
+class StatusModel(CustomBaseModel):
     """Model representing the status of an endpoint.
 
     Attributes
@@ -43,7 +45,7 @@ class StatusModel(BaseModel):
 
     """
 
-    status: Union[str, _MessagesModel]
+    status: Optional[Union[str, _MessagesModel]]
     code: Optional[int] = None
-    errors: Optional[List] = []
+    errors: Optional[List] = None
     message: Optional[str] = None

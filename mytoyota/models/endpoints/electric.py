@@ -2,12 +2,13 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
 from mytoyota.models.endpoints.common import StatusModel, UnitValueModel
+from mytoyota.utils.models import CustomBaseModel
 
 
-class ElectricStatusModel(BaseModel):
+class ElectricStatusModel(CustomBaseModel):
     r"""Model representing the status of an electric vehicle.
 
     Attributes
@@ -25,16 +26,16 @@ class ElectricStatusModel(BaseModel):
 
     """
 
-    battery_level: int = Field(alias="batteryLevel")
+    battery_level: Optional[int] = Field(alias="batteryLevel")
     can_set_next_charging_event: Optional[bool] = Field(
         alias="canSetNextChargingEvent", default=None
     )
-    charging_status: str = Field(alias="chargingStatus")
+    charging_status: Optional[str] = Field(alias="chargingStatus")
     ev_range: Optional[UnitValueModel] = Field(alias="evRange")
     ev_range_with_ac: Optional[UnitValueModel] = Field(alias="evRangeWithAc")
     fuel_level: Optional[int] = Field(alias="fuelLevel", default=None)
     fuel_range: Optional[UnitValueModel] = Field(alias="fuelRange", default=None)
-    last_update_timestamp: datetime = Field(alias="lastUpdateTimestamp")
+    last_update_timestamp: Optional[datetime] = Field(alias="lastUpdateTimestamp")
     remaining_charge_time: Optional[int] = Field(
         alias="remainingChargeTime",
         default=None,

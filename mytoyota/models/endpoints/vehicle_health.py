@@ -2,12 +2,13 @@
 from datetime import datetime
 from typing import Any, List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
 from mytoyota.models.endpoints.common import StatusModel
+from mytoyota.utils.models import CustomBaseModel
 
 
-class VehicleHealthModel(BaseModel):
+class VehicleHealthModel(CustomBaseModel):
     r"""Model representing the health status of a vehicle.
 
     Attributes
@@ -23,9 +24,9 @@ class VehicleHealthModel(BaseModel):
     quantity_of_eng_oil_icon: Optional[List[Any]] = Field(
         alias="quantityOfEngOilIcon"
     )  # TODO unsure what this returns
-    vin: str
+    vin: Optional[str]
     warning: Optional[List[Any]]  # TODO unsure what this returns
-    wng_last_upd_time: datetime = Field(alias="wnglastUpdTime")
+    wng_last_upd_time: Optional[datetime] = Field(alias="wnglastUpdTime")
 
 
 class VehicleHealthResponseModel(StatusModel):

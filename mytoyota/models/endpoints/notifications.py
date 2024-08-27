@@ -3,14 +3,16 @@ from datetime import datetime
 from typing import List, Optional, Union
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import Field
+
+from mytoyota.utils.models import CustomBaseModel
 
 
-class _HeadersModel(BaseModel):
-    content_type: str = Field(..., alias="Content-Type")
+class _HeadersModel(CustomBaseModel):
+    content_type: Optional[str] = Field(..., alias="Content-Type")
 
 
-class NotificationModel(BaseModel):
+class NotificationModel(CustomBaseModel):
     """Model representing a notification.
 
     Attributes
@@ -29,25 +31,25 @@ class NotificationModel(BaseModel):
 
     """
 
-    message_id: str = Field(alias="messageId")
-    vin: str
-    notification_date: datetime = Field(alias="notificationDate")
-    is_read: bool = Field(alias="isRead")
+    message_id: Optional[str] = Field(alias="messageId")
+    vin: Optional[str]
+    notification_date: Optional[datetime] = Field(alias="notificationDate")
+    is_read: Optional[bool] = Field(alias="isRead")
     read_timestamp: Optional[datetime] = Field(alias="readTimestamp", default=None)
-    icon_url: str = Field(alias="iconUrl")
-    message: str
+    icon_url: Optional[str] = Field(alias="iconUrl")
+    message: Optional[str]
     status: Optional[Union[int, str]] = None
-    type: str
-    category: str
-    display_category: str = Field(alias="displayCategory")
+    type: Optional[str]
+    category: Optional[str]
+    display_category: Optional[str] = Field(alias="displayCategory")
 
 
-class _PayloadItemModel(BaseModel):
-    vin: str = None
-    notifications: List[NotificationModel]
+class _PayloadItemModel(CustomBaseModel):
+    vin: Optional[str] = None
+    notifications: Optional[List[NotificationModel]]
 
 
-class NotificationResponseModel(BaseModel):
+class NotificationResponseModel(CustomBaseModel):
     r"""Model representing a notification response.
 
     Attributes
@@ -61,8 +63,8 @@ class NotificationResponseModel(BaseModel):
 
     """
 
-    guid: UUID = None
-    status_code: int = Field(alias="statusCode")
-    headers: _HeadersModel
-    body: str
+    guid: Optional[UUID] = None
+    status_code: Optional[int] = Field(alias="statusCode")
+    headers: Optional[_HeadersModel]
+    body: Optional[str]
     payload: Optional[List[_PayloadItemModel]] = None

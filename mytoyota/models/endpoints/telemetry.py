@@ -2,12 +2,13 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
 from mytoyota.models.endpoints.common import StatusModel, UnitValueModel
+from mytoyota.utils.models import CustomBaseModel
 
 
-class TelemetryModel(BaseModel):
+class TelemetryModel(CustomBaseModel):
     r"""Model representing telemetry data.
 
     Attributes
@@ -21,11 +22,11 @@ class TelemetryModel(BaseModel):
 
     """
 
-    fuel_type: str = Field(alias="fuelType")
-    odometer: UnitValueModel
+    fuel_type: Optional[str] = Field(alias="fuelType")
+    odometer: Optional[UnitValueModel]
     fuel_level: Optional[int] = Field(alias="fuelLevel", default=None)
     distance_to_empty: Optional[UnitValueModel] = Field(alias="distanceToEmpty", default=None)
-    timestamp: datetime
+    timestamp: Optional[datetime]
 
 
 class TelemetryResponseModel(StatusModel):
