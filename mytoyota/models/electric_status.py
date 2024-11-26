@@ -1,6 +1,6 @@
 """models for vehicle electric status."""
 from datetime import date
-from typing import Any, Optional
+from typing import Optional
 
 from mytoyota.models.endpoints.electric import ElectricStatusModel
 from mytoyota.utils.conversions import convert_distance
@@ -15,7 +15,9 @@ class ElectricStatus:
         metric: bool = True,
     ):
         """Initialise ElectricStatus."""
-        self._electric_status: Optional[ElectricStatusModel] = electric_status.payload if electric_status else None
+        self._electric_status: Optional[ElectricStatusModel] = (
+            electric_status.payload if electric_status else None
+        )
         self._distance_unit: str = "km" if metric else "mi"
 
     def __repr__(self):
@@ -57,9 +59,10 @@ class ElectricStatus:
         Returns
         -------
             int: Remaining time to full charge in minutes.
-        """            
+
+        """
         return self._electric_status.remaining_charge_time
-    
+
     @property
     def ev_range(self) -> Optional[float]:
         """Electric vehicle range.
@@ -76,7 +79,7 @@ class ElectricStatus:
                 self._electric_status.ev_range.value,
             )
         return None
-    
+
     @property
     def ev_range_with_ac(self) -> Optional[float]:
         """Electric vehicle range with AC.
@@ -93,7 +96,7 @@ class ElectricStatus:
                 self._electric_status.ev_range_with_ac.value,
             )
         return None
-    
+
     @property
     def can_set_next_charging_event(self) -> Optional[bool]:
         """Can set next charging event.
@@ -104,7 +107,7 @@ class ElectricStatus:
 
         """
         return self._electric_status.can_set_next_charging_event if self._electric_status else None
-    
+
     @property
     def last_update_timestamp(self) -> Optional[date]:
         """Last update timestamp.
