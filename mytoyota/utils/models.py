@@ -1,11 +1,12 @@
 """Utilities for manipulating or extend pydantic models."""
-from pydantic import BaseModel, root_validator
+from pydantic import model_validator, BaseModel
 
 
 class CustomBaseModel(BaseModel):
     """Model that automatically returns values that cannot be parsed correctly as 'None' value."""
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
+    @classmethod
     def invalid_to_none(cls, values: dict[str, object]) -> dict[str, object]:  # noqa: N805
         """Pydantic Root validator parsing config."""
         validated_values: dict[str, object] = {}

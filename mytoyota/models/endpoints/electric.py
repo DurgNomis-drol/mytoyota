@@ -26,16 +26,16 @@ class ElectricStatusModel(CustomBaseModel):
 
     """
 
-    battery_level: Optional[int] = Field(alias="batteryLevel")
+    battery_level: Optional[int] = Field(None, alias="batteryLevel")
     can_set_next_charging_event: Optional[bool] = Field(
         alias="canSetNextChargingEvent", default=None
     )
-    charging_status: Optional[str] = Field(alias="chargingStatus")
-    ev_range: Optional[UnitValueModel] = Field(alias="evRange")
-    ev_range_with_ac: Optional[UnitValueModel] = Field(alias="evRangeWithAc")
+    charging_status: Optional[str] = Field(None, alias="chargingStatus")
+    ev_range: Optional[UnitValueModel] = Field(None, alias="evRange")
+    ev_range_with_ac: Optional[UnitValueModel] = Field(None, alias="evRangeWithAc")
     fuel_level: Optional[int] = Field(alias="fuelLevel", default=None)
     fuel_range: Optional[UnitValueModel] = Field(alias="fuelRange", default=None)
-    last_update_timestamp: Optional[datetime] = Field(alias="lastUpdateTimestamp")
+    last_update_timestamp: Optional[datetime] = Field(None, alias="lastUpdateTimestamp")
     remaining_charge_time: Optional[int] = Field(
         alias="remainingChargeTime",
         default=None,

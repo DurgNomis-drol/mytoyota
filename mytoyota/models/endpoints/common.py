@@ -23,13 +23,13 @@ class UnitValueModel(CustomBaseModel):
 
 
 class _MessageModel(CustomBaseModel):
-    description: Optional[str]
+    description: Optional[str] = None
     detailed_description: Optional[str] = Field(alias="detailedDescription", default=None)
-    response_code: Optional[str] = Field(alias="responseCode")
+    response_code: Optional[str] = Field(None, alias="responseCode")
 
 
 class _MessagesModel(CustomBaseModel):
-    messages: Optional[List[_MessageModel]]
+    messages: Optional[List[_MessageModel]] = None
 
 
 class StatusModel(CustomBaseModel):
@@ -45,7 +45,7 @@ class StatusModel(CustomBaseModel):
 
     """
 
-    status: Optional[Union[str, _MessagesModel]]
+    status: Optional[Union[str, _MessagesModel]] = None
     code: Optional[int] = None
     errors: Optional[List] = None
     message: Optional[str] = None

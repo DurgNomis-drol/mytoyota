@@ -9,8 +9,8 @@ from mytoyota.utils.models import CustomBaseModel
 
 
 class _ValueStatusModel(CustomBaseModel):
-    value: Optional[str]
-    status: Optional[int]
+    value: Optional[str] = None
+    status: Optional[int] = None
 
 
 class SectionModel(CustomBaseModel):
@@ -23,8 +23,8 @@ class SectionModel(CustomBaseModel):
 
     """
 
-    section: Optional[str]
-    values: Optional[List[_ValueStatusModel]]
+    section: Optional[str] = None
+    values: Optional[List[_ValueStatusModel]] = None
 
 
 class VehicleStatusModel(CustomBaseModel):
@@ -39,15 +39,15 @@ class VehicleStatusModel(CustomBaseModel):
 
     """
 
-    category: Optional[str]
-    display_order: Optional[int] = Field(alias="displayOrder")
-    sections: Optional[List[SectionModel]]
+    category: Optional[str] = None
+    display_order: Optional[int] = Field(None, alias="displayOrder")
+    sections: Optional[List[SectionModel]] = None
 
 
 class _TelemetryModel(CustomBaseModel):
     fugage: Optional[UnitValueModel] = None
     rage: Optional[UnitValueModel] = None
-    odo: Optional[UnitValueModel]
+    odo: Optional[UnitValueModel] = None
 
 
 class RemoteStatusModel(CustomBaseModel):
@@ -65,13 +65,13 @@ class RemoteStatusModel(CustomBaseModel):
 
     """
 
-    vehicle_status: Optional[List[VehicleStatusModel]] = Field(alias="vehicleStatus")
-    telemetry: Optional[_TelemetryModel]
-    occurrence_date: Optional[datetime] = Field(alias="occurrenceDate")
-    caution_overall_count: Optional[int] = Field(alias="cautionOverallCount")
-    latitude: Optional[float]
-    longitude: Optional[float]
-    location_acquisition_datetime: Optional[datetime] = Field(alias="locationAcquisitionDatetime")
+    vehicle_status: Optional[List[VehicleStatusModel]] = Field(None, alias="vehicleStatus")
+    telemetry: Optional[_TelemetryModel] = None
+    occurrence_date: Optional[datetime] = Field(None, alias="occurrenceDate")
+    caution_overall_count: Optional[int] = Field(None, alias="cautionOverallCount")
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    location_acquisition_datetime: Optional[datetime] = Field(None, alias="locationAcquisitionDatetime")
 
 
 class RemoteStatusResponseModel(StatusModel):

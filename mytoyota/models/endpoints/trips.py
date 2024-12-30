@@ -13,16 +13,16 @@ from mytoyota.utils.models import CustomBaseModel
 
 
 class _SummaryBaseModel(CustomBaseModel):
-    length: Optional[int]
-    duration: Optional[int]
-    duration_idle: Optional[int] = Field(alias="durationIdle")
-    countries: Optional[List[str]]
-    max_speed: Optional[float] = Field(alias="maxSpeed")
-    average_speed: Optional[float] = Field(alias="averageSpeed")
-    length_overspeed: Optional[int] = Field(alias="lengthOverspeed")
-    duration_overspeed: Optional[int] = Field(alias="durationOverspeed")
-    length_highway: Optional[int] = Field(alias="lengthHighway")
-    duration_highway: Optional[int] = Field(alias="durationHighway")
+    length: Optional[int] = None
+    duration: Optional[int] = None
+    duration_idle: Optional[int] = Field(None, alias="durationIdle")
+    countries: Optional[List[str]] = None
+    max_speed: Optional[float] = Field(None, alias="maxSpeed")
+    average_speed: Optional[float] = Field(None, alias="averageSpeed")
+    length_overspeed: Optional[int] = Field(None, alias="lengthOverspeed")
+    duration_overspeed: Optional[int] = Field(None, alias="durationOverspeed")
+    length_highway: Optional[int] = Field(None, alias="lengthHighway")
+    duration_highway: Optional[int] = Field(None, alias="durationHighway")
     fuel_consumption: Optional[float] = Field(
         alias="fuelConsumption", default=None
     )  # Electric cars might not use fuel. Milliliters.
@@ -64,13 +64,13 @@ class _SummaryModel(_SummaryBaseModel):
 
 
 class _CoachingMsgParamModel(CustomBaseModel):
-    name: Optional[str]
-    unit: Optional[str]
-    value: Optional[int]
+    name: Optional[str] = None
+    unit: Optional[str] = None
+    value: Optional[int] = None
 
 
 class _BehaviourModel(CustomBaseModel):
-    ts: Optional[datetime]
+    ts: Optional[datetime] = None
     type: Optional[str] = None
     coaching_msg_params: Optional[List[_CoachingMsgParamModel]] = Field(
         alias="coachingMsgParams", default=None
@@ -119,19 +119,19 @@ class _HDCModel(CustomBaseModel):
 
 
 class _RouteModel(CustomBaseModel):
-    lat: Optional[float] = Field(repr=False)
-    lon: Optional[float]
-    overspeed: Optional[bool]
-    highway: Optional[bool]
-    index_in_points: Optional[int] = Field(alias="indexInPoints")
+    lat: Optional[float] = Field(None, repr=False)
+    lon: Optional[float] = None
+    overspeed: Optional[bool] = None
+    highway: Optional[bool] = None
+    index_in_points: Optional[int] = Field(None, alias="indexInPoints")
     mode: Optional[int] = None
-    is_ev: Optional[bool] = Field(alias="isEv")
+    is_ev: Optional[bool] = Field(None, alias="isEv")
 
 
 class _TripModel(CustomBaseModel):
-    id: Optional[UUID]
-    category: Optional[int]
-    summary: Optional[_SummaryModel]
+    id: Optional[UUID] = None
+    category: Optional[int] = None
+    summary: Optional[_SummaryModel] = None
     scores: Optional[_ScoresModel] = None
     behaviours: Optional[List[_BehaviourModel]] = None
     hdc: Optional[_HDCModel] = None
@@ -139,41 +139,41 @@ class _TripModel(CustomBaseModel):
 
 
 class _HistogramModel(CustomBaseModel):
-    year: Optional[int]
-    month: Optional[int]
-    day: Optional[int]
-    summary: Optional[_SummaryBaseModel]
+    year: Optional[int] = None
+    month: Optional[int] = None
+    day: Optional[int] = None
+    summary: Optional[_SummaryBaseModel] = None
     scores: Optional[_ScoresModel] = None
     hdc: Optional[_HDCModel] = None
 
 
 class _SummaryItemModel(CustomBaseModel):
-    year: Optional[int]
-    month: Optional[int]
-    summary: Optional[_SummaryBaseModel]
+    year: Optional[int] = None
+    month: Optional[int] = None
+    summary: Optional[_SummaryBaseModel] = None
     scores: Optional[_ScoresModel] = None
     hdc: Optional[_HDCModel] = None
     histograms: List[_HistogramModel]
 
 
 class _PaginationModel(CustomBaseModel):
-    limit: Optional[int]
-    offset: Optional[int]
+    limit: Optional[int] = None
+    offset: Optional[int] = None
     previous_offset: Optional[Any] = Field(alias="previousOffset", default=None)
     next_offset: Optional[int] = Field(alias="nextOffset", default=None)
-    current_page: Optional[int] = Field(alias="currentPage")
-    total_count: Optional[int] = Field(alias="totalCount")
-    page_count: Optional[int] = Field(alias="pageCount")
+    current_page: Optional[int] = Field(None, alias="currentPage")
+    total_count: Optional[int] = Field(None, alias="totalCount")
+    page_count: Optional[int] = Field(None, alias="pageCount")
 
 
 class _SortedByItemModel(CustomBaseModel):
-    field: Optional[str]
-    order: Optional[str]
+    field: Optional[str] = None
+    order: Optional[str] = None
 
 
 class _MetadataModel(CustomBaseModel):
-    pagination: Optional[_PaginationModel]
-    sorted_by: Optional[List[_SortedByItemModel]] = Field(alias="sortedBy")
+    pagination: Optional[_PaginationModel] = None
+    sorted_by: Optional[List[_SortedByItemModel]] = Field(None, alias="sortedBy")
 
 
 class TripsModel(CustomBaseModel):
@@ -194,7 +194,7 @@ class TripsModel(CustomBaseModel):
 
     from_date: Optional[date] = Field(..., alias="from")
     to_date: Optional[date] = Field(..., alias="to")
-    trips: Optional[List[_TripModel]]
+    trips: Optional[List[_TripModel]] = None
     summary: Optional[List[_SummaryItemModel]] = None
     metadata: Optional[_MetadataModel] = Field(..., alias="_metadata")
     route: Optional[_RouteModel] = None

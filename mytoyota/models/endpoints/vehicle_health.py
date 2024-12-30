@@ -22,11 +22,11 @@ class VehicleHealthModel(CustomBaseModel):
     """
 
     quantity_of_eng_oil_icon: Optional[List[Any]] = Field(
-        alias="quantityOfEngOilIcon"
+        None, alias="quantityOfEngOilIcon"
     )  # TODO unsure what this returns
-    vin: Optional[str]
-    warning: Optional[List[Any]]  # TODO unsure what this returns
-    wng_last_upd_time: Optional[datetime] = Field(alias="wnglastUpdTime")
+    vin: Optional[str] = None
+    warning: Optional[List[Any]] = None  # TODO unsure what this returns
+    wng_last_upd_time: Optional[datetime] = Field(None, alias="wnglastUpdTime")
 
 
 class VehicleHealthResponseModel(StatusModel):

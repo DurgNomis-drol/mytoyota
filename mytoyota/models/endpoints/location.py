@@ -9,10 +9,10 @@ from mytoyota.utils.models import CustomBaseModel
 
 
 class _VehicleLocationModel(CustomBaseModel):
-    display_name: Optional[str] = Field(alias="displayName")
-    latitude: Optional[float]
-    location_acquisition_datetime: Optional[datetime] = Field(alias="locationAcquisitionDatetime")
-    longitude: Optional[float]
+    display_name: Optional[str] = Field(None, alias="displayName")
+    latitude: Optional[float] = None
+    location_acquisition_datetime: Optional[datetime] = Field(None, alias="locationAcquisitionDatetime")
+    longitude: Optional[float] = None
 
 
 class LocationModel(CustomBaseModel):
