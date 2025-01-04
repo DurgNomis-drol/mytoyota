@@ -51,6 +51,8 @@ async def get_information():
 
         # Dashboard Information
         pp.pprint(f"Dashboard: {car.dashboard}")
+        # Electric Status Information
+        pp.pprint(f"Electric Status: {car.electric_status}")
         # Location Information
         pp.pprint(f"Location: {car.location}")
         # Lock Status

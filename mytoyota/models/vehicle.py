@@ -12,6 +12,7 @@ from arrow import Arrow
 
 from mytoyota.api import Api
 from mytoyota.models.dashboard import Dashboard
+from mytoyota.models.electric_status import ElectricStatus
 from mytoyota.models.endpoints.vehicle_guid import VehicleGuidModel
 from mytoyota.models.location import Location
 from mytoyota.models.lock_status import LockStatus
@@ -168,6 +169,21 @@ class Vehicle:
             if "health_status" in self._endpoint_data
             else None,
             self._metric,
+        )
+
+    @property
+    def electric_status(self) -> Optional[ElectricStatus]:
+        """Returns the Electric Status of the vehicle.
+
+        Returns
+        -------
+            Electric Status
+
+        """
+        return (
+            ElectricStatus(self._endpoint_data["electric_status"])
+            if "electric_status" in self._endpoint_data
+            else None
         )
 
     @property
