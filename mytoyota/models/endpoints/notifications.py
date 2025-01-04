@@ -31,22 +31,22 @@ class NotificationModel(CustomBaseModel):
 
     """
 
-    message_id: Optional[str] = Field(alias="messageId")
-    vin: Optional[str]
-    notification_date: Optional[datetime] = Field(alias="notificationDate")
-    is_read: Optional[bool] = Field(alias="isRead")
+    message_id: Optional[str] = Field(None, alias="messageId")
+    vin: Optional[str] = None
+    notification_date: Optional[datetime] = Field(None, alias="notificationDate")
+    is_read: Optional[bool] = Field(None, alias="isRead")
     read_timestamp: Optional[datetime] = Field(alias="readTimestamp", default=None)
-    icon_url: Optional[str] = Field(alias="iconUrl")
-    message: Optional[str]
+    icon_url: Optional[str] = Field(None, alias="iconUrl")
+    message: Optional[str] = None
     status: Optional[Union[int, str]] = None
-    type: Optional[str]
-    category: Optional[str]
-    display_category: Optional[str] = Field(alias="displayCategory")
+    type: Optional[str] = None
+    category: Optional[str] = None
+    display_category: Optional[str] = Field(None, alias="displayCategory")
 
 
 class _PayloadItemModel(CustomBaseModel):
     vin: Optional[str] = None
-    notifications: Optional[List[NotificationModel]]
+    notifications: Optional[List[NotificationModel]] = None
 
 
 class NotificationResponseModel(CustomBaseModel):
@@ -64,7 +64,7 @@ class NotificationResponseModel(CustomBaseModel):
     """
 
     guid: Optional[UUID] = None
-    status_code: Optional[int] = Field(alias="statusCode")
-    headers: Optional[_HeadersModel]
-    body: Optional[str]
+    status_code: Optional[int] = Field(None, alias="statusCode")
+    headers: Optional[_HeadersModel] = None
+    body: Optional[str] = None
     payload: Optional[List[_PayloadItemModel]] = None

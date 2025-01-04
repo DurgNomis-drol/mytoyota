@@ -22,11 +22,11 @@ class TelemetryModel(CustomBaseModel):
 
     """
 
-    fuel_type: Optional[str] = Field(alias="fuelType")
-    odometer: Optional[UnitValueModel]
+    fuel_type: Optional[str] = Field(None, alias="fuelType")
+    odometer: Optional[UnitValueModel] = None
     fuel_level: Optional[int] = Field(alias="fuelLevel", default=None)
     distance_to_empty: Optional[UnitValueModel] = Field(alias="distanceToEmpty", default=None)
-    timestamp: Optional[datetime]
+    timestamp: Optional[datetime] = None
 
 
 class TelemetryResponseModel(StatusModel):

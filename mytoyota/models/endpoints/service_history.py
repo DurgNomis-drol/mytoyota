@@ -28,16 +28,16 @@ class ServiceHistoryModel(CustomBaseModel):
 
     """
 
-    customer_created_record: Optional[bool] = Field(alias="customerCreatedRecord")
+    customer_created_record: Optional[bool] = Field(None, alias="customerCreatedRecord")
     mileage: Optional[int] = None
-    notes: Any
-    operations_performed: Any = Field(alias="operationsPerformed")
-    ro_number: Any = Field(alias="roNumber")
-    service_category: Optional[str] = Field(alias="serviceCategory")
-    service_date: Optional[date] = Field(alias="serviceDate")
-    service_history_id: Optional[str] = Field(alias="serviceHistoryId")
-    service_provider: Optional[str] = Field(alias="serviceProvider")
-    servicing_dealer: Any = Field(alias="servicingDealer")
+    notes: Any = None
+    operations_performed: Any = Field(None, alias="operationsPerformed")
+    ro_number: Any = Field(None, alias="roNumber")
+    service_category: Optional[str] = Field(None, alias="serviceCategory")
+    service_date: Optional[date] = Field(None, alias="serviceDate")
+    service_history_id: Optional[str] = Field(None, alias="serviceHistoryId")
+    service_provider: Optional[str] = Field(None, alias="serviceProvider")
+    servicing_dealer: Any = Field(None, alias="servicingDealer")
     unit: Optional[str] = None
 
 
