@@ -5,7 +5,7 @@ from datetime import date, datetime
 from typing import Any, List, Optional
 from uuid import UUID
 
-from pydantic import Field
+from pydantic.v1 import Field
 
 from mytoyota.models.endpoints.common import StatusModel
 from mytoyota.utils.helpers import add_with_none

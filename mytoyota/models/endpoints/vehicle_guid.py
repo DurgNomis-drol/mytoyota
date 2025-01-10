@@ -3,7 +3,7 @@ from datetime import date
 from typing import Any, Dict, List, Optional, Union
 from uuid import UUID
 
-from pydantic import Field
+from pydantic.v1 import Field
 
 from mytoyota.models.endpoints.common import StatusModel
 from mytoyota.utils.models import CustomBaseModel

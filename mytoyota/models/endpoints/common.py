@@ -1,7 +1,7 @@
 """Toyota Connected Services API - Common Endpoint Models."""
 from typing import List, Optional, Union
 
-from pydantic import Field
+from pydantic.v1 import Field
 
 from mytoyota.utils.models import CustomBaseModel
 

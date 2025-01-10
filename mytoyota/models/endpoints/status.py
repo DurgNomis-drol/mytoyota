@@ -2,7 +2,7 @@
 from datetime import datetime
 from typing import List, Optional
 
-from pydantic import Field
+from pydantic.v1 import Field
 
 from mytoyota.models.endpoints.common import StatusModel, UnitValueModel
 from mytoyota.utils.models import CustomBaseModel
