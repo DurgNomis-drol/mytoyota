@@ -1,5 +1,5 @@
 """Utilities for manipulating or extend pydantic models."""
-from pydantic import BaseModel, root_validator
+from pydantic.v1 import BaseModel, root_validator
 
 
 class CustomBaseModel(BaseModel):
