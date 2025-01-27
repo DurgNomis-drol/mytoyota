@@ -1,4 +1,6 @@
 """Toyota Connected Services Controller."""
+
+import contextlib
 import json
 import logging
 from datetime import datetime, timedelta
@@ -10,6 +12,7 @@ from urllib import parse
 import hishel
 import httpx
 import jwt
+from abc import ABC, abstractmethod
 
 from mytoyota.const import (
     ACCESS_TOKEN_URL,
@@ -30,14 +33,33 @@ _LOGGER: logging.Logger = logging.getLogger(__name__)
 CACHE_FILENAME: Path = Path.home() / ".cache" / "toyota_credentials_cache_contains_secrets"
 
 
-# TODO There is an issue if you login with the application on a phone as all the tokens change. # noqa: E501
-#      This seems to work sometimes but no others. Needs investigation.
+class TokenStorage(ABC):
+    """Abstract base class for token storage implementations."""
+    @abstractmethod
+    async def load_tokens(self, username: str) -> Dict[str, Any]:
+        """Load tokens for given username."""
+        pass
+    @abstractmethod
+    async def save_tokens(self, username: str, token_data: Dict[str, Any]) -> None:
+        """Save tokens for given username."""
+        pass
+
+class MemoryTokenStorage(TokenStorage):
+    """In-memory implementation of token storage."""
+    def __init__(self):
+        self._storage: Dict[str, Dict[str, Any]] = {}
+    async def load_tokens(self, username: str) -> Dict[str, Any]:
+        return self._storage.get(username, {})
+    async def save_tokens(self, username: str, token_data: Dict[str, Any]) -> None:
+        self._storage[username] = token_data
 
 
 class Controller:
     """Controller class."""
 
-    def __init__(self, username: str, password: str, timeout: int = 60) -> None:
+    def __init__(self, username: str, password: str, token_storage: Optional[TokenStorage] = None,
+        timeout: int = 60,
+        client: Optional[httpx.AsyncClient] = None) -> None:
         """Initialise Controller class."""
         self._username: str = username
         self._password: str = password
@@ -46,23 +68,37 @@ class Controller:
         self._refresh_token: Optional[str] = None
         self._uuid: Optional[str] = None
         self._timeout = timeout
+        self._token_storage = token_storage or MemoryTokenStorage()
+        self._client = client or httpx.AsyncClient(timeout=timeout)
+        
+        # Base URLs
         self._api_base_url = httpx.URL(API_BASE_URL)
         self._access_token_url = httpx.URL(ACCESS_TOKEN_URL)
         self._authenticate_url = httpx.URL(AUTHENTICATE_URL)
         self._authorize_url = httpx.URL(AUTHORIZE_URL)
 
-        # Do we have a cache file?
-        if CACHE_FILENAME.exists():
-            with open(str(CACHE_FILENAME), "r", encoding="utf-8") as f:
-                cache_data = json.load(f)
-                if self._username == cache_data["username"]:
-                    self._token = cache_data["access_token"]
-                    self._refresh_token = cache_data["refresh_token"]
-                    self._uuid = cache_data["uuid"]
-                    self._token_expiration = datetime.fromisoformat(cache_data["expiration"])
+    async def __aenter__(self):
+        """Async context manager entry."""
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        """Async context manager exit."""
+        await self._client.aclose()
+
+    async def _load_cached_tokens(self) -> None:
+        """Load cached tokens if available."""
+        cached_data = await self._token_storage.load_tokens(self._username)
+        if cached_data:
+            self._token = cached_data.get("access_token")
+            self._refresh_token = cached_data.get("refresh_token")
+            self._uuid = cached_data.get("uuid")
+            expiration = cached_data.get("expiration")
+            if expiration:
+                self._token_expiration = datetime.fromisoformat(expiration)
 
     async def login(self) -> None:
         """Perform first login."""
+        await self._load_cached_tokens()
         if not self._is_token_valid():
             await self._update_token()
 
@@ -70,84 +106,141 @@ class Controller:
         """Login to toyota servers and retrieve token and uuid for the account."""
         if not self._is_token_valid():
             if self._refresh_token:
-                try:
+                with contextlib.suppress(ToyotaLoginError):
                     await self._refresh_tokens()
                     return
-                except ToyotaLoginError:
-                    pass
-
             await self._authenticate()
 
     async def _authenticate(self):
         """Authenticate with username and password."""
         _LOGGER.debug("Authenticating")
-        async with hishel.AsyncCacheClient() as client:
-            data: Dict[str, Any] = {}
+        
+        # Authentication step
+        data: Dict[str, Any] = {}
+        token_id = None
+        
+        async with hishel.AsyncCacheClient() as auth_client:
             for _ in range(10):
                 if "callbacks" in data:
-                    for cb in data["callbacks"]:
-                        if (
-                            cb["type"] == "NameCallback"
-                            and cb["output"][0]["value"] == "User Name"
-                        ):
-                            cb["input"][0]["value"] = self._username
-                        elif cb["type"] == "PasswordCallback":
-                            cb["input"][0]["value"] = self._password
-                        elif (
-                            cb["type"] == "TextOutputCallback"
-                            and cb["output"][0]["value"] == "User Not Found"
-                        ):
-                            raise ToyotaInvalidUsernameError(
-                                "Authentication Failed. User Not Found."
-                            )
-                resp = await client.post(
-                    self._authenticate_url, json=data
-                )  # , headers=standard_headers)
+                    self._handle_callbacks(data["callbacks"])
+                
+                resp = await auth_client.post(self._authenticate_url, json=data)
                 _LOGGER.debug(format_httpx_response(resp))
-
+                
                 if resp.status_code != HTTPStatus.OK:
                     raise ToyotaLoginError(
                         f"Authentication Failed. {resp.status_code}, {resp.text}."
                     )
+                    
                 data = resp.json()
-                # Wait for tokenId to be returned in response
                 if "tokenId" in data:
+                    token_id = data["tokenId"]
                     break
-
-            if "tokenId" not in data:
+                    
+            if not token_id:
                 raise ToyotaLoginError("Authentication Failed. Unknown method.")
+                
+            # Authorization step
+            auth_code = await self._get_authorization_code(auth_client, token_id)
+            
+            # Token retrieval
+            tokens = await self._retrieve_tokens(auth_client, auth_code)
+            await self._update_tokens(tokens)
 
-            # Authorise
-            resp = await client.get(
-                self._authorize_url,
-                headers={"cookie": f"iPlanetDirectoryPro={data['tokenId']}"},
+    def _handle_callbacks(self, callbacks: list) -> None:
+        """Handle authentication callbacks."""
+        for cb in callbacks:
+            if (
+                cb["type"] == "NameCallback"
+                and cb["output"][0]["value"] == "User Name"
+            ):
+                cb["input"][0]["value"] = self._username
+            elif cb["type"] == "PasswordCallback":
+                cb["input"][0]["value"] = self._password
+            elif (
+                cb["type"] == "TextOutputCallback"
+                and cb["output"][0]["value"] == "User Not Found"
+            ):
+                raise ToyotaInvalidUsernameError(
+                    "Authentication Failed. User Not Found."
+                )
+            
+
+    async def _get_authorization_code(
+        self, 
+        client: hishel.AsyncCacheClient, 
+        token_id: str
+    ) -> str:
+        """Get authorization code."""
+        resp = await client.get(
+            self._authorize_url,
+            headers={"cookie": f"iPlanetDirectoryPro={token_id}"},
+        )
+        _LOGGER.debug(format_httpx_response(resp))
+
+        if resp.status_code != HTTPStatus.FOUND:
+            raise ToyotaLoginError(
+                f"Authorization failed. {resp.status_code}, {resp.text}."
             )
-            _LOGGER.debug(format_httpx_response(resp))
+            
+        return parse.parse_qs(
+            httpx.URL(resp.headers.get("location")).query.decode()
+        )["code"]
+    
+    async def _retrieve_tokens(
+        self, 
+        client: hishel.AsyncCacheClient, 
+        auth_code: str
+    ) -> Dict[str, Any]:
+        """Retrieve access and refresh tokens."""
+        resp = await client.post(
+            self._access_token_url,
+            headers={"authorization": "basic b25lYXBwOm9uZWFwcA=="},
+            data={
+                "client_id": "oneapp",
+                "code": auth_code,
+                "redirect_uri": "com.toyota.oneapp:/oauth2Callback",
+                "grant_type": "authorization_code",
+                "code_verifier": "plain",
+            },
+        )
+        _LOGGER.debug(format_httpx_response(resp))
 
-            if resp.status_code != HTTPStatus.FOUND:
-                raise ToyotaLoginError(f"Authorization failed. {resp.status_code}, {resp.text}.")
-            authentication_code = parse.parse_qs(
-                httpx.URL(resp.headers.get("location")).query.decode()
-            )["code"]
-
-            # Retrieve tokens
-            resp = await client.post(
-                self._access_token_url,
-                headers={"authorization": "basic b25lYXBwOm9uZWFwcA=="},
-                data={
-                    "client_id": "oneapp",
-                    "code": authentication_code,
-                    "redirect_uri": "com.toyota.oneapp:/oauth2Callback",
-                    "grant_type": "authorization_code",
-                    "code_verifier": "plain",
-                },
+        if resp.status_code != HTTPStatus.OK:
+            raise ToyotaLoginError(
+                f"Token retrieval failed. {resp.status_code}, {resp.text}."
             )
-            _LOGGER.debug(format_httpx_response(resp))
 
-            if resp.status_code != HTTPStatus.OK:
-                raise ToyotaLoginError(f"Token retrieval failed. {resp.status_code}, {resp.text}.")
+        return resp.json()
+    
+    async def _update_tokens(self, tokens: Dict[str, Any]) -> None:
+        """Update tokens and store them."""
+        if not all(
+            key in tokens
+            for key in ["access_token", "id_token", "refresh_token", "expires_in"]
+        ):
+            raise ToyotaLoginError("Token retrieval failed. Missing Tokens.")
+            
+        self._token = tokens["access_token"]
+        self._refresh_token = tokens["refresh_token"]
+        self._uuid = jwt.decode(
+            tokens["id_token"],
+            algorithms=["RS256"],
+            options={"verify_signature": False},
+            audience="oneappsdkclient",
+        )["uuid"]
+        self._token_expiration = datetime.now() + timedelta(seconds=tokens["expires_in"])
 
-            self._update_tokens(resp.json())
+        # Store tokens
+        await self._token_storage.save_tokens(
+            self._username,
+            {
+                "access_token": self._token,
+                "refresh_token": self._refresh_token,
+                "uuid": self._uuid,
+                "expiration": str(self._token_expiration),
+            },
+        )
 
     def _is_token_valid(self) -> bool:
         """Check if token is valid."""
@@ -172,49 +265,13 @@ class Controller:
             _LOGGER.debug(format_httpx_response(resp))
 
             if resp.status_code != HTTPStatus.OK:
-                raise ToyotaLoginError(f"Token refresh failed. {resp.status_code}, {resp.text}.")
-
-            self._update_tokens(resp.json())
-
-    def _update_tokens(self, resp: Dict[str, Any]):
-        access_tokens: Dict[str, Any] = resp
-        if (
-            "access_token" not in access_tokens
-            or "id_token" not in access_tokens
-            or "refresh_token" not in access_tokens
-            or "expires_in" not in access_tokens
-        ):
-            raise ToyotaLoginError(
-                f"Token retrieval failed. Missing Tokens. \
-                {access_tokens.status_code}, \
-                {access_tokens.text}."
-            )
-        self._token = access_tokens["access_token"]
-        self._refresh_token = access_tokens["refresh_token"]
-        self._uuid = jwt.decode(
-            access_tokens["id_token"],
-            algorithms=["RS256"],
-            options={"verify_signature": False},
-            audience="oneappsdkclient",
-        )["uuid"]
-        self._token_expiration = datetime.now() + timedelta(seconds=access_tokens["expires_in"])
-
-        CACHE_FILENAME.parent.mkdir(parents=True, exist_ok=True)
-        with open(str(CACHE_FILENAME), "w", encoding="utf-8") as f:
-            f.write(
-                json.dumps(
-                    {
-                        "access_token": self._token,
-                        "refresh_token": self._refresh_token,
-                        "uuid": self._uuid,
-                        "expiration": self._token_expiration,
-                        "username": self._username,
-                    },
-                    default=str,
+                raise ToyotaLoginError(
+                    f"Token refresh failed. {resp.status_code}, {resp.text}."
                 )
-            )
 
-    async def request_raw(  # noqa: PLR0913
+            await self._update_tokens(resp.json())
+
+    async def request_raw(
         self,
         method: str,
         endpoint: str,
@@ -223,50 +280,44 @@ class Controller:
         params: Optional[Dict[str, Any]] = None,
         headers: Optional[Dict[str, Any]] = None,
     ) -> httpx.Response:
-        """Shared request method."""
+        """Make a raw request to the API."""
         if method not in ("GET", "POST", "PUT", "DELETE"):
             raise ToyotaInternalError("Invalid request method provided")
 
         if not self._is_token_valid():
             await self._update_token()
 
-        if headers is None:
-            headers = {}
-        headers.update(
-            {
-                "x-api-key": "tTZipv6liF74PwMfk9Ed68AQ0bISswwf3iHQdqcF",
-                "x-guid": self._uuid,
-                "guid": self._uuid,
-                "authorization": f"Bearer {self._token}",
-                "x-channel": "ONEAPP",
-                "x-brand": "T",
-                "user-agent": "okhttp/4.10.0",
-            },
+        request_headers = {
+            "x-api-key": "tTZipv6liF74PwMfk9Ed68AQ0bISswwf3iHQdqcF",
+            "x-guid": self._uuid,
+            "guid": self._uuid,
+            "authorization": f"Bearer {self._token}",
+            "x-channel": "ONEAPP",
+            "x-brand": "T",
+            "user-agent": "okhttp/4.10.0",
+        }
+        
+        if headers:
+            request_headers.update(headers)
+        if vin:
+            request_headers["vin"] = vin
+
+        response = await self._client.request(
+            method,
+            f"{self._api_base_url}{endpoint}",
+            headers=request_headers,
+            json=body,
+            params=params,
+            follow_redirects=True,
         )
-        # Add vin if passed
-        if vin is not None:
-            headers.update({"vin": vin})
+        _LOGGER.debug(format_httpx_response(response))
 
-        async with httpx.AsyncClient(timeout=self._timeout) as client:
-            response = await client.request(
-                method,
-                f"{self._api_base_url}{endpoint}",
-                headers=headers,
-                json=body,
-                params=params,
-                follow_redirects=True,
-            )
-            _LOGGER.debug(format_httpx_response(response))
+        if response.status_code in [HTTPStatus.OK, HTTPStatus.ACCEPTED]:
+            return response
 
-            if response.status_code in [
-                HTTPStatus.OK,
-                HTTPStatus.ACCEPTED,
-            ]:
-                return response
+        raise ToyotaApiError(f"Request Failed. {response.status_code}, {response.text}.")
 
-        raise ToyotaApiError(f"Request Failed.  {response.status_code}, {response.text}.")
-
-    async def request_json(  # noqa: PLR0913
+    async def request_json(
         self,
         method: str,
         endpoint: str,
@@ -274,7 +325,7 @@ class Controller:
         body: Optional[Dict[str, Any]] = None,
         params: Optional[Dict[str, Any]] = None,
         headers: Optional[Dict[str, Any]] = None,
-    ):
+    ) -> Dict[str, Any]:
         """Send a JSON request to the specified endpoint.
 
         Args:
@@ -300,5 +351,4 @@ class Controller:
 
         """
         response = await self.request_raw(method, endpoint, vin, body, params, headers)
-
         return response.json()
