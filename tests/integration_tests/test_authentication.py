@@ -1,8 +1,6 @@
 """pytest tests for mytoyota using httpx mocking."""
 import json
 from datetime import datetime, timedelta
-from pathlib import Path
-from typing import List
 
 import pytest
 from pytest_httpx import HTTPXMock
@@ -10,46 +8,26 @@ from pytest_httpx import HTTPXMock
 from mytoyota import MyT
 from mytoyota.exceptions import ToyotaInvalidUsernameError, ToyotaLoginError
 
+from .conftest import TEST_USER_NAME, TEST_USER_PASSWORD, build_routes
+
 # Global in-memory cache for testing
 cache = {}
 
 
-def build_routes(httpx_mock: HTTPXMock, filenames: List[str]) -> None:  # noqa: D103
-    for filename in filenames:
-        path: str = f"{Path(__file__).parent}/data/"
-
-        with open(
-            f"{path}/{filename}", encoding="utf-8"
-        ) as f:  # I cant see a problem for the tests
-            routes = json.load(f)
-            print("test routes", routes)
-
-        for route in routes:
-            httpx_mock.add_response(
-                method=route["request"]["method"],
-                url=route["request"]["url"],
-                status_code=route["response"]["status"],
-                content=route["response"]["content"]
-                if isinstance(route["response"]["content"], str)
-                else json.dumps(route["response"]["content"]),
-                headers=route["response"]["headers"],
-            )
-
-
 @pytest.mark.asyncio
 async def test_authenticate(httpx_mock):  # noqa: D103
-    build_routes(httpx_mock, ["authenticate_working.json"])
+    build_routes(httpx_mock, filenames=["authenticate_working.json"])
 
-    client = MyT("user@email.com", "password")
+    client = MyT(TEST_USER_NAME, TEST_USER_PASSWORD)
     # Nothing validates this is correct, just replays a "correct" authentication sequence
     await client.login()
 
 
 @pytest.mark.asyncio
 async def test_authenticate_invalid_username(httpx_mock: HTTPXMock):  # noqa: D103
-    build_routes(httpx_mock, ["authenticate_invalid_username.json"])
+    build_routes(httpx_mock, filenames=["authenticate_invalid_username.json"])
 
-    client = MyT("user@email.com", "password")
+    client = MyT("invalid.user@email.com", TEST_USER_PASSWORD)
     # Nothing validates this is correct, just replays an invalid username authentication sequence
     with pytest.raises(ToyotaInvalidUsernameError):
         await client.login()
@@ -57,9 +35,9 @@ async def test_authenticate_invalid_username(httpx_mock: HTTPXMock):  # noqa: D1
 
 @pytest.mark.asyncio
 async def test_authenticate_invalid_password(httpx_mock: HTTPXMock):  # noqa: D103
-    build_routes(httpx_mock, ["authenticate_invalid_password.json"])
+    build_routes(httpx_mock, filenames=["authenticate_invalid_password.json"])
 
-    client = MyT("user@email.com", "password")
+    client = MyT(TEST_USER_NAME, "invalid_password")
     # Nothing validates this is correct, just replays an invalid username authentication sequence
     with pytest.raises(ToyotaLoginError):
         await client.login()
@@ -75,16 +53,16 @@ async def test_authenticate_refresh_token(data_folder, httpx_mock: HTTPXMock):  
         ).isoformat()  # expired token
 
         # Initialize the in-memory cache with the expired token
-        cache["user@email.info"] = {
+        cache[TEST_USER_NAME] = {
             "access_token": valid_token["access_token"],
             "refresh_token": valid_token["refresh_token"],
             "uuid": valid_token["uuid"],
             "expiration": valid_token["expiration"],
         }
 
-    build_routes(httpx_mock, ["authenticate_working.json"])
+    build_routes(httpx_mock, filenames=["authenticate_working.json"])
 
-    client = MyT("user@email.info", "password")
+    client = MyT(TEST_USER_NAME, TEST_USER_PASSWORD)
     # This should trigger a refresh token sequence
     await client.login()
 
@@ -97,16 +75,16 @@ async def test_get_static_data(data_folder, httpx_mock: HTTPXMock):  # noqa: D10
         valid_token["expiration"] = (datetime.now() + timedelta(hours=4)).isoformat()
 
         # Initialize the in-memory cache with the valid token
-        cache["user@email.info"] = {
+        cache[TEST_USER_NAME] = {
             "access_token": valid_token["access_token"],
             "refresh_token": valid_token["refresh_token"],
             "uuid": valid_token["uuid"],
             "expiration": valid_token["expiration"],
         }
 
-    build_routes(httpx_mock, ["authenticate_working.json", "get_static_data.json"])
+    build_routes(httpx_mock, filenames=["authenticate_working.json", "get_static_data.json"])
 
-    client = MyT("user@email.info", "password")
+    client = MyT(TEST_USER_NAME, TEST_USER_PASSWORD)
     await client.login()
     cars = await client.get_vehicles(metric=True)
     car = cars[0]
