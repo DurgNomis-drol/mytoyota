@@ -1,8 +1,8 @@
 """Toyota Connected Services Controller."""
 
 import contextlib
-import json
 import logging
+from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 from http import HTTPStatus
 from pathlib import Path
@@ -12,7 +12,6 @@ from urllib import parse
 import hishel
 import httpx
 import jwt
-from abc import ABC, abstractmethod
 
 from mytoyota.const import (
     ACCESS_TOKEN_URL,
@@ -35,31 +34,79 @@ CACHE_FILENAME: Path = Path.home() / ".cache" / "toyota_credentials_cache_contai
 
 class TokenStorage(ABC):
     """Abstract base class for token storage implementations."""
+
     @abstractmethod
     async def load_tokens(self, username: str) -> Dict[str, Any]:
         """Load tokens for given username."""
         pass
+
     @abstractmethod
     async def save_tokens(self, username: str, token_data: Dict[str, Any]) -> None:
         """Save tokens for given username."""
         pass
 
+
 class MemoryTokenStorage(TokenStorage):
-    """In-memory implementation of token storage."""
+    """In-memory implementation of token storage.
+
+    This class provides a simple in-memory storage solution for managing
+    user tokens. It allows for loading and saving tokens associated
+    with a specific username.
+    """
+
     def __init__(self):
+        """Initialize the MemoryTokenStorage instance.
+
+        This constructor initializes an empty dictionary to store token
+        data, where the keys are usernames and the values are dictionaries
+        containing token information.
+        """
         self._storage: Dict[str, Dict[str, Any]] = {}
+
     async def load_tokens(self, username: str) -> Dict[str, Any]:
+        """Load tokens for a specified username.
+
+        Args:
+        ----
+            username (str): The username for which to load token data.
+
+        Returns:
+        -------
+            Dict[str, Any]: A dictionary containing the token data for
+            the specified username. If no tokens are found, an empty
+            dictionary is returned.
+
+        """
         return self._storage.get(username, {})
+
     async def save_tokens(self, username: str, token_data: Dict[str, Any]) -> None:
+        """Save token data for a specified username.
+
+        Args:
+        ----
+            username (str): The username for which to save token data.
+            token_data (Dict[str, Any]): A dictionary containing the token
+            data to be stored for the specified username.
+
+        Returns:
+        -------
+            None: This method does not return any value.
+
+        """
         self._storage[username] = token_data
 
 
 class Controller:
     """Controller class."""
 
-    def __init__(self, username: str, password: str, token_storage: Optional[TokenStorage] = None,
+    def __init__(  # noqa: PLR0913
+        self,
+        username: str,
+        password: str,
+        token_storage: Optional[TokenStorage] = None,
         timeout: int = 60,
-        client: Optional[httpx.AsyncClient] = None) -> None:
+        client: Optional[httpx.AsyncClient] = None,
+    ) -> None:
         """Initialise Controller class."""
         self._username: str = username
         self._password: str = password
@@ -70,7 +117,7 @@ class Controller:
         self._timeout = timeout
         self._token_storage = token_storage or MemoryTokenStorage()
         self._client = client or httpx.AsyncClient(timeout=timeout)
-        
+
         # Base URLs
         self._api_base_url = httpx.URL(API_BASE_URL)
         self._access_token_url = httpx.URL(ACCESS_TOKEN_URL)
@@ -92,8 +139,7 @@ class Controller:
             self._token = cached_data.get("access_token")
             self._refresh_token = cached_data.get("refresh_token")
             self._uuid = cached_data.get("uuid")
-            expiration = cached_data.get("expiration")
-            if expiration:
+            if expiration := cached_data.get("expiration"):
                 self._token_expiration = datetime.fromisoformat(expiration)
 
     async def login(self) -> None:
@@ -114,35 +160,34 @@ class Controller:
     async def _authenticate(self):
         """Authenticate with username and password."""
         _LOGGER.debug("Authenticating")
-        
-        # Authentication step
+
         data: Dict[str, Any] = {}
-        token_id = None
-        
+        token_id: Optional[str] = None
+
         async with hishel.AsyncCacheClient() as auth_client:
             for _ in range(10):
                 if "callbacks" in data:
                     self._handle_callbacks(data["callbacks"])
-                
+
                 resp = await auth_client.post(self._authenticate_url, json=data)
                 _LOGGER.debug(format_httpx_response(resp))
-                
+
                 if resp.status_code != HTTPStatus.OK:
                     raise ToyotaLoginError(
                         f"Authentication Failed. {resp.status_code}, {resp.text}."
                     )
-                    
+
                 data = resp.json()
                 if "tokenId" in data:
                     token_id = data["tokenId"]
                     break
-                    
+
             if not token_id:
                 raise ToyotaLoginError("Authentication Failed. Unknown method.")
-                
+
             # Authorization step
             auth_code = await self._get_authorization_code(auth_client, token_id)
-            
+
             # Token retrieval
             tokens = await self._retrieve_tokens(auth_client, auth_code)
             await self._update_tokens(tokens)
@@ -150,27 +195,16 @@ class Controller:
     def _handle_callbacks(self, callbacks: list) -> None:
         """Handle authentication callbacks."""
         for cb in callbacks:
-            if (
-                cb["type"] == "NameCallback"
-                and cb["output"][0]["value"] == "User Name"
-            ):
+            if cb["type"] == "NameCallback" and cb["output"][0]["value"] == "User Name":
                 cb["input"][0]["value"] = self._username
             elif cb["type"] == "PasswordCallback":
                 cb["input"][0]["value"] = self._password
             elif (
-                cb["type"] == "TextOutputCallback"
-                and cb["output"][0]["value"] == "User Not Found"
+                cb["type"] == "TextOutputCallback" and cb["output"][0]["value"] == "User Not Found"
             ):
-                raise ToyotaInvalidUsernameError(
-                    "Authentication Failed. User Not Found."
-                )
-            
+                raise ToyotaInvalidUsernameError("Authentication Failed. User Not Found.")
 
-    async def _get_authorization_code(
-        self, 
-        client: hishel.AsyncCacheClient, 
-        token_id: str
-    ) -> str:
+    async def _get_authorization_code(self, client: hishel.AsyncCacheClient, token_id: str) -> str:
         """Get authorization code."""
         resp = await client.get(
             self._authorize_url,
@@ -179,18 +213,12 @@ class Controller:
         _LOGGER.debug(format_httpx_response(resp))
 
         if resp.status_code != HTTPStatus.FOUND:
-            raise ToyotaLoginError(
-                f"Authorization failed. {resp.status_code}, {resp.text}."
-            )
-            
-        return parse.parse_qs(
-            httpx.URL(resp.headers.get("location")).query.decode()
-        )["code"]
-    
+            raise ToyotaLoginError(f"Authorization failed. {resp.status_code}, {resp.text}.")
+
+        return parse.parse_qs(httpx.URL(resp.headers.get("location")).query.decode())["code"]
+
     async def _retrieve_tokens(
-        self, 
-        client: hishel.AsyncCacheClient, 
-        auth_code: str
+        self, client: hishel.AsyncCacheClient, auth_code: str
     ) -> Dict[str, Any]:
         """Retrieve access and refresh tokens."""
         resp = await client.post(
@@ -207,20 +235,17 @@ class Controller:
         _LOGGER.debug(format_httpx_response(resp))
 
         if resp.status_code != HTTPStatus.OK:
-            raise ToyotaLoginError(
-                f"Token retrieval failed. {resp.status_code}, {resp.text}."
-            )
+            raise ToyotaLoginError(f"Token retrieval failed. {resp.status_code}, {resp.text}.")
 
         return resp.json()
-    
+
     async def _update_tokens(self, tokens: Dict[str, Any]) -> None:
         """Update tokens and store them."""
         if not all(
-            key in tokens
-            for key in ["access_token", "id_token", "refresh_token", "expires_in"]
+            key in tokens for key in ["access_token", "id_token", "refresh_token", "expires_in"]
         ):
             raise ToyotaLoginError("Token retrieval failed. Missing Tokens.")
-            
+
         self._token = tokens["access_token"]
         self._refresh_token = tokens["refresh_token"]
         self._uuid = jwt.decode(
@@ -265,13 +290,11 @@ class Controller:
             _LOGGER.debug(format_httpx_response(resp))
 
             if resp.status_code != HTTPStatus.OK:
-                raise ToyotaLoginError(
-                    f"Token refresh failed. {resp.status_code}, {resp.text}."
-                )
+                raise ToyotaLoginError(f"Token refresh failed. {resp.status_code}, {resp.text}.")
 
             await self._update_tokens(resp.json())
 
-    async def request_raw(
+    async def request_raw(  # noqa: PLR0913
         self,
         method: str,
         endpoint: str,
@@ -296,7 +319,7 @@ class Controller:
             "x-brand": "T",
             "user-agent": "okhttp/4.10.0",
         }
-        
+
         if headers:
             request_headers.update(headers)
         if vin:
@@ -317,7 +340,7 @@ class Controller:
 
         raise ToyotaApiError(f"Request Failed. {response.status_code}, {response.text}.")
 
-    async def request_json(
+    async def request_json(  # noqa: PLR0913
         self,
         method: str,
         endpoint: str,
