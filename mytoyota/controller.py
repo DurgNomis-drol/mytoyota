@@ -5,7 +5,6 @@ import logging
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 from http import HTTPStatus
-from pathlib import Path
 from typing import Any, Dict, Optional
 from urllib import parse
 
@@ -28,8 +27,6 @@ from mytoyota.exceptions import (
 from mytoyota.utils.log_utils import format_httpx_response
 
 _LOGGER: logging.Logger = logging.getLogger(__name__)
-
-CACHE_FILENAME: Path = Path.home() / ".cache" / "toyota_credentials_cache_contains_secrets"
 
 
 class TokenStorage(ABC):
