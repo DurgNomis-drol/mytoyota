@@ -161,7 +161,7 @@ class Trip:
             return (
                 round(avg_fuel_consumed, 3)
                 if self._metric
-                else round(235.215 * avg_fuel_consumed, 3)
+                else round(235.215 / avg_fuel_consumed, 3)
             )
 
         return 0.0
