@@ -29,11 +29,8 @@ jobs:
           python-version: "${{ matrix.python-version }}"
       - name: "⚙️ Install Poetry"
         uses: "abatilo/actions-poetry@v4.0.0"
-        with:
-          poetry-version: 1.5.1
       - name: "⚙️ Install dependencies"
         run: |
           poetry install --without dev
-          poetry self add "poetry-dynamic-versioning[plugin]"
       - name: "🚀 Test package building"
         run: "poetry build"

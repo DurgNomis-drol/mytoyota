@@ -34,7 +34,7 @@ jobs:
       - name: "🚀 Run pytest with coverage"
         run: |
           poetry run pip install coverage
-          poetry run coverage run --source=mytoyota/ -m pytest
+          poetry run coverage run --source=pytoyoda/ -m pytest
           poetry run coverage xml
       - name: "⬆️ Upload Coverage to Codecov"
         uses: "codecov/codecov-action@v5"

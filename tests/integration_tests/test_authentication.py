@@ -1,4 +1,4 @@
-"""pytest tests for mytoyota using httpx mocking."""
+"""pytest tests for pytoyoda using httpx mocking."""
 import json
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -8,9 +8,9 @@ from typing import List
 import pytest
 from pytest_httpx import HTTPXMock
 
-from mytoyota import MyT
-from mytoyota.controller import CACHE_FILENAME
-from mytoyota.exceptions import ToyotaInvalidUsernameError, ToyotaLoginError
+from pytoyoda import MyT
+from pytoyoda.controller import CACHE_FILENAME
+from pytoyoda.exceptions import ToyotaInvalidUsernameError, ToyotaLoginError
 
 
 def build_routes(httpx_mock: HTTPXMock, filenames: List[str]) -> None:  # noqa: D103

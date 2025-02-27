@@ -2,8 +2,8 @@
 from datetime import date
 from typing import Any, Optional
 
-from mytoyota.models.endpoints.service_history import ServiceHistoryModel
-from mytoyota.utils.conversions import convert_distance
+from pytoyoda.models.endpoints.service_history import ServiceHistoryModel
+from pytoyoda.utils.conversions import convert_distance
 
 
 class ServiceHistory:

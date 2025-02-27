@@ -3,8 +3,8 @@ from datetime import date, timedelta
 from enum import IntEnum
 from typing import List, Optional
 
-from mytoyota.models.endpoints.trips import _HDCModel, _SummaryBaseModel
-from mytoyota.utils.conversions import convert_distance
+from pytoyoda.models.endpoints.trips import _HDCModel, _SummaryBaseModel
+from pytoyoda.utils.conversions import convert_distance
 
 
 class SummaryType(IntEnum):

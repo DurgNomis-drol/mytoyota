@@ -2,8 +2,8 @@
 from datetime import datetime, timedelta
 from typing import List, Optional, Tuple
 
-from mytoyota.models.endpoints.trips import _TripModel
-from mytoyota.utils.conversions import convert_distance
+from pytoyoda.models.endpoints.trips import _TripModel
+from pytoyoda.utils.conversions import convert_distance
 
 
 class Trip:

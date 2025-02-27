@@ -4,8 +4,8 @@ from typing import List, Optional
 
 from pydantic.v1 import Field
 
-from mytoyota.models.endpoints.common import StatusModel, UnitValueModel
-from mytoyota.utils.models import CustomBaseModel
+from pytoyoda.models.endpoints.common import StatusModel, UnitValueModel
+from pytoyoda.utils.models import CustomBaseModel
 
 
 class _ValueStatusModel(CustomBaseModel):

@@ -4,8 +4,8 @@ import json
 import pprint
 from datetime import date, timedelta
 
-from mytoyota.client import MyT
-from mytoyota.models.summary import SummaryType
+from pytoyoda.client import MyT
+from pytoyoda.models.summary import SummaryType
 
 pp = pprint.PrettyPrinter(indent=4)
 

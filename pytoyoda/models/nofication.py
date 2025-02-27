@@ -2,7 +2,7 @@
 from datetime import datetime
 from typing import Optional
 
-from mytoyota.models.endpoints.notifications import NotificationModel
+from pytoyoda.models.endpoints.notifications import NotificationModel
 
 
 class Notification:

@@ -1,8 +1,8 @@
-"""Test mytoyota client."""
+"""Test pytoyoda client."""
 import pytest
 
-from mytoyota.client import MyT
-from mytoyota.exceptions import ToyotaInvalidUsernameError
+from pytoyoda.client import MyT
+from pytoyoda.exceptions import ToyotaInvalidUsernameError
 
 # Constants for tests
 VALID_USERNAME = "user@example.com"

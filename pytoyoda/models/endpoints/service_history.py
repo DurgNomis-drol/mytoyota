@@ -5,8 +5,8 @@ from typing import Any, List, Optional
 
 from pydantic.v1 import Field
 
-from mytoyota.models.endpoints.common import StatusModel
-from mytoyota.utils.models import CustomBaseModel
+from pytoyoda.models.endpoints.common import StatusModel
+from pytoyoda.utils.models import CustomBaseModel
 
 
 class ServiceHistoryModel(CustomBaseModel):

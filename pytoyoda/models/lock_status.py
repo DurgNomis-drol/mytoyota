@@ -4,7 +4,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import List, Optional
 
-from mytoyota.models.endpoints.status import (
+from pytoyoda.models.endpoints.status import (
     RemoteStatusModel,
     RemoteStatusResponseModel,
     SectionModel,

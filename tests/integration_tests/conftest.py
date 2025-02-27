@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from mytoyota.controller import CACHE_FILENAME
+from pytoyoda.controller import CACHE_FILENAME
 
 
 @pytest.fixture(scope="module")

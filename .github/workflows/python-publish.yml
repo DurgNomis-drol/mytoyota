@@ -6,17 +6,26 @@ name: "Upload Python Package to PyPi"
 on:
   release:
     types: ["published"]
+
 jobs:
-  build:
-    runs-on: "ubuntu-latest"
+  pypi-publish:
+    name: upload release to PyPI
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
     steps:
       - name: "⤵️ Check out code from GitHub"
         uses: "actions/checkout@v4"
         with:
           fetch-depth: 0
           fetch-tags: true
-      - name: "🚀 Build package and publish to pypi"
-        uses: "JRubics/poetry-publish@v1.16"
-        with:
-          pypi_token: "${{ secrets.PYPI_PASSWORD }}"
-          plugins: "poetry-dynamic-versioning[plugin]"
+
+      - name: "⚙️ Install dependencies"
+        run: |
+          poetry install --without dev
+      - name: "🚀 Test package building"
+        run: "poetry build"
+
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1

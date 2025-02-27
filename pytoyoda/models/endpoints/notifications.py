@@ -5,7 +5,7 @@ from uuid import UUID
 
 from pydantic.v1 import Field
 
-from mytoyota.utils.models import CustomBaseModel
+from pytoyoda.utils.models import CustomBaseModel
 
 
 class _HeadersModel(CustomBaseModel):

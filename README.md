@@ -1,8 +1,8 @@
-![GitHub Workflow](https://img.shields.io/github/actions/workflow/status/DurgNomis-drol/mytoyota/build.yml)
-![Codecov](https://img.shields.io/codecov/c/github/DurgNomis-drol/mytoyota)
-![Commit activity](https://img.shields.io/github/commit-activity/y/DurgNomis-drol/mytoyota)
-![GitHub Release](https://img.shields.io/github/release/DurgNomis-drol/mytoyota.svg)
-![PyPI - Downloads](https://img.shields.io/pypi/dm/mytoyota)
+![GitHub Workflow](https://img.shields.io/github/actions/workflow/status/pytoyoda/pytoyoda/build.yml)
+![Codecov](https://img.shields.io/codecov/c/github/pytoyoda/pytoyoda)
+![Commit activity](https://img.shields.io/github/commit-activity/y/pytoyoda/pytoyoda)
+![GitHub Release](https://img.shields.io/github/release/pytoyoda/pytoyoda.svg)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/pytoyoda)
 
 # Toyota Connected Services Europe Python module
 
@@ -25,7 +25,7 @@ This is an unofficial package and Toyota can change their API at any point witho
 This package can be installed through `pip`.
 
 ```text
-pip install mytoyota
+pip install pytoyoda
 ```
 
 ## Usage
@@ -33,10 +33,10 @@ pip install mytoyota
 For a quick start on how to use the package take a look at the `simple_client_example.py` file contained in the report. You can also use and execute this file directly by using the following commands:
 
 ```bash
-python -m venv mytoyota
-source mytoyota/bin/activate
-python -m pip install "mytoyota @ git+https://github.com/DurgNomis-drol/mytoyota@master"
-curl -LO https://raw.githubusercontent.com/GitOldGrumpy/mytoyota/master/simple_client_example.py
+python -m venv pytoyoda
+source pytoyoda/bin/activate
+python -m pip install "pytoyoda@git+https://github.com/pytoyoda/pytoyoda@main"
+curl -LO https://raw.githubusercontent.com/pytoyoda/pytoyoda/main/simple_client_example.py
 # Create a credentials.json file with {"username":"your@mail.tld","password":"yourpassword"}
 python simple_client_example.py
 ```
@@ -52,7 +52,7 @@ Coming soon...
 
 ## Contributing
 
-This python module uses poetry (>= 1.2.2) and pre-commit.
+This python module uses poetry (>= 2.0.0) and pre-commit.
 
 To start contributing, fork this repository and run `poetry install`. Then create a new branch. Before making a PR, please run pre-commit `poetry run pre-commit run --all-files` and make sure that all tests passes locally first by running `pytest tests/`.
 

@@ -2,16 +2,16 @@
 from datetime import timedelta
 from typing import Any, List, Optional
 
-from mytoyota.models.endpoints.electric import (
+from pytoyoda.models.endpoints.electric import (
     ElectricResponseModel,
     ElectricStatusModel,
 )
-from mytoyota.models.endpoints.telemetry import TelemetryModel, TelemetryResponseModel
-from mytoyota.models.endpoints.vehicle_health import (
+from pytoyoda.models.endpoints.telemetry import TelemetryModel, TelemetryResponseModel
+from pytoyoda.models.endpoints.vehicle_health import (
     VehicleHealthModel,
     VehicleHealthResponseModel,
 )
-from mytoyota.utils.conversions import convert_distance
+from pytoyoda.utils.conversions import convert_distance
 
 
 class Dashboard:

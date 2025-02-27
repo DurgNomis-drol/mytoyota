@@ -10,18 +10,18 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from arrow import Arrow
 
-from mytoyota.api import Api
-from mytoyota.models.dashboard import Dashboard
-from mytoyota.models.electric_status import ElectricStatus
-from mytoyota.models.endpoints.vehicle_guid import VehicleGuidModel
-from mytoyota.models.location import Location
-from mytoyota.models.lock_status import LockStatus
-from mytoyota.models.nofication import Notification
-from mytoyota.models.service_history import ServiceHistory
-from mytoyota.models.summary import Summary, SummaryType
-from mytoyota.models.trips import Trip
-from mytoyota.utils.helpers import add_with_none
-from mytoyota.utils.log_utils import censor_all
+from pytoyoda.api import Api
+from pytoyoda.models.dashboard import Dashboard
+from pytoyoda.models.electric_status import ElectricStatus
+from pytoyoda.models.endpoints.vehicle_guid import VehicleGuidModel
+from pytoyoda.models.location import Location
+from pytoyoda.models.lock_status import LockStatus
+from pytoyoda.models.nofication import Notification
+from pytoyoda.models.service_history import ServiceHistory
+from pytoyoda.models.summary import Summary, SummaryType
+from pytoyoda.models.trips import Trip
+from pytoyoda.utils.helpers import add_with_none
+from pytoyoda.utils.log_utils import censor_all
 
 
 class Vehicle:

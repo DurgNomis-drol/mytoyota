@@ -1,12 +1,12 @@
 [tool.poetry]
-name = "mytoyota"
+name = "pytoyoda"
 description = "Python client for Toyota Connected Services."
 authors = ["Simon Grud Hansen <simongrud@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 version = "0.0.0"
 packages = [
-  {include = "mytoyota"},
+    { include = "pytoyoda" },
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -21,12 +21,15 @@ keywords = [
     "Car",
     "MYT",
 ]
-homepage = "https://github.com/DurgNomis-drol/mytoyota"
-repository = "https://github.com/DurgNomis-drol/mytoyota"
+homepage = "https://github.com/pytoyoda/pytoyoda"
+repository = "https://github.com/pytoyoda/pytoyoda"
 
 [tool.poetry.urls]
-"Bug Tracker" = "https://github.com/DurgNomis-drol/mytoyota/issues"
-"Release Notes" = "https://github.com/DurgNomis-drol/mytoyota/releases"
+"Bug Tracker" = "https://github.com/pytoyoda/pytoyoda/issues"
+"Release Notes" = "https://github.com/pytoyoda/pytoyoda/releases"
+
+[tool.poetry.requires-plugins]
+poetry-dynamic-versioning = { version = ">=1.0.0,<2.0.0", extras = ["plugin"] }
 
 [tool.poetry.dependencies]
 python = "^3.9"

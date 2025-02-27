@@ -11,19 +11,19 @@ import hishel
 import httpx
 import jwt
 
-from mytoyota.const import (
+from pytoyoda.const import (
     ACCESS_TOKEN_URL,
     API_BASE_URL,
     AUTHENTICATE_URL,
     AUTHORIZE_URL,
 )
-from mytoyota.exceptions import (
+from pytoyoda.exceptions import (
     ToyotaApiError,
     ToyotaInternalError,
     ToyotaInvalidUsernameError,
     ToyotaLoginError,
 )
-from mytoyota.utils.log_utils import format_httpx_response
+from pytoyoda.utils.log_utils import format_httpx_response
 
 _LOGGER: logging.Logger = logging.getLogger(__name__)
 

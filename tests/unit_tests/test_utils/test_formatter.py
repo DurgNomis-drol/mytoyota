@@ -1,7 +1,7 @@
 """Test Formatter Utils."""
 import pytest
 
-from mytoyota.utils.formatters import format_odometer
+from pytoyoda.utils.formatters import format_odometer
 
 
 # Test cases for the happy path with various realistic test values

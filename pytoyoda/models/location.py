@@ -2,7 +2,7 @@
 from datetime import datetime
 from typing import Optional
 
-from mytoyota.models.endpoints.location import LocationResponseModel
+from pytoyoda.models.endpoints.location import LocationResponseModel
 
 
 class Location:

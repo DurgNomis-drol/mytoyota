@@ -1,5 +1,5 @@
-"""pytest tests for mytoyota.__init__."""
-from mytoyota import MyT
+"""pytest tests for pytoyoda.__init__."""
+from pytoyoda import MyT
 
 
 def test_imports():

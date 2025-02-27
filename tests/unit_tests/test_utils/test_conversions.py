@@ -1,7 +1,7 @@
 """Test Conversion Utils."""
 import pytest
 
-from mytoyota.utils import conversions
+from pytoyoda.utils import conversions
 
 
 # Test for convert_to_miles

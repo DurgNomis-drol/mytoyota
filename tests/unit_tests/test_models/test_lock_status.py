@@ -3,8 +3,8 @@ from datetime import datetime
 
 import pytest
 
-from mytoyota.models.endpoints.common import UnitValueModel
-from mytoyota.models.endpoints.status import (
+from pytoyoda.models.endpoints.common import UnitValueModel
+from pytoyoda.models.endpoints.status import (
     RemoteStatusModel,
     RemoteStatusResponseModel,
     SectionModel,
@@ -12,7 +12,7 @@ from mytoyota.models.endpoints.status import (
     _TelemetryModel,
     _ValueStatusModel,
 )
-from mytoyota.models.lock_status import Door, Doors, LockStatus, Window, Windows
+from pytoyoda.models.lock_status import Door, Doors, LockStatus, Window, Windows
 
 # Mock data for testing
 mock_section_closed = SectionModel(

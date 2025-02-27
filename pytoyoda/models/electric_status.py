@@ -2,8 +2,8 @@
 from datetime import date
 from typing import Optional
 
-from mytoyota.models.endpoints.electric import ElectricStatusModel
-from mytoyota.utils.conversions import convert_distance
+from pytoyoda.models.endpoints.electric import ElectricStatusModel
+from pytoyoda.utils.conversions import convert_distance
 
 
 class ElectricStatus:

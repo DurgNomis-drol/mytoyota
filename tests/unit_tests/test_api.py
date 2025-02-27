@@ -1,12 +1,12 @@
-"""pytest tests for mytoyota.api."""
+"""pytest tests for pytoyoda.api."""
 import json
 from datetime import date, timedelta
 from unittest.mock import AsyncMock
 
 import pytest
 
-from mytoyota.api import Api
-from mytoyota.const import (
+from pytoyoda.api import Api
+from pytoyoda.const import (
     VEHICLE_GLOBAL_REMOTE_ELECTRIC_STATUS_ENDPOINT,
     VEHICLE_GLOBAL_REMOTE_STATUS_ENDPOINT,
     VEHICLE_GUID_ENDPOINT,
@@ -17,17 +17,17 @@ from mytoyota.const import (
     VEHICLE_TELEMETRY_ENDPOINT,
     VEHICLE_TRIPS_ENDPOINT,
 )
-from mytoyota.models.endpoints.electric import ElectricResponseModel
-from mytoyota.models.endpoints.location import LocationResponseModel
-from mytoyota.models.endpoints.notifications import NotificationResponseModel
-from mytoyota.models.endpoints.service_history import ServiceHistoryResponseModel
+from pytoyoda.models.endpoints.electric import ElectricResponseModel
+from pytoyoda.models.endpoints.location import LocationResponseModel
+from pytoyoda.models.endpoints.notifications import NotificationResponseModel
+from pytoyoda.models.endpoints.service_history import ServiceHistoryResponseModel
 
-# from mytoyota.models.endpoints.account import AccountResponseModel
-from mytoyota.models.endpoints.status import RemoteStatusResponseModel
-from mytoyota.models.endpoints.telemetry import TelemetryResponseModel
-from mytoyota.models.endpoints.trips import TripsResponseModel
-from mytoyota.models.endpoints.vehicle_guid import VehiclesResponseModel
-from mytoyota.models.endpoints.vehicle_health import VehicleHealthResponseModel
+# from pytoyoda.models.endpoints.account import AccountResponseModel
+from pytoyoda.models.endpoints.status import RemoteStatusResponseModel
+from pytoyoda.models.endpoints.telemetry import TelemetryResponseModel
+from pytoyoda.models.endpoints.trips import TripsResponseModel
+from pytoyoda.models.endpoints.vehicle_guid import VehiclesResponseModel
+from pytoyoda.models.endpoints.vehicle_health import VehicleHealthResponseModel
 
 # Constants for tests
 VIN = "Random0815"

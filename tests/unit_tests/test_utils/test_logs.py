@@ -2,7 +2,7 @@
 import pytest
 from httpx import Request, Response
 
-from mytoyota.utils.log_utils import (
+from pytoyoda.utils.log_utils import (
     censor_all,
     censor_string,
     censor_value,

@@ -1,7 +1,7 @@
 """Test Locale Utils."""
 import pytest
 
-from mytoyota.utils.locale import is_valid_locale
+from pytoyoda.utils.locale import is_valid_locale
 
 
 # Parametrized test for happy path with various realistic test values
