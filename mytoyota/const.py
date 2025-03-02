@@ -18,3 +18,4 @@ VEHICLE_TELEMETRY_ENDPOINT = "/v3/telemetry"
 VEHICLE_NOTIFICATION_HISTORY_ENDPOINT = "/v2/notification/history"
 VEHICLE_TRIPS_ENDPOINT = "/v1/trips?from={from_date}&to={to_date}&route={route}&summary={summary}&limit={limit}&offset={offset}"  # noqa: E501
 VEHICLE_SERVICE_HISTORY_ENDPONT = "/v1/servicehistory/vehicle/summary"
+VEHICLE_COMMAND_ENDPOINT = "/v1/global/remote/command"

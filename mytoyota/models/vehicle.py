@@ -11,6 +11,8 @@ from typing import Any, Dict, List, Optional, Tuple
 from arrow import Arrow
 
 from mytoyota.api import Api
+from mytoyota.models.endpoints.command import CommandType
+from mytoyota.models.endpoints.common import StatusModel
 from mytoyota.models.dashboard import Dashboard
 from mytoyota.models.electric_status import ElectricStatus
 from mytoyota.models.endpoints.vehicle_guid import VehicleGuidModel
@@ -428,6 +430,21 @@ class Vehicle:
                 break
 
         return ret
+
+    async def post_command(self, command: CommandType, beeps: int = 0) -> StatusModel:
+        """Send remote command to the vehicle.
+
+        Args:
+        ----
+            command: CommandType:   The remote command model
+            beeps: int              Amount of beeps for commands that support it
+
+        Returns:
+        -------
+            StatusModel: A status response for the command.
+
+        """
+        return await self._api.post_command_endpoint(self.vin, command=command, beeps=beeps)
 
     #
     # More get functionality depending on what we find
