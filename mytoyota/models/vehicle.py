@@ -2,7 +2,7 @@
 import asyncio
 import copy
 import json
-from datetime import date
+from datetime import date, timedelta
 from functools import partial
 from itertools import groupby
 from operator import attrgetter
@@ -90,6 +90,20 @@ class Vehicle:
                 "name": "climate_status",
                 "capable": vehicle_info.features.climate_start_engine,
                 "function": partial(self._api.get_climate_status_endpoint, vin=vehicle_info.vin),
+            },
+            {
+                "name": "trip_history",
+                "capable": True,
+                "function": partial(
+                    self._api.get_trips_endpoint,
+                    vin=vehicle_info.vin,
+                    from_date=(date.today() - timedelta(days=90)),
+                    to_date=date.today(),
+                    summary=False,
+                    limit=10,
+                    offset=0,
+                    route=False,
+                )
             },
         ]
         self._endpoint_collect = [
@@ -333,6 +347,41 @@ class Vehicle:
             self._endpoint_data["status"] if "status" in self._endpoint_data else None
         )
 
+    @property
+    def last_trip(self) -> Optional[Trip]:
+        """Returns the Vehicle last trip.
+
+        Returns
+        -------
+            Optional[Trip]
+
+        """
+        ret = None
+        if "trip_history" in self._endpoint_data:
+            ret = next(iter(self._endpoint_data["trip_history"].payload.trips), None)
+
+        if ret is None:
+            return None
+
+        return Trip(ret, self._metric)
+
+    @property
+    def trip_history(self) -> Optional[List[Trip]]:
+        """Returns the Vehicle trips.
+
+        Returns
+        -------
+            Optional[List[Trip]]
+
+        """
+        if "trip_history" in self._endpoint_data:
+            ret: List[Trip] = []
+            payload = self._endpoint_data["trip_history"].payload
+            ret.extend(Trip(t, self._metric) for t in payload.trips)
+            return ret
+
+        return None
+
     async def get_summary(
         self,
         from_date: date,
@@ -487,6 +536,33 @@ class Vehicle:
                 break
 
         return ret
+
+    async def get_last_trip(self) -> Optional[Trip]:
+        """Return information on the last trip.
+
+        Returns:
+        -------
+            Optional[Trip]: A trip model or None if not supported.
+
+        """
+        resp = await self._api.get_trips_endpoint(
+            self.vin,
+            date.today() - timedelta(days=90),
+            date.today(),
+            summary=False,
+            limit=1,
+            offset=0,
+            route=False,
+        )
+
+        if resp.payload is None:
+            return None
+
+        ret = next(iter(resp.payload.trips), None)
+        if ret is None:
+            return None
+
+        return Trip(ret, self._metric)
 
     async def refresh_climate_status(self) -> StatusModel:
         """Force update of climate status.
