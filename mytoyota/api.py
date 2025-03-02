@@ -9,6 +9,7 @@ from mytoyota.const import (
     VEHICLE_CLIMATE_CONTROL_ENDPOINT,
     VEHICLE_CLIMATE_SETTINGS_ENDPOINT,
     VEHICLE_CLIMATE_STATUS_ENDPOINT,
+    VEHICLE_CLIMATE_STATUS_REFRESH_ENDPOINT,
     VEHICLE_COMMAND_ENDPOINT,
     VEHICLE_GLOBAL_REMOTE_ELECTRIC_STATUS_ENDPOINT,
     VEHICLE_GLOBAL_REMOTE_STATUS_ENDPOINT,
@@ -309,6 +310,25 @@ class Api:
             VEHICLE_CLIMATE_CONTROL_ENDPOINT,
             vin=vin,
             body=command.dict(exclude_unset=True, by_alias=True),
+        )
+        _LOGGER.debug(msg=f"Parsed 'StatusModel': {parsed_response}")
+        return parsed_response
+
+
+    async def refresh_climate_status(self, vin: str) -> StatusModel:
+        """Refresh climate status.
+
+        Args:
+        ----
+            vin: str:                       The vehicles VIN
+
+        Returns:
+        -------
+            StatusModel: A pydantic model for the status response
+
+        """
+        parsed_response: StatusModel = await self._request_and_parse(
+            StatusModel, "POST", VEHICLE_CLIMATE_STATUS_REFRESH_ENDPOINT, vin=vin
         )
         _LOGGER.debug(msg=f"Parsed 'StatusModel': {parsed_response}")
         return parsed_response

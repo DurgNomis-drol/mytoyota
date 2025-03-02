@@ -488,6 +488,16 @@ class Vehicle:
 
         return ret
 
+    async def refresh_climate_status(self) -> StatusModel:
+        """Force update of climate status.
+
+        Returns:
+        -------
+            StatusModel: A status response for the command.
+
+        """
+        return await self._api.refresh_climate_status(self.vin)
+
     async def post_command(self, command: CommandType, beeps: int = 0) -> StatusModel:
         """Send remote command to the vehicle.
 
