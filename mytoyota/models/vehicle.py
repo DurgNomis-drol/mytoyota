@@ -13,6 +13,7 @@ from arrow import Arrow
 from mytoyota.api import Api
 from mytoyota.models.endpoints.command import CommandType
 from mytoyota.models.endpoints.common import StatusModel
+from mytoyota.models.climate import ClimateSettings, ClimateStatus
 from mytoyota.models.dashboard import Dashboard
 from mytoyota.models.electric_status import ElectricStatus
 from mytoyota.models.endpoints.vehicle_guid import VehicleGuidModel
@@ -79,6 +80,16 @@ class Vehicle:
                 "name": "service_history",
                 "capable": vehicle_info.features.service_history,
                 "function": partial(self._api.get_service_history_endpoint, vin=vehicle_info.vin),
+            },
+            {
+                "name": "climate_settings",
+                "capable": vehicle_info.features.climate_start_engine,
+                "function": partial(self._api.get_climate_settings_endpoint, vin=vehicle_info.vin),
+            },
+            {
+                "name": "climate_status",
+                "capable": vehicle_info.features.climate_start_engine,
+                "function": partial(self._api.get_climate_status_endpoint, vin=vehicle_info.vin),
             },
         ]
         self._endpoint_collect = [
@@ -172,6 +183,52 @@ class Vehicle:
             else None,
             self._metric,
         )
+
+    @property
+    def dashboard(self) -> Optional[Dashboard]:
+        """Returns the Vehicle dashboard.
+
+        The dashboard consists of items of information you would expect to
+        find on the dashboard. i.e. Fuel Levels.
+
+        Returns
+        -------
+            A dashboard
+
+        """
+        # Always returns a Dashboard object as we can always get the odometer value
+        return Dashboard(
+            self._endpoint_data["telemetry"] if "telemetry" in self._endpoint_data else None,
+            self._endpoint_data["electric_status"]
+            if "electric_status" in self._endpoint_data
+            else None,
+            self._endpoint_data["health_status"]
+            if "health_status" in self._endpoint_data
+            else None,
+            self._metric,
+        )
+
+    @property
+    def climate_settings(self) -> Optional[ClimateSettings]:
+        """Return the vehicle climate settings.
+
+        Returns
+        -------
+            A climate settings
+
+        """
+        return ClimateSettings(self._endpoint_data.get("climate_settings", None))
+
+    @property
+    def climate_status(self) -> Optional[ClimateStatus]:
+        """Return the vehicle climate status.
+
+        Returns
+        -------
+            A climate status
+
+        """
+        return ClimateStatus(self._endpoint_data.get("climate_status", None))
 
     @property
     def electric_status(self) -> Optional[ElectricStatus]:

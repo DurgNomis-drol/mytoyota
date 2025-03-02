@@ -5,6 +5,7 @@ import pprint
 from datetime import date, timedelta
 
 from mytoyota.client import MyT
+from mytoyota.models.endpoints.climate import ACOperations, ACParameters, ClimateSettingsModel
 from mytoyota.models.endpoints.command import CommandType
 from mytoyota.models.summary import SummaryType
 
@@ -51,6 +52,27 @@ async def get_information():
 
         # Send command to car
         # pp.pprint(await car.post_command(command=CommandType.DOOR_LOCK))
+        # return
+
+        # Get climate status
+        # response = await car._api.get_climate_status_endpoint(car.vin)
+        # print(response)
+
+        # Get current climate settings
+        # settings = await car._api.get_climate_settings_endpoint(car.vin)
+        # print(settings)
+        # climate_settings: ClimateSettingsModel = ClimateSettingsModel(
+        #   settingsOn=True,
+        #   temperature=21,
+        #   temperatureUnit="C",
+        #   acOperations=[ACOperations(
+        #       categoryName="defrost",
+        #       acParameters=[ACParameters(enabled=True, name="frontDefrost"),
+        #       ACParameters(enabled=False, name="rearDefrost")])])
+        # climate_settings = settings.payload
+        # climate_settings.temperature = 20
+        # response = await car._api.put_climate_settings_endpoint(car.vin, climate_settings)
+        # print(response)
         # return
 
         await car.update()
